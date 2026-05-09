@@ -383,6 +383,7 @@ def _check_axioms(root: Path) -> list[_QualityError]:
     with tempfile.NamedTemporaryFile("w", suffix=".lean", delete=False) as temp_file:
         temp_path = Path(temp_file.name)
         temp_file.write(commands)
+        temp_file.flush()
 
     try:
         process = subprocess.run(
@@ -593,6 +594,7 @@ def _check_project_declarations(
     with tempfile.NamedTemporaryFile("w", suffix=".lean", delete=False) as temp_file:
         temp_path = Path(temp_file.name)
         temp_file.write(commands)
+        temp_file.flush()
 
     try:
         process = subprocess.run(
