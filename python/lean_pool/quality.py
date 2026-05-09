@@ -277,7 +277,11 @@ def _non_comment_code_lines(text: str) -> int:
 def _check_file_sizes(root: Path) -> list[_QualityError]:
     errors: list[_QualityError] = []
     for path in _lean_content_files(root):
-        code_lines = _non_comment_code_lines(path.read_text())
+        text = path.read_text()
+        # Honor `-- size-limit-ok: <reason>` waivers per CODE_QUALITY.md §5.
+        if any("size-limit-ok:" in line for line in text.splitlines()):
+            continue
+        code_lines = _non_comment_code_lines(text)
         if code_lines > 2000:
             errors.append(
                 _QualityError(
@@ -333,8 +337,11 @@ def _check_proof_sizes(root: Path) -> list[_QualityError]:
 def _parse_declarations(root: Path) -> list[_Declaration]:
     declarations: list[_Declaration] = []
     keyword_pattern = "|".join(DECLARATION_KEYWORDS)
+    # Use a negative lookahead instead of `\b`: `\b` does not treat `'` as a
+    # word character, so a name like `foo'` would be parsed as `foo`.
     decl_pattern = re.compile(
-        rf"^\s*{DECLARATION_PREFIX}({keyword_pattern})\s+([A-Za-z_][A-Za-z0-9_'.]*)\b"
+        rf"^\s*{DECLARATION_PREFIX}({keyword_pattern})\s+"
+        rf"([A-Za-z_][A-Za-z0-9_'.]*)(?![A-Za-z0-9_'.])"
     )
     for path in _lean_content_files(root):
         namespace_stack: list[str] = []
@@ -654,8 +661,12 @@ def _check_project_card(
         return []
     text = entry_path.read_text()
     expected = _project_card(project)
-    body = text[_initial_header_end(text) :].lstrip()
-    if body.startswith(expected):
+    # The project card is the first module docstring (`/-!`) after the file
+    # header. Mathlib convention places imports between the header and the
+    # module docstring, so we skip past those.
+    body = text[_initial_header_end(text) :]
+    idx = body.find("/-!")
+    if idx >= 0 and body[idx:].startswith(expected):
         return []
     return [
         _QualityError(
