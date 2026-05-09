@@ -113,8 +113,53 @@ jobs:
           uv sync --locked
           uv run python -m lean_pool.quality --repo ..
 
+      - name: Save caches
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: |
+            ~/.elan
+            .lake/packages
+            .lake/build
+          key: Lake-${{ runner.os }}-${{ hashFiles('lake-manifest.json') }}-${{ github.sha }}
+
+  proof-profile:
+    runs-on: ubuntu-latest
+    name: Proof profile (advisory)
+    continue-on-error: true
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Restore caches
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: |
+            ~/.elan
+            .lake/packages
+            .lake/build
+          key: Lake-${{ runner.os }}-${{ hashFiles('lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            Lake-${{ runner.os }}-${{ hashFiles('lake-manifest.json') }}-
+
+      - name: Install Lean
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+
+      - name: Install Mathlib cache
+        run: |
+          if [ ! -d ".lake/packages/mathlib" ]; then
+            ~/.elan/bin/lake exe cache get
+          else
+            echo "Mathlib already present from cache"
+          fi
+
       - name: Proof profile (advisory)
-        continue-on-error: true
         run: |
           set -euo pipefail
           : > proof-profile.log
@@ -133,13 +178,3 @@ jobs:
           name: proof-profile
           path: proof-profile.log
           if-no-files-found: ignore
-
-      - name: Save caches
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae
-        with:
-          path: |
-            ~/.elan
-            .lake/packages
-            .lake/build
-          key: Lake-${{ runner.os }}-${{ hashFiles('lake-manifest.json') }}-${{ github.sha }}
