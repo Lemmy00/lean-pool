@@ -80,3 +80,22 @@ jobs:
           # when bumping the model.
           REVIEW_MODEL: gpt-5.4-mini
         run: uv run python -m lean_pool.review
+
+      # Request Copilot's PR review now that Lean CI has passed. This
+      # only matters if the repo's "Automatically request Copilot code
+      # review" setting is OFF — otherwise Copilot already fired on PR
+      # open. The endpoint accepts the literal reviewer name "Copilot";
+      # `if: always()` means we still try this even if the LLM review
+      # step above failed (it's a separate channel).
+      - name: Request Copilot review
+        if: always() && steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          gh api -X POST "repos/$REPO/pulls/$PR_NUMBER/requested_reviewers" \
+            --input - <<'JSON' || echo "Copilot review request returned non-zero; continuing."
+          {"reviewers": ["Copilot"]}
+          JSON
