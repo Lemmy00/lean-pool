@@ -8,18 +8,6 @@ The reviewer flags only **specific, actionable** rule violations and never makes
 
 Lean Pool wants completed, self-contained formalization projects of real mathematics, physics, computer science, or similarly serious formal subjects at the **graduate or research level**, ideally anchored in a paper, textbook, or problem statement, with a clearly identified main theorem (or set of theorems) and a brief project description.
 
-### Approve PRs like these
-
-- **Vlasov-Maxwell-Landau steady-state classification** (~10K LOC, 35 files): formalizes Theorem 4.2 of arXiv:2603.15929. Self-contained, paper-anchored, named author, zero sorries.
-- **Formal Learning Theory kernel** (~22K LOC, 53 files): formalizes the fundamental theorem of statistical learning, Sauer-Shelah, Moran-Yehudayoff compression. Key results listed in the PR body, named author, zero sorries.
-- **Sphere packing in dimensions 8 and 24** (~180K LOC): formalization of Viazovska's published result. Multi-file, paper-anchored, complete.
-- **Erdős Problem 124** (~1K LOC, small but research-level): a complete formalization of a named open problem. Small but anchored and self-contained.
-
-### Reject PRs like these
-
-- **"add binomial PMF corollaries"** (74 adds / 61 dels / 3 files): two trivial corollaries that follow in one or two lines from a single existing lemma. No standalone theorem of interest; just churn from an agent.
-- **"generalize binomial addition with additive convolution API"** (241 adds / 174 dels / 1 file): incremental refactor from the same agent. No clear new mathematical content articulated.
-
 ### The pattern
 
 PRs that belong here state, point to, or formalize **a result a working mathematician would name**. Single lemmas, golfing PRs, infrastructure-only PRs, and incremental API tweaks do **not** belong, even when they compile cleanly. Significance, not size, is the criterion: a 200-line proof of a research-level theorem is welcome; a 2,000-line API generalization with no headline result is not.
@@ -56,14 +44,16 @@ A project may legitimately be split across multiple PRs *if* each one ends at a 
 
 **Severity:** warning.
 
-A new top-level project (a new directory directly under `LeanPool/`) must be accompanied by a "project card" — either a `/-! ... -/` module docstring near the top of the entry-point file or a section in the PR description — stating:
+A new top-level project (a new directory directly under `LeanPool/`) must include a **project card** as a `/-! ... -/` module docstring at the top of its entry-point Lean file (e.g. `LeanPool/<ProjectName>.lean`). The card must live in the Lean file so it appears in the rendered docs (doc-gen4 picks up module docstrings); a description in the PR body alone does **not** satisfy this rule.
+
+The card must state:
 
 - **What was formalized** in two or three sentences of plain English.
 - **Source:** paper, textbook, or problem reference (arXiv ID, DOI, URL).
 - **Author(s)** of the formal development.
 - **Status:** sorry-free vs. partial; what is open.
 
-Flag PRs that introduce a new top-level project without one, or with an empty/placeholder card. Do not flag PRs that extend an existing project whose card already exists.
+Flag PRs that introduce a new top-level project without a docstring card, or with an empty / placeholder card, or whose card lives only in the PR description. Do not flag PRs that extend an existing project whose card already exists.
 
 ### S4. Statement matches description
 
@@ -139,28 +129,3 @@ Verdict semantics:
 - `needs_discussion` — judgement is genuinely close (e.g. significance is borderline) and a human should weigh in.
 
 If the PR has no rule violations, return `findings: []` and a one-sentence summary saying so.
-
-## Out of scope (handled by linters)
-
-The reviewer **does not** comment on the following — they are caught by separate linters, and flagging them here pollutes review output:
-
-- presence of `sorry` / `admit` / new `axiom`;
-- file-header / copyright / license / authorship metadata fields;
-- file-size or proof-size limits;
-- `set_option maxHeartbeats` / `synthInstance.maxHeartbeats` overrides;
-- naming conventions (`camelCase` vs `snake_case`);
-- bare `simp` vs `simp only`;
-- `decide` / `native_decide` justification comments;
-- presence of docstrings on public declarations.
-
-## Out of scope (style)
-
-The reviewer also does **not**:
-
-- comment on personal style preferences not listed above;
-- demand additional tests, examples, or documentation beyond the project card;
-- rewrite proofs in full (suggests directions, not full replacements);
-- comment on commit messages, PR titles, or PR descriptions beyond verifying the project card;
-- speculate about correctness of mathematics it cannot verify from the diff alone.
-
-When in doubt, the reviewer says nothing.

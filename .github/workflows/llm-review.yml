@@ -1,11 +1,19 @@
 name: LLM Review
 
+# Runs only after Lean Action CI succeeds for a pull_request, so the LLM
+# never reviews code that doesn't even build. Also exposes a manual
+# `workflow_dispatch` trigger for testing or for cases where the gate
+# wasn't satisfied but a maintainer wants the review anyway.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - "**/*.lean"
-      - ".github/workflows/llm-review.yml"
+  workflow_run:
+    workflows: ["Lean Action CI"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to review"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -14,15 +22,45 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    # Run for manual dispatches, or for successful Lean Action CI runs that
+    # were themselves triggered by a pull_request.
     if: >-
-      github.event.pull_request.draft == false &&
-      !contains(github.event.pull_request.labels.*.name, 'skip-review')
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'pull_request')
     steps:
-      - uses: actions/checkout@v5
+      - name: Resolve PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          DISPATCH_PR: ${{ inputs.pr_number }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "number=$DISPATCH_PR" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: PR #$DISPATCH_PR"
+          else
+            pr=$(jq -r '.workflow_run.pull_requests[0].number // empty' < "$GITHUB_EVENT_PATH")
+            if [ -z "$pr" ]; then
+              pr=$(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" --jq '.[0].number // empty')
+            fi
+            if [ -z "$pr" ]; then
+              echo "No PR associated with workflow_run head sha; skipping." >&2
+              exit 0
+            fi
+            echo "number=$pr" >> "$GITHUB_OUTPUT"
+            echo "Resolved PR #$pr from workflow_run."
+          fi
+
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
@@ -31,11 +69,17 @@ jobs:
         run: uv sync --group review
 
       - name: Run LLM review
+        if: steps.pr.outputs.number != ''
         working-directory: python
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Override here if the model name needs to change.
           REVIEW_MODEL: gpt-5.4-mini
+          # USD per 1M tokens. Update against
+          # https://openai.com/api/pricing/ when REVIEW_MODEL changes.
+          # Set both to 0 to suppress the cost line; tokens still shown.
+          INPUT_PRICE_PER_M: "0"
+          OUTPUT_PRICE_PER_M: "0"
         run: uv run python -m lean_pool.review

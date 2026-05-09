@@ -2,13 +2,16 @@
 
 Reads the rules from ``.github/REVIEW_RULES.md``, fetches the PR diff via the
 GitHub CLI, asks the configured OpenAI model to apply the rules, and posts the
-findings as a single PR comment.
+findings as a single PR comment that includes token usage and (optionally)
+estimated USD cost.
 
 Environment variables:
-    OPENAI_API_KEY: OpenAI credentials (required).
-    PR_NUMBER:      Pull request number to review (required).
-    GH_TOKEN:       Token for the GitHub CLI (required in CI).
-    REVIEW_MODEL:   Model name; defaults to ``gpt-5.4-mini``.
+    OPENAI_API_KEY:         OpenAI credentials (required).
+    PR_NUMBER:              Pull request number to review (required).
+    GH_TOKEN:               Token for the GitHub CLI (required in CI).
+    REVIEW_MODEL:           Model name; defaults to ``gpt-5.4-mini``.
+    INPUT_PRICE_PER_M:      USD per 1M input tokens (optional; default 0).
+    OUTPUT_PRICE_PER_M:     USD per 1M output tokens (optional; default 0).
 
 Run:
     uv run python -m lean_pool.review
@@ -22,12 +25,12 @@ import subprocess
 import sys
 from pathlib import Path
 from textwrap import dedent
+from typing import Any
 
 from openai import OpenAI
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RULES_PATH = REPO_ROOT / ".github" / "REVIEW_RULES.md"
-MAX_DIFF_BYTES = 200_000
 DEFAULT_MODEL = "gpt-5.4-mini"
 
 SEVERITY_ICON = {"info": "ℹ️", "warning": "⚠️", "blocking": "🛑"}
@@ -59,6 +62,17 @@ SYSTEM_PROMPT = dedent(
 )
 
 
+def _float_env(name: str) -> float:
+    """Read a non-negative float from the environment, defaulting to 0."""
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return 0.0
+    try:
+        return max(0.0, float(raw))
+    except ValueError:
+        return 0.0
+
+
 def run_gh(*args: str, stdin: str | None = None) -> str:
     """Run ``gh`` with the given arguments and return stdout.
 
@@ -83,15 +97,18 @@ def run_gh(*args: str, stdin: str | None = None) -> str:
 
 
 def fetch_diff(pr_number: str) -> str:
-    """Return the unified diff for ``pr_number``, truncated for cost control."""
-    diff = run_gh("pr", "diff", pr_number)
-    if len(diff) > MAX_DIFF_BYTES:
-        diff = diff[:MAX_DIFF_BYTES] + "\n\n[diff truncated for length]"
-    return diff
+    """Return the full unified diff for ``pr_number``, untruncated."""
+    return run_gh("pr", "diff", pr_number)
 
 
-def request_review(model: str, rules: str, diff: str) -> dict:
-    """Ask the model to apply ``rules`` to ``diff`` and return parsed JSON."""
+def request_review(model: str, rules: str, diff: str) -> tuple[dict, Any]:
+    """Ask the model to apply ``rules`` to ``diff``.
+
+    Returns:
+        A tuple ``(payload, usage)`` where ``payload`` is the parsed JSON
+        review and ``usage`` is the OpenAI ``CompletionUsage`` object (or
+        ``None`` if the SDK did not return one).
+    """
     client = OpenAI()
     response = client.chat.completions.create(
         model=model,
@@ -107,23 +124,47 @@ def request_review(model: str, rules: str, diff: str) -> dict:
         response_format={"type": "json_object"},
     )
     content = response.choices[0].message.content or "{}"
-    return json.loads(content)
+    return json.loads(content), response.usage
 
 
-def render_comment(payload: dict, model: str) -> str:
+def render_usage(
+    usage: Any, input_price_per_m: float, output_price_per_m: float
+) -> str:
+    """Render a one-line token / cost footer.
+
+    Returns an empty string if ``usage`` is unavailable.
+    """
+    if usage is None:
+        return ""
+    in_tok = getattr(usage, "prompt_tokens", 0) or 0
+    out_tok = getattr(usage, "completion_tokens", 0) or 0
+    line = f"**Tokens:** {in_tok:,} in / {out_tok:,} out"
+    if input_price_per_m > 0 or output_price_per_m > 0:
+        cost = (in_tok * input_price_per_m + out_tok * output_price_per_m) / 1_000_000
+        line += f" · **Cost:** ${cost:.4f}"
+    else:
+        line += " · _(set INPUT_PRICE_PER_M / OUTPUT_PRICE_PER_M for cost)_"
+    return line
+
+
+def render_comment(
+    payload: dict,
+    model: str,
+    usage: Any,
+    input_price_per_m: float,
+    output_price_per_m: float,
+) -> str:
     """Render the model's payload as a Markdown PR comment body."""
     summary = (payload.get("summary") or "").strip()
     verdict = (payload.get("verdict") or "").strip()
     findings = payload.get("findings") or []
 
-    verdict_line = ""
+    lines = [f"## 🤖 LLM review (`{model}`)", ""]
+
     if verdict:
         icon = VERDICT_ICON.get(verdict, "•")
-        verdict_line = f"**Verdict:** {icon} `{verdict}`"
+        lines.extend([f"**Verdict:** {icon} `{verdict}`", ""])
 
-    lines = [f"## 🤖 LLM review (`{model}`)", ""]
-    if verdict_line:
-        lines.extend([verdict_line, ""])
     lines.extend([summary, ""])
 
     if not findings:
@@ -148,6 +189,9 @@ def render_comment(payload: dict, model: str) -> str:
 
     lines.append("")
     lines.append("---")
+    usage_line = render_usage(usage, input_price_per_m, output_price_per_m)
+    if usage_line:
+        lines.append(usage_line)
     lines.append(
         "_Automated review against "
         "[`.github/REVIEW_RULES.md`](../blob/main/.github/REVIEW_RULES.md). "
@@ -172,6 +216,9 @@ def main() -> int:
         return 2
 
     model = os.environ.get("REVIEW_MODEL", DEFAULT_MODEL)
+    input_price = _float_env("INPUT_PRICE_PER_M")
+    output_price = _float_env("OUTPUT_PRICE_PER_M")
+
     rules = RULES_PATH.read_text(encoding="utf-8")
     diff = fetch_diff(pr_number)
 
@@ -179,8 +226,14 @@ def main() -> int:
         print("Empty diff; nothing to review.", file=sys.stderr)
         return 0
 
-    payload = request_review(model=model, rules=rules, diff=diff)
-    comment = render_comment(payload, model=model)
+    payload, usage = request_review(model=model, rules=rules, diff=diff)
+    comment = render_comment(
+        payload,
+        model=model,
+        usage=usage,
+        input_price_per_m=input_price,
+        output_price_per_m=output_price,
+    )
     post_comment(pr_number, comment)
     return 0
 
