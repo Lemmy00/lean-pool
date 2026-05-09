@@ -78,7 +78,7 @@ jobs:
           # Override here if the model name needs to change. Per-tier
           # prices live in PRICING_PER_M inside review.py — update there
           # when bumping the model.
-          REVIEW_MODEL: gpt-5.4-mini
+          REVIEW_MODEL: gpt-5.5
         run: uv run python -m lean_pool.review
 
       # Request Copilot's PR review now that Lean CI has passed. This
