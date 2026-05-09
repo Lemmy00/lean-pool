@@ -1,0 +1,76 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'python/**'
+      - '.github/workflows/python_ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'python/**'
+      - '.github/workflows/python_ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint (ruff)
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dev dependencies
+        run: cd python && uv sync --locked --group dev
+
+      - name: Ruff check
+        run: cd python && uv run ruff check .
+
+      - name: Ruff format check
+        run: cd python && uv run ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    name: Test (pytest)
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install test dependencies
+        run: cd python && uv sync --locked --group test
+
+      - name: Pytest
+        run: |
+          cd python
+          # Translate pytest's exit code 5 ("no tests collected") to success
+          # so CI passes while tests/ is still empty. Remove this once tests
+          # exist; any other failure still fails the job.
+          set +e
+          uv run pytest --cov
+          status=$?
+          set -e
+          if [ "$status" -eq 5 ]; then
+            echo "No tests collected; skipping pytest."
+            exit 0
+          fi
+          exit "$status"
