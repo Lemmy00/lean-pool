@@ -14,7 +14,6 @@ PRs that belong here state, point to, or formalize **a result a working mathemat
 
 ### Concrete REJECT examples
 
-- **`PMF.binomial_add_binomial` (176 lines, 1 lemma, no project card, no paper anchor):** a single utility lemma stating that the convolution of two binomial PMFs is binomial. Despite the gnarly proof, this is an **undergraduate-textbook** identity that any introductory probability course covers. **NOT acceptable.** The proof's complexity does not change the verdict — significance is what matters, and there isn't any. Author's own framing ("a particularly acute example of a very gnarly proof of a straightforwardly useful fact") is itself a tell that this is utility code, not a project.
 - **"add binomial PMF corollaries" (74/61/3 files):** two trivial corollaries that follow in one or two lines from a single existing lemma. Pure churn from an agent.
 - **"generalize binomial addition with additive convolution API" (241/174/1 file):** incremental refactor with no clear new mathematical content articulated.
 
