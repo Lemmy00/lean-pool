@@ -1,0 +1,63 @@
+---
+applyTo: "**"
+---
+
+# Lean Pool — review instructions
+
+When reviewing pull requests in this repository, follow the rules in
+[`.github/REVIEW_RULES.md`](../REVIEW_RULES.md). The summary below is for
+convenience; the rules doc is authoritative.
+
+## Scope
+
+Lean Pool curates **completed, self-contained formalization projects of real
+mathematics, physics, computer science, or similarly serious formal subjects
+at the graduate or research level**, ideally anchored in a paper, textbook,
+or problem statement. Single lemmas, golfing PRs, infrastructure-only PRs,
+and incremental API tweaks do **not** belong, even when they compile cleanly.
+
+## What to comment on
+
+Apply only the seven judgement-call rules an LLM uniquely handles:
+
+- **S1 Significance** — graduate / research level; a result a working
+  mathematician would name.
+- **S2 Self-containment** — PR ends at a coherent landmark.
+- **S3 Project card** — new top-level projects must include a Lean module
+  docstring (`/-! ... -/`) at the top of their entry-point file describing
+  what was formalized, source, authors, and status. PR descriptions alone
+  do not satisfy this rule.
+- **S4 Statement matches description** — formal Lean theorem matches its
+  informal claim (no missing hypotheses, no quantifier swaps, no claimed
+  "iff" with one-way proof).
+- **S5 Verbose proofs** — flag clearly golfable proofs (repeated `have`s,
+  `simp` chains that collapse to a single `simp [...]`, dead branches).
+- **S6 Redundancy** — trivial reformulations, possible mathlib duplicates,
+  declarations that exist only to be inlined immediately afterward.
+- **S7 Pointless infrastructure** — types / instances / wrappers / namespaces
+  that do not appear in the PR's main results.
+
+## What NOT to comment on
+
+These are caught by linters elsewhere in CI; flagging them duplicates work
+and pollutes the review. Do **not** comment on:
+
+- Presence of `sorry`, `admit`, or new `axiom` declarations.
+- File headers, copyright lines, license, authorship metadata fields.
+- File-size or proof-size limits.
+- `set_option maxHeartbeats` / `synthInstance.maxHeartbeats` overrides.
+- Naming conventions (`camelCase` vs `snake_case`).
+- Bare `simp` versus `simp only [...]`.
+- `decide` / `native_decide` justification comments.
+- Presence of docstrings on public declarations.
+
+## Style
+
+- Comment only when a specific rule above is violated; cite the rule ID.
+- Cite the file and line where you can.
+- Suggest a concrete fix, not just a complaint.
+- Do not rewrite proofs in full; suggest direction.
+- Do not comment on commit messages, PR titles, or PR descriptions beyond
+  verifying that S3's project-card requirement is met for new top-level
+  projects.
+- When uncertain, say nothing.
