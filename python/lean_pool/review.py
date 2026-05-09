@@ -37,7 +37,7 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
-from openai import OpenAI, RateLimitError
+from openai import APIStatusError, OpenAI, RateLimitError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RULES_PATH = REPO_ROOT / ".github" / "REVIEW_RULES.md"
@@ -147,15 +147,20 @@ def request_review(model: str, rules: str, diff: str) -> tuple[dict, Any, str]:
             service_tier="flex",
         )
         tier = "flex"
-    except RateLimitError:
-        # Flex pool exhausted; retry on standard tier.
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            response_format={"type": "json_object"},
-            service_tier="auto",
-        )
-        tier = "standard"
+    except (RateLimitError, APIStatusError) as e:
+        # Flex either out of capacity (429 RateLimitError) or unsupported
+        # for this model (e.g. 500 InternalServerError on gpt-5.5).
+        # Either way, fall back to standard.
+        if isinstance(e, RateLimitError) or (500 <= e.status_code < 600):
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                response_format={"type": "json_object"},
+                service_tier="auto",
+            )
+            tier = "standard"
+        else:
+            raise
 
     content = response.choices[0].message.content or "{}"
     return json.loads(content), response.usage, tier
