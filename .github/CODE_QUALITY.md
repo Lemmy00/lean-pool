@@ -106,7 +106,7 @@ CI checks:
 
 ### 9. Semantic dedup
 
-On every PR, extract new or modified theorem/lemma statements and query LeanExplore.
+On every PR, extract natural-language theorem/lemma docstrings and query LeanExplore.
 
 Use [`lean-explore`](https://www.leanexplore.com/docs) with `LEANEXPLORE_API_KEY` and comment with top candidate duplicates across:
 

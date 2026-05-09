@@ -10,6 +10,9 @@ import Mathlib.Tactic
 
 open Real PMF BigOperators ENNReal NNReal Finset
 
+/-- The sum of two independent binomial distributions with the same success
+probability is a binomial distribution whose trial count is the sum of the two
+trial counts. -/
 lemma PMF.binomial_add_binomial (p : NNReal) (hp : p ≤ 1) (m₁ m₂ : ℕ) :
     -- size-limit-ok: existing standalone proof;
     -- split into helper lemmas when refactoring this file

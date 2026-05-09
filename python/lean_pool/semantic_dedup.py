@@ -36,10 +36,23 @@ class _Statement:
 
 
 @dataclass(frozen=True)
+class _SkippedStatement:
+    path: Path
+    line: int
+    name: str
+
+
+@dataclass(frozen=True)
 class _SearchResult:
     name: str
     module: str
     source_link: str
+
+
+@dataclass(frozen=True)
+class _Extraction:
+    statements: list[_Statement]
+    skipped: list[_SkippedStatement]
 
 
 def _changed_lean_files(root: Path, base: str) -> list[Path]:
@@ -60,10 +73,12 @@ def _changed_lean_files(root: Path, base: str) -> list[Path]:
     return sorted(files)
 
 
-def _extract_statements(path: Path) -> list[_Statement]:
+def _extract_statements(path: Path) -> _Extraction:
     text = path.read_text()
+    original_lines = text.splitlines()
     stripped_lines = _strip_lean_comments(text).splitlines()
     statements: list[_Statement] = []
+    skipped: list[_SkippedStatement] = []
     index = 0
     while index < len(stripped_lines):
         line = stripped_lines[index]
@@ -75,11 +90,14 @@ def _extract_statements(path: Path) -> list[_Statement]:
             index += 1
             continue
         end = _statement_end(stripped_lines, index)
-        query = _statement_query(stripped_lines[index:end])
+        name = match.group(1)
+        query = _docstring_query(original_lines, index)
         if query:
-            statements.append(_Statement(path, index + 1, match.group(1), query))
+            statements.append(_Statement(path, index + 1, name, query))
+        else:
+            skipped.append(_SkippedStatement(path, index + 1, name))
         index = end
-    return statements
+    return _Extraction(statements, skipped)
 
 
 def _statement_end(lines: list[str], start: int) -> int:
@@ -98,10 +116,41 @@ def _is_private_declaration_line(line: str) -> bool:
     return "private" in line.split()
 
 
-def _statement_query(lines: list[str]) -> str:
-    joined = " ".join(line.strip() for line in lines if line.strip())
-    statement = joined.split(":=", maxsplit=1)[0]
-    return re.sub(r"\s+", " ", statement).strip()
+def _docstring_query(lines: list[str], declaration_index: int) -> str:
+    index = declaration_index - 1
+    while index >= 0 and _can_appear_between_docstring_and_declaration(lines[index]):
+        index -= 1
+    if index < 0 or "-/" not in lines[index]:
+        return ""
+
+    end = index
+    while index >= 0 and "/--" not in lines[index]:
+        index -= 1
+    if index < 0:
+        return ""
+
+    block = "\n".join(lines[index : end + 1])
+    if not block.lstrip().startswith("/--"):
+        return ""
+    return _clean_docstring(block)
+
+
+def _can_appear_between_docstring_and_declaration(line: str) -> bool:
+    stripped = line.strip()
+    return not stripped or stripped.startswith("@[")
+
+
+def _clean_docstring(block: str) -> str:
+    body = re.sub(r"^\s*/--", "", block)
+    body = re.sub(r"-/\s*$", "", body)
+    lines = []
+    for line in body.splitlines():
+        line = line.strip()
+        if line.startswith("*"):
+            line = line[1:].strip()
+        if line:
+            lines.append(line)
+    return re.sub(r"\s+", " ", " ".join(lines)).strip()
 
 
 def _field(result: Any, field: str) -> Any:
@@ -145,18 +194,32 @@ async def _run_search(
 def _markdown(
     root: Path,
     statements: list[_Statement],
+    skipped: list[_SkippedStatement],
     results: dict[_Statement, list[_SearchResult]],
 ) -> str:
-    if not statements:
+    if not statements and not skipped:
         return (
             "### LeanExplore semantic dedup\n\n"
             "No changed theorem or lemma statements found.\n"
         )
 
     lines = ["### LeanExplore semantic dedup", ""]
+    if skipped:
+        lines.append(
+            "Skipped changed theorem/lemma declarations without docstrings; "
+            "LeanExplore queries must be natural language."
+        )
+        lines.append("")
+        for statement in skipped:
+            relative = statement.path.relative_to(root)
+            lines.append(f"- `{statement.name}` in `{relative}:{statement.line}`")
+        lines.append("")
+
     for statement in statements:
         relative = statement.path.relative_to(root)
         lines.append(f"#### `{statement.name}` in `{relative}:{statement.line}`")
+        lines.append("")
+        lines.append(f"Query: {statement.query}")
         lines.append("")
         matches = results.get(statement, [])
         if not matches:
@@ -198,13 +261,17 @@ def main(argv: list[str] | None = None) -> int:
         print("LEANEXPLORE_API_KEY is not set; skipping semantic dedup.")
         return 0
 
+    extractions = [
+        _extract_statements(path) for path in _changed_lean_files(root, args.base)
+    ]
     statements = [
-        statement
-        for path in _changed_lean_files(root, args.base)
-        for statement in _extract_statements(path)
+        statement for extraction in extractions for statement in extraction.statements
+    ]
+    skipped = [
+        statement for extraction in extractions for statement in extraction.skipped
     ]
     results = asyncio.run(_run_search(statements, args.limit)) if statements else {}
-    markdown = _markdown(root, statements, results)
+    markdown = _markdown(root, statements, skipped, results)
     if args.output:
         args.output.write_text(markdown)
     else:
