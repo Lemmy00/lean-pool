@@ -1,9 +1,11 @@
 /.lake
+.env
 
 # Python
 __pycache__/
 *.pyc
 .venv/
+.coverage
 .ruff_cache/
 .pytest_cache/
 
@@ -11,4 +13,3 @@ __pycache__/
 # locally only. Curated per-package files in candidates/packages/
 # are the source of truth that gets committed.
 /aggregator/candidates/raw_data/
-

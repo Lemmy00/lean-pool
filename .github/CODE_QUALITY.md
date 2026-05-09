@@ -14,6 +14,7 @@ Run the same class of checks mathlib relies on, adapted to `LeanPool`:
 - mathlib text-style linting (`lint-style-action` or local equivalent)
 - doc-gen4 build once docs are enabled
 - import/reachability checks: every `.lean` file is imported by `LeanPool.lean`
+- import hygiene: content files may not use broad `import Mathlib`
 
 Copy useful mathlib CI hygiene directly where possible: `actionlint`, SHA-pinned Actions, and any still-relevant workflow/style linters.
 
@@ -27,8 +28,6 @@ Fail CI on:
 - new `axiom` / `constant`
 - `unsafe`, `partial`, unallowlisted `opaque`, or unallowlisted `@[extern]`
 - theorem dependencies outside the permitted axiom set: `Classical.choice`, `propext`, `Quot.sound`
-
-Use [`leanprover/comparator`](https://github.com/leanprover/comparator) for changed public theorem/lemma declarations when practical: generate a trusted challenge module with copied statements, a solution module that proves wrappers using the PR declarations, and run comparator with the permitted axiom list. This checks statement equality, kernel acceptance, and axiom usage.
 
 ### 3. No option overrides
 
@@ -144,7 +143,7 @@ Run `actions/stale` daily:
 
 1. Mathlib baseline, workflow linting, and SHA-pinned Actions.
 2. No `set_option`, no diagnostics, no `sorry`, and no debug commands.
-3. Kernel/soundness audit with comparator where practical.
+3. Kernel/soundness audit.
 4. `LeanPool/projects.yml`, generated project cards, and file headers.
 5. Docs/index generation and doc-gen4 build.
 6. Size limits.

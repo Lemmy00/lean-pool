@@ -25,4 +25,5 @@ uv sync
 uv run pytest       # run tests
 uv run ruff check   # lint
 uv run ruff format  # format
+uv run python -m lean_pool.quality --repo ..  # repository quality gates
 ```
