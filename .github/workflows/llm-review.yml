@@ -77,9 +77,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Override here if the model name needs to change.
           REVIEW_MODEL: gpt-5.4-mini
-          # USD per 1M tokens. Update against
-          # https://openai.com/api/pricing/ when REVIEW_MODEL changes.
+          # USD per 1M tokens for REVIEW_MODEL. Verify against
+          # https://developers.openai.com/api/docs/pricing when bumping.
           # Set both to 0 to suppress the cost line; tokens still shown.
-          INPUT_PRICE_PER_M: "0"
-          OUTPUT_PRICE_PER_M: "0"
+          INPUT_PRICE_PER_M: "0.75"
+          OUTPUT_PRICE_PER_M: "4.50"
         run: uv run python -m lean_pool.review
