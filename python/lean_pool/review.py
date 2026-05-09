@@ -2,16 +2,23 @@
 
 Reads the rules from ``.github/REVIEW_RULES.md``, fetches the PR diff via the
 GitHub CLI, asks the configured OpenAI model to apply the rules, and posts the
-findings as a single PR comment that includes token usage and (optionally)
-estimated USD cost.
+findings as a single PR comment that includes token usage, the service tier
+that served the request, and (optionally) estimated USD cost.
+
+The reviewer prefers OpenAI's `flex` tier (cheaper, slower, occasionally
+unavailable). When flex returns 429 Resource Unavailable, the request is
+retried with `service_tier="auto"` (standard pricing). The rendered comment
+shows which tier was actually used and costs the request at that tier's rate.
 
 Environment variables:
-    OPENAI_API_KEY:         OpenAI credentials (required).
-    PR_NUMBER:              Pull request number to review (required).
-    GH_TOKEN:               Token for the GitHub CLI (required in CI).
-    REVIEW_MODEL:           Model name; defaults to ``gpt-5.4-mini``.
-    INPUT_PRICE_PER_M:      USD per 1M input tokens (optional; default 0).
-    OUTPUT_PRICE_PER_M:     USD per 1M output tokens (optional; default 0).
+    OPENAI_API_KEY:                 OpenAI credentials (required).
+    PR_NUMBER:                      Pull request number to review (required).
+    GH_TOKEN:                       Token for the GitHub CLI (required in CI).
+    REVIEW_MODEL:                   Model name; defaults to ``gpt-5.4-mini``.
+    INPUT_PRICE_PER_M_FLEX:         USD per 1M input tokens at flex rates.
+    OUTPUT_PRICE_PER_M_FLEX:        USD per 1M output tokens at flex rates.
+    INPUT_PRICE_PER_M_STANDARD:     USD per 1M input tokens at standard rates.
+    OUTPUT_PRICE_PER_M_STANDARD:    USD per 1M output tokens at standard rates.
 
 Run:
     uv run python -m lean_pool.review
@@ -27,11 +34,13 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
-from openai import OpenAI
+from openai import OpenAI, RateLimitError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RULES_PATH = REPO_ROOT / ".github" / "REVIEW_RULES.md"
 DEFAULT_MODEL = "gpt-5.4-mini"
+# Flex tier requests can take longer than the default 10-minute timeout.
+REQUEST_TIMEOUT_SECONDS = 900.0
 
 SEVERITY_ICON = {"info": "ℹ️", "warning": "⚠️", "blocking": "🛑"}
 VERDICT_ICON = {
@@ -73,6 +82,20 @@ def _float_env(name: str) -> float:
         return 0.0
 
 
+def load_pricing() -> dict[str, tuple[float, float]]:
+    """Load (input_per_m, output_per_m) per service tier from the environment."""
+    return {
+        "flex": (
+            _float_env("INPUT_PRICE_PER_M_FLEX"),
+            _float_env("OUTPUT_PRICE_PER_M_FLEX"),
+        ),
+        "standard": (
+            _float_env("INPUT_PRICE_PER_M_STANDARD"),
+            _float_env("OUTPUT_PRICE_PER_M_STANDARD"),
+        ),
+    }
+
+
 def run_gh(*args: str, stdin: str | None = None) -> str:
     """Run ``gh`` with the given arguments and return stdout.
 
@@ -101,36 +124,48 @@ def fetch_diff(pr_number: str) -> str:
     return run_gh("pr", "diff", pr_number)
 
 
-def request_review(model: str, rules: str, diff: str) -> tuple[dict, Any]:
+def request_review(model: str, rules: str, diff: str) -> tuple[dict, Any, str]:
     """Ask the model to apply ``rules`` to ``diff``.
 
+    Tries the ``flex`` service tier first; if OpenAI returns 429 Resource
+    Unavailable, retries with ``service_tier="auto"`` (standard tier).
+
     Returns:
-        A tuple ``(payload, usage)`` where ``payload`` is the parsed JSON
-        review and ``usage`` is the OpenAI ``CompletionUsage`` object (or
-        ``None`` if the SDK did not return one).
+        ``(payload, usage, tier)`` where ``payload`` is the parsed JSON
+        review, ``usage`` is the OpenAI ``CompletionUsage`` object (or
+        ``None``), and ``tier`` is ``"flex"`` or ``"standard"``.
     """
-    client = OpenAI()
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": (
-                    f"## Review rules\n\n{rules}\n\n## PR diff\n\n```diff\n{diff}\n```"
-                ),
-            },
-        ],
-        response_format={"type": "json_object"},
-    )
+    client = OpenAI(timeout=REQUEST_TIMEOUT_SECONDS)
+    user_content = f"## Review rules\n\n{rules}\n\n## PR diff\n\n```diff\n{diff}\n```"
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_content},
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            response_format={"type": "json_object"},
+            service_tier="flex",
+        )
+        tier = "flex"
+    except RateLimitError:
+        # Flex pool exhausted; retry on standard tier.
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            response_format={"type": "json_object"},
+            service_tier="auto",
+        )
+        tier = "standard"
+
     content = response.choices[0].message.content or "{}"
-    return json.loads(content), response.usage
+    return json.loads(content), response.usage, tier
 
 
-def render_usage(
-    usage: Any, input_price_per_m: float, output_price_per_m: float
-) -> str:
-    """Render a one-line token / cost footer.
+def render_usage(usage: Any, tier: str, prices: dict[str, tuple[float, float]]) -> str:
+    """Render a one-line token / tier / cost footer.
 
     Returns an empty string if ``usage`` is unavailable.
     """
@@ -138,21 +173,24 @@ def render_usage(
         return ""
     in_tok = getattr(usage, "prompt_tokens", 0) or 0
     out_tok = getattr(usage, "completion_tokens", 0) or 0
-    line = f"**Tokens:** {in_tok:,} in / {out_tok:,} out"
-    if input_price_per_m > 0 or output_price_per_m > 0:
-        cost = (in_tok * input_price_per_m + out_tok * output_price_per_m) / 1_000_000
-        line += f" · **Cost:** ${cost:.4f}"
+    in_price, out_price = prices.get(tier, (0.0, 0.0))
+
+    parts = [f"**Tokens:** {in_tok:,} in / {out_tok:,} out"]
+    parts.append(f"**Tier:** `{tier}`")
+    if in_price > 0 or out_price > 0:
+        cost = (in_tok * in_price + out_tok * out_price) / 1_000_000
+        parts.append(f"**Cost:** ${cost:.4f}")
     else:
-        line += " · _(set INPUT_PRICE_PER_M / OUTPUT_PRICE_PER_M for cost)_"
-    return line
+        parts.append(f"_(set INPUT/OUTPUT_PRICE_PER_M_{tier.upper()} for cost)_")
+    return " · ".join(parts)
 
 
 def render_comment(
     payload: dict,
     model: str,
     usage: Any,
-    input_price_per_m: float,
-    output_price_per_m: float,
+    tier: str,
+    prices: dict[str, tuple[float, float]],
 ) -> str:
     """Render the model's payload as a Markdown PR comment body."""
     summary = (payload.get("summary") or "").strip()
@@ -189,7 +227,7 @@ def render_comment(
 
     lines.append("")
     lines.append("---")
-    usage_line = render_usage(usage, input_price_per_m, output_price_per_m)
+    usage_line = render_usage(usage, tier, prices)
     if usage_line:
         lines.append(usage_line)
     lines.append(
@@ -216,8 +254,7 @@ def main() -> int:
         return 2
 
     model = os.environ.get("REVIEW_MODEL", DEFAULT_MODEL)
-    input_price = _float_env("INPUT_PRICE_PER_M")
-    output_price = _float_env("OUTPUT_PRICE_PER_M")
+    prices = load_pricing()
 
     rules = RULES_PATH.read_text(encoding="utf-8")
     diff = fetch_diff(pr_number)
@@ -226,13 +263,13 @@ def main() -> int:
         print("Empty diff; nothing to review.", file=sys.stderr)
         return 0
 
-    payload, usage = request_review(model=model, rules=rules, diff=diff)
+    payload, usage, tier = request_review(model=model, rules=rules, diff=diff)
     comment = render_comment(
         payload,
         model=model,
         usage=usage,
-        input_price_per_m=input_price,
-        output_price_per_m=output_price,
+        tier=tier,
+        prices=prices,
     )
     post_comment(pr_number, comment)
     return 0
