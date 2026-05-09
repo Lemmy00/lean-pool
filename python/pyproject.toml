@@ -15,6 +15,9 @@ test = [
     "pytest>=8.3",
     "pytest-cov>=6.1",
 ]
+review = [
+    "openai>=1.50",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
