@@ -14,6 +14,10 @@ from typing import Any
 import yaml
 
 ALLOWED_AXIOMS = {"Classical.choice", "propext", "Quot.sound"}
+CODE_QUALITY_URL = (
+    "https://github.com/Vilin97/lean-pool/blob/main/.github/CODE_QUALITY.md"
+)
+FILE_HEADERS_DOC = f"{CODE_QUALITY_URL}#7-file-headers"
 STATUS_VALUES = {"verified", "draft", "extra-axiom"}
 SOURCE_KEYS = {"arxiv", "doi", "url"}
 DECLARATION_KEYWORDS = (
@@ -195,7 +199,13 @@ def _check_headers(root: Path) -> list[_QualityError]:
             continue
         text = path.read_text()
         if not all(pattern.search(text) for pattern in HEADER_PATTERNS):
-            errors.append(_QualityError(path, 1, "missing structured file header"))
+            errors.append(
+                _QualityError(
+                    path,
+                    1,
+                    f"missing structured file header; see {FILE_HEADERS_DOC}",
+                )
+            )
     return errors
 
 
