@@ -75,16 +75,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Override here if the model name needs to change.
+          # Override here if the model name needs to change. Per-tier
+          # prices live in PRICING_PER_M inside review.py — update there
+          # when bumping the model.
           REVIEW_MODEL: gpt-5.4-mini
-          # The review job calls OpenAI with `service_tier="flex"` first
-          # (slower, ~50% cheaper) and falls back to standard (`auto`) on
-          # 429 Resource Unavailable. Cost is rendered at the tier that
-          # actually served the request. Verify rates against
-          # https://developers.openai.com/api/docs/pricing when bumping
-          # REVIEW_MODEL. Set any pair to 0 to suppress the cost line.
-          INPUT_PRICE_PER_M_FLEX: "0.375"
-          OUTPUT_PRICE_PER_M_FLEX: "2.25"
-          INPUT_PRICE_PER_M_STANDARD: "0.75"
-          OUTPUT_PRICE_PER_M_STANDARD: "4.50"
         run: uv run python -m lean_pool.review

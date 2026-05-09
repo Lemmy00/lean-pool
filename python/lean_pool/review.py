@@ -10,15 +10,16 @@ unavailable). When flex returns 429 Resource Unavailable, the request is
 retried with `service_tier="auto"` (standard pricing). The rendered comment
 shows which tier was actually used and costs the request at that tier's rate.
 
+Per-token prices live in the ``PRICING_PER_M`` table below — the OpenAI
+API does not return cost in its responses, so we maintain a small lookup
+keyed on (model, tier). Update it when bumping ``DEFAULT_MODEL`` or when
+OpenAI changes pricing.
+
 Environment variables:
-    OPENAI_API_KEY:                 OpenAI credentials (required).
-    PR_NUMBER:                      Pull request number to review (required).
-    GH_TOKEN:                       Token for the GitHub CLI (required in CI).
-    REVIEW_MODEL:                   Model name; defaults to ``gpt-5.4-mini``.
-    INPUT_PRICE_PER_M_FLEX:         USD per 1M input tokens at flex rates.
-    OUTPUT_PRICE_PER_M_FLEX:        USD per 1M output tokens at flex rates.
-    INPUT_PRICE_PER_M_STANDARD:     USD per 1M input tokens at standard rates.
-    OUTPUT_PRICE_PER_M_STANDARD:    USD per 1M output tokens at standard rates.
+    OPENAI_API_KEY: OpenAI credentials (required).
+    PR_NUMBER:      Pull request number to review (required).
+    GH_TOKEN:       Token for the GitHub CLI (required in CI).
+    REVIEW_MODEL:   Model name; defaults to ``gpt-5.4-mini``.
 
 Run:
     uv run python -m lean_pool.review
@@ -41,6 +42,16 @@ RULES_PATH = REPO_ROOT / ".github" / "REVIEW_RULES.md"
 DEFAULT_MODEL = "gpt-5.4-mini"
 # Flex tier requests can take longer than the default 10-minute timeout.
 REQUEST_TIMEOUT_SECONDS = 900.0
+
+# USD per 1M tokens, keyed by (model, tier) -> (input_per_M, output_per_M).
+# Source: https://developers.openai.com/api/docs/pricing — update when
+# bumping DEFAULT_MODEL or when OpenAI changes pricing.
+PRICING_PER_M: dict[str, dict[str, tuple[float, float]]] = {
+    "gpt-5.4-mini": {
+        "flex": (0.375, 2.25),
+        "standard": (0.75, 4.50),
+    },
+}
 
 SEVERITY_ICON = {"info": "ℹ️", "warning": "⚠️", "blocking": "🛑"}
 VERDICT_ICON = {
@@ -69,31 +80,6 @@ SYSTEM_PROMPT = dedent(
     in the rules document. No prose outside the JSON.
     """
 )
-
-
-def _float_env(name: str) -> float:
-    """Read a non-negative float from the environment, defaulting to 0."""
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return 0.0
-    try:
-        return max(0.0, float(raw))
-    except ValueError:
-        return 0.0
-
-
-def load_pricing() -> dict[str, tuple[float, float]]:
-    """Load (input_per_m, output_per_m) per service tier from the environment."""
-    return {
-        "flex": (
-            _float_env("INPUT_PRICE_PER_M_FLEX"),
-            _float_env("OUTPUT_PRICE_PER_M_FLEX"),
-        ),
-        "standard": (
-            _float_env("INPUT_PRICE_PER_M_STANDARD"),
-            _float_env("OUTPUT_PRICE_PER_M_STANDARD"),
-        ),
-    }
 
 
 def run_gh(*args: str, stdin: str | None = None) -> str:
@@ -164,24 +150,26 @@ def request_review(model: str, rules: str, diff: str) -> tuple[dict, Any, str]:
     return json.loads(content), response.usage, tier
 
 
-def render_usage(usage: Any, tier: str, prices: dict[str, tuple[float, float]]) -> str:
+def render_usage(usage: Any, model: str, tier: str) -> str:
     """Render a one-line token / tier / cost footer.
 
-    Returns an empty string if ``usage`` is unavailable.
+    Returns an empty string if ``usage`` is unavailable. Cost is computed
+    from :data:`PRICING_PER_M` and suppressed when the model/tier pair is
+    not listed there.
     """
     if usage is None:
         return ""
     in_tok = getattr(usage, "prompt_tokens", 0) or 0
     out_tok = getattr(usage, "completion_tokens", 0) or 0
-    in_price, out_price = prices.get(tier, (0.0, 0.0))
 
-    parts = [f"**Tokens:** {in_tok:,} in / {out_tok:,} out"]
-    parts.append(f"**Tier:** `{tier}`")
-    if in_price > 0 or out_price > 0:
+    parts = [f"**Tokens:** {in_tok:,} in / {out_tok:,} out", f"**Tier:** `{tier}`"]
+    rates = PRICING_PER_M.get(model, {}).get(tier)
+    if rates is not None:
+        in_price, out_price = rates
         cost = (in_tok * in_price + out_tok * out_price) / 1_000_000
         parts.append(f"**Cost:** ${cost:.4f}")
     else:
-        parts.append(f"_(set INPUT/OUTPUT_PRICE_PER_M_{tier.upper()} for cost)_")
+        parts.append(f"_(no pricing recorded for `{model}` at `{tier}` tier)_")
     return " · ".join(parts)
 
 
@@ -190,7 +178,6 @@ def render_comment(
     model: str,
     usage: Any,
     tier: str,
-    prices: dict[str, tuple[float, float]],
 ) -> str:
     """Render the model's payload as a Markdown PR comment body."""
     summary = (payload.get("summary") or "").strip()
@@ -227,7 +214,7 @@ def render_comment(
 
     lines.append("")
     lines.append("---")
-    usage_line = render_usage(usage, tier, prices)
+    usage_line = render_usage(usage, model, tier)
     if usage_line:
         lines.append(usage_line)
     lines.append(
@@ -254,8 +241,6 @@ def main() -> int:
         return 2
 
     model = os.environ.get("REVIEW_MODEL", DEFAULT_MODEL)
-    prices = load_pricing()
-
     rules = RULES_PATH.read_text(encoding="utf-8")
     diff = fetch_diff(pr_number)
 
@@ -264,13 +249,7 @@ def main() -> int:
         return 0
 
     payload, usage, tier = request_review(model=model, rules=rules, diff=diff)
-    comment = render_comment(
-        payload,
-        model=model,
-        usage=usage,
-        tier=tier,
-        prices=prices,
-    )
+    comment = render_comment(payload, model=model, usage=usage, tier=tier)
     post_comment(pr_number, comment)
     return 0
 
