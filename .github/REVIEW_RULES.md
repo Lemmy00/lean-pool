@@ -12,21 +12,54 @@ Lean Pool wants completed, self-contained formalization projects of real mathema
 
 PRs that belong here state, point to, or formalize **a result a working mathematician would name**. Single lemmas, golfing PRs, infrastructure-only PRs, and incremental API tweaks do **not** belong, even when they compile cleanly. Significance, not size, is the criterion: a 200-line proof of a research-level theorem is welcome; a 2,000-line API generalization with no headline result is not.
 
+### Concrete REJECT examples
+
+- **`PMF.binomial_add_binomial` (176 lines, 1 lemma, no project card, no paper anchor):** a single utility lemma stating that the convolution of two binomial PMFs is binomial. Despite the gnarly proof, this is an **undergraduate-textbook** identity that any introductory probability course covers. **NOT acceptable.** The proof's complexity does not change the verdict — significance is what matters, and there isn't any. Author's own framing ("a particularly acute example of a very gnarly proof of a straightforwardly useful fact") is itself a tell that this is utility code, not a project.
+- **"add binomial PMF corollaries" (74/61/3 files):** two trivial corollaries that follow in one or two lines from a single existing lemma. Pure churn from an agent.
+- **"generalize binomial addition with additive convolution API" (241/174/1 file):** incremental refactor with no clear new mathematical content articulated.
+
+## Decision flow
+
+Before applying the rules, **classify the PR's shape**. The model should walk this check explicitly and report what it found:
+
+1. **Count new top-level declarations** (`theorem` / `lemma` / `def` / `instance` / `structure` / `inductive` / `class`) introduced in this diff. Call this `N`.
+2. **Count new files** that contain at least one new declaration. Call this `F`.
+3. **Look for paper / textbook / problem anchors** in the PR description, the project card (S3), or doc comments: arXiv ID, DOI, URL, named open problem. Call this `A` (boolean).
+4. **Look for a project card docstring** (`/-! ... -/`) at the top of a new entry-point file under `LeanPool/`. Call this `C` (boolean).
+
+Then:
+
+- **`N ≤ 2` AND `A = false` → S1 blocking, full stop.** No interpretation, no "but the math is sophisticated." Two-or-fewer-lemmas-with-no-anchor is utility code by structural definition. The named lemma is *not* a "main theorem" for S1's purposes — main theorems sit at the top of a multi-step development with their dependencies introduced in the same PR.
+- **`F = 1` AND `N ≤ 5` AND `A = false` → S1 blocking.** A single .lean file with at most a handful of declarations and no external anchor is an incremental contribution, not a project. (Exception: a complete formalization of a famous *named* problem in `≤ 5` declarations, e.g. an Erdős problem statement, with the problem named in the diff.)
+- **`N ≥ 5` AND `F ≥ 2` AND (`A = true` OR `C = true`) → run S2–S7.** This is the "candidate project" shape; apply the full rules.
+- **Anything else:** judgement call; lean toward `request_changes` and explain in the summary.
+
+When in the summary, **state the values of N, F, A, C explicitly** so a maintainer can audit the verdict.
+
 ## Rules
 
 ### S1. Significance
 
 **Severity:** blocking.
 
-The PR must contribute substantive content at the graduate or research level. Flag any PR that:
+The PR must contribute substantive content at the **graduate or research level**, anchored in a paper, textbook, or named problem. The Decision flow above is the primary gate; this rule fills in the qualitative cases. Flag any PR that:
 
-- adds only one or two small lemmas without a stated main theorem;
-- formalizes only an undergraduate-textbook exercise;
+- adds only one or two declarations without a paper / textbook / problem anchor (regardless of how technical the proof is — see the binomial example in calibration);
+- formalizes only an undergraduate-textbook exercise (probability identities, group-axiom-style commutativity / associativity / distributivity, basic real-analysis lemmas, etc.);
 - consists of refactors, renamings, or reformulations of existing material with no new mathematical content;
-- adds tactic helpers, simp lemmas, or general-purpose API without a paper/textbook anchoring them;
-- looks like agent-driven incremental output ("add corollaries", "generalize API") without a headline result.
+- adds tactic helpers, `simp` lemmas, or general-purpose API without a paper / textbook anchoring them;
+- looks like agent-driven incremental output ("add corollaries", "generalize API", "convolution lemma", "addition lemma") without a headline result.
 
-When the PR is small but the mathematics is genuinely nontrivial (a short proof of a published research result, a named open problem), do **not** flag.
+**Do not be charitable** with phrases like "graduate-level," "self-contained," "main theorem," or "substantive." Apply them only when:
+
+- "graduate-level" — the result would not appear in an undergraduate textbook in the field;
+- "self-contained" — the diff *develops* a result through multiple intermediate definitions and lemmas, ending at a final theorem you can name in one phrase;
+- "main theorem" — the PR description / project card *announces* it as such, not just any named declaration in the diff;
+- "substantive" — there is an external anchor (paper, textbook, problem statement) the maintainer can compare against.
+
+A PR's named declaration being labelled `theorem` or `lemma` does **not** make it a "main theorem" of a project. Most lemmas in mathlib are not project main theorems.
+
+When the PR is small but the mathematics is genuinely nontrivial (a short proof of a *published* research result with the paper cited, a *named* open problem like Erdős 124, etc.), do **not** flag.
 
 ### S2. Self-containment
 
@@ -113,6 +146,12 @@ The reviewer must return JSON only, of the form:
 ```json
 {
   "summary": "<2-3 sentences: what the PR claims to do, whether it belongs here, top concerns>",
+  "shape": {
+    "N": <int, count of new top-level declarations>,
+    "F": <int, count of files with new declarations>,
+    "A": <bool, paper/textbook/problem anchor present>,
+    "C": <bool, project card docstring present>
+  },
   "verdict": "approve" | "request_changes" | "needs_discussion",
   "findings": [
     {
@@ -125,6 +164,8 @@ The reviewer must return JSON only, of the form:
   ]
 }
 ```
+
+The `shape` field is **required**. If the Decision flow's automatic blockers fire (e.g. `N ≤ 2` and `A = false`), the verdict must be `request_changes` with at least one `S1` finding.
 
 Verdict semantics:
 

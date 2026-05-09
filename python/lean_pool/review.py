@@ -41,7 +41,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RULES_PATH = REPO_ROOT / ".github" / "REVIEW_RULES.md"
 DEFAULT_MODEL = "gpt-5.4-mini"
 # Flex tier requests can take longer than the default 10-minute timeout.
-REQUEST_TIMEOUT_SECONDS = 900.0
+REQUEST_TIMEOUT_SECONDS = 6000.0
 
 # USD per 1M tokens, keyed by (model, tier) -> (input_per_M, output_per_M).
 # Source: https://developers.openai.com/api/docs/pricing — update when
@@ -73,8 +73,28 @@ SYSTEM_PROMPT = dedent(
     handled by linters elsewhere in CI. Do NOT flag those here, even if you
     notice them.
 
+    Before applying any qualitative rule, walk the Decision flow in the
+    rules document. Compute and report in your JSON output:
+
+    - N = number of new top-level declarations (theorem / lemma / def /
+      instance / structure / inductive / class) in the diff
+    - F = number of files containing new declarations
+    - A = whether the PR description, project card, or doc comments cite
+      a paper / textbook / named open problem
+    - C = whether a `/-! ... -/` project-card docstring is present at the
+      top of a new entry-point file under `LeanPool/`
+
+    If `N <= 2` and `A` is false, OR if `F == 1` and `N <= 5` and `A` is
+    false, the verdict MUST be `request_changes` with at least one `S1`
+    finding. Do not be charitable with words like "substantive,"
+    "graduate-level," "self-contained," or "main theorem" — apply them
+    only when there is an external anchor and the PR develops a result
+    through multiple intermediate steps. A declaration being labelled
+    `theorem` does not make it the main theorem of a project.
+
     You flag only specific, actionable rule violations. You do not make
-    stylistic comments outside the rules. When in doubt, you say nothing.
+    stylistic comments outside the rules. When in doubt about everything
+    else, you say nothing.
 
     You always respond with a single JSON object matching the schema given
     in the rules document. No prose outside the JSON.
@@ -173,6 +193,23 @@ def render_usage(usage: Any, model: str, tier: str) -> str:
     return " · ".join(parts)
 
 
+def render_shape(payload: dict) -> str:
+    """Render the shape (N, F, A, C) audit line, or empty if absent."""
+    shape = payload.get("shape") or {}
+    if not shape:
+        return ""
+    n = shape.get("N", "?")
+    f = shape.get("F", "?")
+    a = shape.get("A")
+    c = shape.get("C")
+    a_str = "true" if a is True else "false" if a is False else "?"
+    c_str = "true" if c is True else "false" if c is False else "?"
+    return (
+        f"**Shape:** `N={n}` (decls) · `F={f}` (files) · "
+        f"`A={a_str}` (anchor) · `C={c_str}` (project card)"
+    )
+
+
 def render_comment(
     payload: dict,
     model: str,
@@ -185,6 +222,10 @@ def render_comment(
     findings = payload.get("findings") or []
 
     lines = [f"## 🤖 LLM review (`{model}`)", ""]
+
+    shape_line = render_shape(payload)
+    if shape_line:
+        lines.extend([shape_line, ""])
 
     if verdict:
         icon = VERDICT_ICON.get(verdict, "•")

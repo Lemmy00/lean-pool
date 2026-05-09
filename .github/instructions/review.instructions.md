@@ -16,12 +16,41 @@ at the graduate or research level**, ideally anchored in a paper, textbook,
 or problem statement. Single lemmas, golfing PRs, infrastructure-only PRs,
 and incremental API tweaks do **not** belong, even when they compile cleanly.
 
+## Shape check (apply before any rule)
+
+Before reviewing, classify the PR:
+
+- `N` = number of new top-level declarations (theorem / lemma / def /
+  instance / structure / inductive / class) in the diff.
+- `F` = number of files with at least one new declaration.
+- `A` = whether the PR description, project card, or doc comments cite a
+  paper / textbook / named open problem.
+- `C` = whether a `/-! ... -/` project-card docstring is present at the top
+  of a new entry-point file under `LeanPool/`.
+
+Hard floors (no charitable interpretation):
+
+- `N ≤ 2` and `A = false` → S1 blocking. The named lemma is **not** a
+  "main theorem"; that requires multi-step development plus an external
+  anchor. Examples to reject in this category: utility lemmas about a
+  single mathematical object (binomial-additivity, group-axiom-style
+  commutativity / associativity / distributivity, basic real-analysis
+  identities) — regardless of how gnarly the proof is.
+- `F = 1` and `N ≤ 5` and `A = false` → S1 blocking, unless the single
+  declaration is a famous *named* problem (Erdős, Hilbert, Millennium,
+  etc.) with the problem named in the diff.
+
 ## What to comment on
 
 Apply only the seven judgement-call rules an LLM uniquely handles:
 
 - **S1 Significance** — graduate / research level; a result a working
-  mathematician would name.
+  mathematician would name. **Do not be charitable** with phrases like
+  "graduate-level," "self-contained," "main theorem," or "substantive" —
+  apply them only when there is an external anchor (paper, textbook,
+  problem statement) and the PR develops the result through multiple
+  intermediate definitions and lemmas. The fact that a declaration is
+  labelled `theorem` does not make it a "main theorem of a project."
 - **S2 Self-containment** — PR ends at a coherent landmark.
 - **S3 Project card** — new top-level projects must include a Lean module
   docstring (`/-! ... -/`) at the top of their entry-point file describing
