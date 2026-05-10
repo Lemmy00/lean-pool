@@ -16,3 +16,16 @@ projects:
       - number-theory
       - combinatorics
       - polynomials
+  - slug: anderson-conjecture
+    title: "The Anderson Conjecture: A Weakly Quasi-Complete Ring Need Not Be Quasi-Complete"
+    entry_module: LeanPool.AndersonConjecture
+    authors:
+      - FrenzyMath
+    source:
+      url: "https://github.com/frenzymath/Anderson-Conjecture"
+    status: verified
+    main_declarations:
+      - main_theorem
+    tags:
+      - commutative-algebra
+      - ring-theory
