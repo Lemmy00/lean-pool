@@ -49,8 +49,6 @@ See [`python/README.md`](python/README.md) for common commands.
 
 ## Branch and PR Workflow
 
-Direct commits to `main` are not allowed. All changes go through pull requests.
-
 **Branch naming.** Use `yourname/description` for solo work (e.g., `justin/aggregator-draft`). Use `feature/` or `fix/` prefixes for branches where multiple people may contribute (e.g., `feature/manifest-summary`, `fix/timeout-default`).
 
 **Open PRs early.** Push and open a PR as soon as you have something, even if incomplete. Use GitHub's draft PR feature and label with `WIP` if needed.
@@ -58,8 +56,6 @@ Direct commits to `main` are not allowed. All changes go through pull requests.
 **Link issues.** Use `Closes #123` in the PR description to automatically close the related issue on merge.
 
 **Commit messages.** Write clear, concise commit messages in imperative tense (e.g., "Add manifest fetcher", not "Added manifest fetcher"). Do not include AI-generated tags (e.g., "Generated with Claude", "Co-authored-by: Codex") in commits or PRs.
-
-**Review and merge.** All PRs require at least one review from another contributor before merging.
 
 
 ## Linting and Testing
