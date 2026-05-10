@@ -208,62 +208,90 @@ jobs:
           log_path = Path("proof-profile.log")
           rendered_path = Path("proof-profile.md")
           summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
-          metrics = ("import", "elaboration", "compilation (IR)", "type checking")
           run_url = (
               f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}"
               f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
           )
 
+          # Lean's `cumulative profiling times:` block is one indented
+          # `<phase name> <number>ms` per line. The phase name can contain
+          # spaces, parens, and hyphens (`compilation (IR)`,
+          # `let-to-have transformation`, ...). Lean only emits a phase if
+          # it accumulated nonzero time, so the set of phases differs per
+          # file and per run; the renderer captures every phase rather than
+          # cherry-picking known names.
+          metric_re = re.compile(
+              r"^[ \t]+(.+?)\s+([0-9]+(?:\.[0-9]+)?)\s*ms\s*$"
+          )
+
           out = ["## Proof profile (new / modified Lean files)\n\n"]
-          if not log_path.exists() or not log_path.read_text().strip():
+          log_text = log_path.read_text() if log_path.exists() else ""
+          if not log_text.strip():
               out.append("_No proof profile output._\n")
               rendered_path.write_text("".join(out))
               summary_path.write_text("".join(out))
               raise SystemExit(0)
 
-          files: list[dict] = []
-          cur: dict | None = None
-          for line in log_path.read_text().splitlines():
-              m = re.match(r"^## (.+)$", line)
-              if m:
-                  if cur is not None:
-                      files.append(cur)
-                  cur = {"file": m.group(1), "m": {}, "errors": 0}
-                  continue
-              if cur is None:
-                  continue
-              if "error:" in line:
-                  cur["errors"] += 1
-                  continue
-              for key in metrics:
-                  match = re.match(rf"^\s+{re.escape(key)} ([0-9.]+)ms\s*$", line)
-                  if match:
-                      cur["m"][key] = float(match.group(1))
-                      break
-          if cur is not None:
-              files.append(cur)
+          # Split the log into one section per profiled file (delimited by
+          # `## <file>` markers written by the profile loop).
+          sections: list[tuple[str, str]] = []
+          name = None
+          buf: list[str] = []
+          for line in log_text.splitlines():
+              header = re.match(r"^## (.+)$", line)
+              if header:
+                  if name is not None:
+                      sections.append((name, "\n".join(buf).rstrip()))
+                  name = header.group(1)
+                  buf = []
+              elif name is not None:
+                  buf.append(line)
+          if name is not None:
+              sections.append((name, "\n".join(buf).rstrip()))
 
-          if not files:
+          if not sections:
               out.append("_No files profiled._\n")
           else:
-              out.append(
-                  "| File | Import (ms) | Elaboration (ms) | "
-                  "Compilation IR (ms) | Type check (ms) | Errors |\n"
-              )
-              out.append("|---|---:|---:|---:|---:|---:|\n")
-              for f in files:
-                  m = f["m"]
-                  cells = [f"`{f['file']}`"]
-                  for key in metrics:
-                      v = m.get(key)
-                      cells.append(f"{v:.1f}" if v is not None else "—")
-                  cells.append(str(f["errors"]) if f["errors"] else "0")
-                  out.append("| " + " | ".join(cells) + " |\n")
+              # Summary table: cumulative ms = sum over reported phases.
+              summary_rows = []
+              for fname, body in sections:
+                  total = 0.0
+                  phases = 0
+                  errors = 0
+                  for line in body.splitlines():
+                      if "error:" in line:
+                          errors += 1
+                          continue
+                      m = metric_re.match(line)
+                      if m:
+                          total += float(m.group(2))
+                          phases += 1
+                  summary_rows.append((fname, total, phases, errors))
+              summary_rows.sort(key=lambda r: -r[1])
+              out.append("| File | Cumulative (ms) | Phases | Errors |\n")
+              out.append("|---|---:|---:|---:|\n")
+              for fname, total, phases, errors in summary_rows:
+                  out.append(
+                      f"| `{fname}` | {total:.1f} | {phases} | {errors} |\n"
+                  )
+              out.append("\n")
+
+              # Full per-file output, collapsed by default so the comment
+              # stays scannable when many files are profiled.
+              out.append("<details><summary>Per-file profile output</summary>\n\n")
+              for fname, body in sections:
+                  out.append(f"#### `{fname}`\n\n")
+                  out.append("```text\n")
+                  out.append(body if body.strip() else "(empty)")
+                  out.append("\n```\n\n")
+              out.append("</details>\n")
+
               out.append(
                   "\n_Advisory only — never blocks merge. "
                   f"[Full log]({run_url}) uploaded as the `proof-profile` "
                   "artifact._\n"
               )
+
           rendered = "".join(out)
           rendered_path.write_text(rendered)
           with summary_path.open("a") as f:
