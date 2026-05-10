@@ -94,7 +94,7 @@ theorem MeasurableConceptClass.hWB
 
 /-! ## Instances
 
-TODO: Add automatic instances for common cases:
+Common automatic instances can be added for:
 - Finite concept classes (WellBehavedVC holds automatically)
 - Concept classes over MeasurableSingletonClass spaces
 - Countable concept classes (existential preserves measurability)

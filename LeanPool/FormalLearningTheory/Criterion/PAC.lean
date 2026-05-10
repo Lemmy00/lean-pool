@@ -27,8 +27,8 @@ and the labeled sample is constructed as fun i => (xs i, c (xs i)).
 
 The sample distribution is the CONCRETE product measure D^m, NOT an existentially
 quantified Dm. The existential ∃Dm formulation is strictly weaker than standard PAC:
-it allows Dm to depend on the target concept c, making PACLearnable trivially true
-for all C when X is finite (via memorizer + point mass).
+it allows Dm to depend on the target concept c, so finite-domain examples can be
+learned by choosing a concept-dependent point-mass sample distribution.
 
 Instead, Dm = Measure.pi (fun _ : Fin m => D), which:
 - Does NOT depend on c (D is quantified before c)

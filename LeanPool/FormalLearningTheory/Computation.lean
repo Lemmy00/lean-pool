@@ -153,7 +153,7 @@ def Delta02Class (α : Type*) [Encodable α] :=
 /-- Kolmogorov complexity: the length of the shortest program that produces x.
     Defined via Nat.Partrec.Code (Mathlib's effective program codes).
     K(x) = inf { encode(p) : p.eval 0 = some (encode x) }.
-    If no program produces x, sInf ∅ = 0 by convention (vacuous). -/
+    If no program produces x, this uses Lean's `sInf ∅ = 0` convention for `ℕ`. -/
 noncomputable def KolmogorovComplexity (α : Type*) [Encodable α] (x : α) : ℕ :=
   sInf { Encodable.encode p | (p : Nat.Partrec.Code)
     (_ : Nat.Partrec.Code.eval p 0 = Part.some (Encodable.encode x)) }

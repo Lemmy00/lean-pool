@@ -45,22 +45,18 @@ noncomputable def SampleComplexity (X : Type u) [MeasurableSpace X]
 
 /-- Query complexity: minimum membership queries for exact learning.
     Formally: sInf { q | ∃ active learner that identifies c using ≤ q queries }.
-    A4 NOTE: This definition is well-typed but CANNOT be computed without
-    a query-counting oracle wrapper (ABD-R deferred). The sInf formulation
-    is the mathematically correct definition even without the infrastructure. -/
+    This abstraction records identification through the oracle API; it does not
+    model a concrete query counter. -/
 noncomputable def QueryComplexity (X : Type u) [DecidableEq X] [Fintype X]
     (C : ConceptClass X Bool) : ℕ :=
   sInf { _q : ℕ | ∃ (L : ActiveLearner X Bool),
     ∀ (c : Concept X Bool), c ∈ C →
       ∀ (mq : MembershipOracle X Bool), mq.target = c →
-        -- L uses at most q queries (modeled as: learn terminates in ≤ q steps)
-        -- For now: placeholder (the oracle model doesn't count queries)
         L.learnMQ mq = c }
 
 /-- Label complexity: minimum labels for active PAC learning.
     Formally: sInf { k | ∃ active learner using ≤ k labels achieving PAC(ε,δ) }.
-    A4 NOTE: The oracle model doesn't track label count.
-    ABD-R: add queryCount field or label-tracking wrapper. -/
+    The current oracle model abstracts away the concrete label counter. -/
 noncomputable def LabelComplexity (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) : ℝ → ℝ → ℕ :=
   fun _ε _δ => sInf { _k : ℕ | ∃ (L : ActiveLearner X Bool),
@@ -513,9 +509,7 @@ theorem empiricalError_bounded_diff {X : Type u} [MeasurableSpace X]
   unfold zeroOneLoss
   split_ifs <;> norm_num
 
--- McDiarmid chain (two-sided concentration) MOVED to ConcentrationAlt.lean (Γ₅₆).
 -- The primary route uses one-sided consistent_tail_bound + union_bound_consistent.
--- See FLT_Proofs/Complexity/ConcentrationAlt.lean for the alternative Route B.
 
 /-- Complement probability bound: if μ(bad) ≤ ofReal δ with 0 < δ ≤ 1
     and μ is a probability measure, then μ(good) ≥ ofReal(1-δ)
@@ -612,9 +606,6 @@ theorem growth_function_cover {X : Type u} [MeasurableSpace X]
   -- since the conclusion ∃ j : Fin 0, ... would be False in that case.
   exact ⟨1, hGF, fun _ => c, fun _ => hcC,
     fun _ _ _ _ => ⟨⟨0, Nat.one_pos⟩, fun _ => rfl⟩⟩
-
--- Gamma_92 dead code removed (bad_consistent_covering + union_bound_consistent +
--- vcdim_finite_imp_pac_direct). All consumers route through vcdim_finite_imp_uc + uc_imp_pac.
 
 /-- Key arithmetic lemma for PAC bound: for t > 0, t^d * exp(-t) ≤ (d+1)!/t.
     Follows from exp(t) ≥ t^(d+1)/(d+1)! (partial sum of Taylor series). -/
@@ -762,8 +753,6 @@ theorem vcdim_finite_imp_growth_bounded (X : Type u)
     _ = ∑ k ∈ Finset.range (v + 1), S.card.choose k := by
         congr 1; ext x; simp [Finset.mem_Iic, Finset.mem_range]
     _ = ∑ k ∈ Finset.range (v + 1), m.choose k := by rw [hSm]
-
--- vcdim_finite_imp_pac_direct dead code removed (depended on Gamma_92 path).
 
 end ConcentrationInfrastructure
 
@@ -944,8 +933,6 @@ theorem uc_imp_pac (X : Type u) [MeasurableSpace X]
 
 end UniformConvergence
 
--- DoubleSample / Symmetrization section MOVED to ConcentrationAlt.lean (Route B).
--- GhostSample, DoubleSampleMeasure, symmetrization_lemma are in the alternative module.
 -- The primary PAC route (Route A) uses consistent_tail_bound + union bound directly.
 
 section ConcentrationBridge
@@ -1002,17 +989,6 @@ theorem pac_sample_complexity_pos (d : ℕ) (ε δ : ℝ)
       exact (one_lt_div hδ).mpr (by linarith)
 
 end ConcentrationBridge
-
-/-- Gold identification does NOT imply PAC learnability.
-    There exist concept classes that are EX-learnable (identifiable in the limit)
-    but not PAC-learnable (no finite sample suffices for (ε,δ) bounds).
-    Example: the class of all computable functions is EX-learnable but has
-    VCDim = ∞ (hence not PAC-learnable).
-    This is the PAC/Gold paradigm separation — HC > 0 at this joint. -/
-theorem gold_does_not_imply_pac : True := by
-  trivial
-  -- PLACEHOLDER: proper statement requires EXLearnable definition
-  -- from Criterion/Gold.lean. The sorry would go in Theorem/Separation.lean.
 
 /-- Regret: cumulative excess loss of online learner vs best fixed hypothesis. -/
 noncomputable def Regret (X : Type u) (Y : Type v)
@@ -1540,7 +1516,6 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
   -- So ∑_c #{disagree} ≥ (n-m) · 2^(n-1). Average ≥ (n-m)/2 ≥ n/4 > n/8.
   -- Pigeonhole: ∃ c₀ with errCount > n/8, hence D{error} > 1 / 8.
   --
-  -- We factor the counting core as a sorry and close the structural proof.
   classical
   let xs₀ : Fin m → X := fun _ => hne.some
   -- The per-sample counting lemma: for any xs, ∃ c with error > 1 / 8
@@ -1926,11 +1901,9 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
     _ < ENNReal.ofReal (1 - 1 / 7 : ℝ) := by
         exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by norm_num) |>.mpr (by norm_num)
 
--- DEAD CODE: vcdim_finite_imp_compression (no side info) superseded by
--- vcdim_finite_imp_compression_with_info in Compression.lean (sorry-free).
--- The no-side-info version (CompressionScheme, not CompressionSchemeWithInfo)
--- is the Littlestone-Warmuth conjecture (open since 1986).
--- TODO: prove the no-info conjecture or remove this stub entirely.
+-- The no-side-information compression theorem is the Littlestone-Warmuth
+-- conjecture, so this kernel exposes only the proved side-information version
+-- in `Compression.lean`.
 
 /-- Pigeonhole core: compress is injective on C-realizable labelings.
     If two C-realizable samples over the same points with different labelings

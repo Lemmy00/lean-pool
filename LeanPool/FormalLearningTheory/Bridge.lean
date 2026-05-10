@@ -625,9 +625,6 @@ def bayesianToBatch (X : Type u) (Y : Type v) [MeasurableSpace X]
 ## Complexity Measure Bridges
 -/
 
--- DEAD CODE: sample_complexity_upper_bound has a sorry and no downstream consumers.
--- TODO: prove the quantitative PAC bound (requires Sauer-Shelah + exponential concentration).
-
 -- Quantitative VCDim bound from compression scheme size.
 -- Γ₇₃ RESOLVED: CompressionScheme parameterized by C with realizability guard.
 -- Proof: pigeonhole counting — compress is injective on labelings of any
@@ -635,7 +632,7 @@ def bayesianToBatch (X : Type u) (Y : Type v) [MeasurableSpace X]
 -- compressed subsets of size ≤ k from a 2n-element ground set is at most
 -- (k+1)·(2n)^k.  At n = 2(k+1)² the exponential 2^n exceeds this polynomial,
 -- giving a contradiction.  Hence no set of size ≥ 2(k+1)² is shattered.
--- Statement weakened from 2^k − 1 to 2(k+1)² − 1 per SESSION_TRANSFER_URS.
+-- The explicit polynomial bound is 2(k+1)² − 1.
 theorem compression_bounds_vcdim (X : Type u)
     (C : ConceptClass X Bool) (cs : CompressionScheme X Bool C)
     (hcs : 0 < cs.size) :

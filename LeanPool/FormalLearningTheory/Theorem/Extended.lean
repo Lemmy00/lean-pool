@@ -12,57 +12,79 @@ import LeanPool.FormalLearningTheory.Theorem.Separation
 import LeanPool.FormalLearningTheory.Complexity.Structures
 import LeanPool.FormalLearningTheory.Complexity.Generalization
 import LeanPool.FormalLearningTheory.Learner.Active
-import LeanPool.FormalLearningTheory.Computation
 import Mathlib.Data.Nat.Pairing
 import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Extended Theorems
 
-Universal trichotomy, computational hardness, advice reduction,
-meta-PAC bound, and separation results for compression and SQ dimension.
+Advice reduction, meta-learning lower-bound infrastructure, and separation
+results for compression and SQ dimension.
 -/
 
 universe u v
 
--- PENDING FURTHER PROOF: bhmz_middle_branch + universal_trichotomy commented out.
--- The BHMZ middle branch (STOC 2021, Theorem 3.1) requires one-inclusion graph
--- learners + doubling aggregation — deep construction not yet formalized.
--- TODO: formalize the BHMZ construction to restore universal_trichotomy.
-/-
-private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
-    (C : ConceptClass X Bool)
-    (hldim : LittlestoneDim X C = ⊤)
-    (hvcdim : VCDim X C < ⊤) :
-    UniversalLearnable X C := by
-  pending_further_proof
+/-! ## Multi-Task Meta-Learning Infrastructure -/
 
-theorem universal_trichotomy (X : Type) [MeasurableSpace X]
-    [MeasurableSingletonClass X]
-    (C : ConceptClass X Bool)
-    [MeasurableHypotheses X C]
-    (hL_meas : ∀ (L : BatchLearner X Bool), LearnEvalMeasurable L) :
-    (LittlestoneDim X C < ⊤ ∧ OnlineLearnable X Bool C) ∨
-    (LittlestoneDim X C = ⊤ ∧ VCDim X C < ⊤ ∧
-      UniversalLearnable X C ∧ ¬ OnlineLearnable X Bool C) ∨
-    (VCDim X C = ⊤ ∧ ¬ UniversalLearnable X C) := by
-  have hc_meas := MeasurableHypotheses.mem_measurable (C := C)
-  rcases lt_or_eq_of_le (le_top : LittlestoneDim X C ≤ ⊤) with hldim | hldim
-  · exact Or.inl ⟨hldim, (littlestone_characterization X C).mpr hldim⟩
-  · rcases lt_or_eq_of_le (le_top : VCDim X C ≤ ⊤) with hvcdim | hvcdim
-    · refine Or.inr (Or.inl ⟨hldim, hvcdim, bhmz_middle_branch X C hldim hvcdim, ?_⟩)
-      intro hol
-      have := (littlestone_characterization X C).mp hol
-      rw [hldim] at this
-      exact lt_irrefl _ this
-    · -- Branch 3: VCDim = ⊤ ⟹ ¬UniversalLearnable
-      exact Or.inr (Or.inr ⟨hvcdim, fun huniv =>
-        vcdim_infinite_not_pac X C hvcdim (universal_imp_pac X C hL_meas huniv)⟩)
--/
+/-- A task environment: a finite collection of concept classes (tasks)
+    that a meta-learner is trained on. Each task is a concept class
+    over the same domain X.
 
--- computational_hardness_pac MOVED to Benchmarks/CryptoHardness.lean.
--- Category A benchmark (UU): requires cryptographic assumptions (one-way functions,
--- pseudorandom generators) absent from Lean4/Mathlib.
+    This is the formalization of Baxter (2000)'s "learning environment."
+    In the full theory, tasks are drawn i.i.d. from a distribution over
+    concept classes; here we use a finite deterministic collection as the
+    base case. -/
+structure TaskEnvironment (X : Type u) where
+  /-- Number of training tasks -/
+  numTasks : ℕ
+  /-- The concept classes for each task -/
+  tasks : Fin numTasks → ConceptClass X Bool
+
+/-- A meta-learner with PAC guarantees: given a task environment (training tasks),
+    produces a BatchLearner and sample complexity function for new tasks.
+
+    Compared to MetaLearner (in Active.lean), this structure:
+    - takes a TaskEnvironment (multiple training tasks) rather than a single ConceptClass
+    - exposes the sample complexity function (not just the learner)
+    - is designed for quantitative PAC bounds, not just learnability
+
+    The key question: does seeing n training tasks reduce the per-task
+    sample complexity on new tasks? Baxter (2000) shows the answer is yes
+    under task similarity, but the NFL lower bound still applies per-task. -/
+structure MetaLearnerPAC (X : Type u) [MeasurableSpace X] where
+  /-- Given training tasks, produce a learner for new tasks -/
+  learn : TaskEnvironment X → BatchLearner X Bool
+  /-- Given training tasks, produce a sample complexity function -/
+  sampleComplexity : TaskEnvironment X → ℝ → ℝ → ℕ
+
+/-- A task sample environment: n training tasks, each with m samples.
+    The meta-learner observes labeled samples from each task and must
+    produce a learner for a new (unseen) task.
+
+    This extends TaskEnvironment by specifying sample sizes and
+    the actual samples drawn. The meta-learner's output may depend
+    on the samples but not on the true concepts. -/
+structure TaskSampleEnvironment (X : Type u) [MeasurableSpace X] where
+  /-- Number of training tasks -/
+  numTasks : ℕ
+  /-- Samples per task -/
+  samplesPerTask : ℕ
+  /-- The concept classes (one per task) -/
+  taskClasses : Fin numTasks → ConceptClass X Bool
+  /-- The true concepts (one per task, each in its class) -/
+  trueConcepts : (j : Fin numTasks) → Concept X Bool
+  /-- Each true concept is in its class -/
+  concept_mem : ∀ j, trueConcepts j ∈ taskClasses j
+
+/-- A sample-based meta-learner: sees labeled samples from n training tasks,
+    produces a BatchLearner for new tasks.
+    Unlike MetaLearnerPAC (which takes a TaskEnvironment directly),
+    this meta-learner only sees the data, not the concept classes. -/
+structure SampleMetaLearner (X : Type u) [MeasurableSpace X] where
+  /-- Given n × m labeled samples, produce a learner -/
+  learn : {n m : ℕ} → (Fin n → Fin m → X × Bool) → BatchLearner X Bool
+  /-- Given n × m, produce sample complexity for the new task -/
+  sampleComplexity : ℕ → ℕ → ℝ → ℝ → ℕ
 
 /-! ## Advice Elimination Infrastructure -/
 
@@ -1091,95 +1113,6 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
         | (ext a; congr 1; exact (Fin.heq_fun_iff h_fst).mpr (fun i => rfl))
         | (exact (Fin.heq_fun_iff h_snd).mpr (fun j => rfl))))
 
-/-- Meta-PAC bound: after seeing enough tasks, the meta-learner's
-    output learner generalizes to new tasks from the same environment.
-    The meta-learner's sample complexity over tasks is bounded by a
-    function of ε, δ, and the complexity of the task environment. -/
-theorem meta_pac_bound (X : Type u) [MeasurableSpace X]
-    (_ML : MetaLearner X Bool) (numTasks : ℕ)
-    (_tasks : Fin numTasks → ConceptClass X Bool)
-    (ε δ : ℝ) (_hε : 0 < ε) (_hδ : 0 < δ) :
-    -- After seeing t₀ tasks, the meta-learner produces a learner
-    -- whose excess sample complexity on a new task is ≤ ε
-    ∃ (t₀ : ℕ), t₀ ≤ numTasks →
-      ∀ (C_new : ConceptClass X Bool),
-        VCDim X C_new < ⊤ →
-          -- The meta-learned learner needs fewer samples than a generic learner
-          ∃ (mf : ℝ → ℝ → ℕ),
-            ∀ (ε' δ' : ℝ), 0 < ε' → 0 < δ' →
-              mf ε' δ' ≤ SampleComplexity X C_new ε' δ' := by
-  -- A4 ALARM: this is trivially true via mf = 0. The statement says mf ≤ SampleComplexity
-  -- which is satisfied by mf = fun _ _ => 0 since SampleComplexity : ℕ and 0 ≤ n for all n.
-  -- ABD-R: the statement should assert mf ACHIEVES PAC AND mf ≤ SampleComplexity - εₘₑₜₐ
-  -- (the meta-learning IMPROVES over the generic bound by a task-environment-dependent amount).
-  exact ⟨0, fun _ _ _ => ⟨fun _ _ => 0, fun _ _ _ _ => Nat.zero_le _⟩⟩
-
--- unlabeled_not_implies_labeled MOVED to Benchmarks/CompressionConjecture.lean.
--- Category A benchmark (UU): labeled/unlabeled compression separation requires
--- distribution-dependent complexity construction.
-
-/-! ## Multi-Task Meta-Learning Infrastructure -/
-
-/-- A task environment: a finite collection of concept classes (tasks)
-    that a meta-learner is trained on. Each task is a concept class
-    over the same domain X.
-
-    This is the formalization of Baxter (2000)'s "learning environment."
-    In the full theory, tasks are drawn i.i.d. from a distribution over
-    concept classes; here we use a finite deterministic collection as the
-    base case. -/
-structure TaskEnvironment (X : Type u) where
-  /-- Number of training tasks -/
-  numTasks : ℕ
-  /-- The concept classes for each task -/
-  tasks : Fin numTasks → ConceptClass X Bool
-
-/-- A meta-learner with PAC guarantees: given a task environment (training tasks),
-    produces a BatchLearner and sample complexity function for new tasks.
-
-    Compared to MetaLearner (in Active.lean), this structure:
-    - takes a TaskEnvironment (multiple training tasks) rather than a single ConceptClass
-    - exposes the sample complexity function (not just the learner)
-    - is designed for quantitative PAC bounds, not just learnability
-
-    The key question: does seeing n training tasks reduce the per-task
-    sample complexity on new tasks? Baxter (2000) shows the answer is yes
-    under task similarity, but the NFL lower bound still applies per-task. -/
-structure MetaLearnerPAC (X : Type u) [MeasurableSpace X] where
-  /-- Given training tasks, produce a learner for new tasks -/
-  learn : TaskEnvironment X → BatchLearner X Bool
-  /-- Given training tasks, produce a sample complexity function -/
-  sampleComplexity : TaskEnvironment X → ℝ → ℝ → ℕ
-
-/-- A task sample environment: n training tasks, each with m samples.
-    The meta-learner observes labeled samples from each task and must
-    produce a learner for a new (unseen) task.
-
-    This extends TaskEnvironment by specifying sample sizes and
-    the actual samples drawn. The meta-learner's output may depend
-    on the samples but not on the true concepts. -/
-structure TaskSampleEnvironment (X : Type u) [MeasurableSpace X] where
-  /-- Number of training tasks -/
-  numTasks : ℕ
-  /-- Samples per task -/
-  samplesPerTask : ℕ
-  /-- The concept classes (one per task) -/
-  taskClasses : Fin numTasks → ConceptClass X Bool
-  /-- The true concepts (one per task, each in its class) -/
-  trueConcepts : (j : Fin numTasks) → Concept X Bool
-  /-- Each true concept is in its class -/
-  concept_mem : ∀ j, trueConcepts j ∈ taskClasses j
-
-/-- A sample-based meta-learner: sees labeled samples from n training tasks,
-    produces a BatchLearner for new tasks.
-    Unlike MetaLearnerPAC (which takes a TaskEnvironment directly),
-    this meta-learner only sees the data, not the concept classes. -/
-structure SampleMetaLearner (X : Type u) [MeasurableSpace X] where
-  /-- Given n × m labeled samples, produce a learner -/
-  learn : {n m : ℕ} → (Fin n → Fin m → X × Bool) → BatchLearner X Bool
-  /-- Given n × m, produce sample complexity for the new task -/
-  sampleComplexity : ℕ → ℕ → ℝ → ℝ → ℕ
-
 /-- Baxter base case: any meta-learner's output is subject to the NFL lower bound.
     Even after seeing arbitrarily many training tasks, the meta-learner's output
     learner on a NEW task C_new with VCDim = d requires at least ⌈(d-1)/2⌉ samples.
@@ -1192,9 +1125,8 @@ structure SampleMetaLearner (X : Type u) [MeasurableSpace X] where
     If (L, mf) achieves PAC on C_new, then mf ε δ is a PAC-valid sample size,
     so pac_lower_bound_member gives ⌈(d-1)/2⌉ ≤ mf ε δ.
 
-    TODO: Strengthen to full Baxter bound with n training tasks giving
-    per-task improvement m ≥ Ω(d/(ε²·n)). Requires TaskEnvironment distribution
-    + multi-task product measure infrastructure. -/
+    The full multi-environment Baxter bound is outside this kernel; this theorem
+    records the single-environment lower-bound component. -/
 theorem baxter_base_case (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (ML : MetaLearnerPAC X)
@@ -1237,8 +1169,7 @@ theorem baxter_base_case (X : Type u) [MeasurableSpace X]
     - TaskDistribution: a measure over concept classes
     - Product measure: D^(n×m) decomposed as (D^m)^n
     - Information-theoretic counting: n·m bits vs 2^d labelings
-    These are future infrastructure targets. The current theorem proves
-    the n-INDEPENDENT base case which is already non-trivial. -/
+    This theorem proves the n-independent base case. -/
 theorem baxter_full (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (SML : SampleMetaLearner X)
@@ -1268,8 +1199,8 @@ theorem baxter_full (X : Type u) [MeasurableSpace X]
     For any probability D on ℕ, the correlation between distinct indicators 1_i, 1_j
     is |1 - 2(D({i}) + D({j}))| ≤ 1, so every finite subset of C qualifies at τ = 1.
     Since C is infinite, SQDimension = ⊤.
-    M-DefinitionRepair (Γ₈₄): added MeasurableSpace, existential over D and τ.
-    Previous statement had `True` placeholder due to missing SQDimension parameters. -/
+    The statement quantifies the measurable domain, distribution, and threshold
+    parameters used by `SQDimension`. -/
 theorem vcdim_not_implies_hardness :
     ∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       VCDim X C < ⊤ ∧

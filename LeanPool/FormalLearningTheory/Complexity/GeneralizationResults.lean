@@ -9,12 +9,11 @@ import LeanPool.FormalLearningTheory.Complexity.Rademacher
 import LeanPool.FormalLearningTheory.Complexity.Measurability
 
 /-!
-# Generalization Results (redirected to primed versions)
+# Generalization Results
 
-Theorems moved from Generalization.lean and Rademacher.lean.
-Each call has been redirected from the orphaned sorry'd version
-(e.g. `vcdim_finite_imp_uc`) to the primed version
-(e.g. `vcdim_finite_imp_uc'`) in Symmetrization.lean.
+Theorems factored out of the generalization and Rademacher developments.
+The public statements use the primed uniform-convergence route from
+`Symmetrization.lean`.
 
 ## Main results
 

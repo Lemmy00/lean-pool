@@ -466,7 +466,7 @@ lemma labeledSampleOfFinset_eq_of_eq_on_support
   congr 1
   exact hℓ _ (Z.equivFin.symm j).property
 
-/-- Generic roundtrip theorem for the `hround` sorry.
+/-- Generic roundtrip theorem for the compression reconstruction invariant.
 
 If:
 * `encodeWitnessInfo` is used in `compressCore`,
@@ -857,10 +857,8 @@ private theorem moran_yehudayoff_forward_construction
   -- Parameter choice: ε_minimax = 1 / 12, ε_sparsify = 1 / 24.
   -- Sum = 1 / 12 + 1 / 24 = 1 / 8 < 1 / 6.
   -- Margin: 2 / 3 - 1 / 8 = 13 / 24 > 1 / 2. Strict majority guaranteed.
-  -- When the 7 obligations are closed, replace Tvc/hTvcPos sorrys with:
-  --   obtain ⟨Tvc, hTvcPos, hVCApprox⟩ :=
-  --     finite_support_vc_approx (2 ^ (d + 1) - 1) (1 / 24) (by norm_num)
-  -- And use mwu_approx_minimax with ε = 1 / 12 inside compressCore.
+  -- The VC-approximation sample and minimax parameters are fixed so that the
+  -- reconstruction vote has strict majority margin.
   obtain ⟨Tvc, hTvcPos, hVCApprox⟩ :=
     finite_support_vc_approx (2 ^ (d + 1) - 1) (1 / 24) (by norm_num)
   let Kreal := Tvc * s

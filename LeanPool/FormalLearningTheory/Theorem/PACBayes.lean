@@ -460,7 +460,7 @@ private lemma gibbs_bound_of_pointwise {X : Type u} [MeasurableSpace X]
     This is the union-bound version. The tight change-of-measure version
     replaces crossEntropyFinitePMF with klDivFinitePMF and adds log(m).
 
-    TODO: Prove the tight version via change of measure (Catoni 2007):
+    The tighter change-of-measure version (Catoni 2007) is not included here:
       E_Q[TrueErr] ≤ E_Q[EmpErr] + √((KL(Q‖P) + log(2√m/δ))/(2m))
 
     Reference: McAllester, COLT 1999. -/

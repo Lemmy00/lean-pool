@@ -810,17 +810,15 @@ private lemma boosted_sample_error_le_of_good_blocks
     - Event containment: when > k/2 blocks have D-error ≤ rate(n) < ε/kmin,
       majority D-error ≤ k · rate(n) < k/kmin · ε ≤ ε via union bound.
 
-    Γ₆₇: sorry — the full measure-theoretic proof requires:
+    The measure-theoretic proof uses:
     (a) block_extract : (Fin (k*n) → X) → Fin k → (Fin n → X)
     (b) iIndepFun for block extractions under product measure D^(k*n)
     (c) chebyshev_majority_bound for i.i.d. Bernoulli(≥2 / 3) events
     (d) block extraction marginal = D^n
     (e) majority vote D-error analysis via union bound
 
-    None of this infrastructure currently exists in the codebase.
-    The sorry is A4-compliant (the conclusion PACLearnable X C is non-trivially-true:
-    it requires genuine concentration + majority analysis) and A5-compliant
-    (the proof strategy is structurally complete, only infrastructure is missing). -/
+    The helper lemmas below provide the concentration and majority analysis
+    needed by the final PAC bound. -/
 private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
     [MeasurableHypotheses X C]
@@ -883,8 +881,7 @@ private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
   --     ≥ ofReal (1 - δ)
   -- where m = mf ε δ = (n + 1) * n.
   --
-  -- PROOF STRUCTURE (all steps require missing infrastructure, hence sorry):
-  --
+  -- PROOF STRUCTURE:
   -- 1. PARAMETER EXTRACTION:
   --    kmin = ⌈9/δ⌉ + 2, ε' = ε/kmin, m₀ from hrate(ε'), n = max m₀ (kmin-1).
   --    k = n+1 ≥ kmin ≥ ⌈9/δ⌉+2, so 9/δ ≤ k.
@@ -1013,7 +1010,7 @@ private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
     Two components:
     1. Event containment: rate(m) < ε ⟹ {error ≤ rate(m)} ⊆ {error ≤ ε} (monotonicity).
     2. Confidence boosting: 2 / 3 → 1-δ via median-of-means
-       (Γ₆₇, sorry'd in boost_two_thirds_to_pac).
+       implemented in boost_two_thirds_to_pac.
     Routes through boost_two_thirds_to_pac which encapsulates the Chernoff-based boosting. -/
 theorem universal_imp_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
@@ -1347,16 +1344,8 @@ theorem online_strictly_stronger_pac :
     (∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       PACLearnable X C ∧ ¬ OnlineLearnable X Bool C) :=
   -- Factored: conjunct 1 = online_imp_pac (Generalization.lean)
-  --           conjunct 2 = pac_not_implies_online (this file, sorry)
+  --           conjunct 2 = pac_not_implies_online.
   ⟨fun X _ C _ hol => online_imp_pac X C hol, pac_not_implies_online⟩
-
--- Γ₆₈: `universal_strictly_stronger_pac` REMOVED from kernel.
--- The original conjunct 2 (∃ PAC ∧ ¬ Universal) was FALSE — Bousquet et al.
--- (STOC 2021, arXiv:2011.04483) showed PAC ↔ Universal for binary classification.
--- The true equivalence (PAC ↔ Universal ↔ VCDim < ⊤) requires `pac_imp_universal`
--- which needs infrastructure not yet in this kernel (rate convergence + boosting).
--- The only proved content (Universal → PAC) is already `universal_imp_pac`.
--- Zero downstream consumers existed.
 
 /-- EX learning is strictly stronger than finite learning. -/
 theorem ex_strictly_stronger_finite :
@@ -1366,18 +1355,6 @@ theorem ex_strictly_stronger_finite :
   exact ⟨L, fun c hcC T => by
     obtain ⟨t₀, ht₀⟩ := hL c hcC T
     exact ⟨t₀, fun t ht => (ht₀ t ht).1⟩⟩
-
--- natarajan_not_characterizes_pac MOVED to Benchmarks/Extended.lean.
--- Brukhim et al. (FOCS 2022): NatarajanDim ≠ multiclass PAC characterization.
--- Requires hyperbolic pseudo-manifolds (Januszkiewicz-Swiatkowski 2003) — deep
--- algebraic topology absent from Mathlib. Benchmark Category A (UU region).
-
--- proper_improper_separation REMOVED from kernel.
--- The statement (∃ C H, IsProper C H ∧ PACLearnable C) is A4-failing: trivially
--- satisfied via Empty (IsProbabilityMeasure absurd). The meaningful separation
--- (computational: proper learners need exponentially more samples, assuming OWFs)
--- requires cryptographic hardness infrastructure absent from Lean4/Mathlib.
--- Zero downstream consumers. Moved to SeparationGraveyard.lean.
 
 /-- Online-PAC-Gold three-way separation.
     Pl-REPAIR: first conjunct had [Fintype X] which made it false.

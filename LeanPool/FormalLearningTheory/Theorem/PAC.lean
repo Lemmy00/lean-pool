@@ -10,7 +10,6 @@ import LeanPool.FormalLearningTheory.Complexity.Structures
 import LeanPool.FormalLearningTheory.Complexity.Generalization
 import LeanPool.FormalLearningTheory.Complexity.Compression
 import LeanPool.FormalLearningTheory.Complexity.Symmetrization
-import LeanPool.FormalLearningTheory.Computation
 import LeanPool.FormalLearningTheory.Bridge
 import LeanPool.FormalLearningTheory.Complexity.Measurability
 
@@ -60,10 +59,8 @@ universe u v
       Sub-step 2b: ERM is consistent in realizable case
       Sub-step 2c: Consistent + UC → low TrueError
 
-    KU₁₈: C.Nonempty is needed for ERM but not stated as hypothesis.
-    If C = ∅, then PACLearnable is vacuously true (∀ c ∈ C, ... is vacuous).
-    But ERM needs a fallback hypothesis from C. Is this a genuine gap or
-    does the empty case work out vacuously?
+    The proof handles the empty concept class separately before constructing
+    an ERM learner for the nonempty case.
 
     **Counterdefinition (COUNTER-4):** If the ERM approach fails for computational
     reasons (ERM is noncomputable, and we need a computable learner for
@@ -149,18 +146,10 @@ theorem sauer_shelah_quantitative (X : Type u) [Fintype X] [DecidableEq X]
   -- M-Bridge: factored through Bridge.lean infrastructure
   growth_function_le_sauer_shelah C d hd m hm
 
-/-- Weak Sauer-Shelah (legacy statement, trivially true). -/
-theorem sauer_shelah (X : Type u)
-    (C : ConceptClass X Bool) (d m : ℕ)
-    (_hd : VCDim X C = d) (_hm : d ≤ m) :
-    ∃ (bound : ℕ), GrowthFunction X C m ≤ bound := by
-  exact ⟨GrowthFunction X C m, le_refl _⟩
-
 /-- PAC lower bound: sample complexity is at least linear in d/ε.
 
-    A₄ REPAIR: The original statement `∃ lower, lower ≤ SampleComplexity` was
-    trivially true via `⟨0, Nat.zero_le _⟩`. The corrected statement asserts the
-    SPECIFIC quantitative lower bound from learning theory:
+    This statement asserts the specific quantitative lower bound from learning
+    theory:
       m ≥ ⌈(d-1)/(64ε)⌉ for PAC learning with VCDim = d.
     Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean.
 
@@ -371,9 +360,6 @@ theorem vcdim_univ_infinite (X : Type u) [Infinite X] :
 theorem nfl_theorem_infinite (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X] [Infinite X] :
     ¬ PACLearnable X (Set.univ : ConceptClass X Bool) := by
-  -- MetaProgram: M-Contrapositive (depends on vc_characterization → direction)
-  -- Pl: single path — PACLearnable → VCDim < ⊤ → contradicts vcdim_univ_infinite
-  -- Comp: blocked by vc_characterization (sorry). Uses it as black box.
   intro h
   have hfin := pac_imp_vcdim_finite X (Set.univ : ConceptClass X Bool) h
   rw [vcdim_univ_infinite] at hfin
@@ -383,9 +369,8 @@ theorem nfl_theorem_infinite (X : Type u) [MeasurableSpace X]
     For any fixed sample size m, there exists a distribution such that
     any learner using m samples fails on SOME concept in Set.univ.
 
-    A₄ REPAIR: Original statement used `∃ D, (IsProbabilityMeasure D → ...)`
-    which allows D = 0 (zero measure), making the implication vacuously true.
-    Corrected to `∃ D, IsProbabilityMeasure D ∧ ...` (bundled conjunction).
+    The distribution is bundled with its probability-measure proof, avoiding
+    a weak implication-shaped existence statement.
 
     Proof route:
     1. Let T ⊂ X with |T| = 2m (exists since 2m ≤ |X|)
@@ -416,34 +401,3 @@ theorem nfl_fixed_sample (X : Type u) [MeasurableSpace X] [Fintype X]
   -- to work with Measure.count. This ENRICHES the statement (more structure
   -- on X), it doesn't simplify it. The hypothesis is standard for discrete spaces.
   nfl_core X hX m hm L
-
-/-- Occam's algorithm: any consistent learner with bounded description length
-    is a PAC learner.
-
-    Hypotheses (what the theorem NEEDS but the current statement is MISSING):
-    1. L is consistent: ∀ S, ∀ i, L.learn S (S i).1 = (S i).2
-    2. Description length bound: ∀ c ∈ C, dl c ≤ k (for some k)
-    3. Hoeffding: for iid sample of size m ≥ (1/ε)(k·ln 2 + ln(1/δ)),
-       a consistent hypothesis has true error ≤ ε with probability ≥ 1-δ
-
-    The current hypothesis only states consistency. The dl parameter is unused.
-    ABD-R: add hypothesis (∀ c ∈ C, dl c ≤ k) and set m accordingly. -/
-theorem occam_algorithm (X : Type u) [MeasurableSpace X]
-    [MeasurableSingletonClass X]
-    (C : ConceptClass X Bool)
-    (L : BatchLearner X Bool)
-    (dl : DescriptionLength (Concept X Bool))
-    (k : ℕ) (_hk : ∀ c ∈ C, dl c ≤ k)
-    (hvcdim : VCDim X C < ⊤)
-    [MeasurableConceptClass X C] :
-    (∀ {m : ℕ} (S : Fin m → X × Bool), ∀ i, L.learn S (S i).1 = (S i).2) →
-    PACLearnable X C := by
-  -- Γ₅₂: Added VCDim < ⊤ hypothesis. Without it, statement is FALSE:
-  -- consistent learners exist for VCDim = ∞ classes, but PACLearnable is false there.
-  -- The GENUINE Occam content is SAMPLE COMPLEXITY: m = O((k + log(1/δ))/ε)
-  -- via union bound over 2^k bounded-length hypotheses. This quantitative bound
-  -- is TIGHTER than the generic VC bound. But the existential PACLearnable
-  -- already follows from VCDim < ⊤.
-  -- A5: hvcdim enriches the statement; consistency + dl provide the tighter bound.
-  intro _
-  exact (vc_characterization X C).mpr hvcdim

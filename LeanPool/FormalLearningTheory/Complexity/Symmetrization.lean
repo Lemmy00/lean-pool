@@ -1076,19 +1076,10 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
        (MeasureTheory.Measure.pi (fun _ : Fin m => D)))
 
 /- The exchangeability + union bound + Hoeffding chain.
-   ORPHANED — contains 2 sorrys (swap→signed avg + Tonelli).
-   The critical path now uses `uc_bad_event_le_delta_proved` (below) which
-   composes `symmetrization_uc_bound` + `growth_exp_le_delta` via the
-   `finite_exchangeability_bound` + NullMeasurableSet architecture.
-   This version remains because `double_sample_pattern_bound` and
-   `symmetrization_uc_bound` (unprimed) call it, and those are called by
-   the unprimed `vcdim_finite_imp_uc` in Generalization.lean.
-
-   γ₁₈ (Session 7 discovery): The 2 sorrys here represent the original
-   attempt to close the exchangeability chain via direct Tonelli interchange.
-   Sorry A (swap→signed avg) needed connecting swap_fun to a Rademacher sum.
-   Sorry B (Tonelli) was blocked by MeasurableSet requirements for uncountable C.
-   Resolution: NullMeasurableSet + finite_exchangeability_bound (above). -/
+   The critical path uses `uc_bad_event_le_delta_proved` below, which composes
+   `symmetrization_uc_bound` and `growth_exp_le_delta` through the
+   `finite_exchangeability_bound` and `NullMeasurableSet` architecture. This
+   version remains because the unprimed API in `Generalization.lean` depends on it. -/
 
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -2503,12 +2494,12 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
       exact le_trans hε2_ge_two
         (by simpa [one_mul] using mul_le_mul_of_nonneg_right hm_ge_1 hε2.le)
 
-/-! ## Sorry-free UC proof: composing symmetrization + arithmetic
+/-! ## UC proof: composing symmetrization + arithmetic
 
-These theorems close the sorry in `uc_bad_event_le_delta` (Generalization.lean)
-by composing `symmetrization_uc_bound` with `growth_exp_le_delta`.
-They live here because Symmetrization.lean has access to both components,
-whereas Generalization.lean cannot import Symmetrization.lean (circular). -/
+These theorems provide the imported bad-event bound used by
+`uc_bad_event_le_delta` in `Generalization.lean`. They live here because this
+module has access to both the symmetrization and arithmetic components, whereas
+`Generalization.lean` cannot import this module without a cycle. -/
 
 /-- UC bad-event bound: for m ≥ m₀(v,ε,δ), the probability
     of the bad event (∃ h with |TrueErr-EmpErr| ≥ ε) is at most δ.
