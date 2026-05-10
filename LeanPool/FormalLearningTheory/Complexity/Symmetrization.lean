@@ -98,7 +98,6 @@ open MeasureTheory ENNReal
 
     **References:** SSBD Lemma B.3, Hoeffding (1963) -/
 theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (h c : Concept X Bool) (m : ℕ) (hm : 0 < m)
     (t : ℝ) (ht : 0 < t) (_ht1 : t ≤ 1)
@@ -505,7 +504,6 @@ theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
 
     **References:** SSBD Lemma 4.5, Kakade-Tewari Lecture 19 Lemma 1 -/
 theorem symmetrization_step {X : Type u} [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (C : ConceptClass X Bool) (c : Concept X Bool)
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : Measurable c)
@@ -721,7 +719,6 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
 
     **Mathlib chain:** iIndepFun_pi + HasSubgaussianMGF.of_map + measure_sum_ge_le_of_iIndepFun -/
 theorem per_hypothesis_gap_bound {X : Type u} [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (h c : Concept X Bool) (hmeas_h : Measurable h) (hc_meas : Measurable c)
     (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) :
@@ -956,6 +953,68 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
       _ = 2 ^ n := by rw [T.2]
   exact hR_le_RS.trans (hR_S_eq ▸ le_csSup hbdd ⟨⟨S, hS_card⟩, rfl⟩)
 
+private theorem rademacher_markov_filter_bound {m : ℕ} (hm : 0 < m) {ε : ℝ}
+    (hε : 0 < ε) (a : Fin m → ℝ) (ha : ∀ i, |a i| ≤ 1) :
+    ((Finset.univ.filter (fun σ : SignVector m =>
+      (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2)).card : ℝ) ≤
+    (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
+  have hm_pos : (0 : ℝ) < m := Nat.cast_pos.mpr hm
+  set t₀ := (m : ℝ) * ε / 2 with ht₀_def
+  have ht₀_pos : 0 < t₀ := by positivity
+  have ht₀_nn : 0 ≤ t₀ := ht₀_pos.le
+  have h_mgf := rademacher_mgf_bound hm a 1 zero_le_one (fun i => ha i) t₀ ht₀_nn
+  have h_filter_le : ∀ σ ∈ Finset.univ.filter (fun σ : SignVector m =>
+      (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2),
+      Real.exp (t₀ * (ε / 2)) ≤
+      Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) := by
+    intro σ hσ
+    simp only [Finset.mem_filter] at hσ
+    exact Real.exp_le_exp_of_le (by nlinarith [hσ.2])
+  have h_sum_filter : (Finset.univ.filter (fun σ : SignVector m =>
+      (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2)).card *
+      Real.exp (t₀ * (ε / 2)) ≤
+      ∑ σ ∈ Finset.univ.filter (fun σ : SignVector m =>
+        (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2),
+        Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) := by
+    rw [← nsmul_eq_mul]
+    exact Finset.card_nsmul_le_sum _ _ _ h_filter_le
+  have h_filter_sub_all :
+      ∑ σ ∈ Finset.univ.filter (fun σ : SignVector m =>
+        (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2),
+        Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) ≤
+      ∑ σ : SignVector m,
+        Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) :=
+    Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+      (fun σ _ _ => (Real.exp_pos _).le)
+  have hSV_pos : (0 : ℝ) < Fintype.card (SignVector m) := Nat.cast_pos.mpr Fintype.card_pos
+  set filt := Finset.univ.filter (fun σ : SignVector m =>
+      (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2) with hfilt_def
+  have h_all_sum_bound : ∑ σ : SignVector m,
+      Real.exp (t₀ * ((1 / ↑m) * ∑ i, a i * boolToSign (σ i))) ≤
+      (Fintype.card (SignVector m) : ℝ) * Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) := by
+    have hSV_ne : (Fintype.card (SignVector m) : ℝ) ≠ 0 := ne_of_gt hSV_pos
+    have := mul_le_mul_of_nonneg_left h_mgf (le_of_lt hSV_pos)
+    rwa [← mul_assoc, mul_one_div_cancel hSV_ne, one_mul] at this
+  have h_chain : (filt.card : ℝ) * Real.exp (t₀ * (ε / 2)) ≤
+      (Fintype.card (SignVector m) : ℝ) * Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) :=
+    (h_sum_filter.trans h_filter_sub_all).trans h_all_sum_bound
+  have h_exp_pos : 0 < Real.exp (t₀ * (ε / 2)) := Real.exp_pos _
+  have h_card_le : (filt.card : ℝ) ≤
+      (Fintype.card (SignVector m) : ℝ) *
+      Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) / Real.exp (t₀ * (ε / 2)) :=
+    le_div_iff₀ h_exp_pos |>.mpr h_chain
+  calc (filt.card : ℝ) ≤ (Fintype.card (SignVector m) : ℝ) *
+          Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) / Real.exp (t₀ * (ε / 2)) :=
+        h_card_le
+    _ = (Fintype.card (SignVector m) : ℝ) *
+          (Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) / Real.exp (t₀ * (ε / 2))) := by
+        ring
+    _ = (Fintype.card (SignVector m) : ℝ) *
+          Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m) - t₀ * (ε / 2)) := by
+        congr 1; rw [Real.exp_sub]
+    _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
+        congr 1; rw [ht₀_def]; field_simp; ring_nf
+
 /-- Generic finite exchangeability bound. Given a measure-preserving family of
     transformations on a probability space, a NullMeasurableSet S, and a pointwise
     bound on the sum of preimage indicators, conclude ν(S) ≤ B. -/
@@ -1032,11 +1091,10 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
    Resolution: NullMeasurableSet + finite_exchangeability_bound (above). -/
 
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (C : ConceptClass X Bool) (c : Concept X Bool)
     (_hmeas_C : ∀ h ∈ C, Measurable h) (_hc_meas : Measurable c)
-    (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) (_hε2 : ε ≤ 2) (hC : C.Nonempty)
+    (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) (_hε2 : ε ≤ 2) (_hC : C.Nonempty)
     (hE_nullmeas : MeasureTheory.NullMeasurableSet
       {p : (Fin m → X) × (Fin m → X) | ∃ h ∈ C,
         EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
@@ -1083,8 +1141,6 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
       _ ≤ ENNReal.ofReal bound := ENNReal.ofReal_le_ofReal h_triv
   · -- Case 2: bound < 1
     push Not at h_triv
-    -- Extract h₀ from C.Nonempty
-    obtain ⟨h₀, hh₀⟩ := hC
     -- The proof requires the full Rademacher swap averaging argument.
     -- We establish: (μ.prod μ)(E) ≤ ENNReal.ofReal(bound) where
     -- bound = GF(C,2m) · exp(-mε²/8) via the symmetrization chain:
@@ -1104,44 +1160,12 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
     have h_mp : MeasurePreserving (⇑eqv) ν (μ.prod μ) := by
       rw [hν_def]
       exact measurePreserving_arrowProdEquivProdArrow X X (Fin m) (fun _ => D) (fun _ => D)
-    have h_meas_eq : (μ.prod μ) E = ν (eqv ⁻¹' E) := by
-      rw [← h_mp.map_eq]; exact eqv.map_apply E
+    have h_meas_eq : (μ.prod μ) E = ν (eqv ⁻¹' E) := by rw [← h_mp.map_eq]; exact eqv.map_apply E
     rw [h_meas_eq]
-    -- === GF ≥ 1 ===
-    have hGF_pos : 0 < GrowthFunction X C (2 * m) := by
-      obtain ⟨S, _, hS_card⟩ := Infinite.exists_superset_card_eq
-        (∅ : Finset X) (2 * m) (by simp)
-      have h1 : 1 ≤ Set.ncard
-          ({f : ↥S → Bool | ∃ c_1 ∈ C, ∀ x : ↥S, c_1 ↑x = f x} : Set _) := by
-        apply Nat.one_le_iff_ne_zero.mpr
-        have hmem : (fun (x : ↥S) => h₀ (↑x : X)) ∈
-            ({f : ↥S → Bool | ∃ c_1 ∈ C, ∀ x : ↥S, c_1 ↑x = f x} : Set _) :=
-          ⟨h₀, hh₀, fun _ => rfl⟩
-        exact Set.ncard_ne_zero_of_mem hmem (Set.toFinite _)
-      have hbdd : BddAbove (Set.range fun (T : {T : Finset X // T.card = 2 * m}) =>
-          ({f : ↥T.val → Bool | ∃ c_1 ∈ C, ∀ x : ↥T.val, c_1 ↑x = f x} : Set _).ncard) := by
-        refine ⟨2 ^ (2 * m), ?_⟩
-        rintro _ ⟨T, rfl⟩
-        calc Set.ncard _ ≤ Set.ncard (Set.univ : Set (↥T.val → Bool)) :=
-                Set.ncard_le_ncard (Set.subset_univ _)
-          _ = Nat.card (↥T.val → Bool) := Set.ncard_univ _
-          _ = Fintype.card (↥T.val → Bool) := Nat.card_eq_fintype_card
-          _ = 2 ^ T.val.card := by simp [Fintype.card_pi, Fintype.card_bool]
-          _ = 2 ^ (2 * m) := by rw [T.2]
-      have h2 : Set.ncard ({f : ↥S → Bool | ∃ c_1 ∈ C, ∀ x : ↥S, c_1 ↑x = f x} : Set _)
-          ≤ GrowthFunction X C (2 * m) :=
-        le_csSup hbdd ⟨⟨S, hS_card⟩, rfl⟩
-      exact Nat.lt_of_lt_of_le Nat.one_pos (h1.trans h2)
     -- === SWAP MEASURABLE EQUIV ===
-    -- D.prod D is symmetric
-    have h_DxD_sym : (D.prod D).map Prod.swap = D.prod D :=
-      MeasureTheory.Measure.prod_swap (μ := D) (ν := D)
     -- For each σ : SignVector m, swap_σ is an involutive MeasurableEquiv
     let swap_fun (σ : SignVector m) : (Fin m → X × X) → (Fin m → X × X) :=
       fun z i => if σ i then (z i).swap else z i
-    have h_swap_invol : ∀ σ, Function.Involutive (swap_fun σ) := by
-      intro σ z; funext i; simp only [swap_fun]
-      split <;> simp [Prod.swap_swap]
     have h_swap_meas : ∀ σ, Measurable (swap_fun σ) := by
       intro σ; apply measurable_pi_lambda; intro i
       by_cases hσi : σ i
@@ -1149,10 +1173,6 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
         exact (measurable_pi_apply i |>.snd).prod (measurable_pi_apply i |>.fst)
       · simp only [swap_fun, hσi]
         exact measurable_pi_apply i
-    let swap_eqv (σ : SignVector m) : MeasurableEquiv (Fin m → X × X) (Fin m → X × X) :=
-      { toEquiv := (h_swap_invol σ).toPerm
-        measurable_toFun := h_swap_meas σ
-        measurable_invFun := by rw [(h_swap_invol σ).toPerm_symm]; exact h_swap_meas σ }
     -- Swap preserves ν: use pi_map_pi with explicit per-coordinate functions
     have h_swap_pres : ∀ σ, ν.map (swap_fun σ) = ν := by
       intro σ; rw [hν_def]
@@ -1167,35 +1187,13 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
         · exact measurable_id.aemeasurable)]
       congr 1; funext i; simp only [f_σ]
       split
-      · exact h_DxD_sym
+      · exact MeasureTheory.Measure.prod_swap (μ := D) (ν := D)
       · exact MeasureTheory.Measure.map_id
-    -- Swap preimage preserves measure (using MeasurableEquiv.map_apply)
-    have h_swap_eq : ∀ σ A, ν (swap_fun σ ⁻¹' A) = ν A := by
-      intro σ A
-      -- Use: ν.map (swap_fun σ) = ν (from h_swap_pres)
-      -- And: (swap_eqv σ).map_apply gives ν.map (swap_eqv) A = ν (preimage A) for ALL A
-      have h1 : ν.map (⇑(swap_eqv σ)) A = ν ((swap_eqv σ) ⁻¹' A) :=
-        (swap_eqv σ).map_apply A
-      have h2 : (⇑(swap_eqv σ) : (Fin m → X × X) → (Fin m → X × X)) = swap_fun σ := rfl
-      rw [h2] at h1
-      -- h1 : ν.map (swap_fun σ) A = ν (swap_fun σ ⁻¹' A)
-      -- h_swap_pres σ : ν.map (swap_fun σ) = ν
-      rw [← h1, h_swap_pres]
     -- === TONELLI CHAIN ===
     -- Define g(z) := #{σ | swap_σ(z) ∈ eqv⁻¹'E} as an ENNReal-valued function
     set S := eqv ⁻¹' E
     -- Key: |SV| · ν(S) = ∑_σ ν(swap_σ⁻¹(S)) = ∫⁻ #{σ|...} dν ≤ ∫⁻ (GF·|SV|·exp) dν
-    have hcard_pos : (0 : ℝ≥0∞) < (Fintype.card (SignVector m) : ℝ≥0∞) := by
-      exact_mod_cast Fintype.card_pos (α := SignVector m)
-    -- ∑_σ ν(S) = |SV| · ν(S)
-    have h_sum_eq_mul : ∑ _σ : SignVector m, ν S =
-        (Fintype.card (SignVector m) : ℝ≥0∞) * ν S := by
-      rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
-    -- ∑_σ ν(swap_σ⁻¹(S)) = ∑_σ ν(S)
-    have h_swap_sum : ∑ σ : SignVector m, ν (swap_fun σ ⁻¹' S) =
-        ∑ _σ : SignVector m, ν S := by
-      congr 1; ext σ; exact h_swap_eq σ S
-    -- === CORE CHAIN ===
+      -- === CORE CHAIN ===
     -- We prove: ν(S) ≤ ENNReal.ofReal(bound) via:
     -- |SV| · ν(S) = ∑_σ ν(swap_σ⁻¹(S)) ≤ ∫⁻ z, ∑_σ 1_{swap(z)∈S} dν
     --             ≤ ∫⁻ z, (GF · |SV| · exp) dν = GF · |SV| · exp
@@ -1287,7 +1285,8 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
         else (z ⟨j.val - m, by omega⟩).2
       -- Step A2: For each distinct restriction pattern of C on merged,
       -- the gap under swap is determined. Count: ≤ GF(C, 2m) patterns.
-      have h_pattern_count := restriction_pattern_count C c (2 * m) merged
+      have h_pattern_count :=
+        restriction_pattern_count (X := X) (C := C) (c := c) (n := 2 * m) (z := merged)
       -- Step A3: For each coefficient vector a with |a_i| ≤ 1,
       -- the Chernoff/Markov bound gives:
       -- #{σ | (1/m)∑ a_i · boolToSign(σ_i) ≥ ε/2} / |SV| ≤ exp(-mε²/8)
@@ -1331,80 +1330,8 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
       have h_markov_bound : ∀ (a : Fin m → ℝ), (∀ i, |a i| ≤ 1) →
           ((Finset.univ.filter (fun σ : SignVector m =>
             (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2)).card : ℝ) ≤
-          (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
-        intro a ha
-        -- Use: card(filter) / |SV| ≤ (1/|SV|) · ∑_σ exp(t·avg) / exp(t·ε/2)
-        -- ≤ exp(t²/(2m)) / exp(t·ε/2) = exp(t²/(2m) - t·ε/2)
-        -- With t = m·ε/2: exp(-mε²/8)
-        -- So card(filter) ≤ |SV| · exp(-mε²/8)
-        have hm_pos : (0 : ℝ) < m := Nat.cast_pos.mpr hm
-        have hm_ne : (m : ℝ) ≠ 0 := ne_of_gt hm_pos
-        set t₀ := (m : ℝ) * ε / 2 with ht₀_def
-        have ht₀_pos : 0 < t₀ := by positivity
-        have ht₀_nn : 0 ≤ t₀ := ht₀_pos.le
-        -- Apply rademacher_mgf_bound
-        have h_mgf := rademacher_mgf_bound hm a 1 zero_le_one
-          (fun i => ha i) t₀ ht₀_nn
-        -- h_mgf: (1/|SV|) * ∑_σ exp(t₀ * avg(σ)) ≤ exp(t₀²·1²/(2m))
-        -- For each σ in the filter: avg(σ) ≥ ε/2, so exp(t₀ * avg(σ)) ≥ exp(t₀ * ε/2)
-        have h_filter_le : ∀ σ ∈ Finset.univ.filter (fun σ : SignVector m =>
-            (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2),
-            Real.exp (t₀ * (ε / 2)) ≤
-            Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) := by
-          intro σ hσ
-          simp only [Finset.mem_filter] at hσ
-          exact Real.exp_le_exp_of_le (by nlinarith [hσ.2])
-        -- card(filter) · exp(t₀ · ε/2) ≤ ∑_{filter} exp(t₀ · avg)
-        have h_sum_filter : (Finset.univ.filter (fun σ : SignVector m =>
-            (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2)).card *
-            Real.exp (t₀ * (ε / 2)) ≤
-            ∑ σ ∈ Finset.univ.filter (fun σ : SignVector m =>
-              (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2),
-              Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) := by
-          rw [← nsmul_eq_mul]
-          exact Finset.card_nsmul_le_sum _ _ _ h_filter_le
-        -- ∑_{filter} ≤ ∑_{all} (filter is a subset)
-        have h_filter_sub_all :
-            ∑ σ ∈ Finset.univ.filter (fun σ : SignVector m =>
-              (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2),
-              Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) ≤
-            ∑ σ : SignVector m,
-              Real.exp (t₀ * ((1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i))) :=
-          Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
-            (fun σ _ _ => (Real.exp_pos _).le)
-        -- Chain: card · exp(t₀ε/2) ≤ ∑_all exp(t₀·avg) = |SV| · (1/|SV|) · ∑ exp
-        -- ≤ |SV| · exp(t₀²/(2m))
-        have hSV_pos : (0 : ℝ) < Fintype.card (SignVector m) := Nat.cast_pos.mpr Fintype.card_pos
-        set filt := Finset.univ.filter (fun σ : SignVector m =>
-            (1 / (m : ℝ)) * ∑ i, a i * boolToSign (σ i) ≥ ε / 2) with hfilt_def
-        -- Chain: filt.card · exp(t₀ε/2) ≤ ∑_all exp(t₀·avg) ≤ |SV| · exp(t₀²/(2m))
-        have h_all_sum_bound : ∑ σ : SignVector m,
-            Real.exp (t₀ * ((1 / ↑m) * ∑ i, a i * boolToSign (σ i))) ≤
-            (Fintype.card (SignVector m) : ℝ) * Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) := by
-          -- h_mgf says (1/|SV|) * ∑ ≤ exp(...). Multiply both sides by |SV|.
-          have hSV_ne : (Fintype.card (SignVector m) : ℝ) ≠ 0 := ne_of_gt hSV_pos
-          have := mul_le_mul_of_nonneg_left h_mgf (le_of_lt hSV_pos)
-          rwa [← mul_assoc, mul_one_div_cancel hSV_ne, one_mul] at this
-        have h_chain : (filt.card : ℝ) * Real.exp (t₀ * (ε / 2)) ≤
-            (Fintype.card (SignVector m) : ℝ) * Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) :=
-          (h_sum_filter.trans h_filter_sub_all).trans h_all_sum_bound
-        -- Divide by exp(t₀·ε/2) > 0 and simplify exponent
-        have h_exp_pos : 0 < Real.exp (t₀ * (ε / 2)) := Real.exp_pos _
-        have h_card_le : (filt.card : ℝ) ≤
-            (Fintype.card (SignVector m) : ℝ) *
-            Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) / Real.exp (t₀ * (ε / 2)) :=
-          le_div_iff₀ h_exp_pos |>.mpr h_chain
-        calc (filt.card : ℝ) ≤ (Fintype.card (SignVector m) : ℝ) *
-                Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) / Real.exp (t₀ * (ε / 2)) :=
-              h_card_le
-          _ = (Fintype.card (SignVector m) : ℝ) *
-                (Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m)) / Real.exp (t₀ * (ε / 2))) := by
-              ring
-          _ = (Fintype.card (SignVector m) : ℝ) *
-                Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m) - t₀ * (ε / 2)) := by
-              congr 1; rw [Real.exp_sub]
-          _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
-              congr 1; rw [ht₀_def]; field_simp; ring_nf
+          (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) :=
+        rademacher_markov_filter_bound hm hε
       -- Step A4: Connect swap_fun σ z ∈ S to the signed average condition
       -- For each σ, swap_fun σ z ∈ S iff ∃h ∈ C with gap under swap ≥ ε/2.
       -- The gap under swap = (1/m)∑ sign(σ_i) · a_i(h,z).
@@ -1523,16 +1450,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
     -- |SV| · ν(S) = ∑_σ ν(swap_σ⁻¹'S) = ∑_σ ∫⁻ 𝟙_{Aσ}
     -- = ∫⁻ ∑_σ 𝟙_{Aσ} ≤ ∫⁻ (GF·|SV|·exp) = GF·|SV|·exp
     -- Then divide by |SV|.
-    have hcard_ne_zero : (Fintype.card (SignVector m) : ℝ≥0∞) ≠ 0 :=
-      ne_of_gt hcard_pos
-    have hcard_ne_top : (Fintype.card (SignVector m) : ℝ≥0∞) ≠ ⊤ :=
-      ENNReal.natCast_ne_top _
-    -- The bound as ENNReal
-    have hbound_ennreal : ENNReal.ofReal bound =
-        ENNReal.ofReal (↑(GrowthFunction X C (2 * m))) *
-        ENNReal.ofReal (Real.exp (-(↑m * ε ^ 2 / 8))) := by
-      rw [hbound_def, ENNReal.ofReal_mul (Nat.cast_nonneg' _)]
-    -- Use finite_exchangeability_bound with swap_fun as the transformation family
+      -- Use finite_exchangeability_bound with swap_fun as the transformation family
     -- Step B1: NullMeasurableSet S ν from hE_nullmeas
     have hS_nullmeas : MeasureTheory.NullMeasurableSet S ν := by
       change MeasureTheory.NullMeasurableSet (eqv ⁻¹' E) ν
@@ -1543,9 +1461,8 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
       rw [this]
       exact (hE_nullmeas.preimage h_mp.quasiMeasurePreserving)
     -- Step B2: MeasurePreserving for each swap
-    have h_swap_mp : ∀ σ : SignVector m, MeasureTheory.MeasurePreserving (swap_fun σ) ν ν := by
-      intro σ
-      exact ⟨h_swap_meas σ, h_swap_pres σ⟩
+    have h_swap_mp : ∀ σ : SignVector m, MeasureTheory.MeasurePreserving (swap_fun σ) ν ν :=
+      fun σ => ⟨h_swap_meas σ, h_swap_pres σ⟩
     -- Step B3: Bridge h_per_z_bound to indicator-sum form
     have h_pointwise : ∀ z : Fin m → X × X,
         (∑ σ : SignVector m,
@@ -1827,7 +1744,6 @@ theorem double_sample_pattern_bound {X : Type u} [MeasurableSpace X] [Infinite X
     The proof uses the same sub-Gaussian machinery with Z_i = indicator(x_i) - p
     (instead of p - indicator(x_i)). -/
 theorem hoeffding_one_sided_upper {X : Type u} [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (h c : Concept X Bool) (m : ℕ) (hm : 0 < m)
     (t : ℝ) (ht : 0 < t) (_ht1 : t ≤ 1)
@@ -1955,7 +1871,6 @@ theorem hoeffding_one_sided_upper {X : Type u} [MeasurableSpace X]
     Mirror of `symmetrization_step` for the opposite direction.
     Uses `hoeffding_one_sided_upper` instead of `hoeffding_one_sided`. -/
 theorem symmetrization_step_lower {X : Type u} [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (C : ConceptClass X Bool) (c : Concept X Bool)
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : Measurable c)
@@ -2430,7 +2345,6 @@ private lemma growth_exp_le_delta_large_v {X : Type u} [MeasurableSpace X]
   linarith [hstep1, hstep2, hstep3]
 
 theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool)
     (v : ℕ) (hv : 0 < v) (m : ℕ) (hm : 0 < m) (ε δ : ℝ)
     (hε : 0 < ε) (hδ : 0 < δ) (hδ1 : δ < 1)
@@ -2631,14 +2545,46 @@ private lemma uc_bad_event_le_delta_proved {X : Type u} [MeasurableSpace X] [Inf
              (zeroOneLoss Bool)| ≥ ε }
       ≤ ENNReal.ofReal (4 * ↑(GrowthFunction X C (2 * m)) *
           Real.exp (-(↑m * ε ^ 2 / 8))) := h_sym
-    _ ≤ ENNReal.ofReal δ := ENNReal.ofReal_le_ofReal h_bound
+      _ ≤ ENNReal.ofReal δ := ENNReal.ofReal_le_ofReal h_bound
+
+private theorem bad_event_compl_measure_ge {Ω : Type*} [MeasurableSpace Ω]
+    (μ : MeasureTheory.Measure Ω) [MeasureTheory.IsProbabilityMeasure μ]
+    (Bad : Set Ω) {δ : ℝ} (hδ : 0 < δ)
+    (h_ub : μ Bad ≤ ENNReal.ofReal δ) :
+    ENNReal.ofReal (1 - δ) ≤ μ Badᶜ := by
+  have h_sub : (1 : ENNReal) ≤ μ Bad + μ Badᶜ := by
+    rw [← MeasureTheory.IsProbabilityMeasure.measure_univ (μ := μ)]
+    calc μ Set.univ
+        ≤ μ (Bad ∪ Badᶜ) := MeasureTheory.measure_mono (by rw [Set.union_compl_self])
+      _ ≤ μ Bad + μ Badᶜ := MeasureTheory.measure_union_le Bad Badᶜ
+  calc ENNReal.ofReal (1 - δ)
+      = 1 - ENNReal.ofReal δ := by
+        rw [ENNReal.ofReal_sub 1 (le_of_lt hδ), ENNReal.ofReal_one]
+    _ ≤ 1 - μ Bad := tsub_le_tsub_left h_ub 1
+    _ ≤ μ Badᶜ := by
+        calc 1 - μ Bad
+            ≤ (μ Bad + μ Badᶜ) - μ Bad := tsub_le_tsub_right h_sub _
+          _ ≤ μ Badᶜ := by
+              rw [ENNReal.add_sub_cancel_left (ne_top_of_le_ne_top ENNReal.one_ne_top
+                MeasureTheory.prob_le_one)]
+
+private theorem uniform_good_event_eq_bad_compl {X : Type u} [MeasurableSpace X]
+    (D : MeasureTheory.Measure X) (C : ConceptClass X Bool) (c : Concept X Bool)
+    (m : ℕ) (ε : ℝ) :
+    { xs : Fin m → X | ∀ (h : Concept X Bool), h ∈ C →
+        |TrueErrorReal X h c D -
+          EmpiricalError X Bool h (fun i => (xs i, c (xs i))) (zeroOneLoss Bool)| < ε } =
+      { xs : Fin m → X | ∃ h ∈ C,
+        |TrueErrorReal X h c D -
+          EmpiricalError X Bool h (fun i => (xs i, c (xs i))) (zeroOneLoss Bool)| ≥ ε }ᶜ := by
+  ext xs
+  simp only [Set.mem_setOf_eq, Set.mem_compl_iff, not_exists, not_and, not_le]
 
 /-- Finite VCDim implies uniform convergence.
     Proof: VCDim < ∞ → UC.
     - Finite X: direct Hoeffding per-hypothesis + finite union bound.
     - Infinite X: Sauer-Shelah → symmetrization + growth function → UC. -/
 theorem vcdim_finite_imp_uc' (X : Type u) [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) (hC : VCDim X C < ⊤)
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : ∀ c : Concept X Bool, Measurable c)
     (hWB : WellBehavedVC X C) :
@@ -2816,34 +2762,10 @@ theorem vcdim_finite_imp_uc' (X : Type u) [MeasurableSpace X]
                     _ = δ / (2 * ↑N) := by rw [inv_div]
                 calc ↑N * (2 * Real.exp (-2 * ↑m * ε' ^ 2))
                     ≤ ↑N * (2 * (δ / (2 * ↑N))) := by gcongr
-                  _ = δ := by field_simp
-      -- Complement argument: μ(Badᶜ) ≥ 1 - δ
-      have hgood_eq_compl : { xs : Fin m → X |
-            ∀ (h : Concept X Bool), h ∈ C →
-              |TrueErrorReal X h c D -
-               EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
-                 (zeroOneLoss Bool)| < ε } =
-          { xs : Fin m → X | ∃ h ∈ C,
-            |TrueErrorReal X h c D -
-             EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
-               (zeroOneLoss Bool)| ≥ ε }ᶜ := by
-        ext xs; simp only [Set.mem_setOf_eq, Set.mem_compl_iff, not_exists, not_and, not_le]
-      rw [hgood_eq_compl]
-      have h_sub : (1 : ENNReal) ≤ μ Bad + μ Badᶜ := by
-        rw [← MeasureTheory.IsProbabilityMeasure.measure_univ (μ := μ)]
-        calc μ Set.univ
-            ≤ μ (Bad ∪ Badᶜ) := MeasureTheory.measure_mono (by rw [Set.union_compl_self])
-          _ ≤ μ Bad + μ Badᶜ := MeasureTheory.measure_union_le Bad Badᶜ
-      calc ENNReal.ofReal (1 - δ)
-          = 1 - ENNReal.ofReal δ := by
-            rw [ENNReal.ofReal_sub 1 (le_of_lt hδ), ENNReal.ofReal_one]
-        _ ≤ 1 - μ Bad := tsub_le_tsub_left h_ub 1
-        _ ≤ μ Badᶜ := by
-            calc 1 - μ Bad
-                ≤ (μ Bad + μ Badᶜ) - μ Bad := tsub_le_tsub_right h_sub _
-              _ ≤ μ Badᶜ := by
-                  rw [ENNReal.add_sub_cancel_left (ne_top_of_le_ne_top ENNReal.one_ne_top
-                    MeasureTheory.prob_le_one)]
+                    _ = δ := by field_simp [ne_of_gt hN_pos]
+      rw [uniform_good_event_eq_bad_compl (D := D) (C := C) (c := c) (m := m) (ε := ε)]
+      change ENNReal.ofReal (1 - δ) ≤ μ Badᶜ
+      exact bad_event_compl_measure_ge μ Bad hδ h_ub
   · -- ═══ INFINITE X BRANCH ═══
     -- Existing symmetrization proof, unchanged. hinf : Infinite X provides the instance.
     rw [WithTop.lt_top_iff_ne_top] at hC
@@ -2881,37 +2803,14 @@ theorem vcdim_finite_imp_uc' (X : Type u) [MeasurableSpace X]
       have hE_nullmeas := hWB D c m ε
       have h_ub := uc_bad_event_le_delta_proved D C c hmeas_C (hc_meas c) m hm_pos ε δ hε hδ hδ1
         v hv_pos hv (le_trans (Nat.le_ceil _) (by exact_mod_cast hm)) hE_nullmeas
-      have hgood_eq_compl : { xs : Fin m → X |
-            ∀ (h : Concept X Bool), h ∈ C →
-              |TrueErrorReal X h c D -
-               EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
-                 (zeroOneLoss Bool)| < ε } =
-          { xs : Fin m → X | ∃ h ∈ C,
-            |TrueErrorReal X h c D -
-             EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
-               (zeroOneLoss Bool)| ≥ ε }ᶜ := by
-        ext xs; simp only [Set.mem_setOf_eq, Set.mem_compl_iff, not_exists, not_and, not_le]
-      rw [hgood_eq_compl]
       set μ := MeasureTheory.Measure.pi (fun _ : Fin m => D)
       set Bad := { xs : Fin m → X | ∃ h ∈ C,
           |TrueErrorReal X h c D -
            EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
              (zeroOneLoss Bool)| ≥ ε }
-      have h_sub : (1 : ENNReal) ≤ μ Bad + μ Badᶜ := by
-        rw [← MeasureTheory.IsProbabilityMeasure.measure_univ (μ := μ)]
-        calc μ Set.univ
-            ≤ μ (Bad ∪ Badᶜ) := MeasureTheory.measure_mono (by rw [Set.union_compl_self])
-          _ ≤ μ Bad + μ Badᶜ := MeasureTheory.measure_union_le Bad Badᶜ
-      calc ENNReal.ofReal (1 - δ)
-          = 1 - ENNReal.ofReal δ := by
-            rw [ENNReal.ofReal_sub 1 (le_of_lt hδ), ENNReal.ofReal_one]
-        _ ≤ 1 - μ Bad := tsub_le_tsub_left h_ub 1
-        _ ≤ μ Badᶜ := by
-            calc 1 - μ Bad
-                ≤ (μ Bad + μ Badᶜ) - μ Bad := tsub_le_tsub_right h_sub _
-              _ ≤ μ Badᶜ := by
-                  rw [ENNReal.add_sub_cancel_left (ne_top_of_le_ne_top ENNReal.one_ne_top
-                    MeasureTheory.prob_le_one)]
+      rw [uniform_good_event_eq_bad_compl (D := D) (C := C) (c := c) (m := m) (ε := ε)]
+      change ENNReal.ofReal (1 - δ) ≤ μ Badᶜ
+      exact bad_event_compl_measure_ge μ Bad hδ h_ub
 
 /-- VCDim < ⊤ → PACLearnable via UC route. -/
 theorem vcdim_finite_imp_pac_via_uc' (X : Type u) [MeasurableSpace X]

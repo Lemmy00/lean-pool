@@ -111,7 +111,6 @@ noncomputable def DSDim (X : Type u) (Y : Type v) [Fintype Y]
     Requires |Y| ≥ 2 (Nontrivial Y): when |Y| = 1, Natarajan witnesses f₀ ≠ f₁ cannot exist.
     M-DefinitionRepair (Γ₈): original statement had wrong direction. -/
 theorem DSDim_le_NatarajanDim (X : Type u) (Y : Type v) [Fintype Y] [Nontrivial Y]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Y) : DSDim X Y C ≤ NatarajanDim X Y C := by
   obtain ⟨y₀, y₁, hne⟩ := exists_pair_ne Y
   apply iSup₂_le

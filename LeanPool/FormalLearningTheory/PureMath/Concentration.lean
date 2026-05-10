@@ -47,7 +47,6 @@ attribute [local instance] Classical.propDecidable
     Uses indicator random variables, Popoviciu's variance bound, independence for
     variance of sums, and Chebyshev's inequality. -/
 lemma chebyshev_majority_bound
-    -- proof-size-limit-ok: ported formal learning theory proof.
     {Ω : Type*} [MeasurableSpace Ω] {μ : MeasureTheory.Measure Ω}
     [MeasureTheory.IsProbabilityMeasure μ]
     {k : ℕ} {δ : ℝ} (h_delta_pos : 0 < δ)

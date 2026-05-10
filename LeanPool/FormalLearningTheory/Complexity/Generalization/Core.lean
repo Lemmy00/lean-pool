@@ -645,7 +645,6 @@ lemma pow_mul_exp_neg_le_factorial_div {d : ℕ} {t : ℝ} (ht : 0 < t) :
     Forward direction of fundamental_theorem conjunct 5.
     Uses Sauer-Shelah: GrowthFunction(m) ≤ ∑_{i≤d} C(m,i) where d = VCDim. -/
 theorem vcdim_finite_imp_growth_bounded (X : Type u)
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) (hC : VCDim X C < ⊤) :
     ∃ (d : ℕ), ∀ (m : ℕ), d ≤ m →
       GrowthFunction X C m ≤ ∑ i ∈ Finset.range (d + 1), Nat.choose m i := by
@@ -1331,7 +1330,6 @@ private lemma per_sample_labeling_bound {α : Type*} [Fintype α] [DecidableEq �
     at most half the total number of samples.
     Proof: double-counting + pigeonhole using per_sample_labeling_bound. -/
 lemma nfl_counting_core {X : Type u} {C : ConceptClass X Bool} {T : Finset X}
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (hT : Shatters X C T) {m : ℕ} (h2m : 2 * m < T.card)
     (L : BatchLearner X Bool) :
     ∃ (f₀ : ↥T → Bool),
@@ -1641,12 +1639,211 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
             > ENNReal.ofReal (1 / 8) } := by
         apply MeasureTheory.measure_mono
         exact Set.singleton_subset_iff.mpr hc₀
+
+theorem pac_lower_bound_good_event_le_half
+    (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
+    {T : Finset X} (hTne : T.Nonempty) (L : BatchLearner X Bool)
+    (m : ℕ) (c₀ : X → Bool) (ε : ℝ) (hε1 : ε ≤ 1 / 4)
+    (hcount : 2 * (Finset.univ.filter fun xs : Fin m → ↥T =>
+      (Finset.univ.filter fun t : ↥T =>
+        c₀ ((↑t : X)) ≠ L.learn (fun i => ((↑(xs i) : X), c₀ (↑(xs i)))) (↑t)).card * 4
+      ≤ T.card).card ≤ Fintype.card (Fin m → ↥T)) :
+    ∃ D : MeasureTheory.Measure X, MeasureTheory.IsProbabilityMeasure D ∧
+      MeasureTheory.Measure.pi (fun _ : Fin m => D)
+        { xs : Fin m → X |
+          D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
+            ≤ ENNReal.ofReal ε } ≤ ENNReal.ofReal (1 / 2 : ℝ) := by
+  classical
+  letI msT : MeasurableSpace ↥T := ⊤
+  haveI : @MeasurableSingletonClass ↥T ⊤ :=
+    ⟨fun _ => MeasurableSpace.measurableSet_top⟩
+  have hTne_type : Nonempty ↥T := hTne.coe_sort
+  have hTpos : 0 < Fintype.card ↥T := Fintype.card_pos_iff.mpr hTne_type
+  let D_sub := @uniformMeasure ↥T ⊤ _ hTne_type
+  have hD_sub_prob : @MeasureTheory.IsProbabilityMeasure ↥T ⊤ D_sub :=
+    @uniformMeasure_isProbability ↥T ⊤ _ ⟨fun _ => trivial⟩ hTne_type hTpos
+  have hval_meas : @Measurable ↥T X ⊤ _ Subtype.val :=
+    fun _ _ => MeasurableSpace.measurableSet_top
+  let D := @MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub
+  have hDprob : MeasureTheory.IsProbabilityMeasure D := by
+    constructor
+    show D Set.univ = 1
+    simp only [D, MeasureTheory.Measure.map_apply hval_meas MeasurableSet.univ]
+    have : Subtype.val ⁻¹' (Set.univ : Set X) = (Set.univ : Set ↥T) := Set.preimage_univ
+    rw [this]
+    exact hD_sub_prob.measure_univ
+  refine ⟨D, hDprob, ?_⟩
+  have hval_emb : @MeasurableEmbedding ↥T X ⊤ _ Subtype.val := {
+    injective := Subtype.val_injective
+    measurable := hval_meas
+    measurableSet_image' := fun {s} _ => by
+      exact Set.Finite.measurableSet (Set.Finite.subset T.finite_toSet
+        (fun x hx => by obtain ⟨⟨y, hy⟩, _, rfl⟩ := hx; exact Finset.mem_coe.mpr hy)) }
+  have hD_val : ∀ S : Set X, D S = D_sub (Subtype.val ⁻¹' S) :=
+    fun S => hval_emb.map_apply D_sub S
+  let valProd : (Fin m → ↥T) → (Fin m → X) := fun xs i => (xs i).val
+  have hvalProd_emb : @MeasurableEmbedding (Fin m → ↥T) (Fin m → X)
+      (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤))
+      MeasurableSpace.pi valProd := {
+    injective := fun a b hab => funext fun i => Subtype.val_injective (congr_fun hab i)
+    measurable := by
+      rw [@measurable_pi_iff]; intro i
+      exact hval_meas.comp (@measurable_pi_apply (Fin m) (fun _ => ↥T)
+        (fun _ => (⊤ : MeasurableSpace ↥T)) i)
+    measurableSet_image' := fun {s} _ =>
+      (Set.toFinite s |>.image valProd).measurableSet }
+  have hpi_map : MeasureTheory.Measure.pi (fun _ : Fin m => D) =
+      (@MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
+        (fun _ => D_sub)).map valProd := by
+    letI : ∀ (_ : Fin m), MeasureTheory.SigmaFinite
+        (@MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub) := fun _ => by
+      change MeasureTheory.SigmaFinite D; exact inferInstance
+    conv_lhs =>
+      rw [show (fun (_ : Fin m) => D) =
+        fun (_ : Fin m) => @MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub from rfl]
+    symm
+    convert @MeasureTheory.Measure.pi_map_pi (Fin m) inferInstance
+      (fun _ => ↥T) (fun _ => X) (fun _ => (⊤ : MeasurableSpace ↥T))
+      (fun _ => D_sub) inferInstance (fun _ => @Subtype.val X (· ∈ T))
+      inferInstance (fun _ => hval_meas.aemeasurable) using 1
+  have hpi_val : ∀ S : Set (Fin m → X),
+      MeasureTheory.Measure.pi (fun _ : Fin m => D) S =
+      @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
+        (fun _ => D_sub) (valProd ⁻¹' S) := fun S => by
+    rw [hpi_map]; exact hvalProd_emb.map_apply _ S
+  set good_X : Set (Fin m → X) := { xs |
+    D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
+      ≤ ENNReal.ofReal ε } with good_X_def
+  set good_quarter : Set (Fin m → X) := { xs |
+    D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
+      ≤ ENNReal.ofReal (1 / 4 : ℝ) } with good_quarter_def
+  set count_finset := Finset.univ.filter fun xs : Fin m → ↥T =>
+    (Finset.univ.filter fun t : ↥T =>
+      c₀ ((↑t : X)) ≠
+        L.learn (fun i => ((↑(xs i) : X), c₀ (↑(xs i)))) (↑t)).card * 4
+    ≤ T.card with count_finset_def
+  have hgood_sub : good_X ⊆ good_quarter := by
+    intro xs hxs
+    simp only [good_X_def, good_quarter_def, Set.mem_setOf_eq] at hxs ⊢
+    exact le_trans hxs (ENNReal.ofReal_le_ofReal hε1)
+  have hpre_eq : valProd ⁻¹' good_quarter = (↑count_finset : Set (Fin m → ↥T)) := by
+    ext xs_T
+    simp only [Set.mem_preimage, good_quarter_def, Set.mem_setOf_eq, valProd,
+      count_finset_def, Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
+    set h_val := L.learn (fun i => ((↑(xs_T i) : X), c₀ (↑(xs_T i))))
+    have herr : D { x | h_val x ≠ c₀ x } =
+        D_sub { t : ↥T | c₀ (↑t) ≠ h_val (↑t) } := by
+      rw [hD_val]; congr 1; ext ⟨t, _⟩; exact ne_comm
+    have hunif : D_sub { t : ↥T | c₀ (↑t) ≠ h_val (↑t) } =
+        ((Finset.univ.filter fun t : ↥T => c₀ (↑t) ≠ h_val (↑t)).card : ENNReal) /
+          (T.card : ENNReal) := by
+      simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
+      rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
+        (Set.toFinite _) MeasurableSpace.measurableSet_top]
+      simp only [Fintype.card_coe, one_div, ne_eq, Set.Finite.toFinset_setOf,
+        Finset.univ_eq_attach]
+      rw [ENNReal.div_eq_inv_mul]
+    rw [herr, hunif]
+    set k := (Finset.univ.filter fun t : ↥T => c₀ (↑t) ≠ h_val (↑t)).card
+    have hd_ne : (T.card : ENNReal) ≠ 0 := Nat.cast_ne_zero.mpr (by
+      rw [← Fintype.card_coe]; exact Nat.pos_iff_ne_zero.mp hTpos)
+    have hd_nt : (T.card : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top T.card
+    constructor
+    · intro hle
+      rw [ENNReal.div_le_iff hd_ne hd_nt] at hle
+      rw [show ENNReal.ofReal (1 / 4 : ℝ) = (4 : ENNReal)⁻¹ from by
+        rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 4)]; norm_num,
+        mul_comm] at hle
+      have h4 : (k : ENNReal) * 4 ≤ (T.card : ENNReal) :=
+        calc (k : ENNReal) * 4
+            ≤ (T.card : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_left hle 4
+          _ = (T.card : ENNReal) := by
+              rw [mul_assoc, ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
+      exact_mod_cast h4
+    · intro hle
+      rw [ENNReal.div_le_iff hd_ne hd_nt]
+      rw [show ENNReal.ofReal (1 / 4 : ℝ) = (4 : ENNReal)⁻¹ from by
+        rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 4)]; norm_num,
+        mul_comm]
+      have hk4 : (k : ENNReal) * 4 ≤ (T.card : ENNReal) := by exact_mod_cast hle
+      calc (k : ENNReal) = (k : ENNReal) * 4 * (4 : ENNReal)⁻¹ := by
+              rw [mul_assoc, mul_comm 4 (4 : ENNReal)⁻¹,
+                  ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
+            _ ≤ (T.card : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_left hk4 _
+  have hgoal_eq : MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter =
+      @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
+        (fun _ => D_sub) (↑count_finset) := by
+    rw [hpi_val good_quarter, hpre_eq]
+  have hpi_sub_bound : @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
+      (fun _ => D_sub) (↑count_finset) ≤ ENNReal.ofReal (1 / 2 : ℝ) := by
+    set μ_pi := @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
+      (fun _ => D_sub) with hμ_pi_def
+    haveI inst_msc_pi : @MeasurableSingletonClass (Fin m → ↥T)
+        (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤)) :=
+      @Pi.instMeasurableSingletonClass (Fin m) (fun _ => ↥T) (fun _ => ⊤)
+        inferInstance (fun _ => ⟨fun _ => MeasurableSpace.measurableSet_top⟩)
+    haveI : @MeasureTheory.IsFiniteMeasure ↥T ⊤ D_sub := by
+      constructor; rw [hD_sub_prob.measure_univ]; exact ENNReal.one_lt_top
+    haveI : @MeasureTheory.SigmaFinite ↥T ⊤ D_sub :=
+      @MeasureTheory.IsFiniteMeasure.toSigmaFinite ↥T ⊤ D_sub inferInstance
+    have hD_sub_singleton : ∀ t : ↥T, D_sub {t} = 1 / (T.card : ENNReal) := by
+      intro t
+      simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
+      rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
+        (Set.toFinite _) MeasurableSpace.measurableSet_top]
+      simp [Set.Finite.toFinset, Fintype.card_coe]
+    have hpi_singleton : ∀ xs : Fin m → ↥T,
+        μ_pi {xs} = (1 / (T.card : ENNReal)) ^ m := by
+      intro xs
+      rw [hμ_pi_def, @MeasureTheory.Measure.pi_singleton]
+      simp only [hD_sub_singleton, Finset.prod_const, Finset.card_univ, Fintype.card_fin]
+    have hsum_eq : μ_pi (↑count_finset) = ∑ xs ∈ count_finset, μ_pi {xs} :=
+      (@MeasureTheory.sum_measure_singleton (Fin m → ↥T)
+        (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤)) μ_pi
+        count_finset inst_msc_pi).symm
+    rw [hsum_eq]
+    simp only [hpi_singleton, Finset.sum_const, nsmul_eq_mul]
+    have hd_ne : (T.card : ENNReal) ^ m ≠ 0 :=
+      pow_ne_zero m (Nat.cast_ne_zero.mpr
+        (Nat.pos_iff_ne_zero.mp (Finset.card_pos.mpr hTne)))
+    have hd_ne_top : (T.card : ENNReal) ^ m ≠ ⊤ :=
+      ENNReal.pow_ne_top (ENNReal.natCast_ne_top T.card)
+    rw [show (count_finset.card : ENNReal) * (1 / (T.card : ENNReal)) ^ m =
+        (count_finset.card : ENNReal) / (T.card : ENNReal) ^ m from by
+      rw [one_div, ← ENNReal.inv_pow, div_eq_mul_inv]]
+    rw [ENNReal.div_le_iff hd_ne hd_ne_top]
+    have h_ennreal : (2 * count_finset.card : ENNReal) ≤ (T.card : ENNReal) ^ m := by
+      rw [show (T.card : ENNReal) ^ m = ((T.card ^ m : ℕ) : ENNReal) from by push_cast; rfl]
+      push_cast
+      have hcard_eq : Fintype.card (Fin m → ↥T) = T.card ^ m := by
+        rw [Fintype.card_fun, Fintype.card_fin, Fintype.card_coe]
+      have h_le_card : 2 * count_finset.card ≤ Fintype.card (Fin m → ↥T) := by
+        simpa [count_finset_def] using hcount
+      rw [hcard_eq] at h_le_card
+      exact_mod_cast h_le_card
+    calc (count_finset.card : ENNReal)
+        = (count_finset.card : ENNReal) * 1 := (mul_one _).symm
+      _ = (count_finset.card : ENNReal) * (2 * (2 : ENNReal)⁻¹) := by
+          rw [ENNReal.mul_inv_cancel (by norm_num) (by norm_num)]
+      _ = (count_finset.card : ENNReal) * 2 * (2 : ENNReal)⁻¹ := by ring
+      _ = (2 * count_finset.card : ENNReal) * (2 : ENNReal)⁻¹ := by ring
+      _ ≤ (T.card : ENNReal) ^ m * (2 : ENNReal)⁻¹ :=
+          mul_le_mul_left h_ennreal _
+      _ = ENNReal.ofReal (1 / 2 : ℝ) * (T.card : ENNReal) ^ m := by
+          rw [show ENNReal.ofReal (1 / 2 : ℝ) = (2 : ENNReal)⁻¹ from by
+            rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 2)]; norm_num]
+          ring
+  calc MeasureTheory.Measure.pi (fun _ : Fin m => D) good_X
+      ≤ MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter :=
+        MeasureTheory.measure_mono hgood_sub
+    _ = @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
+          (fun _ => D_sub) (↑count_finset) := hgoal_eq
+    _ ≤ ENNReal.ofReal (1 / 2 : ℝ) := hpi_sub_bound
 /-- PAC lower bound core: sample complexity is at least (d-1)/2.
     For any PAC learner with VCDim = d, at least ⌈(d-1)/2⌉ samples needed.
     Proof: construct d shattered points, uniform distribution, counting argument.
     Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean. -/
 theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) (d : ℕ) (hd_pos : 1 ≤ d)
     (hd : VCDim X C = d) (ε : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1 / 4) :
     -- Any PAC learner needs at least ⌈(d-1)/(64ε)⌉ samples
@@ -1704,75 +1901,9 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
           < ENNReal.ofReal (1 - 1 / 7) by
     obtain ⟨D, hDprob, c, hcC, hfail⟩ := this
     exact not_le.mpr hfail (hpac17 D hDprob c hcC)
-  -- Step 4: Construct D = uniform on T as a measure on X.
-  -- D = (1/d) · ∑_{x ∈ T} δ_x, a probability measure supported on T.
   classical
   have hTne : T.Nonempty := by
     rw [Finset.nonempty_iff_ne_empty]; intro h; simp [h] at hTcard; omega
-  -- Use uniformMeasure on ↥T pushed forward to X via Subtype.val
-  -- Equip ↥T with discrete measurable space for MeasurableSingletonClass
-  letI msT : MeasurableSpace ↥T := ⊤
-  haveI : @MeasurableSingletonClass ↥T ⊤ :=
-    ⟨fun _ => MeasurableSpace.measurableSet_top⟩
-  have hTne_type : Nonempty ↥T := hTne.coe_sort
-  have hTcard_type : Fintype.card ↥T = d := by rwa [Fintype.card_coe]
-  have hTpos : 0 < Fintype.card ↥T := by omega
-  let D_sub := @uniformMeasure ↥T ⊤ _ hTne_type
-  have hD_sub_prob : @MeasureTheory.IsProbabilityMeasure ↥T ⊤ D_sub :=
-    @uniformMeasure_isProbability ↥T ⊤ _ ⟨fun _ => trivial⟩ hTne_type hTpos
-  -- Subtype.val is measurable from discrete (⊤) to any sigma-algebra
-  have hval_meas : @Measurable ↥T X ⊤ _ Subtype.val :=
-    fun _ _ => MeasurableSpace.measurableSet_top
-  let D := @MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub
-  have hDprob : MeasureTheory.IsProbabilityMeasure D := by
-    constructor
-    show D Set.univ = 1
-    simp only [D, MeasureTheory.Measure.map_apply hval_meas MeasurableSet.univ]
-    have : Subtype.val ⁻¹' (Set.univ : Set X) = (Set.univ : Set ↥T) := Set.preimage_univ
-    rw [this]
-    exact hD_sub_prob.measure_univ
-  refine ⟨D, hDprob, ?_⟩
-  -- Step 5: Per-sample adversarial construction via shattering.
-  -- For EACH xs, construct c_xs ∈ C with error ≥ D(unseen in T).
-  -- Key: define f : ↥T → Bool agreeing with false on seen points,
-  -- !(L.learn(all-false)) on unseen points. Shattering gives c ∈ C.
-  -- Under c: training = all-false, so same hypothesis. Error = D(unseen).
-  --
-  -- Per-sample adversarial lemma: for any xs : Fin m → X, there exists
-  -- c ∈ C such that L.learn(xs,c) disagrees with c on all of T \ range(xs).
-  have per_sample : ∀ (xs : Fin m → X),
-      (∀ i, xs i ∈ T) →
-      ∃ c ∈ C,
-        (∀ i, c (xs i) = false) ∧
-        ∀ t ∈ T, t ∉ Set.range xs →
-          L.learn (fun i => (xs i, false)) t ≠ c t := by
-    intro xs hxsT
-    -- Define the adversarial labeling on T
-    let h₀ := L.learn (m := m) (fun i => (xs i, false))
-    -- f : ↥T → Bool labels seen as false, unseen as !h₀
-    let f : ↥T → Bool := fun ⟨t, ht⟩ =>
-      if t ∈ Set.range xs then false else !h₀ t
-    -- Shattering gives c ∈ C with c|_T = f
-    obtain ⟨c, hcC, hcf⟩ := hTshat f
-    refine ⟨c, hcC, ?_, ?_⟩
-    · -- c agrees with false on seen points
-      intro i
-      have hmem : xs i ∈ (T : Set X) := Finset.mem_coe.mpr (hxsT i)
-      have : c (xs i) = f ⟨xs i, hmem⟩ := hcf ⟨xs i, hmem⟩
-      simp only [f, Set.mem_range_self, ↓reduceIte] at this
-      exact this
-    · -- On unseen T points: h₀(t) ≠ c(t)
-      intro t htT htns
-      have htT' : t ∈ (T : Set X) := Finset.mem_coe.mpr htT
-      have hct : c t = f ⟨t, htT'⟩ := hcf ⟨t, htT'⟩
-      simp only [f, htns, ↓reduceIte] at hct
-      -- hct : c t = !h₀ t where h₀ = L.learn(all-false)
-      -- Goal: L.learn(all-false) t ≠ c t
-      -- i.e. h₀ t ≠ !h₀ t, which is always true
-      change h₀ t ≠ c t
-      rw [hct]
-      cases h₀ t <;> decide
-  -- Step 6: Measure bridge via nfl_counting_core.
   set d' := T.card with hd'_def
   have hd'_eq_d : d' = d := hTcard
   have h2m_lt_d : 2 * m < d' := by
@@ -1782,183 +1913,17 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
     have hm_real : (m : ℝ) < (d - 1 : ℝ) / 2 := Nat.lt_ceil.mp h_lt
     have hge_real : (d : ℝ) ≤ 2 * (m : ℝ) := by exact_mod_cast h_ge
     linarith
-  have hd'_pos : 0 < d' := by omega
-  obtain ⟨f₀, c₀, hc₀C, hc₀f, hcount⟩ := nfl_counting_core hTshat h2m_lt_d L
-  refine ⟨c₀, hc₀C, ?_⟩
-  -- B1: MeasurableEmbedding for Subtype.val
-  have hval_emb : @MeasurableEmbedding ↥T X ⊤ _ Subtype.val := {
-    injective := Subtype.val_injective
-    measurable := hval_meas
-    measurableSet_image' := fun {s} _ => by
-      exact Set.Finite.measurableSet (Set.Finite.subset T.finite_toSet
-        (fun x hx => by obtain ⟨⟨y, hy⟩, _, rfl⟩ := hx; exact Finset.mem_coe.mpr hy)) }
-  -- B2: D S = D_sub(val⁻¹' S)
-  have hD_val : ∀ S : Set X, D S = D_sub (Subtype.val ⁻¹' S) :=
-    fun S => hval_emb.map_apply D_sub S
-  -- B3: valProd and MeasurableEmbedding
-  let valProd : (Fin m → ↥T) → (Fin m → X) := fun xs i => (xs i).val
-  have hvalProd_emb : @MeasurableEmbedding (Fin m → ↥T) (Fin m → X)
-      (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤))
-      MeasurableSpace.pi valProd := {
-    injective := fun a b hab => funext fun i => Subtype.val_injective (congr_fun hab i)
-    measurable := by
-      rw [@measurable_pi_iff]; intro i
-      exact hval_meas.comp (@measurable_pi_apply (Fin m) (fun _ => ↥T)
-        (fun _ => (⊤ : MeasurableSpace ↥T)) i)
-    measurableSet_image' := fun {s} _ =>
-      (Set.toFinite s |>.image valProd).measurableSet }
-  -- B4: Measure.pi D = (Measure.pi D_sub).map valProd
-  have hpi_map : MeasureTheory.Measure.pi (fun _ : Fin m => D) =
-      (@MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-        (fun _ => D_sub)).map valProd := by
-    letI : ∀ (_ : Fin m), MeasureTheory.SigmaFinite
-        (@MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub) := fun _ => by
-      change MeasureTheory.SigmaFinite D; exact inferInstance
-    conv_lhs =>
-      rw [show (fun (_ : Fin m) => D) =
-        fun (_ : Fin m) => @MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub from rfl]
-    symm
-    convert @MeasureTheory.Measure.pi_map_pi (Fin m) inferInstance
-      (fun _ => ↥T) (fun _ => X) (fun _ => (⊤ : MeasurableSpace ↥T))
-      (fun _ => D_sub) inferInstance (fun _ => @Subtype.val X (· ∈ T))
-      inferInstance (fun _ => hval_meas.aemeasurable) using 1
-  -- B5: Measure.pi D S = Measure.pi D_sub (valProd⁻¹' S)
-  have hpi_val : ∀ S : Set (Fin m → X),
-      MeasureTheory.Measure.pi (fun _ : Fin m => D) S =
-      @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-        (fun _ => D_sub) (valProd ⁻¹' S) := fun S => by
-    rw [hpi_map]; exact hvalProd_emb.map_apply _ S
-  -- B6: Define good sets
-  set good_X : Set (Fin m → X) := { xs |
-    D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
-      ≤ ENNReal.ofReal ε } with good_X_def
-  set good_quarter : Set (Fin m → X) := { xs |
-    D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
-      ≤ ENNReal.ofReal (1 / 4 : ℝ) } with good_quarter_def
-  set count_finset := Finset.univ.filter fun xs : Fin m → ↥T =>
-    (Finset.univ.filter fun t : ↥T =>
-      c₀ ((↑t : X)) ≠
-        L.learn (fun i => ((↑(xs i) : X), c₀ (↑(xs i)))) (↑t)).card * 4
-    ≤ d' with count_finset_def
-  -- B6a: good_X ⊆ good_quarter since ε ≤ 1 / 4
-  have hgood_sub : good_X ⊆ good_quarter := by
-    intro xs hxs
-    simp only [good_X_def, good_quarter_def, Set.mem_setOf_eq] at hxs ⊢
-    exact le_trans hxs (ENNReal.ofReal_le_ofReal hε1)
-  -- B7: Preimage equivalence
-  have hpre_eq : valProd ⁻¹' good_quarter = (↑count_finset : Set (Fin m → ↥T)) := by
-    ext xs_T
-    simp only [Set.mem_preimage, good_quarter_def, Set.mem_setOf_eq, valProd,
-      count_finset_def, Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
-    set h_val := L.learn (fun i => ((↑(xs_T i) : X), c₀ (↑(xs_T i))))
-    have herr : D { x | h_val x ≠ c₀ x } =
-        D_sub { t : ↥T | c₀ (↑t) ≠ h_val (↑t) } := by
-      rw [hD_val]; congr 1; ext ⟨t, _⟩; exact ne_comm
-    have hunif : D_sub { t : ↥T | c₀ (↑t) ≠ h_val (↑t) } =
-        ((Finset.univ.filter fun t : ↥T => c₀ (↑t) ≠ h_val (↑t)).card : ENNReal) /
-          (d' : ENNReal) := by
-      simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
-      rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
-        (Set.toFinite _) MeasurableSpace.measurableSet_top]
-      simp only [Fintype.card_coe, one_div, ne_eq, Set.Finite.toFinset_setOf,
-        Finset.univ_eq_attach]
-      rw [ENNReal.div_eq_inv_mul]
-    rw [herr, hunif]
-    set k := (Finset.univ.filter fun t : ↥T => c₀ (↑t) ≠ h_val (↑t)).card
-    have hd_ne : (d' : ENNReal) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
-    have hd_nt : (d' : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top d'
-    constructor
-    · intro hle
-      rw [ENNReal.div_le_iff hd_ne hd_nt] at hle
-      rw [show ENNReal.ofReal (1 / 4 : ℝ) = (4 : ENNReal)⁻¹ from by
-        rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 4)]; norm_num,
-        mul_comm] at hle
-      have h4 : (k : ENNReal) * 4 ≤ (d' : ENNReal) :=
-        calc (k : ENNReal) * 4
-            ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_left hle 4
-          _ = (d' : ENNReal) := by
-              rw [mul_assoc, ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-      exact_mod_cast h4
-    · intro hle
-      rw [ENNReal.div_le_iff hd_ne hd_nt]
-      rw [show ENNReal.ofReal (1 / 4 : ℝ) = (4 : ENNReal)⁻¹ from by
-        rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 4)]; norm_num,
-        mul_comm]
-      have hk4 : (k : ENNReal) * 4 ≤ (d' : ENNReal) := by exact_mod_cast hle
-      calc (k : ENNReal) = (k : ENNReal) * 4 * (4 : ENNReal)⁻¹ := by
-              rw [mul_assoc, mul_comm 4 (4 : ENNReal)⁻¹,
-                  ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-            _ ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_left hk4 _
-  -- B8: Main calc chain
-  rw [show ENNReal.ofReal (1 - 1 / 7 : ℝ) = ENNReal.ofReal (6 / 7 : ℝ) from by norm_num]
-  have hgoal_eq : MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter =
-      @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-        (fun _ => D_sub) (↑count_finset) := by
-    rw [hpi_val good_quarter, hpre_eq]
-  -- B9: Bound μ_pi(count_finset) ≤ 1 / 2 using hcount
-  have hpi_sub_bound : @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-      (fun _ => D_sub) (↑count_finset) ≤ ENNReal.ofReal (1 / 2 : ℝ) := by
-    set μ_pi := @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-      (fun _ => D_sub) with hμ_pi_def
-    haveI inst_msc_pi : @MeasurableSingletonClass (Fin m → ↥T)
-        (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤)) :=
-      @Pi.instMeasurableSingletonClass (Fin m) (fun _ => ↥T) (fun _ => ⊤)
-        inferInstance (fun _ => ⟨fun _ => MeasurableSpace.measurableSet_top⟩)
-    haveI : @MeasureTheory.IsFiniteMeasure ↥T ⊤ D_sub := by
-      constructor; rw [hD_sub_prob.measure_univ]; exact ENNReal.one_lt_top
-    haveI : @MeasureTheory.SigmaFinite ↥T ⊤ D_sub :=
-      @MeasureTheory.IsFiniteMeasure.toSigmaFinite ↥T ⊤ D_sub inferInstance
-    have hD_sub_singleton : ∀ t : ↥T, D_sub {t} = 1 / (d' : ENNReal) := by
-      intro t
-      simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
-      rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
-        (Set.toFinite _) MeasurableSpace.measurableSet_top]
-      simp [Set.Finite.toFinset, Fintype.card_coe, hd'_def]
-    have hpi_singleton : ∀ xs : Fin m → ↥T,
-        μ_pi {xs} = (1 / (d' : ENNReal)) ^ m := by
-      intro xs
-      rw [hμ_pi_def, @MeasureTheory.Measure.pi_singleton]
-      simp only [hD_sub_singleton, Finset.prod_const, Finset.card_univ, Fintype.card_fin]
-    have hsum_eq : μ_pi (↑count_finset) = ∑ xs ∈ count_finset, μ_pi {xs} :=
-      (@MeasureTheory.sum_measure_singleton (Fin m → ↥T)
-        (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤)) μ_pi
-        count_finset inst_msc_pi).symm
-    rw [hsum_eq]
-    simp only [hpi_singleton, Finset.sum_const, nsmul_eq_mul]
-    have hcard_prod : Fintype.card (Fin m → ↥T) = d' ^ m := by
-      rw [Fintype.card_fun, Fintype.card_fin, Fintype.card_coe]
-    have hd_ne : (d' : ENNReal) ^ m ≠ 0 := by positivity
-    have hd_ne_top : (d' : ENNReal) ^ m ≠ ⊤ :=
-      ENNReal.pow_ne_top (ENNReal.natCast_ne_top d')
-    rw [show (count_finset.card : ENNReal) * (1 / (d' : ENNReal)) ^ m =
-        (count_finset.card : ENNReal) / (d' : ENNReal) ^ m from by
-      rw [one_div, ← ENNReal.inv_pow, div_eq_mul_inv]]
-    rw [ENNReal.div_le_iff hd_ne hd_ne_top]
-    have hcard_eq : Fintype.card (Fin m → ↥T) = d' ^ m := by
-      rw [Fintype.card_fun, Fintype.card_fin, Fintype.card_coe]
-    rw [hcard_eq] at hcount
-    have h_ennreal : (2 * count_finset.card : ENNReal) ≤ (d' : ENNReal) ^ m := by
-      rw [show (d' : ENNReal) ^ m = ((d' ^ m : ℕ) : ENNReal) from by push_cast; rfl]
-      exact_mod_cast hcount
-    calc (count_finset.card : ENNReal)
-        = (count_finset.card : ENNReal) * 1 := (mul_one _).symm
-      _ = (count_finset.card : ENNReal) * (2 * (2 : ENNReal)⁻¹) := by
-          rw [ENNReal.mul_inv_cancel (by norm_num) (by norm_num)]
-      _ = (count_finset.card : ENNReal) * 2 * (2 : ENNReal)⁻¹ := by ring
-      _ = (2 * count_finset.card : ENNReal) * (2 : ENNReal)⁻¹ := by ring
-      _ ≤ (d' : ENNReal) ^ m * (2 : ENNReal)⁻¹ :=
-          mul_le_mul_left h_ennreal _
-      _ = ENNReal.ofReal (1 / 2 : ℝ) * (d' : ENNReal) ^ m := by
-          rw [show ENNReal.ofReal (1 / 2 : ℝ) = (2 : ENNReal)⁻¹ from by
-            rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 2)]; norm_num]
-          ring
-  calc MeasureTheory.Measure.pi (fun _ : Fin m => D) good_X
-      ≤ MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter :=
-        MeasureTheory.measure_mono hgood_sub
-    _ = @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-          (fun _ => D_sub) (↑count_finset) := hgoal_eq
-    _ ≤ ENNReal.ofReal (1 / 2 : ℝ) := hpi_sub_bound
-    _ < ENNReal.ofReal (6 / 7 : ℝ) := by
+  obtain ⟨_, c₀, hc₀C, _, hcount⟩ := nfl_counting_core hTshat h2m_lt_d L
+  obtain ⟨D, hDprob, hgood_half⟩ :=
+    pac_lower_bound_good_event_le_half (X := X) (T := T) hTne L m c₀ ε hε1
+      (by simpa using hcount)
+  refine ⟨D, hDprob, c₀, hc₀C, ?_⟩
+  calc MeasureTheory.Measure.pi (fun _ : Fin m => D)
+        { xs : Fin m → X |
+          D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
+            ≤ ENNReal.ofReal ε }
+      ≤ ENNReal.ofReal (1 / 2 : ℝ) := hgood_half
+    _ < ENNReal.ofReal (1 - 1 / 7 : ℝ) := by
         exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by norm_num) |>.mpr (by norm_num)
 
 -- DEAD CODE: vcdim_finite_imp_compression (no side info) superseded by
@@ -2275,7 +2240,6 @@ theorem growth_bounded_imp_vcdim_finite (X : Type u)
     5. Reversed Markov: ∃ c₀ ∈ C with Pr[error ≤ 1 / 8] ≤ 6 / 7
     6. For ε ≤ 1 / 8: Pr[error ≤ ε] ≤ 6 / 7 = 1 - 1 / 7, contradicting PAC -/
 theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) (d : ℕ)
     (hd : VCDim X C = d) (ε δ : ℝ) (_hε : 0 < ε) (hε1 : ε ≤ 1 / 4)
     (hδ : 0 < δ) (_hδ1 : δ ≤ 1) (hδ2 : δ ≤ 1 / 7) (hd_pos : 1 ≤ d) (m : ℕ)
@@ -2349,55 +2313,7 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
           < ENNReal.ofReal (1 - δ) by
     obtain ⟨D, hDprob, c, hcC, hfail⟩ := this
     exact not_le.mpr hfail (hL D hDprob c hcC)
-  -- Step 5: Construct D = uniform on T as a measure on X.
   classical
-  -- Equip ↥T with discrete measurable space for MeasurableSingletonClass
-  letI msT : MeasurableSpace ↥T := ⊤
-  haveI : @MeasurableSingletonClass ↥T ⊤ :=
-    ⟨fun _ => MeasurableSpace.measurableSet_top⟩
-  have hTne_type : Nonempty ↥T := hTne.coe_sort
-  have hTcard_type : Fintype.card ↥T = d := by rwa [Fintype.card_coe]
-  have hTpos : 0 < Fintype.card ↥T := by omega
-  let D_sub := @uniformMeasure ↥T ⊤ _ hTne_type
-  have hD_sub_prob : @MeasureTheory.IsProbabilityMeasure ↥T ⊤ D_sub :=
-    @uniformMeasure_isProbability ↥T ⊤ _ ⟨fun _ => trivial⟩ hTne_type hTpos
-  have hval_meas : @Measurable ↥T X ⊤ _ Subtype.val :=
-    fun _ _ => MeasurableSpace.measurableSet_top
-  let D := @MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub
-  have hDprob : MeasureTheory.IsProbabilityMeasure D := by
-    constructor
-    show D Set.univ = 1
-    simp only [D, MeasureTheory.Measure.map_apply hval_meas MeasurableSet.univ]
-    have : Subtype.val ⁻¹' (Set.univ : Set X) = (Set.univ : Set ↥T) := Set.preimage_univ
-    rw [this]
-    exact hD_sub_prob.measure_univ
-  refine ⟨D, hDprob, ?_⟩
-  -- Step 6: per-sample adversarial construction (same as pac_lower_bound_core)
-  have per_sample : ∀ (xs : Fin m → X),
-      (∀ i, xs i ∈ T) →
-      ∃ c ∈ C,
-        (∀ i, c (xs i) = false) ∧
-        ∀ t ∈ T, t ∉ Set.range xs →
-          L.learn (fun i => (xs i, false)) t ≠ c t := by
-    intro xs hxsT
-    let h₀ := L.learn (m := m) (fun i => (xs i, false))
-    let f : ↥T → Bool := fun ⟨t, ht⟩ =>
-      if t ∈ Set.range xs then false else !h₀ t
-    obtain ⟨c, hcC, hcf⟩ := hTshat f
-    refine ⟨c, hcC, ?_, ?_⟩
-    · intro i
-      have hmem : xs i ∈ (T : Set X) := Finset.mem_coe.mpr (hxsT i)
-      have : c (xs i) = f ⟨xs i, hmem⟩ := hcf ⟨xs i, hmem⟩
-      simp only [f, Set.mem_range_self, ↓reduceIte] at this
-      exact this
-    · intro t htT htns
-      have htT' : t ∈ (T : Set X) := Finset.mem_coe.mpr htT
-      have hct : c t = f ⟨t, htT'⟩ := hcf ⟨t, htT'⟩
-      simp only [f, htns, ↓reduceIte] at hct
-      change h₀ t ≠ c t
-      rw [hct]
-      cases h₀ t <;> decide
-  -- Step 7: Measure bridge via nfl_counting_core
   set d' := T.card with hd'_def
   have hd'_eq_d : d' = d := hTcard
   have h2m_lt_d : 2 * m < d' := by
@@ -2406,186 +2322,16 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
     have hm_real : (m : ℝ) < (d - 1 : ℝ) / 2 := Nat.lt_ceil.mp h_lt
     have hge_real : (d : ℝ) ≤ 2 * (m : ℝ) := by exact_mod_cast h_ge
     linarith
-  have hd'_pos : 0 < d' := by omega
-  obtain ⟨f₀, c₀, hc₀C, hc₀f, hcount⟩ := nfl_counting_core hTshat h2m_lt_d L
-  refine ⟨c₀, hc₀C, ?_⟩
-  -- B1: MeasurableEmbedding for Subtype.val
-  have hval_emb : @MeasurableEmbedding ↥T X ⊤ _ Subtype.val := {
-    injective := Subtype.val_injective
-    measurable := hval_meas
-    measurableSet_image' := fun {s} _ => by
-      exact Set.Finite.measurableSet (Set.Finite.subset T.finite_toSet
-        (fun x hx => by obtain ⟨⟨y, hy⟩, _, rfl⟩ := hx; exact Finset.mem_coe.mpr hy)) }
-  -- B2: D S = D_sub(val⁻¹' S)
-  have hD_val : ∀ S : Set X, D S = D_sub (Subtype.val ⁻¹' S) :=
-    fun S => hval_emb.map_apply D_sub S
-  -- B3: valProd and MeasurableEmbedding
-  let valProd : (Fin m → ↥T) → (Fin m → X) := fun xs i => (xs i).val
-  have hvalProd_emb : @MeasurableEmbedding (Fin m → ↥T) (Fin m → X)
-      (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤))
-      MeasurableSpace.pi valProd := {
-    injective := fun a b hab => funext fun i => Subtype.val_injective (congr_fun hab i)
-    measurable := by
-      rw [@measurable_pi_iff]; intro i
-      exact hval_meas.comp (@measurable_pi_apply (Fin m) (fun _ => ↥T)
-        (fun _ => (⊤ : MeasurableSpace ↥T)) i)
-    measurableSet_image' := fun {s} _ =>
-      (Set.toFinite s |>.image valProd).measurableSet }
-  -- B4: Measure.pi D = (Measure.pi D_sub).map valProd
-  have hpi_map : MeasureTheory.Measure.pi (fun _ : Fin m => D) =
-      (@MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-        (fun _ => D_sub)).map valProd := by
-    letI : ∀ (_ : Fin m), MeasureTheory.SigmaFinite
-        (@MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub) := fun _ => by
-      change MeasureTheory.SigmaFinite D; exact inferInstance
-    conv_lhs =>
-      rw [show (fun (_ : Fin m) => D) =
-        fun (_ : Fin m) => @MeasureTheory.Measure.map ↥T X ⊤ _ Subtype.val D_sub from rfl]
-    symm
-    convert @MeasureTheory.Measure.pi_map_pi (Fin m) inferInstance
-      (fun _ => ↥T) (fun _ => X) (fun _ => (⊤ : MeasurableSpace ↥T))
-      (fun _ => D_sub) inferInstance (fun _ => @Subtype.val X (· ∈ T))
-      inferInstance (fun _ => hval_meas.aemeasurable) using 1
-  -- B5: Measure.pi D S = Measure.pi D_sub (valProd⁻¹' S)
-  have hpi_val : ∀ S : Set (Fin m → X),
-      MeasureTheory.Measure.pi (fun _ : Fin m => D) S =
-      @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-        (fun _ => D_sub) (valProd ⁻¹' S) := fun S => by
-    rw [hpi_map]; exact hvalProd_emb.map_apply _ S
-  -- B6: Define good sets
-  set good_X : Set (Fin m → X) := { xs |
-    D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
-      ≤ ENNReal.ofReal ε } with good_X_def
-  set good_quarter : Set (Fin m → X) := { xs |
-    D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
-      ≤ ENNReal.ofReal (1 / 4 : ℝ) } with good_quarter_def
-  set count_finset := Finset.univ.filter fun xs : Fin m → ↥T =>
-    (Finset.univ.filter fun t : ↥T =>
-      c₀ ((↑t : X)) ≠
-        L.learn (fun i => ((↑(xs i) : X), c₀ (↑(xs i)))) (↑t)).card * 4
-    ≤ d' with count_finset_def
-  -- B6a: good_X ⊆ good_quarter since ε ≤ 1 / 4
-  have hgood_sub : good_X ⊆ good_quarter := by
-    intro xs hxs
-    simp only [good_X_def, good_quarter_def, Set.mem_setOf_eq] at hxs ⊢
-    exact le_trans hxs (ENNReal.ofReal_le_ofReal hε1)
-  -- B7: Preimage equivalence
-  have hpre_eq : valProd ⁻¹' good_quarter = (↑count_finset : Set (Fin m → ↥T)) := by
-    ext xs_T
-    simp only [Set.mem_preimage, good_quarter_def, Set.mem_setOf_eq, valProd,
-      count_finset_def, Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
-    set h_val := L.learn (fun i => ((↑(xs_T i) : X), c₀ (↑(xs_T i))))
-    have herr : D { x | h_val x ≠ c₀ x } =
-        D_sub { t : ↥T | c₀ (↑t) ≠ h_val (↑t) } := by
-      rw [hD_val]; congr 1; ext ⟨t, _⟩; exact ne_comm
-    have hunif : D_sub { t : ↥T | c₀ (↑t) ≠ h_val (↑t) } =
-        ((Finset.univ.filter fun t : ↥T => c₀ (↑t) ≠ h_val (↑t)).card : ENNReal) /
-          (d' : ENNReal) := by
-      simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
-      rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
-        (Set.toFinite _) MeasurableSpace.measurableSet_top]
-      simp only [Fintype.card_coe, one_div, ne_eq, Set.Finite.toFinset_setOf,
-        Finset.univ_eq_attach]
-      rw [ENNReal.div_eq_inv_mul]
-    rw [herr, hunif]
-    set k := (Finset.univ.filter fun t : ↥T => c₀ (↑t) ≠ h_val (↑t)).card
-    have hd_ne : (d' : ENNReal) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
-    have hd_nt : (d' : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top d'
-    constructor
-    · intro hle
-      rw [ENNReal.div_le_iff hd_ne hd_nt] at hle
-      rw [show ENNReal.ofReal (1 / 4 : ℝ) = (4 : ENNReal)⁻¹ from by
-        rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 4)]; norm_num,
-        mul_comm] at hle
-      have h4 : (k : ENNReal) * 4 ≤ (d' : ENNReal) :=
-        calc (k : ENNReal) * 4
-            ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_left hle 4
-          _ = (d' : ENNReal) := by
-              rw [mul_assoc, ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-      exact_mod_cast h4
-    · intro hle
-      rw [ENNReal.div_le_iff hd_ne hd_nt]
-      rw [show ENNReal.ofReal (1 / 4 : ℝ) = (4 : ENNReal)⁻¹ from by
-        rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 4)]; norm_num,
-        mul_comm]
-      have hk4 : (k : ENNReal) * 4 ≤ (d' : ENNReal) := by exact_mod_cast hle
-      calc (k : ENNReal) = (k : ENNReal) * 4 * (4 : ENNReal)⁻¹ := by
-              rw [mul_assoc, mul_comm 4 (4 : ENNReal)⁻¹,
-                  ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-            _ ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_left hk4 _
-  -- B8: Main calc chain
-  have hgoal_eq : MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter =
-      @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-        (fun _ => D_sub) (↑count_finset) := by
-    rw [hpi_val good_quarter, hpre_eq]
-  -- B9: Bound μ_pi(count_finset) ≤ 1 / 2 using hcount
-  have hpi_sub_bound : @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-      (fun _ => D_sub) (↑count_finset) ≤ ENNReal.ofReal (1 / 2 : ℝ) := by
-    set μ_pi := @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-      (fun _ => D_sub) with hμ_pi_def
-    haveI inst_msc_pi : @MeasurableSingletonClass (Fin m → ↥T)
-        (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤)) :=
-      @Pi.instMeasurableSingletonClass (Fin m) (fun _ => ↥T) (fun _ => ⊤)
-        inferInstance (fun _ => ⟨fun _ => MeasurableSpace.measurableSet_top⟩)
-    haveI : @MeasureTheory.IsFiniteMeasure ↥T ⊤ D_sub := by
-      constructor; rw [hD_sub_prob.measure_univ]; exact ENNReal.one_lt_top
-    haveI : @MeasureTheory.SigmaFinite ↥T ⊤ D_sub :=
-      @MeasureTheory.IsFiniteMeasure.toSigmaFinite ↥T ⊤ D_sub inferInstance
-    have hD_sub_singleton : ∀ t : ↥T, D_sub {t} = 1 / (d' : ENNReal) := by
-      intro t
-      simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
-      rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
-        (Set.toFinite _) MeasurableSpace.measurableSet_top]
-      simp [Set.Finite.toFinset, Fintype.card_coe, hd'_def]
-    have hpi_singleton : ∀ xs : Fin m → ↥T,
-        μ_pi {xs} = (1 / (d' : ENNReal)) ^ m := by
-      intro xs
-      rw [hμ_pi_def, @MeasureTheory.Measure.pi_singleton]
-      simp only [hD_sub_singleton, Finset.prod_const, Finset.card_univ, Fintype.card_fin]
-    have hsum_eq : μ_pi (↑count_finset) = ∑ xs ∈ count_finset, μ_pi {xs} :=
-      (@MeasureTheory.sum_measure_singleton (Fin m → ↥T)
-        (@MeasurableSpace.pi (Fin m) (fun _ => ↥T) (fun _ => ⊤)) μ_pi
-        count_finset inst_msc_pi).symm
-    rw [hsum_eq]
-    simp only [hpi_singleton, Finset.sum_const, nsmul_eq_mul]
-    have hcard_prod : Fintype.card (Fin m → ↥T) = d' ^ m := by
-      rw [Fintype.card_fun, Fintype.card_fin, Fintype.card_coe]
-    have hd_ne : (d' : ENNReal) ^ m ≠ 0 := by positivity
-    have hd_ne_top : (d' : ENNReal) ^ m ≠ ⊤ :=
-      ENNReal.pow_ne_top (ENNReal.natCast_ne_top d')
-    rw [show (count_finset.card : ENNReal) * (1 / (d' : ENNReal)) ^ m =
-        (count_finset.card : ENNReal) / (d' : ENNReal) ^ m from by
-      rw [one_div, ← ENNReal.inv_pow, div_eq_mul_inv]]
-    rw [ENNReal.div_le_iff hd_ne hd_ne_top]
-    -- Bridge Fintype instance: use Subsingleton to coerce hcount
-    have h_ennreal : (2 * count_finset.card : ENNReal) ≤ (d' : ENNReal) ^ m := by
-      rw [show (d' : ENNReal) ^ m = ((d' ^ m : ℕ) : ENNReal) from by push_cast; rfl]
-      push_cast
-      have hcard_eq : Fintype.card (Fin m → ↥T) = d' ^ m := by
-        rw [Fintype.card_fun, Fintype.card_fin, Fintype.card_coe]
-      have h_le_card : 2 * count_finset.card ≤ Fintype.card (Fin m → ↥T) := by
-        simp only [count_finset_def, hd'_def]
-        exact hcount
-      rw [hcard_eq] at h_le_card
-      exact_mod_cast h_le_card
-    calc (count_finset.card : ENNReal)
-        = (count_finset.card : ENNReal) * 1 := (mul_one _).symm
-      _ = (count_finset.card : ENNReal) * (2 * (2 : ENNReal)⁻¹) := by
-          rw [ENNReal.mul_inv_cancel (by norm_num) (by norm_num)]
-      _ = (count_finset.card : ENNReal) * 2 * (2 : ENNReal)⁻¹ := by ring
-      _ = (2 * count_finset.card : ENNReal) * (2 : ENNReal)⁻¹ := by ring
-      _ ≤ (d' : ENNReal) ^ m * (2 : ENNReal)⁻¹ :=
-          mul_le_mul_left h_ennreal _
-      _ = ENNReal.ofReal (1 / 2 : ℝ) * (d' : ENNReal) ^ m := by
-          rw [show ENNReal.ofReal (1 / 2 : ℝ) = (2 : ENNReal)⁻¹ from by
-            rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 2)]; norm_num]
-          ring
-  calc MeasureTheory.Measure.pi (fun _ : Fin m => D) good_X
-      ≤ MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter :=
-        MeasureTheory.measure_mono hgood_sub
-    _ = @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
-          (fun _ => D_sub) (↑count_finset) := hgoal_eq
-    _ ≤ ENNReal.ofReal (1 / 2 : ℝ) := hpi_sub_bound
+  obtain ⟨_, c₀, hc₀C, _, hcount⟩ := nfl_counting_core hTshat h2m_lt_d L
+  obtain ⟨D, hDprob, hgood_half⟩ :=
+    pac_lower_bound_good_event_le_half (X := X) (T := T) hTne L m c₀ ε hε1
+      (by simpa using hcount)
+  refine ⟨D, hDprob, c₀, hc₀C, ?_⟩
+  calc MeasureTheory.Measure.pi (fun _ : Fin m => D)
+        { xs : Fin m → X |
+          D { x | L.learn (fun i => (xs i, c₀ (xs i))) x ≠ c₀ x }
+            ≤ ENNReal.ofReal ε }
+      ≤ ENNReal.ofReal (1 / 2 : ℝ) := hgood_half
     _ < ENNReal.ofReal (1 - δ) := by
         apply ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by norm_num) |>.mpr
         linarith

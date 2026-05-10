@@ -507,7 +507,6 @@ theorem rademacher_mgf_bound {m : ℕ} (hm : 0 < m) (a : Fin m → ℝ) (c : ℝ
 
 /-- Massart finite lemma: E_σ[max_{j ≤ N} Z_j] ≤ σ√(2 log N). -/
 theorem finite_massart_lemma {m : ℕ} (_hm : 0 < m) {N : ℕ} (hN : 0 < N)
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (Z : Fin N → SignVector m → ℝ) (σ_param : ℝ) (hσ : 0 < σ_param)
     (h_mgf : ∀ j t, 0 ≤ t →
       (1 / (Fintype.card (SignVector m) : ℝ)) *
@@ -920,6 +919,27 @@ theorem sauer_shelah_exp_bound {X : Type u} (C : ConceptClass X Bool)
     _ = (∑ i ∈ Finset.range (d + 1), (Nat.choose m i : ℝ)) := by push_cast; rfl
     _ ≤ (Real.exp 1 * ↑m / ↑d) ^ d := h2
 
+private theorem conceptClass_nonempty_of_vcdim_eq_pos {X : Type u}
+    (C : ConceptClass X Bool) {d : ℕ} (hd : VCDim X C = ↑d) (hd_pos : 0 < d) :
+    C.Nonempty := by
+  by_contra hC_empty
+  rw [Set.not_nonempty_iff_eq_empty] at hC_empty
+  have : VCDim X C = 0 := by
+    simp only [VCDim]
+    apply le_antisymm
+    · apply iSup₂_le; intro S hS
+      exfalso; unfold Shatters at hS
+      have := hS (fun _ => true)
+      obtain ⟨c, hcC, _⟩ := this
+      rw [hC_empty] at hcC; exact hcC
+    · exact bot_le
+  rw [this] at hd
+  have : d = 0 := by
+    have := hd.symm
+    rw [show (0 : WithTop ℕ) = ↑(0 : ℕ) from rfl] at this
+    exact WithTop.coe_injective this
+  omega
+
 /-! ## VCDim → Rademacher bound -/
 
 /-- VC dimension upper bounds Rademacher complexity: Rad ≤ √(2d·log(em/d)/m).
@@ -931,7 +951,6 @@ theorem sauer_shelah_exp_bound {X : Type u} (C : ConceptClass X Bool)
     Step (2) is proved. Step (1) for B ≥ 1 follows from EmpRad ≤ 1.
     Step (1) for B < 1 requires Massart finite lemma + Sauer-Shelah growth bound. -/
 theorem vcdim_bounds_rademacher_quantitative (X : Type u) [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X) (m : ℕ) (hm : 0 < m)
     (d : ℕ) (hd : VCDim X C = ↑d) (hd_pos : 0 < d) (hdm : d ≤ m)
     [MeasureTheory.IsProbabilityMeasure (MeasureTheory.Measure.pi (fun _ : Fin m => D))] :
@@ -964,25 +983,7 @@ theorem vcdim_bounds_rademacher_quantitative (X : Type u) [MeasurableSpace X]
       exact_mod_cast Fintype.card_pos (α := SignVector m)
     have h1card_pos : (0 : ℝ) < 1 / (Fintype.card (SignVector m) : ℝ) := by positivity
     -- C is nonempty (from VCDim ≥ 1)
-    have hC_ne : C.Nonempty := by
-      by_contra hC_empty
-      rw [Set.not_nonempty_iff_eq_empty] at hC_empty
-      have : VCDim X C = 0 := by
-        simp only [VCDim]
-        apply le_antisymm
-        · apply iSup₂_le; intro S hS
-          exfalso; unfold Shatters at hS
-          have := hS (fun _ => true)
-          obtain ⟨c, hcC, _⟩ := this
-          rw [hC_empty] at hcC; exact hcC
-        · exact bot_le
-      rw [this] at hd
-      -- hd : (0 : WithTop ℕ) = ↑d
-      have : d = 0 := by
-        have := hd.symm
-        rw [show (0 : WithTop ℕ) = ↑(0 : ℕ) from rfl] at this
-        exact WithTop.coe_injective this
-      omega
+    have hC_ne : C.Nonempty := conceptClass_nonempty_of_vcdim_eq_pos C hd hd_pos
     obtain ⟨h₀, hh₀⟩ := hC_ne
     -- === STEP 1: Restriction collapse ===
     -- The correlation depends on h only through fun i => h(xs i)
@@ -1219,6 +1220,171 @@ private theorem empRad_eq_one_of_injective_in_shattered {X : Type u}
   apply h_inj
   exact (Finset.mem_image.mp hxs_in_S).choose_spec.2
 
+private theorem uniform_injective_tuple_measure_half
+    {α : Type*} [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    (hne : Nonempty α) (m : ℕ) (hlarge : 4 * m ^ 2 + 1 ≤ Fintype.card α) :
+    let D_sub := uniformMeasure α hne
+    let μ_sub := MeasureTheory.Measure.pi (fun _ : Fin m => D_sub)
+    (1 : ℝ) / 2 ≤ (μ_sub {ys : Fin m → α | Function.Injective ys}).toReal := by
+  classical
+  intro D_sub μ_sub
+  have hpos : 0 < Fintype.card α := Fintype.card_pos_iff.mpr hne
+  have hD_sub_prob : MeasureTheory.IsProbabilityMeasure D_sub :=
+    uniformMeasure_isProbability α hne hpos
+  haveI : MeasureTheory.IsProbabilityMeasure μ_sub :=
+    MeasureTheory.Measure.pi.instIsProbabilityMeasure _
+  set B := {ys : Fin m → α | Function.Injective ys}
+  have hB_meas : MeasurableSet B := Set.Finite.measurableSet (Set.toFinite B)
+  set n := Fintype.card α with hn_def
+  have hn_pos : 0 < n := by rw [hn_def]; exact hpos
+  have hn_ne : (n : ENNReal) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
+  have hn_nt : (n : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top n
+  have hDsub_sing : ∀ t : α, D_sub {t} = 1 / (n : ENNReal) := by
+    intro t
+    simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
+    rw [@MeasureTheory.Measure.count_apply_finite' α _ _
+      (Set.toFinite _) (measurableSet_singleton t)]
+    simp [Set.Finite.toFinset, hn_def]
+  haveI : MeasureTheory.IsFiniteMeasure D_sub := by
+    constructor; rw [hD_sub_prob.measure_univ]; exact ENNReal.one_lt_top
+  haveI : MeasureTheory.SigmaFinite D_sub :=
+    @MeasureTheory.IsFiniteMeasure.toSigmaFinite α _ D_sub inferInstance
+  set pairs := (Finset.univ : Finset (Fin m × Fin m)).filter (fun p => p.1 < p.2) with pairs_def
+  have hBc_sub : Bᶜ ⊆ ⋃ p ∈ pairs, {ys : Fin m → α | ys p.1 = ys p.2} := by
+    intro ys hys
+    rw [Set.mem_compl_iff] at hys
+    change ¬ Function.Injective ys at hys
+    rw [Function.Injective] at hys
+    push Not at hys
+    obtain ⟨i, j, hij_eq, hij_ne⟩ := hys
+    rw [Set.mem_iUnion]
+    rcases lt_or_gt_of_ne hij_ne with h | h
+    · exact ⟨(i, j), Set.mem_iUnion.mpr
+        ⟨Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩, hij_eq⟩⟩
+    · exact ⟨(j, i), Set.mem_iUnion.mpr
+        ⟨Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩, hij_eq.symm⟩⟩
+  have hD_univ : D_sub Set.univ = 1 := hD_sub_prob.measure_univ
+  have hcoll_bound : ∀ p ∈ pairs,
+      μ_sub {ys : Fin m → α | ys p.1 = ys p.2} ≤ 1 / (n : ENNReal) := by
+    intro ⟨i, j⟩ hp
+    have hij : i ≠ j := ne_of_lt (Finset.mem_filter.mp hp).2
+    set Cij := {ys : Fin m → α | ys i = ys j}
+    have hCij_eq : Cij = ⋃ t : α, {ys : Fin m → α | ys i = t ∧ ys j = t} := by
+      ext ys; simp only [Cij, Set.mem_setOf_eq, Set.mem_iUnion]
+      exact ⟨fun h => ⟨ys i, rfl, h.symm⟩, fun ⟨_, h1, h2⟩ => h1 ▸ h2.symm⟩
+    have hcyl : ∀ t : α, {ys : Fin m → α | ys i = t ∧ ys j = t} =
+        Set.pi Set.univ (fun k => if k = i then {t} else if k = j then {t} else Set.univ) := by
+      intro t; ext ys
+      simp only [Set.mem_setOf_eq, Set.mem_pi, Set.mem_univ, true_implies]
+      constructor
+      · intro ⟨h1, h2⟩ k
+        split_ifs with hki hkj
+        · exact hki ▸ h1
+        · exact hkj ▸ h2
+        · trivial
+      · intro h
+        constructor
+        · simpa using h i
+        · simpa [Ne.symm hij] using h j
+    have hfiber_bound : ∀ t : α,
+        μ_sub {ys : Fin m → α | ys i = t ∧ ys j = t} ≤ (1 / (n : ENNReal)) ^ 2 := by
+      intro t
+      rw [hcyl t]
+      change (MeasureTheory.Measure.pi (fun _ : Fin m => D_sub)) _ ≤ _
+      rw [MeasureTheory.Measure.pi_pi]
+      have hfact_le : ∀ k : Fin m,
+          D_sub (if k = i then {t} else if k = j then {t} else Set.univ) ≤
+          (if k = i then 1 / (n : ENNReal) else if k = j then 1 / (n : ENNReal) else 1) := by
+        intro k; split_ifs <;> [rw [hDsub_sing]; rw [hDsub_sing]; rw [hD_univ]]
+      have hfact_eq : ∀ k : Fin m,
+          (if k = i then 1 / (n : ENNReal) else if k = j then 1 / (n : ENNReal) else 1) =
+          (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) := by
+        intro k; split_ifs with h1 h2 h3 <;> simp_all
+      calc ∏ k : Fin m, D_sub (if k = i then {t} else if k = j then {t} else Set.univ)
+          ≤ ∏ k : Fin m,
+              (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) := by
+            apply Finset.prod_le_prod'
+            intro k _; exact (hfact_eq k) ▸ (hfact_le k)
+        _ = (1 / (n : ENNReal)) ^ 2 := by
+            have hprod_ij : ∏ k : Fin m,
+                (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) =
+                1 / (n : ENNReal) * (1 / (n : ENNReal)) := by
+              have hi_mem : i ∈ (Finset.univ : Finset (Fin m)) := Finset.mem_univ i
+              rw [← Finset.mul_prod_erase _ _ hi_mem]
+              have hj_in : j ∈ (Finset.univ : Finset (Fin m)).erase i :=
+                Finset.mem_erase.mpr ⟨hij.symm, Finset.mem_univ j⟩
+              rw [← Finset.mul_prod_erase _ _ hj_in]
+              have hrest_eq : ∏ k ∈ ((Finset.univ : Finset (Fin m)).erase i).erase j,
+                  (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) = 1 := by
+                apply Finset.prod_eq_one; intro k hk
+                have hk_ne_j : k ≠ j := (Finset.mem_erase.mp hk).1
+                have hk_ne_i : k ≠ i := (Finset.mem_erase.mp (Finset.mem_erase.mp hk).2).1
+                simp [hk_ne_i, hk_ne_j]
+              rw [hrest_eq, mul_one]
+              simp [hij, hij.symm]
+            rw [hprod_ij, sq]
+    calc μ_sub Cij
+        ≤ ∑ t : α, μ_sub {ys : Fin m → α | ys i = t ∧ ys j = t} := by
+          rw [hCij_eq]
+          calc μ_sub (⋃ t, {ys : Fin m → α | ys i = t ∧ ys j = t})
+              ≤ ∑' t, μ_sub {ys : Fin m → α | ys i = t ∧ ys j = t} :=
+                MeasureTheory.measure_iUnion_le _
+            _ = ∑ t, μ_sub {ys : Fin m → α | ys i = t ∧ ys j = t} := tsum_fintype _
+      _ ≤ ∑ _t : α, (1 / (n : ENNReal)) ^ 2 :=
+          Finset.sum_le_sum (fun t _ => hfiber_bound t)
+      _ = (n : ENNReal) * (1 / (n : ENNReal)) ^ 2 := by
+          rw [Finset.sum_const, Finset.card_univ, hn_def, nsmul_eq_mul]
+      _ = 1 / (n : ENNReal) := by
+          rw [sq, ← mul_assoc]
+          have h1n : (↑n : ENNReal) * (1 / ↑n) = 1 := by
+            rw [one_div, ENNReal.mul_inv_cancel hn_ne hn_nt]
+          rw [h1n, one_mul]
+  have hBc_le : μ_sub Bᶜ ≤ pairs.card * (1 / (n : ENNReal)) :=
+    calc μ_sub Bᶜ
+        ≤ μ_sub (⋃ p ∈ pairs, {ys : Fin m → α | ys p.1 = ys p.2}) :=
+          MeasureTheory.measure_mono hBc_sub
+      _ ≤ ∑ p ∈ pairs, μ_sub {ys : Fin m → α | ys p.1 = ys p.2} :=
+          MeasureTheory.measure_biUnion_finset_le _ _
+      _ ≤ ∑ _p ∈ pairs, (1 / (n : ENNReal)) :=
+          Finset.sum_le_sum hcoll_bound
+      _ = pairs.card * (1 / (n : ENNReal)) := by rw [Finset.sum_const, nsmul_eq_mul]
+  have hpairs_card : pairs.card ≤ m * m :=
+    calc pairs.card
+        ≤ (Finset.univ : Finset (Fin m × Fin m)).card := Finset.card_filter_le _ _
+      _ = Fintype.card (Fin m × Fin m) := Finset.card_univ
+      _ = Fintype.card (Fin m) * Fintype.card (Fin m) := Fintype.card_prod _ _
+      _ = m * m := by simp [Fintype.card_fin]
+  have h2mm_le_n : 2 * (m * m) ≤ n := by rw [hn_def]; nlinarith [hlarge]
+  have hBc_half : μ_sub Bᶜ ≤ 1 / 2 := by
+    have hmm_le : (m * m : ℕ) * (1 / (n : ENNReal)) ≤ 1 / 2 := by
+      have h_key : (↑(m * m) : ENNReal) ≤ (↑n : ENNReal) / 2 := by
+        rw [ENNReal.le_div_iff_mul_le (Or.inl (by norm_num : (2 : ENNReal) ≠ 0))
+          (Or.inl (by norm_num : (2 : ENNReal) ≠ ⊤))]
+        calc (↑(m * m) : ENNReal) * 2 = ↑(m * m * 2 : ℕ) := by push_cast; ring
+          _ ≤ ↑n := Nat.cast_le.mpr (by nlinarith [h2mm_le_n])
+      calc (↑(m * m) : ENNReal) * (1 / ↑n)
+          ≤ (↑n / 2) * (1 / ↑n) :=
+            mul_le_mul_of_nonneg_right h_key (zero_le _)
+        _ = 1 / 2 := by
+            rw [one_div (↑n : ENNReal)]
+            rw [div_eq_mul_inv, mul_assoc, mul_comm (2 : ENNReal)⁻¹ (↑n)⁻¹,
+                ← mul_assoc, ENNReal.mul_inv_cancel hn_ne hn_nt, one_mul, inv_eq_one_div]
+    exact (hBc_le.trans (mul_le_mul_of_nonneg_right
+      (Nat.cast_le.mpr hpairs_card) (zero_le _))).trans hmm_le
+  have hB_le_one : μ_sub B ≤ 1 :=
+    (MeasureTheory.measure_mono (Set.subset_univ B)).trans (le_of_eq MeasureTheory.measure_univ)
+  have hcompl := MeasureTheory.prob_compl_eq_one_sub hB_meas (μ := μ_sub)
+  have hB_ge : 1 / 2 ≤ μ_sub B := by
+    rw [hcompl] at hBc_half
+    have h1 : 1 - (1 : ENNReal) / 2 ≤ 1 - (1 - μ_sub B) :=
+      tsub_le_tsub_left hBc_half 1
+    simp only [show (1 : ENNReal) - 1 / 2 = 1 / 2 from by norm_num] at h1
+    rwa [ENNReal.sub_sub_cancel ENNReal.one_ne_top hB_le_one] at h1
+  have hB_ne_top : μ_sub B ≠ ⊤ := MeasureTheory.measure_ne_top μ_sub B
+  have h_half_real : ((1 : ENNReal) / 2).toReal = (1 : ℝ) / 2 := by norm_num
+  calc (1 : ℝ) / 2 = ((1 : ENNReal) / 2).toReal := h_half_real.symm
+    _ ≤ (μ_sub B).toReal := ENNReal.toReal_mono hB_ne_top hB_ge
+
 /-- Adversarial Rademacher lower bound on shattered sets.
     For |T| >= 4m^2 + 1, exists D with Rad_m(C,D) >= 1 / 2.
 
@@ -1229,7 +1395,6 @@ private theorem empRad_eq_one_of_injective_in_shattered {X : Type u}
     Birthday bound: P[injective m draws from n ≥ 4m²+1 points] ≥ 1 - m(m-1)/(2n) ≥ 7 / 8 ≥ 1 / 2.
     So ∫ EmpRad ≥ P[injective] · 1 + P[¬injective] · 0 ≥ 1 / 2. -/
 theorem rademacher_lower_bound_on_shattered (X : Type u) [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (T : Finset X) (hT : Shatters X C T)
     (m : ℕ) (hm : 0 < m) (hT_large : 4 * m ^ 2 + 1 ≤ T.card) :
@@ -1381,22 +1546,8 @@ theorem rademacher_lower_bound_on_shattered (X : Type u) [MeasurableSpace X]
               Set.indicator_nonneg (fun _ _ => zero_le_one) ys))
             hf_sub_int
             (MeasureTheory.ae_of_all _ h_pw)]
-  -- Birthday probability bound: μ(A).toReal ≥ 1 / 2.
-  -- P[injective ∧ range ⊆ T] ≥ 1 / 2 under the product of uniform on T.
-  -- D supported on T ⟹ μ a.e. has range ⊆ T. μ(A) ≥ 1 - m(m-1)/(2|T|) ≥ 7 / 8.
   suffices h_birthday : (1 : ℝ) / 2 ≤ (μ A).toReal by linarith
-  -- Birthday probability: the measure of injective-range-in-T tuples is ≥ 1 / 2.
-  -- This is the core measure-theoretic content: computing the collision probability
-  -- under the product of the pushforward uniform measure via pi_pi + union bound.
-  -- D(Tᶜ) = 0 ⟹ μ(∃ i, xs i ∉ T) = 0 ⟹ μ(∀ i, xs i ∈ T) = 1.
-  -- μ(¬injective) ≤ Σ_{i<j} μ(xs i = xs j) = C(m,2) · D-collision-prob.
-  -- D-collision = Σ_x D({x})² = |T| · (1/|T|)² = 1/|T|.
-  -- μ(¬injective) ≤ m(m-1)/(2|T|) < 1 / 8 (since |T| ≥ 4m²+1).
-  -- μ(A) = μ(injective ∧ range ⊆ T) = 1 - μ(¬injective) - μ(∃ i, xs i ∉ T) ≥ 7 / 8 ≥ 1 / 2.
-  -- === Phase 1: Transfer μ(A) = μ_sub(B) ===
   set B := {ys : Fin m → ↥T | Function.Injective ys}
-  have hB_meas : MeasurableSet B := Set.Finite.measurableSet (Set.toFinite B)
-  -- Both directions: φ⁻¹'A = B
   have hpre_eq : φ ⁻¹' A = B := by
     ext ys; constructor
     · intro (hys : φ ys ∈ A); exact hys.1.of_comp
@@ -1405,186 +1556,9 @@ theorem rademacher_lower_bound_on_shattered (X : Type u) [MeasurableSpace X]
   have hμA_eq_B : μ A = μ_sub B := by
     rw [hμ_eq, MeasureTheory.Measure.map_apply hφ_emb.measurable hA_meas, hpre_eq]
   rw [hμA_eq_B]
-  -- === Phase 2: μ_sub(Bᶜ) ≤ 1 / 2 ===
-  set n := Fintype.card ↥T with hn_def
-  have hn_eq : n = T.card := Fintype.card_coe T
-  have hn_pos : 0 < n := by rw [hn_eq]; exact hT_card_pos
-  have hn_ne : (n : ENNReal) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
-  have hn_nt : (n : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top n
-  -- Singleton measure: D_sub {t} = 1/n for all t
-  have hDsub_sing : ∀ t : ↥T, D_sub {t} = 1 / (n : ENNReal) := by
-    intro t
-    simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
-    rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
-      (Set.toFinite _) MeasurableSpace.measurableSet_top]
-    simp [Set.Finite.toFinset, Fintype.card_coe, hn_def]
-  -- SigmaFinite for pi_pi
-  haveI : @MeasureTheory.IsFiniteMeasure ↥T ⊤ D_sub := by
-    constructor; rw [hD_sub_prob.measure_univ]; exact ENNReal.one_lt_top
-  haveI : @MeasureTheory.SigmaFinite ↥T ⊤ D_sub :=
-    @MeasureTheory.IsFiniteMeasure.toSigmaFinite ↥T ⊤ D_sub inferInstance
-  -- Bᶜ ⊆ ⋃_{i<j} {ys | ys i = ys j}
-  set pairs := (Finset.univ : Finset (Fin m × Fin m)).filter (fun p => p.1 < p.2) with pairs_def
-  have hBc_sub : Bᶜ ⊆ ⋃ p ∈ pairs, {ys : Fin m → ↥T | ys p.1 = ys p.2} := by
-    intro ys hys
-    rw [Set.mem_compl_iff] at hys
-    change ¬ Function.Injective ys at hys
-    rw [Function.Injective] at hys
-    push Not at hys
-    obtain ⟨i, j, hij_eq, hij_ne⟩ := hys
-    rw [Set.mem_iUnion]
-    rcases lt_or_gt_of_ne hij_ne with h | h
-    · exact ⟨(i, j), Set.mem_iUnion.mpr
-        ⟨Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩, hij_eq⟩⟩
-    · exact ⟨(j, i), Set.mem_iUnion.mpr
-        ⟨Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩, hij_eq.symm⟩⟩
-  -- Collision set measure bound: μ_sub({ys | ys i = ys j}) ≤ 1/n
-  have hD_univ : D_sub Set.univ = 1 := hD_sub_prob.measure_univ
-  have hcoll_bound : ∀ p ∈ pairs,
-      μ_sub {ys : Fin m → ↥T | ys p.1 = ys p.2} ≤ 1 / (n : ENNReal) := by
-    intro ⟨i, j⟩ hp
-    have hij : i ≠ j := ne_of_lt (Finset.mem_filter.mp hp).2
-    set Cij := {ys : Fin m → ↥T | ys i = ys j}
-    -- Cij = ⋃_t {ys | ys i = t ∧ ys j = t}
-    have hCij_eq : Cij = ⋃ t : ↥T, {ys : Fin m → ↥T | ys i = t ∧ ys j = t} := by
-      ext ys; simp only [Cij, Set.mem_setOf_eq, Set.mem_iUnion]
-      exact ⟨fun h => ⟨ys i, rfl, h.symm⟩, fun ⟨_, h1, h2⟩ => h1 ▸ h2.symm⟩
-    -- Each fiber is a cylinder set
-    have hcyl : ∀ t : ↥T, {ys : Fin m → ↥T | ys i = t ∧ ys j = t} =
-        Set.pi Set.univ (fun k => if k = i then {t} else if k = j then {t} else Set.univ) := by
-      intro t; ext ys
-      simp only [Set.mem_setOf_eq, Set.mem_pi, Set.mem_univ, true_implies]
-      constructor
-      · intro ⟨h1, h2⟩ k
-        split_ifs with hki hkj
-        · exact hki ▸ h1
-        · exact hkj ▸ h2
-        · trivial
-      · intro h
-        constructor
-        · simpa using h i
-        · simpa [Ne.symm hij] using h j
-    -- Each fiber has measure ≤ (1/n)^2 via pi_pi and explicit product computation
-    have hfiber_bound : ∀ t : ↥T,
-        μ_sub {ys : Fin m → ↥T | ys i = t ∧ ys j = t} ≤ (1 / (n : ENNReal)) ^ 2 := by
-      intro t
-      rw [hcyl t]
-      -- μ_sub = Measure.pi (fun _ => D_sub) by definition
-      change (MeasureTheory.Measure.pi (fun _ : Fin m => D_sub)) _ ≤ _
-      rw [MeasureTheory.Measure.pi_pi]
-      -- Product of factors. Factor at k: D_sub (if k=i then {t} else if k=j then {t} else univ)
-      -- For k=i or k=j: D_sub {t} = 1/n. For k≠i,j: D_sub univ = 1.
-      -- Product ≤ (1/n)^2
-      have hfact_le : ∀ k : Fin m,
-          D_sub (if k = i then {t} else if k = j then {t} else Set.univ) ≤
-          (if k = i then 1 / (n : ENNReal) else if k = j then 1 / (n : ENNReal) else 1) := by
-        intro k; split_ifs <;> [rw [hDsub_sing]; rw [hDsub_sing]; rw [hD_univ]]
-      have hfact_eq : ∀ k : Fin m,
-          (if k = i then 1 / (n : ENNReal) else if k = j then 1 / (n : ENNReal) else 1) =
-          (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) := by
-        intro k; split_ifs with h1 h2 h3 <;> simp_all
-      calc ∏ k : Fin m, D_sub (if k = i then {t} else if k = j then {t} else Set.univ)
-          ≤ ∏ k : Fin m,
-              (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) := by
-            apply Finset.prod_le_prod'
-            intro k _; exact (hfact_eq k) ▸ (hfact_le k)
-        _ = (1 / (n : ENNReal)) ^ 2 := by
-            -- Show the product equals (1/n)^2 by extracting factors at i and j
-            have hprod_ij : ∏ k : Fin m,
-                (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) =
-                1 / (n : ENNReal) * (1 / (n : ENNReal)) := by
-              have hi_mem : i ∈ (Finset.univ : Finset (Fin m)) := Finset.mem_univ i
-              rw [← Finset.mul_prod_erase _ _ hi_mem]
-              have hj_in : j ∈ (Finset.univ : Finset (Fin m)).erase i :=
-                Finset.mem_erase.mpr ⟨hij.symm, Finset.mem_univ j⟩
-              rw [← Finset.mul_prod_erase _ _ hj_in]
-              have hrest_eq : ∏ k ∈ ((Finset.univ : Finset (Fin m)).erase i).erase j,
-                  (if k = i ∨ k = j then 1 / (n : ENNReal) else 1) = 1 := by
-                apply Finset.prod_eq_one; intro k hk
-                have hk_ne_j : k ≠ j := (Finset.mem_erase.mp hk).1
-                have hk_ne_i : k ≠ i := (Finset.mem_erase.mp (Finset.mem_erase.mp hk).2).1
-                simp [hk_ne_i, hk_ne_j]
-              rw [hrest_eq, mul_one]
-              simp [hij, hij.symm]
-            rw [hprod_ij, sq]
-    -- μ_sub(Cij) ≤ ∑_t (1/n)^2 = n * (1/n)^2 = 1/n
-    -- Use measure_iUnion_le which gives tsum, convert to finite sum
-    calc μ_sub Cij
-        ≤ ∑ t : ↥T, μ_sub {ys : Fin m → ↥T | ys i = t ∧ ys j = t} := by
-          rw [hCij_eq]
-          calc μ_sub (⋃ t, {ys : Fin m → ↥T | ys i = t ∧ ys j = t})
-              ≤ ∑' t, μ_sub {ys : Fin m → ↥T | ys i = t ∧ ys j = t} :=
-                MeasureTheory.measure_iUnion_le _
-            _ = ∑ t, μ_sub {ys : Fin m → ↥T | ys i = t ∧ ys j = t} := tsum_fintype _
-      _ ≤ ∑ _t : ↥T, (1 / (n : ENNReal)) ^ 2 :=
-          Finset.sum_le_sum (fun t _ => hfiber_bound t)
-      _ = (n : ENNReal) * (1 / (n : ENNReal)) ^ 2 := by
-          rw [Finset.sum_const, Finset.card_univ, hn_def, nsmul_eq_mul]
-      _ = 1 / (n : ENNReal) := by
-          rw [sq, ← mul_assoc]
-          have h1n : (↑n : ENNReal) * (1 / ↑n) = 1 := by
-            rw [one_div, ENNReal.mul_inv_cancel hn_ne hn_nt]
-          rw [h1n, one_mul]
-  -- Union bound: μ_sub(Bᶜ) ≤ pairs.card * (1/n)
-  have hBc_le : μ_sub Bᶜ ≤ pairs.card * (1 / (n : ENNReal)) :=
-    calc μ_sub Bᶜ
-        ≤ μ_sub (⋃ p ∈ pairs, {ys : Fin m → ↥T | ys p.1 = ys p.2}) :=
-          MeasureTheory.measure_mono hBc_sub
-      _ ≤ ∑ p ∈ pairs, μ_sub {ys : Fin m → ↥T | ys p.1 = ys p.2} :=
-          MeasureTheory.measure_biUnion_finset_le _ _
-      _ ≤ ∑ _p ∈ pairs, (1 / (n : ENNReal)) :=
-          Finset.sum_le_sum hcoll_bound
-      _ = pairs.card * (1 / (n : ENNReal)) := by rw [Finset.sum_const, nsmul_eq_mul]
-  -- pairs.card ≤ m * m
-  have hpairs_card : pairs.card ≤ m * m :=
-    calc pairs.card
-        ≤ (Finset.univ : Finset (Fin m × Fin m)).card := Finset.card_filter_le _ _
-      _ = Fintype.card (Fin m × Fin m) := Finset.card_univ
-      _ = Fintype.card (Fin m) * Fintype.card (Fin m) := Fintype.card_prod _ _
-      _ = m * m := by simp [Fintype.card_fin]
-  -- 2 * m * m ≤ n
-  have h2mm_le_n : 2 * (m * m) ≤ n := by rw [hn_eq]; nlinarith [hT_large]
-  -- μ_sub(Bᶜ) ≤ 1 / 2
-  have hBc_half : μ_sub Bᶜ ≤ 1 / 2 := by
-    have hmm_le : (m * m : ℕ) * (1 / (n : ENNReal)) ≤ 1 / 2 := by
-      -- (m*m) * (1/n) ≤ 1 / 2 iff (m*m) ≤ n/2 iff 2*(m*m) ≤ n
-      have h_key : (↑(m * m) : ENNReal) ≤ (↑n : ENNReal) / 2 := by
-        rw [ENNReal.le_div_iff_mul_le (Or.inl (by norm_num : (2 : ENNReal) ≠ 0))
-          (Or.inl (by norm_num : (2 : ENNReal) ≠ ⊤))]
-        calc (↑(m * m) : ENNReal) * 2 = ↑(m * m * 2 : ℕ) := by push_cast; ring
-          _ ≤ ↑n := Nat.cast_le.mpr (by nlinarith [h2mm_le_n])
-      calc (↑(m * m) : ENNReal) * (1 / ↑n)
-          ≤ (↑n / 2) * (1 / ↑n) :=
-            mul_le_mul_of_nonneg_right h_key (zero_le _)
-        _ = 1 / 2 := by
-            -- (n/2) * (1/n) = (n * (1/n)) / 2 = 1 / 2
-            rw [one_div (↑n : ENNReal)]
-            -- (n/2) * n⁻¹ = n * n⁻¹ / 2 = 1 / 2
-            rw [div_eq_mul_inv, mul_assoc, mul_comm (2 : ENNReal)⁻¹ (↑n)⁻¹,
-                ← mul_assoc, ENNReal.mul_inv_cancel hn_ne hn_nt, one_mul, inv_eq_one_div]
-    exact (hBc_le.trans (mul_le_mul_of_nonneg_right
-      (Nat.cast_le.mpr hpairs_card) (zero_le _))).trans hmm_le
-  -- === Phase 3: Transfer to ℝ ===
-  have hB_le_one : μ_sub B ≤ 1 :=
-    (MeasureTheory.measure_mono (Set.subset_univ B)).trans (le_of_eq MeasureTheory.measure_univ)
-  have hcompl := MeasureTheory.prob_compl_eq_one_sub hB_meas (μ := μ_sub)
-  -- μ_sub B ≥ 1 / 2 from complement bound
-  have hB_ge : 1 / 2 ≤ μ_sub B := by
-    rw [hcompl] at hBc_half
-    -- hBc_half : 1 - μ_sub B ≤ 1 / 2
-    -- Want: 1 / 2 ≤ μ_sub B
-    -- 1 - (1 - μ_sub B) ≥ 1 - 1 / 2 = 1 / 2
-    have h1 : 1 - (1 : ENNReal) / 2 ≤ 1 - (1 - μ_sub B) :=
-      tsub_le_tsub_left hBc_half 1
-    simp only [show (1 : ENNReal) - 1 / 2 = 1 / 2 from by norm_num] at h1
-    -- h1 : 1 / 2 ≤ 1 - (1 - μ_sub B)
-    -- 1 - (1 - μ_sub B) = μ_sub B (since μ_sub B ≤ 1)
-    rwa [ENNReal.sub_sub_cancel ENNReal.one_ne_top hB_le_one] at h1
-  -- Transfer to ℝ
-  have hB_ne_top : μ_sub B ≠ ⊤ := MeasureTheory.measure_ne_top μ_sub B
-  have h_half_real : ((1 : ENNReal) / 2).toReal = (1 : ℝ) / 2 := by norm_num
-  calc (1 : ℝ) / 2 = ((1 : ENNReal) / 2).toReal := h_half_real.symm
-    _ ≤ (μ_sub B).toReal := ENNReal.toReal_mono hB_ne_top hB_ge
+  simpa [μ_sub, D_sub, B] using
+    uniform_injective_tuple_measure_half (α := ↥T) hTne_type m (by
+      simpa [Fintype.card_coe] using hT_large)
 
 /-- When VCDim = 0, Rademacher complexity is bounded by 1/√m.
 

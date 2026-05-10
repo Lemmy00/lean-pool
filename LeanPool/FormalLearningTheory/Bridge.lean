@@ -637,7 +637,6 @@ def bayesianToBatch (X : Type u) (Y : Type v) [MeasurableSpace X]
 -- giving a contradiction.  Hence no set of size ≥ 2(k+1)² is shattered.
 -- Statement weakened from 2^k − 1 to 2(k+1)² − 1 per SESSION_TRANSFER_URS.
 theorem compression_bounds_vcdim (X : Type u)
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) (cs : CompressionScheme X Bool C)
     (hcs : 0 < cs.size) :
     VCDim X C ≤ ↑(2 * (cs.size + 1) * (cs.size + 1) - 1) := by

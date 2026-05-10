@@ -247,7 +247,6 @@ of an analytic non-Borel subset of ℝ (Souslin's classical result), supplied in
 proved in this kernel is a genuine improvement over the existing literature, not a
 restatement. -/
 theorem analytic_nonborel_set_gives_measTarget_separation
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (A : Set ℝ)
     (hA_an : MeasureTheory.AnalyticSet A)
     (hA_non : ¬ MeasurableSet A) :

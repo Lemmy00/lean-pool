@@ -398,7 +398,6 @@ attribute [local instance] Classical.propDecidable
 /-- T6: Chebyshev concentration for 7 / 12 threshold — when k ≥ 36/δ independent events
     each have probability ≥ 2 / 3, the fraction exceeding 7 / 12 is ≥ 1-δ. -/
 private lemma chebyshev_seven_twelfths_bound
-    -- proof-size-limit-ok: ported formal learning theory proof.
     {Ω : Type*} [MeasurableSpace Ω] {μ : MeasureTheory.Measure Ω}
     [MeasureTheory.IsProbabilityMeasure μ]
     {k : ℕ} {δ : ℝ} (h_delta_pos : 0 < δ)
@@ -555,7 +554,6 @@ end ClassicalInstances
 
 /-- T7: If ≥ 7 / 12 of the hypotheses have D-error ≤ ρ, majority vote has D-error ≤ 7ρ. -/
 private lemma majority_error_le_seven_rate_of_good_fraction
-    -- proof-size-limit-ok: ported formal learning theory proof.
     {X : Type u} [MeasurableSpace X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     {k : ℕ} (hk_pos : 0 < k)
@@ -824,7 +822,6 @@ private lemma boosted_sample_error_le_of_good_blocks
     it requires genuine concentration + majority analysis) and A5-compliant
     (the proof strategy is structurally complete, only infrastructure is missing). -/
 private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool)
     [MeasurableHypotheses X C]
     (L : BatchLearner X Bool) [MeasurableBatchLearner X L]

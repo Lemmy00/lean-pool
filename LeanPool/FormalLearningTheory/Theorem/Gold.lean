@@ -17,7 +17,6 @@ universe u v
 /-- Gold's theorem (1967): No learner can EX-identify any concept class
     containing all finite subsets plus some infinite set, from text. -/
 theorem gold_theorem (X : Type u) [Countable X] [DecidableEq X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool)
     (h_finite : ∀ (S : Finset X), (fun x => decide (x ∈ S)) ∈ C)
     (h_infinite : ∃ c ∈ C, Set.Infinite { x | c x = true }) :

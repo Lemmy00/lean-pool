@@ -336,6 +336,19 @@ def agreeTests {X : Type u} (c : X → Bool) (Y : Finset X)
     (HY : Finset (X → Bool)) : Finset (↥HY → Bool) :=
   Y.image (fun x => agreeTest c x HY)
 
+private theorem boolTestExpectation_empirical_agreeTest_eq_avg {X : Type u} {T : ℕ}
+    {HY : Finset (X → Bool)} [Fintype ↥HY] [DecidableEq ↥HY]
+    (hT : 0 < T) (reps : Fin T → ↥HY) (c : X → Bool) (x : X) :
+    boolTestExpectation (empiricalPMF hT reps) (agreeTest c x HY) =
+      (∑ t : Fin T, if (reps t).val x = c x then (1 : ℝ) else 0) / T := by
+  rw [boolTestExpectation_empirical_eq_avg]
+  congr 1
+  apply Finset.sum_congr rfl
+  intro t _
+  by_cases h : (↑(reps t) : X → Bool) x = c x
+  · simp [agreeTest, h]
+  · simp [agreeTest, h]
+
 /-! ## Roundtrip helpers for the compression proof -/
 
 /-- Encode a witness set `W` as the set of kernel positions of the pairs `(x, c x)`.
@@ -493,7 +506,6 @@ theorem roundtrip_blockHyp_eq_rep
     where `b(j) = decide(g(x_j) = c(x_j))` absorbs the agree/disagree flip). -/
 @[nolint unusedArguments]
 private lemma agreeTests_boolVCDim_le
-    -- proof-size-limit-ok: ported formal learning theory proof.
     {X : Type u}
     (C : ConceptClass X Bool) (c : X → Bool) (Y : Finset X)
     (HY : Finset (X → Bool)) (hHY : ∀ h ∈ HY, h ∈ C)
@@ -800,13 +812,38 @@ private lemma good_on_support_gives_row_response
     ext y; congr 1; simp [decide_eq_true_eq]
   simp only [this] at *
   linarith
+
+@[reducible]
+private def pointSupportNonempty {X : Type u} {m : ℕ} (S : Fin m → X × Bool)
+    (hm : 0 < m) : Nonempty ↥(pointSupport S) :=
+  ⟨⟨(S ⟨0, hm⟩).1, by simp [pointSupport, Finset.mem_image]⟩⟩
+
+private def moranBlockHyp {X : Type u} {C : ConceptClass X Bool} [DecidableEq X]
+    (L : ProperFiniteSupportLearner X C) {T K : ℕ}
+    (Z : Finset (X × Bool)) (info : IncidenceInfo T K) (t : Fin T) (x : X) : Bool :=
+  L.learn
+    (labeledSampleOfFinset (decodeWitnessLabel Z) (decodeWitnessXCoords Z (info t))) x
+
+private theorem moranKernel_labels {X : Type u} [DecidableEq X] {T : ℕ} (c : X → Bool)
+    (getWitness : Fin T → Finset X) :
+    ∀ pair ∈ Finset.univ.biUnion (fun t => (getWitness t).image (fun x => (x, c x))),
+      pair.2 = c pair.1 := by
+  intro pair hp
+  simp only [Finset.mem_biUnion, Finset.mem_image] at hp
+  obtain ⟨_, _, x, _, rfl⟩ := hp
+  rfl
+
+private theorem witness_mem_moranKernel {X : Type u} [DecidableEq X] {T : ℕ} (c : X → Bool)
+    (getWitness : Fin T → Finset X) (t : Fin T) {x : X} (hx : x ∈ getWitness t) :
+    (x, c x) ∈ Finset.univ.biUnion (fun t => (getWitness t).image (fun x => (x, c x))) := by
+  exact Finset.mem_biUnion.mpr ⟨t, by simp, Finset.mem_image.mpr ⟨x, hx, rfl⟩⟩
+
 /-- The Moran-Yehudayoff forward construction. Uses `finalizeIncidenceScheme`
     to package the majority-vote scheme with universe-correct Info type.
 
     The agent must provide: `compressCore`, `blockHyp`, `rowHyp`,
     `hsmall`, `hsub`, `hagree`, `hmajor`. These are the MY wiring. -/
 private theorem moran_yehudayoff_forward_construction
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (X : Type u) (C : ConceptClass X Bool)
     (_hne : C.Nonempty)
     (L : ProperFiniteSupportLearner X C)
@@ -830,15 +867,11 @@ private theorem moran_yehudayoff_forward_construction
   -- Decompose into 7 localized obligations for finalizeIncidenceScheme:
   -- 3 functions (compressCore, blockHyp, rowHyp) + 4 proofs (hsmall, hsub, hagree, hmajor)
   -- Extract the reps pipeline to a top-level function so hmajor can reference it.
-  let mkNonemptyY : ∀ {m : ℕ} (S : Fin m → X × Bool) (_ : 0 < m), Nonempty ↥(pointSupport S) :=
-    fun {m} S hm => ⟨⟨(S ⟨0, hm⟩).1, by simp [pointSupport, Finset.mem_image]⟩⟩
   let mkReps : ∀ {m : ℕ} (S : Fin m → X × Bool)
       (hreal : ∃ c ∈ C, ∀ i : Fin m, c (S i).1 = (S i).2) (hm : 0 < m),
-      Fin Tvc → ↥(hypothesisEnvelope L hreal.choose (pointSupport S)) :=
-    fun {m} S hreal hm =>
-      let c := hreal.choose
-      let Y := pointSupport S
-      haveI : Nonempty ↥Y := mkNonemptyY S hm
+      Fin Tvc → ↥(hypothesisEnvelope L hreal.choose (pointSupport S)) := fun {m} S hreal hm =>
+      let c := hreal.choose; let Y := pointSupport S
+      haveI : Nonempty ↥Y := pointSupportNonempty S hm
       let HY := hypothesisEnvelope L c Y
       let hrow := good_on_support_gives_row_response L c hreal.choose_spec.1 Y HY rfl
       haveI : Nonempty ↥HY := let ⟨h, _⟩ := hrow (uniformPMF ↥Y); ⟨h⟩
@@ -847,8 +880,7 @@ private theorem moran_yehudayoff_forward_construction
       let p : FinitePMF ↥HY := mwu_result.choose
       let hvc_bound := agreeTests_boolVCDim_le C c Y HY
         (fun h hh => hypothesisEnvelope_sub L c Y h hh) (le_of_eq hd.symm)
-      let vc_result := hVCApprox (agreeTests c Y HY) hvc_bound p
-      vc_result.choose
+      (hVCApprox (agreeTests c Y HY) hvc_bound p).choose
   let compressCore : {m : ℕ} → (Fin m → X × Bool) →
       Finset (X × Bool) × IncidenceInfo Tvc Kreal :=
     fun {m} S =>
@@ -856,7 +888,7 @@ private theorem moran_yehudayoff_forward_construction
         let c := hreal.choose
         let Y := pointSupport S
         if hm : 0 < m then
-          haveI : Nonempty ↥Y := mkNonemptyY S hm
+          haveI : Nonempty ↥Y := pointSupportNonempty S hm
           let HY := hypothesisEnvelope L c Y
           haveI : Nonempty ↥HY :=
             let hrow := good_on_support_gives_row_response L c hreal.choose_spec.1 Y HY rfl
@@ -865,36 +897,18 @@ private theorem moran_yehudayoff_forward_construction
           -- For each representative, extract the witness subsample from hypothesisEnvelope.
           -- (getWitness + kernel + info)
           let getWitness : Fin Tvc → Finset X := fun t =>
-            let hmem : (reps t).val ∈ hypothesisEnvelope L c Y := (reps t).property
-            (Finset.mem_image.mp hmem).choose
-          -- Step 8: Build kernel — union of all witness samples, labeled by c
+            (Finset.mem_image.mp (reps t).property).choose
           let kernel : Finset (X × Bool) :=
-            Finset.univ.biUnion (fun t =>
-              (getWitness t).image (fun x => (x, c x)))
-          -- Step 9: Encode incidence info using encodeWitnessInfo
-          let info : IncidenceInfo Tvc Kreal := fun t =>
-            encodeWitnessInfo kernel c Kreal (getWitness t)
-          (kernel, info)
+            Finset.univ.biUnion (fun t => (getWitness t).image (fun x => (x, c x)))
+          (kernel, fun t => encodeWitnessInfo kernel c Kreal (getWitness t))
         else
           (∅, fun _ => ∅)
       else
         (∅, fun _ => ∅)
-  let blockHyp : Finset (X × Bool) → IncidenceInfo Tvc Kreal →
-      Fin Tvc → X → Bool :=
-    fun Z info t x =>
-      -- Decode block t's X-coordinates and labels from kernel Z using helpers.
-      let blockXCoords : Finset X := decodeWitnessXCoords Z (info t)
-      let blockLabel : X → Bool := decodeWitnessLabel Z
-      -- Apply the learner using labeledSampleOfFinset for deterministic ordering.
-      -- This ensures blockHyp ∘ encode = original representative (roundtrip).
-      L.learn (labeledSampleOfFinset blockLabel blockXCoords) x
+  let blockHyp := moranBlockHyp L (T := Tvc) (K := Kreal)
   let rowHyp : {m : ℕ} → (S : Fin m → X × Bool) →
-      (∃ c ∈ C, ∀ i : Fin m, c (S i).1 = (S i).2) →
-      Fin Tvc → X → Bool :=
-    fun {m} S _hreal t x =>
-      -- rowHyp is defined as blockHyp applied to compressCore's output.
-      -- This makes hagree (blockHyp on compressCore = rowHyp) hold definitionally.
-      blockHyp (compressCore S).1 (compressCore S).2 t x
+      (∃ c ∈ C, ∀ i : Fin m, c (S i).1 = (S i).2) → Fin Tvc → X → Bool :=
+    fun {m} S _hreal t x => blockHyp (compressCore S).1 (compressCore S).2 t x
   have hsmall : ∀ {m : ℕ} (S : Fin m → X × Bool),
       (compressCore S).1.card ≤ Kreal := by
     intro m S; dsimp only [compressCore]
@@ -905,9 +919,8 @@ private theorem moran_yehudayoff_forward_construction
         -- kernel.card ≤ Σ |image| ≤ Σ |witness| ≤ Σ s = Tvc*s = Kreal
         -- First, obtain the per-index witness bound generically
         have hwitness_bound : ∀ (h : ↥(hypothesisEnvelope L hreal.choose (pointSupport S))),
-            (Finset.mem_image.mp h.property).choose.card ≤ s := by
-          intro h
-          exact (Finset.mem_filter.mp (Finset.mem_image.mp h.property).choose_spec.1).2
+            (Finset.mem_image.mp h.property).choose.card ≤ s := fun h =>
+          (Finset.mem_filter.mp (Finset.mem_image.mp h.property).choose_spec.1).2
         apply Finset.card_biUnion_le.trans
         apply le_trans _ (show Finset.univ.sum (fun _ : Fin Tvc => s) ≤ Kreal by
           simp [Finset.sum_const, Fintype.card_fin, Kreal])
@@ -969,11 +982,12 @@ private theorem moran_yehudayoff_forward_construction
     have h_kernel_labels : ∀ pair ∈ (compressCore S).1,
         pair.2 = hreal.choose pair.1 := by
       -- Unfold compressCore in the GOAL, resolve dite branches, THEN intro
-      dsimp only [compressCore, mkNonemptyY]
+      let reps := mkReps S hreal hm
+      let getWitness : Fin Tvc → Finset X :=
+        fun t => (Finset.mem_image.mp (reps t).property).choose
+      dsimp only [compressCore, pointSupportNonempty]
       simp only [dif_pos hreal, dif_pos hm]
-      intro pair hp
-      simp only [Finset.mem_biUnion, Finset.mem_image] at hp
-      obtain ⟨_, _, x, _, rfl⟩ := hp; rfl
+      simpa only [reps, getWitness] using moranKernel_labels hreal.choose getWitness
     have hround : ∀ t : Fin Tvc,
         rowHyp S hreal t (S i).1 = (mkReps S hreal hm t).val (S i).1 := by
       intro t
@@ -987,11 +1001,8 @@ private theorem moran_yehudayoff_forward_construction
       have hKbound : (compressCore S).1.card ≤ Kreal := hsmall S
       have hWker : ∀ x ∈ W, (x, c x) ∈ (compressCore S).1 := by
         intro x hx
-        dsimp only [compressCore, mkNonemptyY]
-        simp only [dif_pos hreal, dif_pos hm]
-        refine Finset.mem_biUnion.mpr ?_
-        refine ⟨t, by simp, ?_⟩
-        exact Finset.mem_image.mpr ⟨x, hx, rfl⟩
+        dsimp only [compressCore, pointSupportNonempty]
+        simpa only [dif_pos hreal, dif_pos hm] using witness_mem_moranKernel c _ t hx
       have hrep : L.learn (labeledSampleOfFinset c W) = (reps t).val := hWspec.2
       have hlabels : ∀ p ∈ (compressCore S).1, p.2 = c p.1 := h_kernel_labels
       -- The roundtrip: use roundtrip_blockHyp_eq_rep
@@ -1021,7 +1032,7 @@ private theorem moran_yehudayoff_forward_construction
       -- But Lean may need help with the dite reduction.
       -- Let's unfold the goal's LHS and match hrt.
       dsimp only [rowHyp]
-      dsimp only [blockHyp]
+      dsimp only [blockHyp, moranBlockHyp]
       -- Now the goal is:
       -- L.learn (labeledSampleOfFinset (decodeWitnessLabel (compressCore S).1)
       --   (decodeWitnessXCoords (compressCore S).1 ((compressCore S).2 t))) (S i).1
@@ -1034,7 +1045,7 @@ private theorem moran_yehudayoff_forward_construction
       -- (since getWitness t = W by definition)
       -- Let's use show + convert to bridge:
       have hinfo_eq : (compressCore S).2 t = encodeWitnessInfo (compressCore S).1 c Kreal W := by
-        dsimp only [compressCore, mkNonemptyY, c, reps, W]
+        dsimp only [compressCore, pointSupportNonempty, c, reps, W]
         simp only [dif_pos hreal, dif_pos hm]
       rw [hinfo_eq]
       exact hrt
@@ -1053,7 +1064,7 @@ private theorem moran_yehudayoff_forward_construction
         if (mkReps S hreal hm t).val (S i).1 = hreal.choose (S i).1
         then (1 : ℝ) else 0) / ↑Tvc ≥ 13 / 24 by linarith
     -- Re-derive the pipeline guarantees (same objects as mkReps by let-transparency)
-    haveI hYne : Nonempty ↥(pointSupport S) := mkNonemptyY S hm
+    haveI hYne : Nonempty ↥(pointSupport S) := pointSupportNonempty S hm
     let c' := hreal.choose
     let Y' := pointSupport S
     let HY' := hypothesisEnvelope L c' Y'
@@ -1101,14 +1112,8 @@ private theorem moran_yehudayoff_forward_construction
         (agreeTest c' (S i).1 HY') =
       (∑ t : Fin Tvc,
         if (mkReps S hreal hm t).val (S i).1 = c' (S i).1
-        then (1 : ℝ) else 0) / ↑Tvc := by
-      rw [boolTestExpectation_empirical_eq_avg]
-      congr 1
-      apply Finset.sum_congr rfl; intro t _
-      -- Bridge Bool-if and Prop-if via by_cases
-      by_cases h : (↑(mkReps S hreal hm t) : X → Bool) (S i).1 = c' (S i).1
-      · simp [agreeTest, h]
-      · simp [agreeTest, h]
+        then (1 : ℝ) else 0) / ↑Tvc :=
+      boolTestExpectation_empirical_agreeTest_eq_avg hTvcPos (mkReps S hreal hm) c' (S i).1
     linarith
   -- Package into the goal via finalizeIncidenceScheme
   exact finalizeIncidenceScheme Tvc Kreal compressCore blockHyp rowHyp

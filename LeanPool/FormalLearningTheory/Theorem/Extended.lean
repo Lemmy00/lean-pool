@@ -485,6 +485,354 @@ private lemma used_sample_split_measure
   -- hmp.measure_preimage_equiv gives us the result
   simpa [splitUsedEquiv] using hmp.measure_preimage_equiv (s := Success)
 
+private lemma adviceGoodTrain_measurable {X : Type u} [MeasurableSpace X]
+    {A : Type*} (LA : LearnerWithAdvice X Bool A)
+    (h_eval : AdviceEvalMeasurable LA) (aStar : A)
+    (c : Concept X Bool) (D : MeasureTheory.Measure X) [MeasureTheory.SigmaFinite D]
+    {m₁ : ℕ} (hcm : Measurable c) (ε : ℝ) :
+    MeasurableSet {xs₁ : Fin m₁ → X |
+      TrueError X (LA.learnWithAdvice aStar (fun i => (xs₁ i, c (xs₁ i)))) c D
+        ≤ ENNReal.ofReal (ε / 2)} := by
+  have h_label : Measurable
+      (fun xs₁ : Fin m₁ → X => fun i : Fin m₁ => (xs₁ i, c (xs₁ i))) :=
+    measurable_pi_lambda _ (fun i =>
+      (measurable_pi_apply i).prodMk (hcm.comp (measurable_pi_apply i)))
+  have h_joint : Measurable (fun p : (Fin m₁ → X) × X =>
+      LA.learnWithAdvice aStar (fun i => (p.1 i, c (p.1 i))) p.2) :=
+    (h_eval aStar m₁).comp (h_label.comp measurable_fst |>.prodMk measurable_snd)
+  have h_c_snd : Measurable (fun p : (Fin m₁ → X) × X => c p.2) :=
+    hcm.comp measurable_snd
+  have h_disagree : MeasurableSet {p : (Fin m₁ → X) × X |
+      LA.learnWithAdvice aStar (fun i => (p.1 i, c (p.1 i))) p.2 ≠ c p.2} :=
+    (measurableSet_eq_fun h_joint h_c_snd).compl
+  have h_meas_fun : Measurable (fun xs₁ : Fin m₁ → X =>
+      D {x | LA.learnWithAdvice aStar (fun i => (xs₁ i, c (xs₁ i))) x ≠ c x}) :=
+    measurable_measure_prodMk_left (ν := D) h_disagree
+  exact h_meas_fun measurableSet_Iic
+
+private lemma adviceBadVal_measurable {X : Type u} [MeasurableSpace X]
+    {A : Type*} [Countable A] (LA : LearnerWithAdvice X Bool A)
+    (h_eval : AdviceEvalMeasurable LA)
+    (c : Concept X Bool) (D : MeasureTheory.Measure X) [MeasureTheory.SigmaFinite D]
+    {m₁ m₂ : ℕ} (hcm : Measurable c) (ε : ℝ) :
+    MeasurableSet {p : (Fin m₁ → X) × (Fin m₂ → X) | ∃ a : A,
+      |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
+        EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+          (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≥ ε / 4} := by
+  suffices h : ∀ a : A, MeasurableSet {p : (Fin m₁ → X) × (Fin m₂ → X) |
+      |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
+        EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+          (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≥ ε / 4} by
+    rw [show {p : (Fin m₁ → X) × (Fin m₂ → X) | ∃ a : A,
+        |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
+          EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+            (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≥ ε / 4} =
+        ⋃ a : A, {p | |TrueErrorReal X
+          (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
+            EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+              (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≥ ε / 4} from by
+      ext p; simp only [Set.mem_setOf_eq, Set.mem_iUnion]]
+    exact MeasurableSet.iUnion h
+  intro a
+  have h_label_a : Measurable
+      (fun xs₁ : Fin m₁ → X => fun i : Fin m₁ => (xs₁ i, c (xs₁ i))) :=
+    measurable_pi_lambda _ (fun i =>
+      (measurable_pi_apply i).prodMk (hcm.comp (measurable_pi_apply i)))
+  have h_joint_a : Measurable (fun q : (Fin m₁ → X) × X =>
+      LA.learnWithAdvice a (fun i => (q.1 i, c (q.1 i))) q.2) :=
+    (h_eval a m₁).comp (h_label_a.comp measurable_fst |>.prodMk measurable_snd)
+  have h_c_snd_a : Measurable (fun q : (Fin m₁ → X) × X => c q.2) :=
+    hcm.comp measurable_snd
+  have h_disagree_a : MeasurableSet {q : (Fin m₁ → X) × X |
+      LA.learnWithAdvice a (fun i => (q.1 i, c (q.1 i))) q.2 ≠ c q.2} :=
+    (measurableSet_eq_fun h_joint_a h_c_snd_a).compl
+  have h_true_meas : Measurable (fun xs₁ : Fin m₁ → X =>
+      (D {x | LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i))) x ≠ c x}).toReal) :=
+    (measurable_measure_prodMk_left (ν := D) h_disagree_a).ennreal_toReal
+  have h_trueR : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
+      TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D) := by
+    change Measurable ((fun xs₁ : Fin m₁ → X => (D {x | LA.learnWithAdvice a
+      (fun i => (xs₁ i, c (xs₁ i))) x ≠ c x}).toReal) ∘ Prod.fst)
+    exact h_true_meas.comp measurable_fst
+  have h_empR : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
+      EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+        (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)) := by
+    simp only [EmpiricalError]
+    split
+    · exact measurable_const
+    · apply Measurable.div_const
+      apply Finset.measurable_sum
+      intro j _
+      simp only [zeroOneLoss]
+      apply Measurable.ite
+      · have h_eval_j : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
+            LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))) (p.2 j)) := by
+          have h_pair : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
+              ((fun i => (p.1 i, c (p.1 i))), p.2 j)) :=
+            (h_label_a.comp measurable_fst).prodMk
+              ((measurable_pi_apply j).comp measurable_snd)
+          exact (h_eval a m₁).comp h_pair
+        have h_c_j : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) => c (p.2 j)) :=
+          hcm.comp ((measurable_pi_apply j).comp measurable_snd)
+        exact measurableSet_eq_fun h_eval_j h_c_j
+      · exact measurable_const
+      · exact measurable_const
+  exact (h_trueR.sub h_empR).abs measurableSet_Ici
+
+private theorem adviceGoodPair_subset_success {X : Type u} [MeasurableSpace X]
+    {A : Type*} [Fintype A] [Nonempty A]
+    (LA : LearnerWithAdvice X Bool A) (aStar : A)
+    (c : Concept X Bool) (D : MeasureTheory.Measure X)
+    [MeasureTheory.IsProbabilityMeasure D] {m₁ m₂ : ℕ} {ε : ℝ} (hε : 0 < ε) :
+    {p : (Fin m₁ → X) × (Fin m₂ → X) |
+      TrueError X (LA.learnWithAdvice aStar (fun i => (p.1 i, c (p.1 i)))) c D
+        ≤ ENNReal.ofReal (ε / 2) ∧
+      ∀ a : A,
+        |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
+          EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+            (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| < ε / 4}
+    ⊆
+    {p : (Fin m₁ → X) × (Fin m₂ → X) |
+      let train := fun i => (p.1 i, c (p.1 i))
+      let val := fun j => (p.2 j, c (p.2 j))
+      let cand := fun a => LA.learnWithAdvice a train
+      D {x | cand (bestAdvice cand val) x ≠ c x} ≤ ENNReal.ofReal ε} := by
+  intro p ⟨hgt, hbv⟩
+  have hbv_le : ∀ a : A,
+      |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
+        EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+          (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≤ ε / 4 :=
+    fun a => le_of_lt (hbv a)
+  have hsel_real : TrueErrorReal X
+      (LA.learnWithAdvice
+        (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+          (fun j => (p.2 j, c (p.2 j))))
+        (fun i => (p.1 i, c (p.1 i)))) c D ≤ ε :=
+    calc TrueErrorReal X
+          (LA.learnWithAdvice
+            (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+              (fun j => (p.2 j, c (p.2 j))))
+            (fun i => (p.1 i, c (p.1 i)))) c D
+        ≤ ε / 2 + 2 * (ε / 4) :=
+          trueErrorReal_le_of_bestAdvice
+            (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+            c D (fun j => (p.2 j, c (p.2 j))) (ε / 4) (ε / 2) (by linarith) hbv_le aStar (by
+              unfold TrueErrorReal
+              exact ENNReal.toReal_le_of_le_ofReal (by linarith) hgt)
+      _ = ε := by ring
+  change D {x | LA.learnWithAdvice
+      (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+        (fun j => (p.2 j, c (p.2 j))))
+      (fun i => (p.1 i, c (p.1 i))) x ≠ c x} ≤ ENNReal.ofReal ε
+  have hne_top : D {x | LA.learnWithAdvice
+      (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
+        (fun j => (p.2 j, c (p.2 j))))
+      (fun i => (p.1 i, c (p.1 i))) x ≠ c x} ≠ ⊤ :=
+    ne_of_lt (lt_of_le_of_lt (MeasureTheory.measure_mono (Set.subset_univ _))
+      (by rw [MeasureTheory.IsProbabilityMeasure.measure_univ]; exact ENNReal.one_lt_top))
+  have := ENNReal.ofReal_toReal hne_top
+  rw [TrueErrorReal, TrueError] at hsel_real
+  rw [← this]
+  exact ENNReal.ofReal_le_ofReal hsel_real
+
+private theorem probability_compl_le_of_ge_one_sub_half {Ω : Type*} [MeasurableSpace Ω]
+    (μ : MeasureTheory.Measure Ω) [MeasureTheory.IsProbabilityMeasure μ]
+    {S : Set Ω} (hS_meas : MeasurableSet S) {δ : ℝ}
+    (h_ge : μ S ≥ ENNReal.ofReal (1 - δ / 2)) :
+    μ Sᶜ ≤ ENNReal.ofReal (δ / 2) := by
+  by_cases hδ2 : δ ≥ 2
+  · calc μ Sᶜ
+        ≤ μ Set.univ := MeasureTheory.measure_mono (Set.subset_univ _)
+      _ = 1 := MeasureTheory.IsProbabilityMeasure.measure_univ
+      _ ≤ ENNReal.ofReal (δ / 2) := by
+          rw [← ENNReal.ofReal_one]
+          exact ENNReal.ofReal_le_ofReal (by linarith)
+  · push Not at hδ2
+    have h_ne_top : μ S ≠ ⊤ := by
+      intro h_top
+      have : μ S ≤ μ Set.univ := MeasureTheory.measure_mono (Set.subset_univ S)
+      rw [h_top, MeasureTheory.IsProbabilityMeasure.measure_univ] at this
+      exact absurd this (not_le.mpr ENNReal.one_lt_top)
+    rw [MeasureTheory.measure_compl hS_meas h_ne_top,
+      MeasureTheory.IsProbabilityMeasure.measure_univ]
+    calc (1 : ENNReal) - μ S
+        ≤ 1 - ENNReal.ofReal (1 - δ / 2) := tsub_le_tsub_left h_ge 1
+      _ = ENNReal.ofReal (δ / 2) := by
+          have : (1 : ℝ) - (1 - δ / 2) = δ / 2 := by ring
+          rw [← ENNReal.ofReal_one,
+            ← ENNReal.ofReal_sub 1 (by linarith : (0 : ℝ) ≤ 1 - δ / 2),
+            this]
+
+private lemma adviceValidationUniformBound {X : Type u} [MeasurableSpace X]
+    {A : Type*} [Fintype A] [Nonempty A]
+    (LA : LearnerWithAdvice X Bool A) (h_eval : AdviceEvalMeasurable LA)
+    (c : Concept X Bool) (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
+    [MeasureTheory.SigmaFinite D] {m₁ m₂ : ℕ} (hcm : Measurable c)
+    (hm₂_pos : 0 < m₂) (ε δ : ℝ) (hε : 0 < ε) (hδ : 0 < δ)
+    (hm₂_ge : Real.log (4 * ↑(Fintype.card A) / δ) /
+      (2 * (min (ε / 4) 1) ^ 2) ≤ ↑m₂) :
+    ∀ xs₁ : Fin m₁ → X,
+      MeasureTheory.Measure.pi (fun _ : Fin m₂ => D)
+        {xs₂ : Fin m₂ → X | ∃ a : A,
+          |TrueErrorReal X (LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i)))) c D -
+            EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i))))
+              (fun i => (xs₂ i, c (xs₂ i))) (zeroOneLoss Bool)| ≥ ε / 4}
+        ≤ ENNReal.ofReal (δ / 2) := by
+  intro xs₁
+  let μ₂ := MeasureTheory.Measure.pi (fun _ : Fin m₂ => D)
+  set η := min (ε / 4) 1 with hη_def
+  have hη : 0 < η := by simp [η, hε]
+  have hη1 : η ≤ 1 := by simp [η]
+  let cand : A → Concept X Bool := fun a =>
+    LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i)))
+  have h_cand_meas : ∀ a : A, Measurable (cand a) :=
+    fun a => learnWithAdvice_measurable_fixed LA h_eval a _
+  have hfvb := finite_validation_family_bound D c hcm cand h_cand_meas m₂ hm₂_pos η hη hη1
+  have h_sub : {xs : Fin m₂ → X | ∃ a : A,
+      |TrueErrorReal X (LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i)))) c D -
+        EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i))))
+          (fun i => (xs i, c (xs i))) (zeroOneLoss Bool)| ≥ ε / 4} ⊆
+      {xs : Fin m₂ → X | ∃ a : A,
+        |TrueErrorReal X (cand a) c D -
+          EmpiricalError X Bool (cand a) (fun i => (xs i, c (xs i)))
+            (zeroOneLoss Bool)| ≥ η} := by
+    intro xs hxs
+    simp only [Set.mem_setOf_eq, cand] at hxs ⊢
+    obtain ⟨a, ha⟩ := hxs
+    exact ⟨a, le_trans (min_le_left _ _) ha⟩
+  calc μ₂ {xs : Fin m₂ → X | ∃ a : A,
+          |TrueErrorReal X (LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i)))) c D -
+            EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i))))
+              (fun i => (xs i, c (xs i))) (zeroOneLoss Bool)| ≥ ε / 4}
+      ≤ μ₂ {xs : Fin m₂ → X | ∃ a : A,
+          |TrueErrorReal X (cand a) c D -
+            EmpiricalError X Bool (cand a) (fun i => (xs i, c (xs i)))
+              (zeroOneLoss Bool)| ≥ η} :=
+        μ₂.mono h_sub
+    _ ≤ ENNReal.ofReal ((Fintype.card A : ℝ) * 2 * Real.exp (-2 * ↑m₂ * η ^ 2)) := hfvb
+    _ ≤ ENNReal.ofReal (δ / 2) := by
+        apply ENNReal.ofReal_le_ofReal
+        have h2η2_pos : (0 : ℝ) < 2 * η ^ 2 := by positivity
+        have hA_pos : (0 : ℝ) < Fintype.card A := Nat.cast_pos.mpr Fintype.card_pos
+        set R := 4 * ↑(Fintype.card A) / δ with hR_def
+        have hR_pos : (0 : ℝ) < R := div_pos (by positivity) hδ
+        have hm₂_ge' : Real.log R / (2 * η ^ 2) ≤ ↑m₂ := by simpa [R, η] using hm₂_ge
+        have hlog_le : Real.log R ≤ 2 * ↑m₂ * η ^ 2 := by
+          have := mul_le_mul_of_nonneg_right hm₂_ge' (le_of_lt h2η2_pos)
+          rw [div_mul_cancel₀ _ (ne_of_gt h2η2_pos)] at this
+          linarith
+        by_cases hR1 : R ≤ 1
+        · have hA_le : (Fintype.card A : ℝ) * 2 ≤ δ / 2 := by
+            have : R * δ = 4 * ↑(Fintype.card A) := by simp only [R]; field_simp
+            nlinarith
+          have hexp_le : Real.exp (-2 * ↑m₂ * η ^ 2) ≤ 1 :=
+            Real.exp_le_one_iff.mpr (by nlinarith [sq_nonneg η])
+          calc (Fintype.card A : ℝ) * 2 * Real.exp (-2 * ↑m₂ * η ^ 2)
+              ≤ (Fintype.card A : ℝ) * 2 * 1 := by gcongr
+            _ = (Fintype.card A : ℝ) * 2 := mul_one _
+            _ ≤ δ / 2 := hA_le
+        · push Not at hR1
+          have hexp_bound :
+              Real.exp (-2 * ↑m₂ * η ^ 2) ≤ δ / (4 * ↑(Fintype.card A)) := by
+            have h1 : -(2 * ↑m₂ * η ^ 2) ≤ -Real.log R := by linarith
+            have h2 : -2 * ↑m₂ * η ^ 2 = -(2 * ↑m₂ * η ^ 2) := by ring
+            rw [h2]
+            calc Real.exp (-(2 * ↑m₂ * η ^ 2))
+                ≤ Real.exp (-Real.log R) := Real.exp_le_exp_of_le h1
+              _ = R⁻¹ := by rw [Real.exp_neg, Real.exp_log hR_pos]
+              _ = δ / (4 * ↑(Fintype.card A)) := by simp only [R]; rw [inv_div]
+          calc (Fintype.card A : ℝ) * 2 * Real.exp (-2 * ↑m₂ * η ^ 2)
+              ≤ (Fintype.card A : ℝ) * 2 * (δ / (4 * ↑(Fintype.card A))) := by gcongr
+            _ = δ / 2 := by field_simp; ring
+
+private theorem adviceGoodFull_subset_goal {X : Type u} [MeasurableSpace X]
+    {A : Type*} [Fintype A] [Nonempty A]
+    (LA : LearnerWithAdvice X Bool A) (c : Concept X Bool)
+    (D : MeasureTheory.Measure X) {m₁ m₂ : ℕ} {ε : ℝ}
+    (GoodPair : Set ((Fin m₁ → X) × (Fin m₂ → X)))
+    (hGP_sub_SP : GoodPair ⊆
+      {p : (Fin m₁ → X) × (Fin m₂ → X) |
+        let train := fun i => (p.1 i, c (p.1 i))
+        let val := fun j => (p.2 j, c (p.2 j))
+        let cand := fun a => LA.learnWithAdvice a train
+        D {x | cand (bestAdvice cand val) x ≠ c x} ≤ ENNReal.ofReal ε}) :
+    (usedPrefix (X := X) m₁ m₂) ⁻¹'
+      ((splitUsedEquiv (X := X) m₁ m₂) ⁻¹' GoodPair)
+    ⊆
+      {xs : Fin (Nat.pair m₁ m₂) → X | D {x |
+        LA.learnWithAdvice
+          (bestAdvice (fun a => LA.learnWithAdvice a
+            (fun i : Fin m₁ => (xs ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
+              c (xs ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩))))
+            (fun j : Fin m₂ => (xs ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩,
+              c (xs ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩))))
+          (fun i : Fin m₁ => (xs ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
+            c (xs ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩)))
+          x ≠ c x} ≤ ENNReal.ofReal ε} := by
+  have h_split_fst : ∀ (ys : Fin (m₁ + m₂) → X) (i : Fin m₁),
+      (splitUsedEquiv (X := X) m₁ m₂ ys).1 i = ys (Fin.castAdd m₂ i) := by
+    intro ys i
+    simp [splitUsedEquiv, MeasurableEquiv.trans_apply, MeasurableEquiv.sumPiEquivProdPi,
+      MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft, finSumFinEquiv,
+      Equiv.sumPiEquivProdPi, Fin.castAdd]
+  have h_split_snd : ∀ (ys : Fin (m₁ + m₂) → X) (j : Fin m₂),
+      (splitUsedEquiv (X := X) m₁ m₂ ys).2 j = ys (Fin.natAdd m₁ j) := by
+    intro ys j
+    simp [splitUsedEquiv, MeasurableEquiv.trans_apply, MeasurableEquiv.sumPiEquivProdPi,
+      MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft, finSumFinEquiv,
+      Equiv.sumPiEquivProdPi, Fin.natAdd]
+  have h_composed_fst : ∀ (xs' : Fin (Nat.pair m₁ m₂) → X) (i : Fin m₁),
+      (splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i =
+      xs' ⟨i.1, by have := Nat.left_le_pair m₁ m₂; omega⟩ := by
+    intro xs' i; rw [h_split_fst]; simp [usedPrefix, Fin.castLE, Fin.castAdd]
+  have h_composed_snd : ∀ (xs' : Fin (Nat.pair m₁ m₂) → X) (j : Fin m₂),
+      (splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j =
+      xs' ⟨m₁ + j.1, by have := Nat.add_le_pair m₁ m₂; omega⟩ := by
+    intro xs' j; rw [h_split_snd]; simp [usedPrefix, Fin.castLE, Fin.natAdd]
+  have h_full_hyp : ∀ xs' : Fin (Nat.pair m₁ m₂) → X,
+      LA.learnWithAdvice
+        (bestAdvice
+          (fun a => LA.learnWithAdvice a (fun i : Fin m₁ =>
+            ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i,
+             c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i))))
+          (fun j : Fin m₂ =>
+            ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j,
+             c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j))))
+        (fun i : Fin m₁ =>
+          ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i,
+           c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i))) =
+      LA.learnWithAdvice
+        (bestAdvice
+          (fun a => LA.learnWithAdvice a (fun i : Fin m₁ =>
+            (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
+             c (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩))))
+          (fun j : Fin m₂ =>
+            (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩,
+             c (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩))))
+        (fun i : Fin m₁ =>
+          (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
+           c (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩))) := by
+    intro xs'
+    have ht : ∀ i : Fin m₁,
+        ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i,
+         c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i)) =
+        (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
+         c (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩)) := by
+      intro i; simp only [h_composed_fst]
+    have hv : ∀ j : Fin m₂,
+        ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j,
+         c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j)) =
+        (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩,
+         c (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩)) := by
+      intro j; simp only [h_composed_snd]
+    simp only [funext ht, funext hv]
+  intro xs hxs
+  have hxGP : splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs) ∈ GoodPair := hxs
+  have hxSP := hGP_sub_SP hxGP
+  simp only [Set.mem_setOf_eq] at hxSP ⊢
+  rw [← h_full_hyp xs]
+  exact hxSP
+
 /-- Advice elimination (Ben-David & Dichterman 1998):
     If C is PAC-learnable with concept-dependent advice from a FINITE set A
     (with measurability regularity), then C is PAC-learnable without advice.
@@ -498,7 +846,6 @@ private lemma used_sample_split_measure
     The [Fintype A] constraint is essential: for infinite A, the theorem is false
     (no finite union bound). [Nonempty A] ensures the advice space is inhabited. -/
 theorem advice_elimination (X : Type u) [MeasurableSpace X]
-    -- proof-size-limit-ok: ported formal learning theory proof.
     (C : ConceptClass X Bool) [MeasurableHypotheses X C]
     (A : Type*) [Fintype A] [Nonempty A] :
     PACLearnableWithAdviceRegular X C A → PACLearnable X C := by
@@ -575,48 +922,9 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
                  (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| < ε / 4}
     -- === KU_2: GoodPair ⊆ SuccessProd (deterministic core) ===
     have hGP_sub_SP : GoodPair ⊆ SuccessProd := by
-      intro p ⟨hgt, hbv⟩
-      -- Convert < to ≤ for hbv
-      have hbv_le : ∀ a : A,
-          |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
-            EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-              (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≤ ε / 4 :=
-        fun a => le_of_lt (hbv a)
-      -- Apply trueErrorReal_le_of_bestAdvice with τ = ε/2, η = ε/4
-      have hsel_real : TrueErrorReal X
-          (LA.learnWithAdvice
-            (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-              (fun j => (p.2 j, c (p.2 j))))
-            (fun i => (p.1 i, c (p.1 i)))) c D ≤ ε :=
-        calc TrueErrorReal X
-              (LA.learnWithAdvice
-                (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-                  (fun j => (p.2 j, c (p.2 j))))
-                (fun i => (p.1 i, c (p.1 i)))) c D
-            ≤ ε / 2 + 2 * (ε / 4) :=
-              trueErrorReal_le_of_bestAdvice
-                (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-                c D (fun j => (p.2 j, c (p.2 j))) (ε / 4) (ε / 2) (by linarith) hbv_le aStar (by
-                  unfold TrueErrorReal
-                  exact ENNReal.toReal_le_of_le_ofReal (by linarith) hgt)
-          _ = ε := by ring
-      -- Convert TrueErrorReal ≤ ε to TrueError ≤ ofReal ε
-      -- TrueErrorReal = (TrueError).toReal, so TrueError = ofReal(TrueErrorReal) when finite
-      change SuccessProd p
-      change D {x | LA.learnWithAdvice
-          (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-            (fun j => (p.2 j, c (p.2 j))))
-          (fun i => (p.1 i, c (p.1 i))) x ≠ c x} ≤ ENNReal.ofReal ε
-      have hne_top : D {x | LA.learnWithAdvice
-          (bestAdvice (fun a => LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-            (fun j => (p.2 j, c (p.2 j))))
-          (fun i => (p.1 i, c (p.1 i))) x ≠ c x} ≠ ⊤ :=
-        ne_of_lt (lt_of_le_of_lt (MeasureTheory.measure_mono (Set.subset_univ _))
-          (by rw [MeasureTheory.IsProbabilityMeasure.measure_univ]; exact ENNReal.one_lt_top))
-      have := ENNReal.ofReal_toReal hne_top
-      rw [TrueErrorReal, TrueError] at hsel_real
-      rw [← this]
-      exact ENNReal.ofReal_le_ofReal hsel_real
+      simpa [GoodPair, GoodTrain, SuccessProd] using
+        adviceGoodPair_subset_success (LA := LA) (aStar := aStar) (c := c) (D := D)
+          (m₁ := m₁) (m₂ := m₂) (ε := ε) hε
     -- === KU_3 + transport + final bound ===
     have hgt_ge : μ₁ GoodTrain ≥ ENNReal.ofReal (1 - δ / 2) := haStar
     have hm₂_pos : 0 < m₂ := by simp only [m₂]; omega
@@ -636,172 +944,24 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
       ext p; simp only [GoodPair, BadVal, Set.mem_setOf_eq, not_exists, not_le]
     -- Step 2c: Measurability
     have hGoodTrain_meas : MeasurableSet GoodTrain := by
-      -- GoodTrain = (fun xs₁ => D {x | ... ≠ c x}) ⁻¹' Iic (ofReal (ε/2))
-      -- Step 1: The labeling map xs₁ ↦ (fun i => (xs₁ i, c (xs₁ i))) is measurable
-      have h_label : Measurable
-          (fun xs₁ : Fin m₁ → X => fun i : Fin m₁ => (xs₁ i, c (xs₁ i))) :=
-        measurable_pi_lambda _ (fun i =>
-          (measurable_pi_apply i).prodMk (hcm.comp (measurable_pi_apply i)))
-      -- Step 2: measurability of evaluating the advised learner on `(xs₁, x)`.
-      have h_joint : Measurable (fun p : (Fin m₁ → X) × X =>
-          LA.learnWithAdvice aStar (fun i => (p.1 i, c (p.1 i))) p.2) :=
-        (h_eval aStar m₁).comp (h_label.comp measurable_fst |>.prodMk measurable_snd)
-      -- Step 3: The concept map (xs₁, x) ↦ c x is measurable
-      have h_c_snd : Measurable (fun p : (Fin m₁ → X) × X => c p.2) :=
-        hcm.comp measurable_snd
-      -- Step 4: The disagreement set {(xs₁, x) | ... ≠ c x} is MeasurableSet in the product
-      have h_disagree : MeasurableSet {p : (Fin m₁ → X) × X |
-          LA.learnWithAdvice aStar (fun i => (p.1 i, c (p.1 i))) p.2 ≠ c p.2} :=
-        (measurableSet_eq_fun h_joint h_c_snd).compl
-      -- Step 5: xs₁ ↦ D {x | ... ≠ c x} is measurable via measurable_measure_prodMk_left
-      have h_meas_fun : Measurable (fun xs₁ : Fin m₁ → X =>
-          D {x | LA.learnWithAdvice aStar (fun i => (xs₁ i, c (xs₁ i))) x ≠ c x}) := by
-        have := measurable_measure_prodMk_left (ν := D) h_disagree
-        exact this
-      -- Step 6: GoodTrain is the preimage of Iic under a measurable function
-      exact h_meas_fun (measurableSet_Iic)
+      simpa [GoodTrain] using
+        adviceGoodTrain_measurable LA h_eval aStar c D (m₁ := m₁) hcm ε
     have hBadVal_meas : MeasurableSet BadVal := by
-      -- UK_6: BadVal = ⋃ a, {p | |f_a(p)| ≥ ε/4}, finite union of measurable sets
-      -- Step 1: Rewrite BadVal as iUnion
-      suffices h : ∀ a : A, MeasurableSet {p : (Fin m₁ → X) × (Fin m₂ → X) |
-          |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
-            EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-              (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≥ ε / 4} by
-        have h_eq : BadVal = ⋃ a : A, {p | |TrueErrorReal X
-            (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
-              EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-                (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| ≥ ε / 4} := by
-          ext p; simp only [BadVal, Set.mem_setOf_eq, Set.mem_iUnion]
-        rw [h_eq]
-        exact MeasurableSet.iUnion h
-      -- Step 2: Per-advice measurability
-      intro a
-      -- 2a: TrueErrorReal part is measurable as function of p
-      -- TrueErrorReal X h c D = (D {x | h x ≠ c x}).toReal
-      -- Following S1 pattern: labeling → joint eval → disagreement → measure → toReal
-      have h_label_a : Measurable
-          (fun xs₁ : Fin m₁ → X => fun i : Fin m₁ => (xs₁ i, c (xs₁ i))) :=
-        measurable_pi_lambda _ (fun i =>
-          (measurable_pi_apply i).prodMk (hcm.comp (measurable_pi_apply i)))
-      have h_joint_a : Measurable (fun q : (Fin m₁ → X) × X =>
-          LA.learnWithAdvice a (fun i => (q.1 i, c (q.1 i))) q.2) :=
-        (h_eval a m₁).comp (h_label_a.comp measurable_fst |>.prodMk measurable_snd)
-      have h_c_snd_a : Measurable (fun q : (Fin m₁ → X) × X => c q.2) :=
-        hcm.comp measurable_snd
-      have h_disagree_a : MeasurableSet {q : (Fin m₁ → X) × X |
-          LA.learnWithAdvice a (fun i => (q.1 i, c (q.1 i))) q.2 ≠ c q.2} :=
-        (measurableSet_eq_fun h_joint_a h_c_snd_a).compl
-      have h_true_meas : Measurable (fun xs₁ : Fin m₁ → X =>
-          (D {x | LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i))) x ≠ c x}).toReal) :=
-        (measurable_measure_prodMk_left (ν := D) h_disagree_a).ennreal_toReal
-      -- TrueErrorReal as function of p (depends only on p.1)
-      have h_trueR : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
-          TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D) := by
-        change Measurable ((fun xs₁ : Fin m₁ → X => (D {x | LA.learnWithAdvice a
-          (fun i => (xs₁ i, c (xs₁ i))) x ≠ c x}).toReal) ∘ Prod.fst)
-        exact h_true_meas.comp measurable_fst
-      -- 2b: EmpiricalError part is measurable as function of p
-      -- EmpiricalError = if m₂ = 0 then 0 else (∑ i, loss(h(xᵢ), yᵢ)) / m₂
-      -- For each i, the indicator if h(p.2 i) ≠ c(p.2 i) then 1 else 0 is measurable
-      have h_empR : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
-          EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-            (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)) := by
-        simp only [EmpiricalError]
-        split
-        · exact measurable_const
-        · apply Measurable.div_const
-          apply Finset.measurable_sum
-          intro j _
-          simp only [zeroOneLoss]
-          apply Measurable.ite
-          · -- {p | h(p.2 j) = c(p.2 j)} is measurable
-            -- h(p.2 j) = LA.learnWithAdvice a (labeled(p.1)) (p.2 j)
-            -- This needs joint measurability from AdviceEvalMeasurable
-            have h_eval_j : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
-                LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))) (p.2 j)) := by
-              -- Compose AdviceEvalMeasurable with the map p ↦ (labeled(p.1), p.2 j)
-              have h_pair : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
-                  ((fun i => (p.1 i, c (p.1 i))), p.2 j)) :=
-                (h_label_a.comp measurable_fst).prodMk
-                  ((measurable_pi_apply j).comp measurable_snd)
-              exact (h_eval a m₁).comp h_pair
-            have h_c_j : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) => c (p.2 j)) :=
-              hcm.comp ((measurable_pi_apply j).comp measurable_snd)
-            exact measurableSet_eq_fun h_eval_j h_c_j
-          · exact measurable_const
-          · exact measurable_const
-      -- 2c: |TrueErrorReal - EmpiricalError| is measurable
-      have h_diff : Measurable (fun p : (Fin m₁ → X) × (Fin m₂ → X) =>
-          |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
-            EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
-              (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)|) :=
-        (h_trueR.sub h_empR).abs
-      -- 2d: Preimage of [ε/4, ∞) under measurable function is MeasurableSet
-      exact h_diff measurableSet_Ici
+      simpa [BadVal] using
+        adviceBadVal_measurable LA h_eval c D (m₁ := m₁) (m₂ := m₂) hcm ε
     have hGoodPair_meas : MeasurableSet GoodPair := by
       rw [hGP_eq]
       exact (measurableSet_preimage measurable_fst hGoodTrain_meas).inter hBadVal_meas.compl
     have hGoodUsed_meas : MeasurableSet GoodUsed :=
       measurableSet_preimage (splitUsedEquiv (X := X) m₁ m₂).measurable hGoodPair_meas
-    -- Step 2d: Fin composition helpers
-    have h_split_fst : ∀ (ys : Fin (m₁ + m₂) → X) (i : Fin m₁),
-        (splitUsedEquiv (X := X) m₁ m₂ ys).1 i = ys (Fin.castAdd m₂ i) := by
-      intro ys i
-      simp [splitUsedEquiv, MeasurableEquiv.trans_apply, MeasurableEquiv.sumPiEquivProdPi,
-        MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft, finSumFinEquiv,
-        Equiv.sumPiEquivProdPi, Fin.castAdd]
-    have h_split_snd : ∀ (ys : Fin (m₁ + m₂) → X) (j : Fin m₂),
-        (splitUsedEquiv (X := X) m₁ m₂ ys).2 j = ys (Fin.natAdd m₁ j) := by
-      intro ys j
-      simp [splitUsedEquiv, MeasurableEquiv.trans_apply, MeasurableEquiv.sumPiEquivProdPi,
-        MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft, finSumFinEquiv,
-        Equiv.sumPiEquivProdPi, Fin.natAdd]
-    have h_composed_fst : ∀ (xs' : Fin (Nat.pair m₁ m₂) → X) (i : Fin m₁),
-        (splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i =
-        xs' ⟨i.1, by have := Nat.left_le_pair m₁ m₂; omega⟩ := by
-      intro xs' i; rw [h_split_fst]; simp [usedPrefix, Fin.castLE, Fin.castAdd]
-    have h_composed_snd : ∀ (xs' : Fin (Nat.pair m₁ m₂) → X) (j : Fin m₂),
-        (splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j =
-        xs' ⟨m₁ + j.1, by have := Nat.add_le_pair m₁ m₂; omega⟩ := by
-      intro xs' j; rw [h_split_snd]; simp [usedPrefix, Fin.castLE, Fin.natAdd]
-    -- Step 2e: GoodFull ⊆ goal_set
-    have h_full_hyp : ∀ xs' : Fin (Nat.pair m₁ m₂) → X,
-        LA.learnWithAdvice
-          (bestAdvice
-            (fun a => LA.learnWithAdvice a (fun i : Fin m₁ =>
-              ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i,
-               c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i))))
-            (fun j : Fin m₂ =>
-              ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j,
-               c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j))))
-          (fun i : Fin m₁ =>
-            ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i,
-             c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i))) =
-        LA.learnWithAdvice
-          (bestAdvice
-            (fun a => LA.learnWithAdvice a (fun i : Fin m₁ =>
-              (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
-               c (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩))))
-            (fun j : Fin m₂ =>
-              (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩,
-               c (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩))))
-          (fun i : Fin m₁ =>
-            (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
-             c (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩))) := by
-      intro xs'
-      have ht : ∀ i : Fin m₁,
-          ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i,
-           c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).1 i)) =
-          (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
-           c (xs' ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩)) := by
-        intro i; simp only [h_composed_fst]
-      have hv : ∀ j : Fin m₂,
-          ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j,
-           c ((splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs')).2 j)) =
-          (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩,
-           c (xs' ⟨m₁ + ↑j, by have := Nat.add_le_pair m₁ m₂; omega⟩)) := by
-        intro j; simp only [h_composed_snd]
-      simp only [funext ht, funext hv]
+    -- Step 2d: GoodFull ⊆ goal_set
+    have hGP_sub_target : GoodPair ⊆
+        {p : (Fin m₁ → X) × (Fin m₂ → X) |
+          let train := fun i => (p.1 i, c (p.1 i))
+          let val := fun j => (p.2 j, c (p.2 j))
+          let cand := fun a => LA.learnWithAdvice a train
+          D {x | cand (bestAdvice cand val) x ≠ c x} ≤ ENNReal.ofReal ε} := by
+      simpa [SuccessProd] using hGP_sub_SP
     have hGoodFull_sub_goal : GoodFull ⊆
         {xs : Fin (Nat.pair m₁ m₂) → X | D {x |
           LA.learnWithAdvice
@@ -813,129 +973,36 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
             (fun i : Fin m₁ => (xs ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩,
               c (xs ⟨↑i, by have := Nat.left_le_pair m₁ m₂; omega⟩)))
             x ≠ c x} ≤ ENNReal.ofReal ε} := by
-      intro xs hxs
-      have hxGP : splitUsedEquiv (X := X) m₁ m₂ (usedPrefix (X := X) m₁ m₂ xs) ∈ GoodPair := hxs
-      have hxSP := hGP_sub_SP hxGP
-      simp only [Set.mem_setOf_eq] at hxSP ⊢
-      rw [← h_full_hyp xs]
-      exact hxSP
+      simpa [GoodFull, GoodUsed] using
+        adviceGoodFull_subset_goal LA c D (m₁ := m₁) (m₂ := m₂) (ε := ε)
+          GoodPair hGP_sub_target
     -- Step 2f: Training complement bound
     have htrain_compl : μ₁ GoodTrainᶜ ≤ ENNReal.ofReal (δ / 2) := by
-      -- When δ ≥ 2, ofReal(δ/2) ≥ 1 ≥ μ₁(anything), so trivial.
-      by_cases hδ2 : δ ≥ 2
-      · calc μ₁ GoodTrainᶜ
-            ≤ μ₁ Set.univ := MeasureTheory.measure_mono (Set.subset_univ _)
-          _ = 1 := MeasureTheory.IsProbabilityMeasure.measure_univ
-          _ ≤ ENNReal.ofReal (δ / 2) := by
-              rw [← ENNReal.ofReal_one]; exact ENNReal.ofReal_le_ofReal (by linarith)
-      · push Not at hδ2  -- hδ2 : δ < 2
-        -- μ₁ GoodTrainᶜ = 1 - μ₁ GoodTrain (measure_compl for probability measures)
-        -- μ₁ GoodTrain ≥ ofReal(1-δ/2), so μ₁ GoodTrainᶜ ≤ 1 - ofReal(1-δ/2) = ofReal(δ/2)
-        have h_ne_top : μ₁ GoodTrain ≠ ⊤ := by
-          intro h_top
-          have : μ₁ GoodTrain ≤ μ₁ Set.univ :=
-            MeasureTheory.measure_mono (Set.subset_univ GoodTrain)
-          rw [h_top, MeasureTheory.IsProbabilityMeasure.measure_univ] at this
-          exact absurd this (not_le.mpr ENNReal.one_lt_top)
-        rw [MeasureTheory.measure_compl hGoodTrain_meas h_ne_top,
-            MeasureTheory.IsProbabilityMeasure.measure_univ]
-        -- Goal: 1 - μ₁ GoodTrain ≤ ofReal(δ/2)
-        -- From hgt_ge: ofReal(1-δ/2) ≤ μ₁ GoodTrain
-        calc (1 : ENNReal) - μ₁ GoodTrain
-            ≤ 1 - ENNReal.ofReal (1 - δ / 2) := tsub_le_tsub_left hgt_ge 1
-          _ = ENNReal.ofReal (δ / 2) := by
-              have : (1 : ℝ) - (1 - δ / 2) = δ / 2 := by ring
-              rw [← ENNReal.ofReal_one,
-                  ← ENNReal.ofReal_sub 1 (by linarith : (0 : ℝ) ≤ 1 - δ / 2),
-                  this]
+      exact probability_compl_le_of_ge_one_sub_half μ₁ hGoodTrain_meas hgt_ge
     -- Step 2g: Validation uniform bound
+    have hm₂_ge : Real.log (4 * ↑(Fintype.card A) / δ) /
+        (2 * (min (ε / 4) 1) ^ 2) ≤ ↑m₂ := by
+      have h1 : Real.log (4 * ↑(Fintype.card A) / δ) /
+          (2 * (min (ε / 4) 1) ^ 2) =
+          (1 / (2 * (min (ε / 4) 1) ^ 2)) *
+            Real.log (4 * ↑(Fintype.card A) / δ) := by
+        ring
+      rw [h1]
+      calc (1 / (2 * (min (ε / 4) 1) ^ 2)) *
+            Real.log (4 * ↑(Fintype.card A) / δ)
+          ≤ ↑(Nat.ceil ((1 / (2 * (min (ε / 4) 1) ^ 2)) *
+              Real.log (4 * ↑(Fintype.card A) / δ))) :=
+            Nat.le_ceil _
+        _ ≤ ↑(Nat.ceil ((1 / (2 * (min (ε / 4) 1) ^ 2)) *
+              Real.log (4 * ↑(Fintype.card A) / δ)) + 1) := by
+            exact_mod_cast Nat.le_succ _
+        _ = ↑m₂ := by simp [m₂]
     have hval_uniform : ∀ xs₁ : Fin m₁ → X,
         μ₂ {xs₂ | (xs₁, xs₂) ∈ BadVal} ≤ ENNReal.ofReal (δ / 2) := by
       intro xs₁
-      -- Use effective η = min(ε/4, 1) to handle both ε < 4 and ε ≥ 4 cases
-      have hη : 0 < min (ε / 4) 1 := lt_min (by linarith) one_pos
-      have hη1 : min (ε / 4) 1 ≤ 1 := min_le_right _ _
-      let cand : A → Concept X Bool := fun a =>
-        LA.learnWithAdvice a (fun i => (xs₁ i, c (xs₁ i)))
-      have h_cand_meas : ∀ a : A, Measurable (cand a) :=
-        fun a => learnWithAdvice_measurable_fixed LA h_eval a _
-      have hfvb := finite_validation_family_bound D c hcm cand h_cand_meas m₂ hm₂_pos
-        (min (ε / 4) 1) hη hη1
-      -- BadVal section ⊆ {|diff| ≥ ε/4} ⊆ {|diff| ≥ min(ε/4, 1)}
-      have h_sub : {xs₂ : Fin m₂ → X | (xs₁, xs₂) ∈ BadVal} ⊆
-          {xs : Fin m₂ → X | ∃ a : A,
-            |TrueErrorReal X (cand a) c D -
-              EmpiricalError X Bool (cand a) (fun i => (xs i, c (xs i)))
-                (zeroOneLoss Bool)| ≥ min (ε / 4) 1} := by
-        intro xs₂ hxs₂
-        simp only [Set.mem_setOf_eq, BadVal, cand] at hxs₂ ⊢
-        obtain ⟨a, ha⟩ := hxs₂
-        exact ⟨a, le_trans (min_le_left _ _) ha⟩
-      calc μ₂ {xs₂ | (xs₁, xs₂) ∈ BadVal}
-          ≤ μ₂ {xs : Fin m₂ → X | ∃ a : A,
-              |TrueErrorReal X (cand a) c D -
-                EmpiricalError X Bool (cand a) (fun i => (xs i, c (xs i)))
-                  (zeroOneLoss Bool)| ≥ min (ε / 4) 1} :=
-            μ₂.mono h_sub
-        _ ≤ ENNReal.ofReal ((Fintype.card A : ℝ) * 2 *
-            Real.exp (-2 * ↑m₂ * (min (ε / 4) 1) ^ 2)) := hfvb
-        _ ≤ ENNReal.ofReal (δ / 2) := by
-            apply ENNReal.ofReal_le_ofReal
-            -- UK_2: Hoeffding arithmetic — |A|·2·exp(-2m₂η²) ≤ δ/2
-            set η := min (ε / 4) 1 with hη_def
-            have hη_pos : (0 : ℝ) < η := lt_min (by linarith) one_pos
-            have h2η2_pos : (0 : ℝ) < 2 * η ^ 2 := by positivity
-            have hA_pos : (0 : ℝ) < Fintype.card A :=
-              Nat.cast_pos.mpr Fintype.card_pos
-            set R := 4 * ↑(Fintype.card A) / δ with hR_def
-            have hR_pos : (0 : ℝ) < R := div_pos (by positivity) hδ
-            -- m₂ ≥ (1/(2η²))·log R, so log R / (2η²) ≤ m₂
-            have hm₂_ge : Real.log R / (2 * η ^ 2) ≤ ↑m₂ := by
-              have h1 : Real.log R / (2 * η ^ 2) =
-                  (1 / (2 * η ^ 2)) * Real.log R := by ring
-              rw [h1]
-              calc (1 / (2 * η ^ 2)) * Real.log R
-                  ≤ ↑(Nat.ceil ((1 / (2 * η ^ 2)) * Real.log R)) :=
-                    Nat.le_ceil _
-                _ ≤ ↑(Nat.ceil ((1 / (2 * η ^ 2)) * Real.log R) + 1) := by
-                    exact_mod_cast Nat.le_succ _
-                _ = ↑m₂ := by simp [m₂, η, R]
-            -- Therefore: log R ≤ 2·m₂·η²
-            have hlog_le : Real.log R ≤ 2 * ↑m₂ * η ^ 2 := by
-              have := mul_le_mul_of_nonneg_right hm₂_ge (le_of_lt h2η2_pos)
-              rw [div_mul_cancel₀ _ (ne_of_gt h2η2_pos)] at this
-              linarith
-            by_cases hR1 : R ≤ 1
-            · -- Case R = 4|A|/δ ≤ 1, so |A| ≤ δ/4, trivially bounded
-              have hA_le : (Fintype.card A : ℝ) * 2 ≤ δ / 2 := by
-                have : R * δ = 4 * ↑(Fintype.card A) := by
-                  simp only [R]; field_simp
-                nlinarith
-              have hm₂_real_pos : (0 : ℝ) < ↑m₂ := Nat.cast_pos.mpr hm₂_pos
-              have hexp_le : Real.exp (-2 * ↑m₂ * η ^ 2) ≤ 1 :=
-                Real.exp_le_one_iff.mpr (by nlinarith [sq_nonneg η])
-              calc (Fintype.card A : ℝ) * 2 * Real.exp (-2 * ↑m₂ * η ^ 2)
-                  ≤ (Fintype.card A : ℝ) * 2 * 1 := by gcongr
-                _ = (Fintype.card A : ℝ) * 2 := mul_one _
-                _ ≤ δ / 2 := hA_le
-            · -- Case R > 1: use exp(-2m₂η²) ≤ exp(-log R) = 1/R = δ/(4|A|)
-              push Not at hR1
-              have hexp_bound :
-                  Real.exp (-2 * ↑m₂ * η ^ 2) ≤ δ / (4 * ↑(Fintype.card A)) := by
-                have h1 : -(2 * ↑m₂ * η ^ 2) ≤ -Real.log R := by linarith
-                have h2 : -2 * ↑m₂ * η ^ 2 = -(2 * ↑m₂ * η ^ 2) := by ring
-                rw [h2]
-                calc Real.exp (-(2 * ↑m₂ * η ^ 2))
-                    ≤ Real.exp (-Real.log R) :=
-                      Real.exp_le_exp_of_le h1
-                  _ = R⁻¹ := by rw [Real.exp_neg, Real.exp_log hR_pos]
-                  _ = δ / (4 * ↑(Fintype.card A)) := by
-                      simp only [R]; rw [inv_div]
-              calc (Fintype.card A : ℝ) * 2 *
-                      Real.exp (-2 * ↑m₂ * η ^ 2)
-                  ≤ (Fintype.card A : ℝ) * 2 *
-                      (δ / (4 * ↑(Fintype.card A))) := by gcongr
-                _ = δ / 2 := by field_simp; ring
+      simpa [BadVal, μ₂] using
+        adviceValidationUniformBound LA h_eval c D (m₁ := m₁) (m₂ := m₂)
+          hcm hm₂_pos ε δ hε hδ hm₂_ge xs₁
     -- Step 2h: Product complement bounds
     have hBadVal_prod : (μ₁.prod μ₂) BadVal ≤ ENNReal.ofReal (δ / 2) := by
       rw [MeasureTheory.Measure.prod_apply hBadVal_meas]
@@ -992,19 +1059,8 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
             nat_pair_sample_marginal D m₁ m₂ GoodUsed hGoodUsed_meas
         _ = (μ₁.prod μ₂) GoodPair :=
             used_sample_split_measure D m₁ m₂ GoodPair hGoodPair_meas
-    -- Step 2k: Final bound (monotonicity)
-    -- The goal has Nat.unpair(Nat.pair m₁ m₂) in Fin binder types.
-    -- Use Decidable.decide + native computation to force evaluation:
-    -- Actually, try omega-like approach or just sorry this pure-Lean gap.
-    -- The mathematical proof is fully verified:
-    -- π(D)(goal_set) ≥ π(D)(GoodFull) = (μ₁×μ₂)(GoodPair) ≥ 1-δ
-    -- via h_transport, hGoodPair_bound, hGoodFull_sub_goal.
-    -- The gap is purely a binder-type cast (Nat.unpair doesn't definitionally reduce).
-    have h_gf_bound : MeasureTheory.Measure.pi (fun _ : Fin (Nat.pair m₁ m₂) => D) GoodFull
-        ≥ ENNReal.ofReal (1 - δ) := by
-      rw [h_transport]; exact hGoodPair_bound
-    -- The goal has Fin (Nat.unpair (Nat.pair m₁ m₂)).1 binder types from the learner.
-    -- Our proof uses Fin m₁. Bridge via Nat.unpair_pair.
+    -- Step 2k: Final bound. The learner exposes `Nat.unpair (Nat.pair m₁ m₂)`;
+    -- the proof above uses `m₁` and `m₂`, so the last step transports across that cast.
     have h_gf_bound : MeasureTheory.Measure.pi (fun _ : Fin (Nat.pair m₁ m₂) => D) GoodFull
         ≥ ENNReal.ofReal (1 - δ) := by
       rw [h_transport]; exact hGoodPair_bound
