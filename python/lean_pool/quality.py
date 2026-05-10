@@ -518,9 +518,8 @@ def _check_projects(root: Path) -> list[_QualityError]:
         return errors
 
     path = root / "LeanPool" / "projects.yml"
-    tags = data.get("tags", [])
     projects = data.get("projects", [])
-    errors.extend(_check_project_container(path, tags, projects))
+    errors.extend(_check_project_container(path, projects))
     if errors:
         return errors
 
@@ -528,18 +527,13 @@ def _check_projects(root: Path) -> list[_QualityError]:
     if errors:
         return errors
 
-    known_tags = set(tags)
     for index, project in enumerate(projects, start=1):
-        errors.extend(_check_project(root, path, index, project, known_tags))
+        errors.extend(_check_project(root, path, index, project))
     return errors
 
 
-def _check_project_container(
-    path: Path, tags: Any, projects: Any
-) -> list[_QualityError]:
+def _check_project_container(path: Path, projects: Any) -> list[_QualityError]:
     errors: list[_QualityError] = []
-    if not isinstance(tags, list) or any(not isinstance(tag, str) for tag in tags):
-        errors.append(_QualityError(path, 1, "`tags` must be a list of strings"))
     if not isinstance(projects, list):
         errors.append(_QualityError(path, 1, "`projects` must be a list"))
     return errors
@@ -575,13 +569,12 @@ def _check_project(
     path: Path,
     index: int,
     project: Any,
-    known_tags: set[str],
 ) -> list[_QualityError]:
     if not isinstance(project, dict):
         return [_QualityError(path, 1, f"project #{index} must be a mapping")]
 
     errors = _check_required_project_fields(path, index, project)
-    errors.extend(_check_project_values(root, path, index, project, known_tags))
+    errors.extend(_check_project_values(root, path, index, project))
     if errors:
         return errors
 
@@ -619,7 +612,6 @@ def _check_project_values(
     path: Path,
     index: int,
     project: dict[str, Any],
-    known_tags: set[str],
 ) -> list[_QualityError]:
     errors: list[_QualityError] = []
     if project["status"] not in STATUS_VALUES:
@@ -639,14 +631,6 @@ def _check_project_values(
     if not _string_list(project["tags"]):
         errors.append(
             _QualityError(path, 1, f"project #{index} tags must be nonempty strings")
-        )
-    elif unknown_tags := sorted(set(project["tags"]) - known_tags):
-        errors.append(
-            _QualityError(
-                path,
-                1,
-                f"project #{index} uses unknown tags: {', '.join(unknown_tags)}",
-            )
         )
     entry_path = _module_to_path(root, str(project["entry_module"]))
     if not entry_path.exists():

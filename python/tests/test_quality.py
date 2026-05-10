@@ -26,7 +26,7 @@ def _write_minimal_repo(root: Path, basic_body: str = 'def hello := "world"\n') 
     (root / "LeanPool").mkdir()
     (root / "LeanPool.lean").write_text("import LeanPool.Basic\n")
     (root / "LeanPool" / "Basic.lean").write_text(f"{HEADER}\n{basic_body}")
-    (root / "LeanPool" / "projects.yml").write_text("tags: []\nprojects: []\n")
+    (root / "LeanPool" / "projects.yml").write_text("projects: []\n")
     (root / "lakefile.toml").write_text(
         'name = "lean-pool"\nversion = "0.1.0"\ndefaultTargets = ["LeanPool"]\n'
     )
@@ -35,10 +35,9 @@ def _write_minimal_repo(root: Path, basic_body: str = 'def hello := "world"\n') 
 def _write_project_yaml(root: Path, projects: list[dict[str, str]]) -> None:
     """Write a `projects.yml` containing the given project entries.
 
-    The entries share a single tag vocabulary so individual tests don't have to
-    repeat boilerplate. Each entry uses an `arxiv` source by default.
+    Each entry uses an `arxiv` source and the `[test]` tag set by default.
     """
-    lines = ["tags: [test]", "projects:"]
+    lines = ["projects:"]
     for project in projects:
         lines.extend(
             [
