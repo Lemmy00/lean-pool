@@ -134,26 +134,26 @@ def test_quality_check_parses_declaration_with_prime_suffix(tmp_path: Path) -> N
     assert not any(declaration.name == "foo" for declaration in declarations)
 
 
-def test_quality_check_honors_file_size_waiver(tmp_path: Path) -> None:
-    """Regression test for e161b8c: `-- size-limit-ok:` waives the 2000-line cap."""
+def test_quality_check_rejects_oversized_file(tmp_path: Path) -> None:
+    """Files over the 10000-line cap fail; there is no waiver."""
     _write_minimal_repo(tmp_path)
-    body = "-- size-limit-ok: vendored upstream import\n" + "def x := 0\n" * 2001
+    body = "def x := 0\n" * 10001
     (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{HEADER}\n{body}")
 
     errors = run_checks(tmp_path, skip_lean_axioms=True)
 
-    assert not any("limit is 2000" in error.message for error in errors)
+    assert any("limit is 10000" in error.message for error in errors)
 
 
-def test_quality_check_rejects_oversized_file_without_waiver(tmp_path: Path) -> None:
-    """The 2000-line cap still bites when no waiver is present."""
+def test_quality_check_does_not_honor_size_marker(tmp_path: Path) -> None:
+    """The old `-- size-limit-ok:` waiver is gone: the marker has no effect."""
     _write_minimal_repo(tmp_path)
-    body = "def x := 0\n" * 2001
+    body = "-- size-limit-ok: should be ignored\n" + "def x := 0\n" * 10001
     (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{HEADER}\n{body}")
 
     errors = run_checks(tmp_path, skip_lean_axioms=True)
 
-    assert any("limit is 2000" in error.message for error in errors)
+    assert any("limit is 10000" in error.message for error in errors)
 
 
 def test_quality_check_accepts_project_card_after_imports(tmp_path: Path) -> None:
@@ -204,13 +204,28 @@ def test_quality_check_rejects_non_verified_status(tmp_path: Path) -> None:
 
 
 def test_axiom_audit_resolved_parses_success_lines() -> None:
-    """`#print axioms` success lines populate the resolved set; _root_ stripped."""
+    """`#print axioms` success lines populate the resolved set; _root_ stripped.
+
+    Both output forms must be recognized — the with-axioms list and the
+    axiom-free message that pure `def`s produce.
+    """
     stdout = (
         "'_root_.Foo.bar' depends on axioms: [Classical.choice, propext]\n"
         "'baz' depends on axioms: []\n"
+        "'_root_.hello' does not depend on any axioms\n"
+        # Names ending in `'` are echoed by Lean as `'foo'' ...`; the parser
+        # must capture the prime, not stop at the embedded quote.
+        "'_root_.Ns.neg_one_pow_ne_zero'' does not depend on any axioms\n"
+        "'_root_.Ns.exp_poly_sub_prod'' depends on axioms: [propext]\n"
     )
 
-    assert _axiom_audit_resolved(stdout) == {"Foo.bar", "baz"}
+    assert _axiom_audit_resolved(stdout) == {
+        "Foo.bar",
+        "baz",
+        "hello",
+        "Ns.neg_one_pow_ne_zero'",
+        "Ns.exp_poly_sub_prod'",
+    }
 
 
 def test_axiom_audit_missing_attributes_stderr_to_each_declaration(

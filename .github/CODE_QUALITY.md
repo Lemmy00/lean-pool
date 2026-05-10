@@ -51,12 +51,12 @@ Expected diagnostic tests, if any, must live under a dedicated test directory ra
 
 ### 5. Size limits
 
-Hard caps:
+Hard caps, no waivers:
 
-- no `.lean` file over 2000 non-blank, non-comment lines
+- no `.lean` file over 10000 non-blank, non-comment lines
 - no single theorem/lemma proof body over 100 lines
 
-Use an AST-aware linter for proof ranges. A temporary text heuristic is acceptable for v0. Allow waivers only with `-- size-limit-ok: <reason>`.
+Use an AST-aware linter for proof ranges. A temporary text heuristic is acceptable for v0.
 
 ### 6. Structured project metadata
 

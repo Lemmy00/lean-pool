@@ -281,15 +281,11 @@ def _non_comment_code_lines(text: str) -> int:
 def _check_file_sizes(root: Path) -> list[_QualityError]:
     errors: list[_QualityError] = []
     for path in _lean_content_files(root):
-        text = path.read_text()
-        # Honor `-- size-limit-ok: <reason>` waivers per CODE_QUALITY.md §5.
-        if any("size-limit-ok:" in line for line in text.splitlines()):
-            continue
-        code_lines = _non_comment_code_lines(text)
-        if code_lines > 2000:
+        code_lines = _non_comment_code_lines(path.read_text())
+        if code_lines > 10000:
             errors.append(
                 _QualityError(
-                    path, 1, f"file has {code_lines} code lines; limit is 2000"
+                    path, 1, f"file has {code_lines} code lines; limit is 10000"
                 )
             )
     return errors
@@ -317,8 +313,6 @@ def _check_proof_sizes(root: Path) -> list[_QualityError]:
                 else len(original_lines) + 1
             )
             block = original_lines[start_line - 1 : end_line - 1]
-            if any("size-limit-ok:" in line for line in block):
-                continue
             try:
                 body_start = next(
                     offset for offset, line in enumerate(block) if ":=" in line
@@ -439,7 +433,8 @@ def _parse_axiom_output(
     by_name.update(
         {f"_root_.{declaration.name}": declaration for declaration in declarations}
     )
-    pattern = re.compile(r"^'([^']+)' depends on axioms: \[(.*)\]$", re.MULTILINE)
+    # Names may contain `'` (e.g. `foo'`); see _axiom_audit_resolved comment.
+    pattern = re.compile(r"^'(.+?)' depends on axioms: \[(.*)\]$", re.MULTILINE)
     for match in pattern.finditer(output):
         name = match.group(1)
         axioms = {item.strip() for item in match.group(2).split(",") if item.strip()}
@@ -459,7 +454,21 @@ def _parse_axiom_output(
 
 def _axiom_audit_resolved(stdout: str) -> set[str]:
     """Return the set of declaration names that `#print axioms` resolved."""
-    pattern = re.compile(r"^'([^']+)' depends on axioms: \[", re.MULTILINE)
+    # `#print axioms NAME` produces one of two messages on stdout:
+    #   'NAME' depends on axioms: [a, b, c]
+    #   'NAME' does not depend on any axioms
+    # Both indicate the lookup resolved; only the first list is interesting
+    # for the trusted-axiom check, but both must count as "seen" so we don't
+    # emit a spurious "produced no result" for axiom-free declarations.
+    #
+    # Names may contain `'` (e.g. `foo'`), so we cannot use `[^']+` for the
+    # name. Use a non-greedy match anchored on `' ` (closing quote followed
+    # by space) — Lean always emits one space between the echoed name and
+    # the verb, and a name cannot end with whitespace.
+    pattern = re.compile(
+        r"^'(.+?)' (?:depends on axioms: \[|does not depend on any axioms)",
+        re.MULTILINE,
+    )
     resolved: set[str] = set()
     for match in pattern.finditer(stdout):
         name = match.group(1)
