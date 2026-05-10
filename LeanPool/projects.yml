@@ -101,4 +101,17 @@ projects:
       - analyticEngine_lower_bound
     tags:
       - number-theory
+  - slug: apportionment
+    title: Apportionmentlib
+    entry_module: LeanPool.Apportionment
+    authors:
+      - Michał Dobranowski
+    source:
+      url: https://github.com/mdbrnowski/Apportionmentlib
+      github_repo: mdbrnowski/apportionmentlib
+    status: verified
+    main_declarations:
+      - Apportionment.balinski_young
+    tags:
+      - social-choice-theory
       - combinatorics
