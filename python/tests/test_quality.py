@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from lean_pool.quality import _parse_declarations, _strip_lean_comments, run_checks
+from lean_pool.quality import (
+    _axiom_audit_missing,
+    _axiom_audit_resolved,
+    _Declaration,
+    _parse_declarations,
+    _strip_lean_comments,
+    run_checks,
+)
 
 HEADER = """/-
 Copyright (c) 2026 Test Author. All rights reserved.
@@ -123,6 +130,33 @@ def test_quality_check_rejects_non_verified_status(tmp_path: Path) -> None:
     errors = run_checks(tmp_path, skip_lean_axioms=True)
 
     assert any("invalid status" in error.message for error in errors)
+
+
+def test_axiom_audit_resolved_parses_success_lines() -> None:
+    """`#print axioms` success lines populate the resolved set; _root_ stripped."""
+    stdout = (
+        "'_root_.Foo.bar' depends on axioms: [Classical.choice, propext]\n"
+        "'baz' depends on axioms: []\n"
+    )
+
+    assert _axiom_audit_resolved(stdout) == {"Foo.bar", "baz"}
+
+
+def test_axiom_audit_missing_attributes_stderr_to_each_declaration(
+    tmp_path: Path,
+) -> None:
+    """Per-declaration errors quote the matching stderr line."""
+    decl_a = _Declaration(name="foo'", path=tmp_path / "A.lean", line=12, kind="lemma")
+    decl_b = _Declaration(name="bar", path=tmp_path / "B.lean", line=34, kind="lemma")
+    stderr = "/tmp/x.lean:5:0: error: unknown constant '_root_.foo''\n"
+
+    errors = _axiom_audit_missing([decl_a, decl_b], stderr)
+
+    assert len(errors) == 2
+    assert errors[0].path == tmp_path / "A.lean" and errors[0].line == 12
+    assert "unknown constant" in errors[0].message
+    assert errors[1].path == tmp_path / "B.lean" and errors[1].line == 34
+    assert "produced no result" in errors[1].message
 
 
 def test_quality_check_rejects_extra_axiom_status(tmp_path: Path) -> None:

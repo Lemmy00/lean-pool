@@ -396,16 +396,25 @@ def _check_axioms(root: Path) -> list[_QualityError]:
     finally:
         temp_path.unlink(missing_ok=True)
 
-    if process.returncode != 0:
-        return [
+    errors = _parse_axiom_output(root, declarations, process.stdout)
+    resolved = _axiom_audit_resolved(process.stdout)
+    missing = [
+        declaration for declaration in declarations if declaration.name not in resolved
+    ]
+    # Distinguish "Lean ran but couldn't resolve some declarations" (per-decl
+    # localization is useful) from "Lean failed before any #print axioms ran"
+    # (a single root-cause error is more useful than N copies).
+    if missing and not resolved and process.returncode != 0:
+        return errors + [
             _QualityError(
                 root / "LeanPool.lean",
                 1,
-                f"axiom audit failed: {process.stderr.strip()}",
+                f"axiom audit failed before any declaration was checked: "
+                f"{process.stderr.strip() or '(no stderr)'}",
             )
         ]
-
-    return _parse_axiom_output(root, declarations, process.stdout)
+    errors.extend(_axiom_audit_missing(missing, process.stderr))
+    return errors
 
 
 def _parse_axiom_output(
@@ -434,6 +443,46 @@ def _parse_axiom_output(
                 )
             )
     return errors
+
+
+def _axiom_audit_resolved(stdout: str) -> set[str]:
+    """Return the set of declaration names that `#print axioms` resolved."""
+    pattern = re.compile(r"^'([^']+)' depends on axioms: \[", re.MULTILINE)
+    resolved: set[str] = set()
+    for match in pattern.finditer(stdout):
+        name = match.group(1)
+        # Lean echoes back the qualified name we passed in; strip _root_. so it
+        # matches the unqualified names we collected via _parse_declarations.
+        if name.startswith("_root_."):
+            name = name[len("_root_.") :]
+        resolved.add(name)
+    return resolved
+
+
+def _axiom_audit_missing(
+    missing: list[_Declaration],
+    stderr: str,
+) -> list[_QualityError]:
+    """Emit one error per declaration that `#print axioms` could not resolve."""
+    errors: list[_QualityError] = []
+    for declaration in missing:
+        snippet = _stderr_snippet_for(stderr, declaration.name)
+        message = (
+            f"axiom audit failed for {declaration.name}: {snippet}"
+            if snippet
+            else f"axiom audit produced no result for {declaration.name}"
+        )
+        errors.append(_QualityError(declaration.path, declaration.line, message))
+    return errors
+
+
+def _stderr_snippet_for(stderr: str, name: str) -> str:
+    """Find the most relevant stderr line mentioning `name`, or ''."""
+    error_lines = [line for line in stderr.splitlines() if name in line]
+    for line in error_lines:
+        if "error" in line.lower():
+            return line.strip()
+    return error_lines[0].strip() if error_lines else ""
 
 
 def _load_projects_yaml(
