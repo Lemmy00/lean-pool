@@ -512,6 +512,10 @@ def _check_projects(root: Path) -> list[_QualityError]:
     if errors:
         return errors
 
+    errors.extend(_check_project_uniqueness(path, projects))
+    if errors:
+        return errors
+
     known_tags = set(tags)
     for index, project in enumerate(projects, start=1):
         errors.extend(_check_project(root, path, index, project, known_tags))
@@ -526,6 +530,33 @@ def _check_project_container(
         errors.append(_QualityError(path, 1, "`tags` must be a list of strings"))
     if not isinstance(projects, list):
         errors.append(_QualityError(path, 1, "`projects` must be a list"))
+    return errors
+
+
+def _check_project_uniqueness(
+    path: Path, projects: list[Any]
+) -> list[_QualityError]:
+    """Reject duplicate `slug` or `entry_module` across projects."""
+    errors: list[_QualityError] = []
+    for field in ("slug", "entry_module"):
+        seen: dict[str, int] = {}
+        for index, project in enumerate(projects, start=1):
+            if not isinstance(project, dict):
+                continue
+            value = project.get(field)
+            if not isinstance(value, str):
+                continue
+            if value in seen:
+                errors.append(
+                    _QualityError(
+                        path,
+                        1,
+                        f"duplicate `{field}` {value!r} in projects "
+                        f"#{seen[value]} and #{index}",
+                    )
+                )
+            else:
+                seen[value] = index
     return errors
 
 

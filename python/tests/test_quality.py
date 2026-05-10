@@ -159,6 +159,41 @@ def test_axiom_audit_missing_attributes_stderr_to_each_declaration(
     assert "produced no result" in errors[1].message
 
 
+def test_quality_check_rejects_duplicate_slug(tmp_path: Path) -> None:
+    """Two projects sharing a slug must be rejected."""
+    _write_minimal_repo(tmp_path)
+    _write_project_yaml(
+        tmp_path,
+        [
+            {"slug": "p", "entry_module": "LeanPool.Basic"},
+            {"slug": "p", "entry_module": "LeanPool.Other"},
+        ],
+    )
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any(
+        "duplicate `slug`" in error.message and "'p'" in error.message
+        for error in errors
+    )
+
+
+def test_quality_check_rejects_duplicate_entry_module(tmp_path: Path) -> None:
+    """Two projects sharing an entry_module must be rejected."""
+    _write_minimal_repo(tmp_path)
+    _write_project_yaml(
+        tmp_path,
+        [
+            {"slug": "a", "entry_module": "LeanPool.Basic"},
+            {"slug": "b", "entry_module": "LeanPool.Basic"},
+        ],
+    )
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any("duplicate `entry_module`" in error.message for error in errors)
+
+
 def test_quality_check_rejects_extra_axiom_status(tmp_path: Path) -> None:
     """`extra-axiom` status was previously valid; only `verified` is now accepted."""
     _write_minimal_repo(tmp_path)
