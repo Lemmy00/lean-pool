@@ -36,6 +36,24 @@ projects:
       - number-theory
       - combinatorics
       - polynomials
+  - slug: rl-theory-in-lean
+    title: RL Theory in Lean
+    entry_module: LeanPool.RlTheoryInLean
+    authors:
+      - Shangtong Zhang
+    source:
+      arxiv: "2511.03618"
+      github_repo: ShangtongZhang/rl-theory-in-lean
+    status: verified
+    main_declarations:
+      - StochasticMatrix.stationary_distribution_exists
+    tags:
+      - probability
+      - reinforcement-learning
+      - stochastic-matrices
+    msc:
+      - "62L20"
+      - "60J10"
   - slug: clawristotle
     title: "Clawristotle: Vlasov-Maxwell-Landau steady-state classification"
     entry_module: LeanPool.Clawristotle
