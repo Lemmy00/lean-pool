@@ -36,6 +36,21 @@ projects:
       - number-theory
       - combinatorics
       - polynomials
+  - slug: clawristotle
+    title: "Clawristotle: Vlasov-Maxwell-Landau steady-state classification"
+    entry_module: LeanPool.Clawristotle
+    authors:
+      - Vasily Ilin
+    source:
+      arxiv: "2603.15929"
+    status: verified
+    main_declarations:
+      - VML.Theorem42
+      - VML.CoulombConcreteTheorem42
+    tags:
+      - pde
+      - kinetic-theory
+      - mathematical-physics
   - slug: partial-regularity
     title: Almost all primes are partially regular
     entry_module: LeanPool.PartialRegularity
