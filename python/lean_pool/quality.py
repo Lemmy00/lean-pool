@@ -453,7 +453,16 @@ def _parse_axiom_output(
 
 def _axiom_audit_resolved(stdout: str) -> set[str]:
     """Return the set of declaration names that `#print axioms` resolved."""
-    pattern = re.compile(r"^'([^']+)' depends on axioms: \[", re.MULTILINE)
+    # `#print axioms NAME` produces one of two messages on stdout:
+    #   'NAME' depends on axioms: [a, b, c]
+    #   'NAME' does not depend on any axioms
+    # Both indicate the lookup resolved; only the first list is interesting
+    # for the trusted-axiom check, but both must count as "seen" so we don't
+    # emit a spurious "produced no result" for axiom-free declarations.
+    pattern = re.compile(
+        r"^'([^']+)' (?:depends on axioms: \[|does not depend on any axioms)",
+        re.MULTILINE,
+    )
     resolved: set[str] = set()
     for match in pattern.finditer(stdout):
         name = match.group(1)

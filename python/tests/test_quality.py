@@ -204,13 +204,18 @@ def test_quality_check_rejects_non_verified_status(tmp_path: Path) -> None:
 
 
 def test_axiom_audit_resolved_parses_success_lines() -> None:
-    """`#print axioms` success lines populate the resolved set; _root_ stripped."""
+    """`#print axioms` success lines populate the resolved set; _root_ stripped.
+
+    Both output forms must be recognized — the with-axioms list and the
+    axiom-free message that pure `def`s produce.
+    """
     stdout = (
         "'_root_.Foo.bar' depends on axioms: [Classical.choice, propext]\n"
         "'baz' depends on axioms: []\n"
+        "'_root_.hello' does not depend on any axioms\n"
     )
 
-    assert _axiom_audit_resolved(stdout) == {"Foo.bar", "baz"}
+    assert _axiom_audit_resolved(stdout) == {"Foo.bar", "baz", "hello"}
 
 
 def test_axiom_audit_missing_attributes_stderr_to_each_declaration(
