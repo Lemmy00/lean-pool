@@ -104,18 +104,6 @@ CI checks:
 
 ## Advisory Automation
 
-### 9. Semantic dedup
-
-On every PR, extract natural-language theorem/lemma docstrings and query LeanExplore.
-
-Use [`lean-explore`](https://www.leanexplore.com/docs) with `LEANEXPLORE_API_KEY` and comment with top candidate duplicates across:
-
-- mathlib
-- existing Lean Pool declarations
-- other indexed packages
-
-This is advisory only. Never block a PR solely on semantic similarity.
-
 ### 10. Proof performance
 
 Track proof performance, but do not hard-fail on wall-clock timing.
