@@ -174,3 +174,20 @@ projects:
     tags:
       - measure-theory
       - geometric-inequalities
+  - slug: sumsthreesquares
+    title: Sums of Three Squares
+    entry_module: LeanPool.SumsThreeSquares
+    authors:
+      - Bhavik Mehta
+      - Pietro Monticone
+      - Abel Doñate Muñoz
+    source:
+      doi: "10.2307/2033731"
+      github_repo: pitmonticone/SumsThreeSquares
+    status: verified
+    main_declarations:
+      - LeanPool.SumsThreeSquares.blueprint_case_mod8_eq3
+    tags:
+      - number-theory
+      - quadratic-forms
+      - geometry-of-numbers

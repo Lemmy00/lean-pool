@@ -198,3 +198,6 @@ import LeanPool.RlTheoryInLean.Probability.MarkovChain.Finite.Defs
 import LeanPool.RlTheoryInLean.Probability.MarkovChain.Trajectory
 import LeanPool.RlTheoryInLean.StochasticApproximation
 import LeanPool.RlTheoryInLean.StochasticApproximation.DiscreteGronwall
+import LeanPool.SumsThreeSquares
+import LeanPool.SumsThreeSquares.MinkowskiConvex
+import LeanPool.SumsThreeSquares.SumThreeSquares
