@@ -119,6 +119,78 @@ def test_quality_check_finds_prefixed_declarations(tmp_path: Path) -> None:
     assert any(declaration.name == "decorated_identity" for declaration in declarations)
 
 
+def test_quality_check_parses_declaration_with_prime_suffix(tmp_path: Path) -> None:
+    r"""Trailing primes must survive declaration parsing.
+
+    Regression: the original regex used `\b` after `[A-Za-z_][A-Za-z0-9_'.]*`,
+    but `\b` does not treat `'` as a word character, so `lemma foo'` was
+    parsed as `foo` and the subsequent `#print axioms` audit failed with
+    `unknown constant`.
+    """
+    _write_minimal_repo(tmp_path, "theorem foo' (n : Nat) : n = n := rfl\n")
+
+    declarations = _parse_declarations(tmp_path)
+
+    assert any(declaration.name == "foo'" for declaration in declarations)
+    assert not any(declaration.name == "foo" for declaration in declarations)
+
+
+def test_quality_check_honors_file_size_waiver(tmp_path: Path) -> None:
+    """Regression test for e161b8c: `-- size-limit-ok:` waives the 2000-line cap."""
+    _write_minimal_repo(tmp_path)
+    body = "-- size-limit-ok: vendored upstream import\n" + "def x := 0\n" * 2001
+    (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{HEADER}\n{body}")
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert not any("limit is 2000" in error.message for error in errors)
+
+
+def test_quality_check_rejects_oversized_file_without_waiver(tmp_path: Path) -> None:
+    """The 2000-line cap still bites when no waiver is present."""
+    _write_minimal_repo(tmp_path)
+    body = "def x := 0\n" * 2001
+    (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{HEADER}\n{body}")
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any("limit is 2000" in error.message for error in errors)
+
+
+def test_quality_check_accepts_project_card_after_imports(tmp_path: Path) -> None:
+    """Regression test for e161b8c: project card may follow imports.
+
+    Mathlib convention places imports between the file header and the module
+    docstring. The earlier check required the docstring at byte offset 0 of the
+    body and rejected this layout.
+    """
+    _write_minimal_repo(tmp_path)
+    (tmp_path / "LeanPool.lean").write_text(
+        "import LeanPool.Basic\nimport LeanPool.MyProj\n"
+    )
+    card = (
+        "/-!\n"
+        "# Test Project\n"
+        "\n"
+        "Source: arxiv:1234.5678\n"
+        "Authors: Test Author\n"
+        "Status: verified\n"
+        "Main declarations: `hello`\n"
+        "Tags: test\n"
+        "-/\n"
+    )
+    (tmp_path / "LeanPool" / "MyProj.lean").write_text(
+        f"{HEADER}\nimport LeanPool.Basic\n\n{card}\ndef hello : Nat := 1\n"
+    )
+    _write_project_yaml(tmp_path, [{"slug": "p", "entry_module": "LeanPool.MyProj"}])
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    # The project-card position check must accept this layout. (lake env lean
+    # for the declarations check fails in the test sandbox; that's unrelated.)
+    assert not any("project card for p is out of date" in e.message for e in errors)
+
+
 def test_quality_check_rejects_non_verified_status(tmp_path: Path) -> None:
     """Only `status: verified` projects may merge; `draft` is not accepted."""
     _write_minimal_repo(tmp_path)
@@ -204,7 +276,9 @@ def test_quality_check_rejects_out_of_order_header(tmp_path: Path) -> None:
         "Released under Apache 2.0 license as described in the file LICENSE.\n"
         "-/\n"
     )
-    (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{out_of_order}\ndef hello := 1\n")
+    (tmp_path / "LeanPool" / "Basic.lean").write_text(
+        f"{out_of_order}\ndef hello := 1\n"
+    )
 
     errors = run_checks(tmp_path, skip_lean_axioms=True)
 
