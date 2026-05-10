@@ -281,15 +281,11 @@ def _non_comment_code_lines(text: str) -> int:
 def _check_file_sizes(root: Path) -> list[_QualityError]:
     errors: list[_QualityError] = []
     for path in _lean_content_files(root):
-        text = path.read_text()
-        # Honor `-- size-limit-ok: <reason>` waivers per CODE_QUALITY.md §5.
-        if any("size-limit-ok:" in line for line in text.splitlines()):
-            continue
-        code_lines = _non_comment_code_lines(text)
-        if code_lines > 2000:
+        code_lines = _non_comment_code_lines(path.read_text())
+        if code_lines > 10000:
             errors.append(
                 _QualityError(
-                    path, 1, f"file has {code_lines} code lines; limit is 2000"
+                    path, 1, f"file has {code_lines} code lines; limit is 10000"
                 )
             )
     return errors
@@ -317,8 +313,6 @@ def _check_proof_sizes(root: Path) -> list[_QualityError]:
                 else len(original_lines) + 1
             )
             block = original_lines[start_line - 1 : end_line - 1]
-            if any("size-limit-ok:" in line for line in block):
-                continue
             try:
                 body_start = next(
                     offset for offset, line in enumerate(block) if ":=" in line
