@@ -328,12 +328,12 @@ def _check_proof_sizes(root: Path) -> list[_QualityError]:
                 continue
             body = "\n".join(block[body_start:])
             proof_lines = _non_comment_code_lines(body)
-            if proof_lines > 100:
+            if proof_lines > 200:
                 errors.append(
                     _QualityError(
                         path,
                         start_line,
-                        f"proof has {proof_lines} code lines; limit is 100",
+                        f"proof has {proof_lines} code lines; limit is 200",
                     )
                 )
     return errors

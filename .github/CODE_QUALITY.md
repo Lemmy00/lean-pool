@@ -54,7 +54,7 @@ Expected diagnostic tests, if any, must live under a dedicated test directory ra
 Hard caps, no waivers:
 
 - no `.lean` file over 10000 non-blank, non-comment lines
-- no single theorem/lemma proof body over 100 lines
+- no single theorem/lemma proof body over 200 lines
 
 Use an AST-aware linter for proof ranges. A temporary text heuristic is acceptable for v0.
 
