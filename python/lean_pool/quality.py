@@ -18,7 +18,7 @@ CODE_QUALITY_URL = (
     "https://github.com/Vilin97/lean-pool/blob/main/.github/CODE_QUALITY.md"
 )
 FILE_HEADERS_DOC = f"{CODE_QUALITY_URL}#7-file-headers"
-STATUS_VALUES = {"verified", "draft", "extra-axiom"}
+STATUS_VALUES = {"verified"}
 SOURCE_KEYS = {"arxiv", "doi", "url"}
 DECLARATION_KEYWORDS = (
     "theorem",
@@ -41,15 +41,16 @@ FORBIDDEN_DIAGNOSTICS = re.compile(
 FORBIDDEN_SOUNDNESS = re.compile(
     r"\b(?:axiom|constant|unsafe|partial|opaque)\b|@\[\s*extern\b"
 )
-HEADER_PATTERNS = (
-    re.compile(r"\A/-\n"),
-    re.compile(r"^Copyright \(c\) \d{4} .+ All rights reserved\.$", re.MULTILINE),
-    re.compile(
-        r"^Released under Apache 2\.0 license as described in the file LICENSE\.$",
-        re.MULTILINE,
-    ),
-    re.compile(r"^Authors: .+$", re.MULTILINE),
-    re.compile(r"^-/\n", re.MULTILINE),
+# Strict four-line header. Anchored at the start of the file, no extra lines
+# allowed inside the block: this forbids ad-hoc Source/MSC/Tags/Status fields
+# (those belong in projects.yml per CODE_QUALITY.md §7) and enforces the
+# documented field order.
+HEADER_PATTERN = re.compile(
+    r"\A/-\n"
+    r"Copyright \(c\) \d{4} [^\n]+\. All rights reserved\.\n"
+    r"Released under Apache 2\.0 license as described in the file LICENSE\.\n"
+    r"Authors: [^\n]+\n"
+    r"-/\n"
 )
 
 
@@ -198,12 +199,15 @@ def _check_headers(root: Path) -> list[_QualityError]:
         if path == root / "LeanPool.lean":
             continue
         text = path.read_text()
-        if not all(pattern.search(text) for pattern in HEADER_PATTERNS):
+        if not HEADER_PATTERN.match(text):
             errors.append(
                 _QualityError(
                     path,
                     1,
-                    f"missing structured file header; see {FILE_HEADERS_DOC}",
+                    "malformed file header: expected exactly the four-line "
+                    "Copyright/License/Authors block in order, with no extra "
+                    "Source/MSC/Tags/Status fields (those live in "
+                    f"projects.yml); see {FILE_HEADERS_DOC}",
                 )
             )
     return errors
@@ -338,7 +342,8 @@ def _parse_declarations(root: Path) -> list[_Declaration]:
     declarations: list[_Declaration] = []
     keyword_pattern = "|".join(DECLARATION_KEYWORDS)
     # Use a negative lookahead instead of `\b`: `\b` does not treat `'` as a
-    # word character, so a name like `foo'` would be parsed as `foo`.
+    # word character, so a name like `foo'` would be parsed as `foo` and the
+    # subsequent `#print axioms` audit would fail with `unknown constant`.
     decl_pattern = re.compile(
         rf"^\s*{DECLARATION_PREFIX}({keyword_pattern})\s+"
         rf"([A-Za-z_][A-Za-z0-9_'.]*)(?![A-Za-z0-9_'.])"
@@ -403,16 +408,25 @@ def _check_axioms(root: Path) -> list[_QualityError]:
     finally:
         temp_path.unlink(missing_ok=True)
 
-    if process.returncode != 0:
-        return [
+    errors = _parse_axiom_output(root, declarations, process.stdout)
+    resolved = _axiom_audit_resolved(process.stdout)
+    missing = [
+        declaration for declaration in declarations if declaration.name not in resolved
+    ]
+    # Distinguish "Lean ran but couldn't resolve some declarations" (per-decl
+    # localization is useful) from "Lean failed before any #print axioms ran"
+    # (a single root-cause error is more useful than N copies).
+    if missing and not resolved and process.returncode != 0:
+        return errors + [
             _QualityError(
                 root / "LeanPool.lean",
                 1,
-                f"axiom audit failed: {process.stderr.strip()}",
+                f"axiom audit failed before any declaration was checked: "
+                f"{process.stderr.strip() or '(no stderr)'}",
             )
         ]
-
-    return _parse_axiom_output(root, declarations, process.stdout)
+    errors.extend(_axiom_audit_missing(missing, process.stderr))
+    return errors
 
 
 def _parse_axiom_output(
@@ -443,6 +457,46 @@ def _parse_axiom_output(
     return errors
 
 
+def _axiom_audit_resolved(stdout: str) -> set[str]:
+    """Return the set of declaration names that `#print axioms` resolved."""
+    pattern = re.compile(r"^'([^']+)' depends on axioms: \[", re.MULTILINE)
+    resolved: set[str] = set()
+    for match in pattern.finditer(stdout):
+        name = match.group(1)
+        # Lean echoes back the qualified name we passed in; strip _root_. so it
+        # matches the unqualified names we collected via _parse_declarations.
+        if name.startswith("_root_."):
+            name = name[len("_root_.") :]
+        resolved.add(name)
+    return resolved
+
+
+def _axiom_audit_missing(
+    missing: list[_Declaration],
+    stderr: str,
+) -> list[_QualityError]:
+    """Emit one error per declaration that `#print axioms` could not resolve."""
+    errors: list[_QualityError] = []
+    for declaration in missing:
+        snippet = _stderr_snippet_for(stderr, declaration.name)
+        message = (
+            f"axiom audit failed for {declaration.name}: {snippet}"
+            if snippet
+            else f"axiom audit produced no result for {declaration.name}"
+        )
+        errors.append(_QualityError(declaration.path, declaration.line, message))
+    return errors
+
+
+def _stderr_snippet_for(stderr: str, name: str) -> str:
+    """Find the most relevant stderr line mentioning `name`, or ''."""
+    error_lines = [line for line in stderr.splitlines() if name in line]
+    for line in error_lines:
+        if "error" in line.lower():
+            return line.strip()
+    return error_lines[0].strip() if error_lines else ""
+
+
 def _load_projects_yaml(
     root: Path,
 ) -> tuple[dict[str, Any] | None, list[_QualityError]]:
@@ -464,26 +518,49 @@ def _check_projects(root: Path) -> list[_QualityError]:
         return errors
 
     path = root / "LeanPool" / "projects.yml"
-    tags = data.get("tags", [])
     projects = data.get("projects", [])
-    errors.extend(_check_project_container(path, tags, projects))
+    errors.extend(_check_project_container(path, projects))
     if errors:
         return errors
 
-    known_tags = set(tags)
+    errors.extend(_check_project_uniqueness(path, projects))
+    if errors:
+        return errors
+
     for index, project in enumerate(projects, start=1):
-        errors.extend(_check_project(root, path, index, project, known_tags))
+        errors.extend(_check_project(root, path, index, project))
     return errors
 
 
-def _check_project_container(
-    path: Path, tags: Any, projects: Any
-) -> list[_QualityError]:
+def _check_project_container(path: Path, projects: Any) -> list[_QualityError]:
     errors: list[_QualityError] = []
-    if not isinstance(tags, list) or any(not isinstance(tag, str) for tag in tags):
-        errors.append(_QualityError(path, 1, "`tags` must be a list of strings"))
     if not isinstance(projects, list):
         errors.append(_QualityError(path, 1, "`projects` must be a list"))
+    return errors
+
+
+def _check_project_uniqueness(path: Path, projects: list[Any]) -> list[_QualityError]:
+    """Reject duplicate `slug` or `entry_module` across projects."""
+    errors: list[_QualityError] = []
+    for field in ("slug", "entry_module"):
+        seen: dict[str, int] = {}
+        for index, project in enumerate(projects, start=1):
+            if not isinstance(project, dict):
+                continue
+            value = project.get(field)
+            if not isinstance(value, str):
+                continue
+            if value in seen:
+                errors.append(
+                    _QualityError(
+                        path,
+                        1,
+                        f"duplicate `{field}` {value!r} in projects "
+                        f"#{seen[value]} and #{index}",
+                    )
+                )
+            else:
+                seen[value] = index
     return errors
 
 
@@ -492,20 +569,17 @@ def _check_project(
     path: Path,
     index: int,
     project: Any,
-    known_tags: set[str],
 ) -> list[_QualityError]:
     if not isinstance(project, dict):
         return [_QualityError(path, 1, f"project #{index} must be a mapping")]
 
     errors = _check_required_project_fields(path, index, project)
-    errors.extend(_check_project_values(root, path, index, project, known_tags))
+    errors.extend(_check_project_values(root, path, index, project))
     if errors:
         return errors
 
-    entry_module = project["entry_module"]
-    entry_path = _module_to_path(root, entry_module)
+    entry_path = _module_to_path(root, project["entry_module"])
     errors.extend(_check_project_declarations(root, path, project))
-    errors.extend(_check_project_status(root, path, project, entry_module))
     errors.extend(_check_project_card(entry_path, path, project))
     return errors
 
@@ -538,7 +612,6 @@ def _check_project_values(
     path: Path,
     index: int,
     project: dict[str, Any],
-    known_tags: set[str],
 ) -> list[_QualityError]:
     errors: list[_QualityError] = []
     if project["status"] not in STATUS_VALUES:
@@ -558,14 +631,6 @@ def _check_project_values(
     if not _string_list(project["tags"]):
         errors.append(
             _QualityError(path, 1, f"project #{index} tags must be nonempty strings")
-        )
-    elif unknown_tags := sorted(set(project["tags"]) - known_tags):
-        errors.append(
-            _QualityError(
-                path,
-                1,
-                f"project #{index} uses unknown tags: {', '.join(unknown_tags)}",
-            )
         )
     entry_path = _module_to_path(root, str(project["entry_module"]))
     if not entry_path.exists():
@@ -621,35 +686,6 @@ def _check_project_declarations(
             path, 1, f"project declarations do not check: {process.stderr.strip()}"
         )
     ]
-
-
-def _check_project_status(
-    root: Path,
-    path: Path,
-    project: dict[str, Any],
-    entry_module: str,
-) -> list[_QualityError]:
-    project_files = _reachable_leanpool_files(root, entry_module)
-    computed = _computed_status(project_files)
-    if project["status"] == computed:
-        return []
-    return [
-        _QualityError(
-            path, 1, f"project status is {project['status']}; computed {computed}"
-        )
-    ]
-
-
-def _computed_status(files: set[Path]) -> str:
-    for path in files:
-        stripped = _strip_lean_comments(path.read_text())
-        if re.search(r"\b(?:sorry|admit)\b", stripped):
-            return "draft"
-    for path in files:
-        stripped = _strip_lean_comments(path.read_text())
-        if FORBIDDEN_SOUNDNESS.search(stripped):
-            return "extra-axiom"
-    return "verified"
 
 
 def _check_project_card(
