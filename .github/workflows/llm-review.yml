@@ -68,8 +68,26 @@ jobs:
         working-directory: python
         run: uv sync --group review
 
-      - name: Run LLM review
+      - name: Check whether the PR touches any .lean files
+        id: lean_changes
         if: steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          count=$(gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate \
+                  --jq '[.[] | select(.filename | endswith(".lean"))] | length')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          if [ "$count" -eq 0 ]; then
+            echo "PR #$PR_NUMBER touches no .lean files; skipping gpt-5.5 review."
+          else
+            echo "PR #$PR_NUMBER touches $count .lean file(s); proceeding."
+          fi
+
+      - name: Run LLM review
+        if: steps.pr.outputs.number != '' && steps.lean_changes.outputs.count != '0'
         working-directory: python
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -78,7 +96,7 @@ jobs:
           # Override here if the model name needs to change. Per-tier
           # prices live in PRICING_PER_M inside review.py — update there
           # when bumping the model.
-          REVIEW_MODEL: gpt-5.4-mini
+          REVIEW_MODEL: gpt-5.5
         run: uv run python -m lean_pool.review
 
       # Request Copilot's PR review now that Lean CI has passed. This

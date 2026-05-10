@@ -5,6 +5,9 @@ Run with ``uv run python -m lean_pool.aggregator <subcommand>`` from
 
 - ``fetch``: download the Reservoir manifest and the manual package
   list into ``raw_data/``.
+- ``clone``: shallow-clone every candidate repo into
+  ``raw_data/clones/`` so downstream classification can read source
+  files locally.
 - ``render``: regenerate the candidates README table from those files.
 """
 
@@ -13,6 +16,10 @@ from pathlib import Path
 
 import click
 
+from lean_pool.aggregator.cloner import (
+    DEFAULT_PARALLELISM,
+    clone_all,
+)
 from lean_pool.aggregator.manual import (
     fetch_manual_packages,
     load_manual_packages,
@@ -32,6 +39,7 @@ DEFAULT_MANIFEST = CANDIDATES_DIR / "raw_data" / "manifest.json"
 DEFAULT_MANUAL_LIST = CANDIDATES_DIR / "manual.txt"
 DEFAULT_MANUAL_DATA = CANDIDATES_DIR / "raw_data" / "manual_packages.json"
 DEFAULT_MANUAL_CACHE = CANDIDATES_DIR / "raw_data" / "manual_cache"
+DEFAULT_CLONES_DIR = CANDIDATES_DIR / "raw_data" / "clones"
 DEFAULT_README = CANDIDATES_DIR / "README.md"
 
 
@@ -103,6 +111,57 @@ def fetch(
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
     default=DEFAULT_MANIFEST,
     show_default=True,
+    help="Manifest JSON produced by `fetch`.",
+)
+@click.option(
+    "--manual-data",
+    "manual_data_path",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default=DEFAULT_MANUAL_DATA,
+    show_default=True,
+    help="Manual package metadata produced by `fetch`.",
+)
+@click.option(
+    "--clones-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=DEFAULT_CLONES_DIR,
+    show_default=True,
+    help="Where to write shallow blobless clones.",
+)
+@click.option(
+    "--parallelism",
+    type=int,
+    default=DEFAULT_PARALLELISM,
+    show_default=True,
+    help="Maximum concurrent `git clone` processes.",
+)
+def clone(
+    manifest_path: Path,
+    manual_data_path: Path,
+    clones_dir: Path,
+    parallelism: int,
+) -> None:
+    """Shallow-clone every candidate repo into the local cache."""
+    with manifest_path.open() as manifest_file:
+        manifest = json.load(manifest_file)
+    manual_packages = load_manual_packages(manual_data_path)
+    packages = list(manifest["packages"]) + manual_packages
+    cloned_now, already_present, failed = clone_all(
+        packages, clones_dir, parallelism=parallelism
+    )
+    click.echo(
+        f"Clones at {clones_dir}: "
+        f"{cloned_now} new, {already_present} cached, {failed} failed."
+    )
+
+
+@cli.command()
+@click.option(
+    "--manifest",
+    "manifest_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=DEFAULT_MANIFEST,
+    show_default=True,
     help="Manifest JSON to render from.",
 )
 @click.option(
@@ -114,6 +173,41 @@ def fetch(
     help="Manual package metadata produced by `fetch`.",
 )
 @click.option(
+    "--clones-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=DEFAULT_CLONES_DIR,
+    show_default=True,
+    help=(
+        "Local clone cache (produced by `clone`). Used to read each "
+        "repo's `lean-toolchain` for the Lean column; pass a missing "
+        "directory to leave that column blank."
+    ),
+)
+@click.option(
+    "--min-stars",
+    type=int,
+    default=2,
+    show_default=True,
+    help=(
+        "Drop rows with fewer stars than this from the rendered table. "
+        "Underlying data files keep every package; this only affects "
+        "the markdown table size so GitHub keeps rendering it."
+    ),
+)
+@click.option(
+    "--min-loc",
+    type=int,
+    default=250,
+    show_default=True,
+    help=(
+        "Drop rows whose local clone has fewer .lean lines than this. "
+        "Counts every .lean file outside .lake/.git/build dirs. Repos "
+        "with no local clone (LOC unknown) are kept; this is purely a "
+        "preliminary filter to remove empty/MWE/scratch projects. "
+        "Pass 0 to disable; effective only when --clones-dir exists."
+    ),
+)
+@click.option(
     "--readme",
     "readme_path",
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
@@ -121,18 +215,34 @@ def fetch(
     show_default=True,
     help="Candidates README to update in place.",
 )
-def render(manifest_path: Path, manual_data_path: Path, readme_path: Path) -> None:
+def render(
+    manifest_path: Path,
+    manual_data_path: Path,
+    clones_dir: Path,
+    min_stars: int,
+    min_loc: int,
+    readme_path: Path,
+) -> None:
     """Render the candidates README table from a manifest."""
     with manifest_path.open() as manifest_file:
         manifest = json.load(manifest_file)
     manual_packages = load_manual_packages(manual_data_path)
     combined = {**manifest, "packages": list(manifest["packages"]) + manual_packages}
-    table = render_table(combined)
+    effective_clones_dir = clones_dir if clones_dir.exists() else None
+    table = render_table(
+        combined,
+        clones_dir=effective_clones_dir,
+        min_stars=min_stars,
+        min_loc=min_loc,
+    )
     update_readme(readme_path, table)
+    rendered_rows = sum(1 for line in table.splitlines() if line.startswith("| "))
+    # Subtract the two header lines from the count.
+    rendered_rows = max(0, rendered_rows - 2)
     click.echo(
-        f"Rendered {len(combined['packages'])} packages "
-        f"({len(manifest['packages'])} reservoir + {len(manual_packages)} manual) "
-        f"into {readme_path}"
+        f"Rendered {rendered_rows} of {len(combined['packages'])} packages "
+        f"({len(manifest['packages'])} reservoir + {len(manual_packages)} manual; "
+        f"min-stars={min_stars}, min-loc={min_loc}) into {readme_path}"
     )
 
 
