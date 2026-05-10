@@ -213,9 +213,19 @@ def test_axiom_audit_resolved_parses_success_lines() -> None:
         "'_root_.Foo.bar' depends on axioms: [Classical.choice, propext]\n"
         "'baz' depends on axioms: []\n"
         "'_root_.hello' does not depend on any axioms\n"
+        # Names ending in `'` are echoed by Lean as `'foo'' ...`; the parser
+        # must capture the prime, not stop at the embedded quote.
+        "'_root_.Ns.neg_one_pow_ne_zero'' does not depend on any axioms\n"
+        "'_root_.Ns.exp_poly_sub_prod'' depends on axioms: [propext]\n"
     )
 
-    assert _axiom_audit_resolved(stdout) == {"Foo.bar", "baz", "hello"}
+    assert _axiom_audit_resolved(stdout) == {
+        "Foo.bar",
+        "baz",
+        "hello",
+        "Ns.neg_one_pow_ne_zero'",
+        "Ns.exp_poly_sub_prod'",
+    }
 
 
 def test_axiom_audit_missing_attributes_stderr_to_each_declaration(

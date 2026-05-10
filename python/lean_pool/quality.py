@@ -433,7 +433,8 @@ def _parse_axiom_output(
     by_name.update(
         {f"_root_.{declaration.name}": declaration for declaration in declarations}
     )
-    pattern = re.compile(r"^'([^']+)' depends on axioms: \[(.*)\]$", re.MULTILINE)
+    # Names may contain `'` (e.g. `foo'`); see _axiom_audit_resolved comment.
+    pattern = re.compile(r"^'(.+?)' depends on axioms: \[(.*)\]$", re.MULTILINE)
     for match in pattern.finditer(output):
         name = match.group(1)
         axioms = {item.strip() for item in match.group(2).split(",") if item.strip()}
@@ -459,8 +460,13 @@ def _axiom_audit_resolved(stdout: str) -> set[str]:
     # Both indicate the lookup resolved; only the first list is interesting
     # for the trusted-axiom check, but both must count as "seen" so we don't
     # emit a spurious "produced no result" for axiom-free declarations.
+    #
+    # Names may contain `'` (e.g. `foo'`), so we cannot use `[^']+` for the
+    # name. Use a non-greedy match anchored on `' ` (closing quote followed
+    # by space) — Lean always emits one space between the echoed name and
+    # the verb, and a name cannot end with whitespace.
     pattern = re.compile(
-        r"^'([^']+)' (?:depends on axioms: \[|does not depend on any axioms)",
+        r"^'(.+?)' (?:depends on axioms: \[|does not depend on any axioms)",
         re.MULTILINE,
     )
     resolved: set[str] = set()
