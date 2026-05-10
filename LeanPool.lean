@@ -31,3 +31,5 @@ import LeanPool.ArchonFirstProofResults.FirstProof6.Problem6
 import LeanPool.Basic
 import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
+import LeanPool.RamanujanTauMissesPrimes
+import LeanPool.RamanujanTauMissesPrimes.Solution
