@@ -41,15 +41,16 @@ FORBIDDEN_DIAGNOSTICS = re.compile(
 FORBIDDEN_SOUNDNESS = re.compile(
     r"\b(?:axiom|constant|unsafe|partial|opaque)\b|@\[\s*extern\b"
 )
-HEADER_PATTERNS = (
-    re.compile(r"\A/-\n"),
-    re.compile(r"^Copyright \(c\) \d{4} .+ All rights reserved\.$", re.MULTILINE),
-    re.compile(
-        r"^Released under Apache 2\.0 license as described in the file LICENSE\.$",
-        re.MULTILINE,
-    ),
-    re.compile(r"^Authors: .+$", re.MULTILINE),
-    re.compile(r"^-/\n", re.MULTILINE),
+# Strict four-line header. Anchored at the start of the file, no extra lines
+# allowed inside the block: this forbids ad-hoc Source/MSC/Tags/Status fields
+# (those belong in projects.yml per CODE_QUALITY.md §7) and enforces the
+# documented field order.
+HEADER_PATTERN = re.compile(
+    r"\A/-\n"
+    r"Copyright \(c\) \d{4} [^\n]+\. All rights reserved\.\n"
+    r"Released under Apache 2\.0 license as described in the file LICENSE\.\n"
+    r"Authors: [^\n]+\n"
+    r"-/\n"
 )
 
 
@@ -198,12 +199,15 @@ def _check_headers(root: Path) -> list[_QualityError]:
         if path == root / "LeanPool.lean":
             continue
         text = path.read_text()
-        if not all(pattern.search(text) for pattern in HEADER_PATTERNS):
+        if not HEADER_PATTERN.match(text):
             errors.append(
                 _QualityError(
                     path,
                     1,
-                    f"missing structured file header; see {FILE_HEADERS_DOC}",
+                    "malformed file header: expected exactly the four-line "
+                    "Copyright/License/Authors block in order, with no extra "
+                    "Source/MSC/Tags/Status fields (those live in "
+                    f"projects.yml); see {FILE_HEADERS_DOC}",
                 )
             )
     return errors

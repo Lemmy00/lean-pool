@@ -194,6 +194,41 @@ def test_quality_check_rejects_duplicate_entry_module(tmp_path: Path) -> None:
     assert any("duplicate `entry_module`" in error.message for error in errors)
 
 
+def test_quality_check_rejects_out_of_order_header(tmp_path: Path) -> None:
+    """The Copyright/License/Authors lines must appear in the documented order."""
+    _write_minimal_repo(tmp_path)
+    out_of_order = (
+        "/-\n"
+        "Authors: Test Author\n"
+        "Copyright (c) 2026 Test Author. All rights reserved.\n"
+        "Released under Apache 2.0 license as described in the file LICENSE.\n"
+        "-/\n"
+    )
+    (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{out_of_order}\ndef hello := 1\n")
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any("malformed file header" in error.message for error in errors)
+
+
+def test_quality_check_rejects_adhoc_metadata_in_header(tmp_path: Path) -> None:
+    """Source/MSC/Tags/Status belong in projects.yml, not in file headers."""
+    _write_minimal_repo(tmp_path)
+    bad_header = (
+        "/-\n"
+        "Copyright (c) 2026 Test Author. All rights reserved.\n"
+        "Released under Apache 2.0 license as described in the file LICENSE.\n"
+        "Authors: Test Author\n"
+        "Source: arxiv:1234.5678\n"
+        "-/\n"
+    )
+    (tmp_path / "LeanPool" / "Basic.lean").write_text(f"{bad_header}\ndef hello := 1\n")
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any("malformed file header" in error.message for error in errors)
+
+
 def test_quality_check_rejects_extra_axiom_status(tmp_path: Path) -> None:
     """`extra-axiom` status was previously valid; only `verified` is now accepted."""
     _write_minimal_repo(tmp_path)
