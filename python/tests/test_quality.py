@@ -25,6 +25,30 @@ def _write_minimal_repo(root: Path, basic_body: str = 'def hello := "world"\n') 
     )
 
 
+def _write_project_yaml(root: Path, projects: list[dict[str, str]]) -> None:
+    """Write a `projects.yml` containing the given project entries.
+
+    The entries share a single tag vocabulary so individual tests don't have to
+    repeat boilerplate. Each entry uses an `arxiv` source by default.
+    """
+    lines = ["tags: [test]", "projects:"]
+    for project in projects:
+        lines.extend(
+            [
+                f"  - slug: {project['slug']}",
+                f"    title: {project.get('title', 'Test Project')}",
+                f"    entry_module: {project['entry_module']}",
+                "    authors: [Test Author]",
+                "    source:",
+                f'      arxiv: "{project.get("arxiv", "1234.5678")}"',
+                f"    status: {project.get('status', 'verified')}",
+                "    main_declarations: [hello]",
+                "    tags: [test]",
+            ]
+        )
+    (root / "LeanPool" / "projects.yml").write_text("\n".join(lines) + "\n")
+
+
 def test_strip_lean_comments_preserves_code_not_comments() -> None:
     """Forbidden tokens in comments and strings are ignored."""
     stripped = _strip_lean_comments(
@@ -86,3 +110,29 @@ def test_quality_check_finds_prefixed_declarations(tmp_path: Path) -> None:
     declarations = _parse_declarations(tmp_path)
 
     assert any(declaration.name == "decorated_identity" for declaration in declarations)
+
+
+def test_quality_check_rejects_non_verified_status(tmp_path: Path) -> None:
+    """Only `status: verified` projects may merge; `draft` is not accepted."""
+    _write_minimal_repo(tmp_path)
+    _write_project_yaml(
+        tmp_path,
+        [{"slug": "p", "entry_module": "LeanPool.Basic", "status": "draft"}],
+    )
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any("invalid status" in error.message for error in errors)
+
+
+def test_quality_check_rejects_extra_axiom_status(tmp_path: Path) -> None:
+    """`extra-axiom` status was previously valid; only `verified` is now accepted."""
+    _write_minimal_repo(tmp_path)
+    _write_project_yaml(
+        tmp_path,
+        [{"slug": "p", "entry_module": "LeanPool.Basic", "status": "extra-axiom"}],
+    )
+
+    errors = run_checks(tmp_path, skip_lean_axioms=True)
+
+    assert any("invalid status" in error.message for error in errors)

@@ -18,7 +18,7 @@ CODE_QUALITY_URL = (
     "https://github.com/Vilin97/lean-pool/blob/main/.github/CODE_QUALITY.md"
 )
 FILE_HEADERS_DOC = f"{CODE_QUALITY_URL}#7-file-headers"
-STATUS_VALUES = {"verified", "draft", "extra-axiom"}
+STATUS_VALUES = {"verified"}
 SOURCE_KEYS = {"arxiv", "doi", "url"}
 DECLARATION_KEYWORDS = (
     "theorem",
@@ -495,10 +495,8 @@ def _check_project(
     if errors:
         return errors
 
-    entry_module = project["entry_module"]
-    entry_path = _module_to_path(root, entry_module)
+    entry_path = _module_to_path(root, project["entry_module"])
     errors.extend(_check_project_declarations(root, path, project))
-    errors.extend(_check_project_status(root, path, project, entry_module))
     errors.extend(_check_project_card(entry_path, path, project))
     return errors
 
@@ -614,35 +612,6 @@ def _check_project_declarations(
             path, 1, f"project declarations do not check: {process.stderr.strip()}"
         )
     ]
-
-
-def _check_project_status(
-    root: Path,
-    path: Path,
-    project: dict[str, Any],
-    entry_module: str,
-) -> list[_QualityError]:
-    project_files = _reachable_leanpool_files(root, entry_module)
-    computed = _computed_status(project_files)
-    if project["status"] == computed:
-        return []
-    return [
-        _QualityError(
-            path, 1, f"project status is {project['status']}; computed {computed}"
-        )
-    ]
-
-
-def _computed_status(files: set[Path]) -> str:
-    for path in files:
-        stripped = _strip_lean_comments(path.read_text())
-        if re.search(r"\b(?:sorry|admit)\b", stripped):
-            return "draft"
-    for path in files:
-        stripped = _strip_lean_comments(path.read_text())
-        if FORBIDDEN_SOUNDNESS.search(stripped):
-            return "extra-axiom"
-    return "verified"
 
 
 def _check_project_card(
