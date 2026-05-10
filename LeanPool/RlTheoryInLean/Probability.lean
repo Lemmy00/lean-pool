@@ -5,11 +5,7 @@ Authors: Shangtong Zhang
 -/
 
 import LeanPool.RlTheoryInLean.Probability.Kernel
-import LeanPool.RlTheoryInLean.Probability.Kernel
 import LeanPool.RlTheoryInLean.Probability.MarkovChain
-import LeanPool.RlTheoryInLean.Probability.MarkovChain
-import LeanPool.RlTheoryInLean.Probability.Martingale
-import LeanPool.RlTheoryInLean.Probability.Martingale
 
 /-!
 # Probability

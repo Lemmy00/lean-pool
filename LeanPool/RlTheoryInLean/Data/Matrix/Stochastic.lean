@@ -35,11 +35,13 @@ namespace StochasticMatrix
 
 universe u
 variable {S : Type u} [Fintype S]
+/-- The finite-dimensional `L¹` space of real-valued functions on `S`. -/
 abbrev l1Space (S : Type u) := WithLp 1 (S → ℝ)
 
 local notation "‖"x"‖₁" => (nnnorm (E := l1Space S) x)
 local notation "d₁("x","y")" => edist (α := l1Space S) x y
 
+/-- A nonnegative vector whose entries sum to one. -/
 class StochasticVec (x : S → ℝ) where
   nonneg : ∀ s, 0 ≤ x s
   rowsum : ∑ s, x s = 1
@@ -55,6 +57,7 @@ lemma StochasticVec.le_one (x : S → ℝ) [StochasticVec x] (s : S) :
 
 section simplex
 
+/-- The probability simplex, represented inside finite-dimensional `L¹`. -/
 abbrev Simplex (S : Type u) [Fintype S] := {x : l1Space S | StochasticVec x.ofLp}
 
 instance (x : ↑(Simplex S)) : @StochasticVec S _ x.val.ofLp := x.property
@@ -122,6 +125,7 @@ lemma simples_is_compact : IsCompact (Simplex S) := by
 
 end simplex
 
+/-- A matrix whose rows are stochastic vectors. -/
 class RowStochastic (P : Matrix S S ℝ) where
   stochastic : ∀ s, StochasticVec (P s)
 
@@ -223,11 +227,12 @@ section minorization
 
 variable [DecidableEq S]
 
+/-- Irreducibility of a finite stochastic matrix. -/
 class Irreducible (P : Matrix S S ℝ) [RowStochastic P] where
   irreducible : ∀ i j, ∃ n : ℕ, 0 < (P ^ n) i j
 
 /-- The set of positive return times for state i -/
-noncomputable def return_times (P : Matrix S S ℝ) [RowStochastic P] (i : S)
+noncomputable def return_times (P : Matrix S S ℝ) (i : S)
   : Set ℕ := {n : ℕ | 1 ≤ n ∧ 0 < (P ^ n) i i}
 
 /-- Return times are closed under addition (used via AddSubmonoid.closure) -/
@@ -283,6 +288,7 @@ theorem eventually_positive [Nonempty S] (P : Matrix S S ℝ) [RowStochastic P]
       have := chapman_kolmogorov_eq_ge P (nij (i,j)) (n - nij (i,j)) i j j
       simp only [Nat.add_sub_cancel' hle] at this; exact this
 
+/-- A Doeblin minorization for a finite stochastic matrix. -/
 class DoeblinMinorization (P : Matrix S S ℝ) [RowStochastic P] where
   minorize : ∃ (ε : ℝ) (ν : S → ℝ),
     0 < ε ∧ ε < 1 ∧ StochasticVec ν ∧ ∀ i j, P i j ≥ ε * ν j
@@ -422,6 +428,7 @@ theorem smat_pow_nonexpansive_in_l1 [DecidableEq S] (Q : Matrix S S ℝ) [RowSto
     have := smat_nonexpansive_in_l1 Q (x ᵥ* Q ^ n) (y ᵥ* Q ^ n)
     exact this.trans ih
 
+/-- The affine action of a stochastic matrix on the probability simplex. -/
 def smat_as_operator (P : Matrix S S ℝ) [RowStochastic P] :
   ↑(Simplex S) → ↑(Simplex S) :=
   fun μ => ⟨WithLp.toLp 1 (μ.val.ofLp ᵥ* P), by
@@ -558,6 +565,7 @@ end contraction
 
 section stationary_distribution
 
+/-- A stationary distribution for a matrix. -/
 class Stationary (μ : S → ℝ) (P : Matrix S S ℝ) : Prop where
   stationary : μ ᵥ* P = μ
 
@@ -608,9 +616,10 @@ theorem pos_of_stationary
   simp at this
 
 
+/-- The Cesaro average of the first `n + 1` iterates of a stochastic vector. -/
 noncomputable def cesaro_average
-  (x₀ : S → ℝ) [StochasticVec x₀]
-  (P : Matrix S S ℝ) [RowStochastic P] (n : ℕ)
+  (x₀ : S → ℝ)
+  (P : Matrix S S ℝ) (n : ℕ)
   : S → ℝ :=
   (n + 1 : ℝ)⁻¹ • ∑ k ∈ Finset.range (n + 1), x₀ ᵥ* (P ^ k)
 
@@ -706,7 +715,9 @@ lemma cesaro_average_almost_invariant
 
 variable [Nonempty S]
 
-noncomputable abbrev uniform_distribution : S → ℝ := fun _ => 1 / Fintype.card S
+/-- The uniform probability distribution on a nonempty finite type. -/
+noncomputable abbrev uniform_distribution : S → ℝ :=
+  Function.const S (1 / Fintype.card S)
 
 instance : StochasticVec (S := S) uniform_distribution := by
   constructor
@@ -825,6 +836,7 @@ theorem stationary_distribution_uniquely_exists
     simp only [Subtype.mk.injEq] at this
     exact (WithLp.toLp_injective 1).eq_iff.mp this
 
+/-- Geometric convergence to stationarity in total variation/L¹ distance. -/
 class GeometricMixing
   (P : Matrix S S ℝ) [RowStochastic P]
   : Prop where

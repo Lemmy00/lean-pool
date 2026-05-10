@@ -46,11 +46,11 @@ projects:
       github_repo: ShangtongZhang/rl-theory-in-lean
     status: verified
     main_declarations:
-      - ReinforcementLearning.LinearTD.ae_tendsto_of_linearTD_iid
+      - StochasticMatrix.stationary_distribution_exists
     tags:
       - probability
       - reinforcement-learning
-      - stochastic-approximation
+      - stochastic-matrices
     msc:
       - "62L20"
       - "60J10"

@@ -23,6 +23,7 @@ namespace ProbabilityTheory.Kernel
 variable {α β γ : Type*}
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
+/-- Iterates of a homogeneous transition kernel. -/
 noncomputable def iter (κ : Kernel α α) : ℕ → Kernel α α
 | 0       => Kernel.id
 | (n + 1) => ((iter κ) n).comp κ

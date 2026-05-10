@@ -27,6 +27,7 @@ namespace ProbabilityTheory.Kernel
 variable {α β γ : Type*}
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
+/-- Comap a kernel along the last coordinate of a finite trajectory prefix. -/
 noncomputable def comap_last
   (κ : Kernel α α) (n : ℕ) :
   Kernel (Iic n → α) α := by

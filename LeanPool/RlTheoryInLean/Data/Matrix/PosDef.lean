@@ -21,6 +21,7 @@ namespace Matrix
 
 variable {α : Type*} [Fintype α] (A : Matrix α α ℝ)
 
+/-- A real square matrix whose quadratic form has positive asymmetric part. -/
 class PosDefAsymm : Prop where
   pd : ∀ x, x ≠ 0 → 0 < x ⬝ᵥ (A *ᵥ x)
 
@@ -139,6 +140,7 @@ theorem posDefAsymm_iff'
           lt_of_lt_of_le (mul_pos hηpos hxx_pos) (hη x)
         linarith
 
+/-- A real square matrix whose negation is asymmetrically positive definite. -/
 class NegDefAsymm : Prop where
   nd : PosDefAsymm (-A)
 

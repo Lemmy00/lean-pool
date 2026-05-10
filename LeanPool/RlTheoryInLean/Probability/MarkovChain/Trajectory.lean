@@ -33,11 +33,7 @@ namespace MarkovChain
 universe u
 variable {S : Type u} [MeasurableSpace S]
 
-def X (S : Type u) : ℕ → Type u := fun _ => S
-
-instance : ∀ n, MeasurableSpace (X (S := S) n) := by
-  intro n; unfold X; infer_instance
-
+/-- Comap a homogeneous kernel along the latest state in a finite history. -/
 noncomputable def kernel_comap_trivial
   (κ : Kernel S S) (n : ℕ) :
   Kernel (Iic n → S) S := by
@@ -46,6 +42,7 @@ noncomputable def kernel_comap_trivial
   have hg : Measurable g := by apply measurable_pi_apply
   exact κ.comap g hg
 
+/-- Expand a homogeneous Markov-chain kernel to act on finite trajectory prefixes. -/
 noncomputable def expand_kernel
   (M : HomMarkovChainSpec S) :
   ∀ n : ℕ, Kernel (Iic n → S) S := by
@@ -62,6 +59,7 @@ instance (M : HomMarkovChainSpec S) :
   unfold expand_kernel
   apply IsMarkovKernel.comap
 
+/-- The trajectory law started from a fixed length-zero prefix. -/
 noncomputable def traj_prob₀
   (M : HomMarkovChainSpec S) (x₀ : Iic 0 → S)
   : ProbabilityMeasure (ℕ → S) := by
@@ -69,6 +67,7 @@ noncomputable def traj_prob₀
   let prob := κ x₀
   exact ⟨prob, inferInstance⟩
 
+/-- The trajectory law obtained by first sampling the initial state. -/
 noncomputable def traj_prob
   (M : HomMarkovChainSpec S) : ProbabilityMeasure (ℕ → S) := by
   let κ := traj (X := fun _ : ℕ => S) (expand_kernel M) 0

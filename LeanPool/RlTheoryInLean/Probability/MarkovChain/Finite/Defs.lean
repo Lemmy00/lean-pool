@@ -27,10 +27,12 @@ universe u
 variable {S : Type u}
 variable [Fintype S] [MeasurableSpace S] [MeasurableSingletonClass S]
 
+/-- Matrix representation of a finite-state Markov transition kernel. -/
 def kernel_mat (M : HomMarkovChainSpec S)
   : Matrix S S ℝ :=
   Matrix.of (fun a b => (M.kernel a {b}).toReal)
 
+/-- Vector representation of the initial distribution of a finite Markov chain. -/
 def init_vec (M : HomMarkovChainSpec S)
   : S → ℝ :=
   fun s => (M.init {s}).toReal

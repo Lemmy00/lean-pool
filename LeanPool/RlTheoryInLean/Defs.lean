@@ -66,6 +66,7 @@ lemma HasDerivAt.congr_congr
 namespace RLTheory
 
 variable {d : ℕ}
+/-- Euclidean space of dimension `d`, used for finite-dimensional RL iterates. -/
 abbrev E (d : ℕ) := EuclideanSpace ℝ (Fin d)
 
 end RLTheory
