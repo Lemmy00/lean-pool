@@ -42,6 +42,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # Needed by proof-profile to post a sticky comment on the PR.
+  pull-requests: write
 
 jobs:
   build:
@@ -195,7 +197,7 @@ jobs:
             } >> proof-profile.log 2>&1
           done
 
-      - name: Summarize profile to job summary
+      - name: Render profile summary
         if: steps.files.outputs.files != ''
         run: |
           python3 <<'PY'
@@ -204,12 +206,18 @@ jobs:
           from pathlib import Path
 
           log_path = Path("proof-profile.log")
+          rendered_path = Path("proof-profile.md")
           summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
           metrics = ("import", "elaboration", "compilation (IR)", "type checking")
+          run_url = (
+              f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}"
+              f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          )
 
           out = ["## Proof profile (new / modified Lean files)\n\n"]
           if not log_path.exists() or not log_path.read_text().strip():
               out.append("_No proof profile output._\n")
+              rendered_path.write_text("".join(out))
               summary_path.write_text("".join(out))
               raise SystemExit(0)
 
@@ -253,11 +261,42 @@ jobs:
                   out.append("| " + " | ".join(cells) + " |\n")
               out.append(
                   "\n_Advisory only — never blocks merge. "
-                  "Full log uploaded as the `proof-profile` artifact._\n"
+                  f"[Full log]({run_url}) uploaded as the `proof-profile` "
+                  "artifact._\n"
               )
+          rendered = "".join(out)
+          rendered_path.write_text(rendered)
           with summary_path.open("a") as f:
-              f.writelines(out)
+              f.write(rendered)
           PY
+
+      - name: Post sticky PR comment with profile
+        if: |
+          github.event_name == 'pull_request' &&
+          steps.files.outputs.files != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Marker so we can find and update the same comment on subsequent
+          # runs instead of stacking new ones.
+          marker="<!-- proof-profile-comment -->"
+          {
+            printf '%s\n' "$marker"
+            cat proof-profile.md
+          } > comment-body.md
+
+          existing=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$marker\"))] | first | .id // empty")
+
+          if [ -n "$existing" ]; then
+            jq -n --rawfile body comment-body.md '{body: $body}' \
+              | gh api -X PATCH "repos/$REPO/issues/comments/$existing" --input -
+          else
+            gh pr comment "$PR_NUMBER" --body-file comment-body.md
+          fi
 
       - name: Upload proof profile
         if: always() && steps.files.outputs.files != ''
