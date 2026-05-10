@@ -159,20 +159,108 @@ jobs:
             echo "Mathlib already present from cache"
           fi
 
-      - name: Proof profile (advisory)
+      - name: Determine new and modified Lean files
+        id: files
         run: |
           set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$base" ]; then
+            # push to main, or workflow_dispatch — compare against previous commit
+            base="HEAD~1"
+          fi
+          files=$(git diff --name-only --diff-filter=AM "$base"...HEAD -- LeanPool \
+                  | grep '\.lean$' \
+                  | tr '\n' ' ' || true)
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+          if [ -z "$files" ]; then
+            echo "No new or modified Lean files in this diff; profile job will no-op."
+          else
+            echo "Will profile: $files"
+          fi
+
+      - name: Build project so profile imports resolve
+        if: steps.files.outputs.files != ''
+        run: ~/.elan/bin/lake build LeanPool
+
+      - name: Profile new and modified files
+        if: steps.files.outputs.files != ''
+        run: |
           : > proof-profile.log
-          while IFS= read -r -d '' file; do
+          for file in ${{ steps.files.outputs.files }}; do
             {
               echo "## $file"
-              ~/.elan/bin/lake env lean --profile "$file"
+              # Errors here are logged but never fail the job — this is advisory.
+              ~/.elan/bin/lake env lean --profile "$file" || true
               echo
             } >> proof-profile.log 2>&1
-          done < <(find LeanPool -name '*.lean' -print0 | sort -z)
+          done
+
+      - name: Summarize profile to job summary
+        if: steps.files.outputs.files != ''
+        run: |
+          python3 <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          log_path = Path("proof-profile.log")
+          summary_path = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          metrics = ("import", "elaboration", "compilation (IR)", "type checking")
+
+          out = ["## Proof profile (new / modified Lean files)\n\n"]
+          if not log_path.exists() or not log_path.read_text().strip():
+              out.append("_No proof profile output._\n")
+              summary_path.write_text("".join(out))
+              raise SystemExit(0)
+
+          files: list[dict] = []
+          cur: dict | None = None
+          for line in log_path.read_text().splitlines():
+              m = re.match(r"^## (.+)$", line)
+              if m:
+                  if cur is not None:
+                      files.append(cur)
+                  cur = {"file": m.group(1), "m": {}, "errors": 0}
+                  continue
+              if cur is None:
+                  continue
+              if "error:" in line:
+                  cur["errors"] += 1
+                  continue
+              for key in metrics:
+                  match = re.match(rf"^\s+{re.escape(key)} ([0-9.]+)ms\s*$", line)
+                  if match:
+                      cur["m"][key] = float(match.group(1))
+                      break
+          if cur is not None:
+              files.append(cur)
+
+          if not files:
+              out.append("_No files profiled._\n")
+          else:
+              out.append(
+                  "| File | Import (ms) | Elaboration (ms) | "
+                  "Compilation IR (ms) | Type check (ms) | Errors |\n"
+              )
+              out.append("|---|---:|---:|---:|---:|---:|\n")
+              for f in files:
+                  m = f["m"]
+                  cells = [f"`{f['file']}`"]
+                  for key in metrics:
+                      v = m.get(key)
+                      cells.append(f"{v:.1f}" if v is not None else "—")
+                  cells.append(str(f["errors"]) if f["errors"] else "0")
+                  out.append("| " + " | ".join(cells) + " |\n")
+              out.append(
+                  "\n_Advisory only — never blocks merge. "
+                  "Full log uploaded as the `proof-profile` artifact._\n"
+              )
+          with summary_path.open("a") as f:
+              f.writelines(out)
+          PY
 
       - name: Upload proof profile
-        if: always()
+        if: always() && steps.files.outputs.files != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: proof-profile
