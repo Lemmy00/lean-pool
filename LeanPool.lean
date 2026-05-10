@@ -45,5 +45,7 @@ import LeanPool.Erdos1196.PreliminariesTailAux
 import LeanPool.Erdos1196.PrimitiveWeight
 import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
+import LeanPool.ForwardEuler
+import LeanPool.ForwardEuler.Main
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
