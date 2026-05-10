@@ -17,3 +17,21 @@ projects:
       - number-theory
       - combinatorics
       - polynomials
+  - slug: rl-theory-in-lean
+    title: RL Theory in Lean
+    entry_module: LeanPool.RlTheoryInLean
+    authors:
+      - Shangtong Zhang
+    source:
+      arxiv: "2511.03618"
+      github_repo: ShangtongZhang/rl-theory-in-lean
+    status: verified
+    main_declarations:
+      - ReinforcementLearning.LinearTD.ae_tendsto_of_linearTD_iid
+    tags:
+      - probability
+      - reinforcement-learning
+      - stochastic-approximation
+    msc:
+      - "62L20"
+      - "60J10"
