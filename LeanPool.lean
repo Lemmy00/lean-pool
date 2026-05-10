@@ -105,6 +105,8 @@ import LeanPool.ForwardEuler
 import LeanPool.ForwardEuler.Main
 import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
+import LeanPool.PartialRegularity
+import LeanPool.PartialRegularity.Extension
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
 import LeanPool.RiemannMappingTheorem
