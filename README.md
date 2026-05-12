@@ -1,7 +1,6 @@
 <p align="center">
   <img src="logo.png" alt="Lean Pool logo" width="240">
 </p>
-<img width="1600" height="900" alt="s-blob-v1-IMAGE-3hPKxYsizog" src="https://github.com/user-attachments/assets/5c53688b-6868-4a62-9ee0-2c65124ecf6b" />
 
 # lean-pool
 
