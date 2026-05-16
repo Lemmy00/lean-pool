@@ -7,6 +7,7 @@ import LeanPool.OrderPQ.PrimeOrder
 
 section MulZMod
 
+/-- `ZMod n` viewed as a multiplicative group. -/
 def MulZMod (n : ℕ) : Type := Multiplicative (ZMod n)
 
 instance {n : ℕ} : DecidableEq (MulZMod n) := instDecidableEqMultiplicative
@@ -30,16 +31,21 @@ lemma nat_card_mulZMod {n : ℕ} [NeZero n] : Nat.card (MulZMod n) = n := by sim
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
-@[simps!]
+/-- A nonzero element of `ZMod p` (with `p` prime) viewed as a unit. -/
 def unitOfNeZero (x : ZMod p) (hx : x ≠ 0) : (ZMod p)ˣ := by
   refine ZMod.unitOfCoprime x.val (Nat.coprime_of_lt_prime ?_ (ZMod.val_lt x) hp.elim).symm
   simp only [ne_eq, ZMod.val_eq_zero, hx, not_false_eq_true]
+
+@[simp]
+lemma val_unitOfNeZero (x : ZMod p) (hx : x ≠ 0) : ((unitOfNeZero x hx) : ZMod p) = x := by
+  simp [unitOfNeZero, ZMod.coe_unitOfCoprime]
 
 @[simp]
 lemma unitOfNeZero_val (x : (ZMod p)ˣ) : unitOfNeZero x (Units.ne_zero _) = x := by
   ext
   exact val_unitOfNeZero _ (Units.ne_zero _)
 
+/-- Multiplication by a unit in `ZMod p` as an additive automorphism. -/
 @[simps]
 def addAutOfUnit (x : (ZMod p)ˣ) : AddAut (ZMod p) where
   toFun a := x.val * a
@@ -50,6 +56,8 @@ def addAutOfUnit (x : (ZMod p)ˣ) : AddAut (ZMod p) where
 
 variable (p)
 
+/-- The group of additive automorphisms of `ZMod p` (with `p` prime) is isomorphic to the
+group of units of `ZMod p`. -/
 def mulEquivAddAutZMod : AddAut (ZMod p) ≃* (ZMod p)ˣ where
   toFun f := unitOfNeZero (f 1) (by simp)
   invFun x := addAutOfUnit x
@@ -61,6 +69,8 @@ def mulEquivAddAutZMod : AddAut (ZMod p) ≃* (ZMod p)ˣ where
     obtain ⟨_, h2⟩ : ∃ n2, ∀ x, f2 x = n2 • x := AddMonoidHom.map_addCyclic f2.toAddMonoidHom
     simp [h1, h2]
 
+/-- The group of multiplicative automorphisms of `MulZMod p` (with `p` prime) is isomorphic
+to the group of units of `ZMod p`. -/
 def mulEquivMulAutMulZMod : MulAut (MulZMod p) ≃* (ZMod p)ˣ :=
   AddEquiv.toMultiplicative.mulEquiv.symm.trans <| mulEquivAddAutZMod p
 

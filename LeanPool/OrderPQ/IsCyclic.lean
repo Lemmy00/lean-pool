@@ -7,9 +7,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import LeanPool.OrderPQ.MonoidHom
 import LeanPool.OrderPQ.TorsionBy
 
-namespace IsCyclic
-
 section MulEquiv
+namespace IsCyclic
 
 variable {α β : Type*} [Group α] [Group β]
 
@@ -33,9 +32,11 @@ lemma exists_mulEquiv_of_generators_and_card_eq : ∃ (f : α ≃* β), f x = y 
     (monoidHom_comp_generator_generator hx hf hg) (monoidHom_comp_generator_generator hy hg hf)
   simp only [MonoidHom.toMulEquiv_apply, hf]
 
+end IsCyclic
 end MulEquiv
 
 section Subgroup
+namespace IsCyclic
 
 variable {α : Type*} [Group α] [IsCyclic α]
 
@@ -54,7 +55,8 @@ lemma card_orderOf_dvd_eq [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
   convert card_orderOf_eq_totient (Nat.dvd_trans hx hd) using 4
   exact and_iff_right_iff_imp.mpr fun h => h ▸ hx
 
-@[to_additive]
+/-- A cyclic group is a commutative group. -/
+@[to_additive /-- A cyclic additive group is a commutative additive group. -/]
 local instance : CommGroup α := IsCyclic.commGroup
 
 @[to_additive]
@@ -84,9 +86,11 @@ lemma subgroup_eq_of_card_eq [Finite α] (s t : Subgroup α) [Finite s] [Finite 
     s = t :=
   (subgroup_eq s).trans <| h ▸ (subgroup_eq t).symm
 
+end IsCyclic
 end Subgroup
 
 section CoprimeOrders
+namespace IsCyclic
 
 variable {G : Type*} [Group G] [Finite G]
 
@@ -118,9 +122,8 @@ lemma isCyclic_prod_iff_coprime_card
     replace hb := Nat.eq_of_dvd_of_div_eq_one hb <| Nat.eq_one_of_mul_eq_one_left this
     rwa [ha, hb] at hgcd
 
-end CoprimeOrders
-
 end IsCyclic
+end CoprimeOrders
 
 section CardEqPrime
 
@@ -149,7 +152,8 @@ theorem IsCyclic.of_card_eq_prime {p : ℕ} [hp : Fact (Nat.Prime p)]
   simp only [ne_eq, orderOf_eq_one_iff, hg, not_false_eq_true]
 
 open IsCyclic in
-@[to_additive]
+/-- Any two groups of the same prime order are isomorphic. -/
+@[to_additive /-- Any two additive groups of the same prime order are isomorphic. -/]
 noncomputable def MulEquiv.ofPrimeCardEq {p : ℕ} [Fact p.Prime] {G H : Type*} [Group G] [Group H]
     (hG : Nat.card G = p) (hH : Nat.card H = p) : G ≃* H :=
   @mulEquivOfCyclicCardEq _ _ _ _ (of_card_eq_prime hG) (of_card_eq_prime hH) (hH ▸ hG)

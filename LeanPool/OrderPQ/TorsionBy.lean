@@ -9,7 +9,9 @@ import Mathlib.Tactic
 variable {α : Type*} [CommGroup α]
 
 variable (α) in
-@[to_additive (attr := simps)]
+/-- The subgroup of elements `a` of a commutative group `α` satisfying `a ^ d = 1`. -/
+@[to_additive (attr := simps)
+/-- The subgroup of elements `a` of an additive commutative group `α` satisfying `d • a = 0`. -/]
 def Subgroup.torsionBy' (d : ℕ) : Subgroup α where
   carrier := {a | a ^ d = 1}
   mul_mem' {x y} hx hy := by

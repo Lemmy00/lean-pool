@@ -25,6 +25,8 @@ lemma Subgroup.comm_of_normal_and_inf_eq_bot
     · exact mul_mem (hH.conj_mem _ (SetLike.coe_mem _) _) (inv_mem (SetLike.coe_mem _))
   rwa [inf_eq_bot, Subgroup.mem_bot, mul_inv_eq_iff_eq_mul, one_mul, mul_inv_eq_iff_eq_mul] at this
 
+/-- If `N` is a normal subgroup of `G` and `H` is a subgroup with `N ⊓ H = ⊥` and `N ⊔ H = ⊤`,
+then `G` is isomorphic to the semidirect product `N ⋊[φ] H` for `φ` the conjugation action. -/
 noncomputable def mulEquivSemidirectProduct
     {N H : Subgroup G} (h : Subgroup.Normal N) (inf_eq_bot : N ⊓ H = ⊥) (sup_eq_top : N ⊔ H = ⊤)
     {φ : H →* MulAut N} (conj : φ = MulAut.conjNormal.restrict H) :
@@ -54,6 +56,7 @@ noncomputable def mulEquivSemidirectProduct
       MonoidHom.restrict_apply, MulAut.conjNormal_apply]
     group
 
+/-- If `H ≤ K` are subgroups of `G`, then `H.subgroupOf K` is canonically isomorphic to `H`. -/
 @[simps]
 def Subgroup.subgroupOfMulEquiv {G : Type*} [Group G] (H K : Subgroup G) (h : H ≤ K) :
     H.subgroupOf K ≃* H where
@@ -68,6 +71,8 @@ theorem Subgroup.subgroupOf_inf {H K L : Subgroup G} :
     (H ⊓ K).subgroupOf L = H.subgroupOf L ⊓ K.subgroupOf L :=
   comap_inf H K L.subtype
 
+/-- Variant of `mulEquivSemidirectProduct` that works within the subgroup `N ⊔ H` rather than
+requiring `N ⊔ H = ⊤`. -/
 noncomputable def mulEquivSemidirectProduct'
     {N H : Subgroup G} (h : Subgroup.Normal N) (inf_eq_bot : N ⊓ H = ⊥)
     {φ : H →* MulAut N} (conj : φ = MulAut.conjNormal.restrict H) :
@@ -87,6 +92,8 @@ noncomputable def mulEquivSemidirectProduct'
     repeat rw [Subgroup.subgroupOfMulEquiv_symm_apply_coe_coe]
     rw [MonoidHom.restrict_apply, MulAut.conjNormal_apply]
 
+/-- If `N` and `H` are normal subgroups of `G` with trivial intersection that span `G`,
+then `G` is isomorphic to the direct product `N × H`. -/
 noncomputable def mulEquivProd
     {N H : Subgroup G} (hN : Subgroup.Normal N) (hH : Subgroup.Normal H)
     (inf_eq_bot : N ⊓ H = ⊥) (sup_eq_top : N ⊔ H = ⊤) :
