@@ -56,9 +56,9 @@ variable {X : Type*} [MeasurableSpace X] {α : ℝ} {hα₀ : 0 < α} {hα₁ : 
 
 open WithRPowDist
 
+variable (α hα₀ hα₁) in
 /-- The pushforward of a measure `μ` on `X` under the canonical map
 `X → WithRPowDist X α hα₀ hα₁`. -/
-variable (α hα₀ hα₁) in
 def withRPowDist (μ : Measure X) : Measure (WithRPowDist X α hα₀ hα₁) :=
   μ.map .mk
 
@@ -77,12 +77,9 @@ instance [SFinite μ] : SFinite (μ.withRPowDist α hα₀ hα₁) := by
   unfold withRPowDist
   infer_instance
 
-section TopologicalSpace
-
-variable [TopologicalSpace X]
-
 -- TODO: generalize to a homeomorphism
-instance [IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.withRPowDist α hα₀ hα₁) where
+instance [TopologicalSpace X] [IsLocallyFiniteMeasure μ] :
+    IsLocallyFiniteMeasure (μ.withRPowDist α hα₀ hα₁) where
   finiteAtNhds := by
     rintro ⟨x⟩
     rcases μ.finiteAt_nhds x with ⟨s, hsx, hμs⟩
@@ -90,13 +87,14 @@ instance [IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.withRPowDist �
     refine ⟨_, Filter.preimage_mem_comap hsx, ?_⟩
     rwa [withRPowDist, measurableEmbedding_mk.map_apply]
 
-instance [IsFiniteMeasureOnCompacts μ] : IsFiniteMeasureOnCompacts (μ.withRPowDist α hα₀ hα₁) where
+instance [TopologicalSpace X] [IsFiniteMeasureOnCompacts μ] :
+    IsFiniteMeasureOnCompacts (μ.withRPowDist α hα₀ hα₁) where
   lt_top_of_isCompact := by
     intro K hK
     rw [withRPowDist_apply, ← image_val_eq_preimage]
     exact hK.image continuous_val |>.measure_lt_top
 
-instance [μ.OuterRegular] : (μ.withRPowDist α hα₀ hα₁).OuterRegular := by
+instance [TopologicalSpace X] [μ.OuterRegular] : (μ.withRPowDist α hα₀ hα₁).OuterRegular := by
   refine ⟨fun A hA r hr ↦ ?_⟩
   rw [withRPowDist_apply] at hr
   rcases Set.exists_isOpen_lt_of_lt _ r hr with ⟨U, hAU, hUo, hU⟩
@@ -104,12 +102,13 @@ instance [μ.OuterRegular] : (μ.withRPowDist α hα₀ hα₁).OuterRegular := 
   rintro ⟨x⟩ hx
   exact hAU hx
 
-instance [μ.InnerRegular] : (μ.withRPowDist α hα₀ hα₁).InnerRegular := by
+instance [TopologicalSpace X] [μ.InnerRegular] : (μ.withRPowDist α hα₀ hα₁).InnerRegular := by
   constructor
   rw [withRPowDist, ← measurableEquiv_symm_apply]
   exact InnerRegular.innerRegular.map' _ measurable_mk fun K hK ↦ hK.image continuous_mk
 
-instance [μ.WeaklyRegular] : (μ.withRPowDist α hα₀ hα₁).WeaklyRegular where
+instance [TopologicalSpace X] [μ.WeaklyRegular] :
+    (μ.withRPowDist α hα₀ hα₁).WeaklyRegular where
   innerRegular := by
     rw [withRPowDist, ← measurableEquiv_symm_apply]
     apply WeaklyRegular.innerRegular.map'
@@ -117,7 +116,8 @@ instance [μ.WeaklyRegular] : (μ.withRPowDist α hα₀ hα₁).WeaklyRegular w
     · intro K hK
       rwa [measurableEquiv_symm_apply, ← homeomorph_symm_apply, Homeomorph.isClosed_image]
 
-instance [μ.InnerRegularCompactLTTop] : (μ.withRPowDist α hα₀ hα₁).InnerRegularCompactLTTop where
+instance [TopologicalSpace X] [μ.InnerRegularCompactLTTop] :
+    (μ.withRPowDist α hα₀ hα₁).InnerRegularCompactLTTop where
   innerRegular := by
     rw [withRPowDist, ← measurableEquiv_symm_apply]
     apply InnerRegularCompactLTTop.innerRegular.map'
@@ -126,14 +126,13 @@ instance [μ.InnerRegularCompactLTTop] : (μ.withRPowDist α hα₀ hα₁).Inne
       exact ⟨hUm.preimage <| MeasurableEquiv.measurable _, hμU⟩
     · exact fun K hK ↦ hK.image continuous_mk
 
-instance [μ.Regular] : (μ.withRPowDist α hα₀ hα₁).Regular where
+instance [TopologicalSpace X] [μ.Regular] : (μ.withRPowDist α hα₀ hα₁).Regular where
   innerRegular := by
     rw [withRPowDist, ← measurableEquiv_symm_apply]
     apply Regular.innerRegular.map'
     · exact fun U hU ↦ hU.preimage continuous_mk
     · exact fun K hK ↦ hK.image continuous_mk
 
-end TopologicalSpace
 
 @[simp]
 theorem withRPowDist_hausdorffMeasure [EMetricSpace X] [BorelSpace X] (d : ℝ) :
