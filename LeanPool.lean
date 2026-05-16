@@ -171,6 +171,17 @@ import LeanPool.Isoperimetric.Isoperimetric
 import LeanPool.Isoperimetric.PrekopaLeindler
 import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
+import LeanPool.LowDimSolvClassification
+import LeanPool.LowDimSolvClassification.Classification1
+import LeanPool.LowDimSolvClassification.Classification2
+import LeanPool.LowDimSolvClassification.Classification3
+import LeanPool.LowDimSolvClassification.GeneralResults
+import LeanPool.LowDimSolvClassification.InstancesConstructions
+import LeanPool.LowDimSolvClassification.InstancesLowDim
+import LeanPool.LowDimSolvClassification.LemmasDim3
+import LeanPool.LowDimSolvClassification.QuotientSolvable
+import LeanPool.LowDimSolvClassification.Semidirect
+import LeanPool.LowDimSolvClassification.Tactics
 import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
 import LeanPool.RamanujanTauMissesPrimes
