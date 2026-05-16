@@ -224,6 +224,8 @@ import LeanPool.RlTheoryInLean.Probability.MarkovChain.Finite.Defs
 import LeanPool.RlTheoryInLean.Probability.MarkovChain.Trajectory
 import LeanPool.RlTheoryInLean.StochasticApproximation
 import LeanPool.RlTheoryInLean.StochasticApproximation.DiscreteGronwall
+import LeanPool.SemicircleLaw
+import LeanPool.SemicircleLaw.SemicircleDistribution
 import LeanPool.Sensitivity
 import LeanPool.Sensitivity.Basic
 import LeanPool.Sensitivity.Consequences

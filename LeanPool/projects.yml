@@ -419,6 +419,33 @@ projects:
       - "28A75"
       - "52A40"
       - "49Q20"
+  - slug: semicirclelaw
+    title: Wigner Semicircle Distribution
+    summary: Defines the real Wigner semicircle distribution and its probability density function.
+    branch: probability theory
+    entry_module: LeanPool.SemicircleLaw
+    authors:
+      - FredRaj3
+    source:
+      url: https://github.com/FredRaj3/SemicircleLaw
+      github_repo: FredRaj3/SemicircleLaw
+    status: verified
+    main_declarations:
+      - LeanPool.SemicircleLaw.semicircleReal
+    main_results:
+      - declaration: LeanPool.SemicircleLaw.semicirclePDFReal
+        informal: Defines the real-valued density of the semicircle distribution with mean μ and variance v.
+      - declaration: LeanPool.SemicircleLaw.semicirclePDF
+        informal: Defines the ℝ≥0∞-valued density of the semicircle distribution.
+      - declaration: LeanPool.SemicircleLaw.semicircleReal
+        informal: Defines the semicircle measure on ℝ, equal to a Dirac mass when the variance is zero.
+    tags:
+      - probability
+      - random-matrix-theory
+      - distributions
+    msc:
+      - "60B20"
+      - "60E05"
   - slug: sumsthreesquares
     title: Sums of Three Squares
     summary: Formalizes a blueprint step in the three-squares theorem using quadratic forms and geometry of numbers.
