@@ -73,10 +73,12 @@ instance {n : ℕ} : Repr (Election n) where
   reprPrec e _ :=
     "{ votes := " ++ repr e.votes.toArray ++ ", houseSize := " ++ repr e.houseSize ++ " }"
 
+namespace Election
+
 /-- Create a new election by permuting the vote distribution of parties according to permutation
 `σ`. -/
 @[simp]
-def Election.mk_by_perm {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin n)) : Election n :=
+def mk_by_perm {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin n)) : Election n :=
   { votes := Vector.ofFn fun i => election.votes[σ i]
     houseSize := election.houseSize
     votes_sum_pos := by
@@ -89,7 +91,7 @@ def Election.mk_by_perm {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin 
 
 /-- Create a new election by scaling all votes by a positive constant `k`. -/
 @[simp]
-def Election.mk_by_scale {n : ℕ} (election : Election n) (k : ℕ+) : Election n :=
+def mk_by_scale {n : ℕ} (election : Election n) (k : ℕ+) : Election n :=
   { votes := Vector.ofFn fun i => k * election.votes[i]
     houseSize := election.houseSize
     votes_sum_pos := by
@@ -98,12 +100,14 @@ def Election.mk_by_scale {n : ℕ} (election : Election n) (k : ℕ+) : Election
   }
 
 /-- The number of parties in an election is positive. -/
-lemma Election.n_pos {n : ℕ} (election : Election n) : 0 < n := by
+lemma n_pos {n : ℕ} (election : Election n) : 0 < n := by
   by_contra h_neg
   have h_sum_zero : (Vector.sum election.votes) = 0 := by
     have h_empty : ∀ (v : Vector ℕ 0), v.sum = 0 := by decide
     aesop
   exact absurd h_sum_zero (ne_of_gt election.votes_sum_pos)
+
+end Election
 
 /-- An apportionment rule is a function that, given an election, returns a set of apportionments
 satisfying three properties:

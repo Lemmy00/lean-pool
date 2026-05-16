@@ -13,7 +13,7 @@ Source: arxiv:2603.23928
 Authors: Evan Chen, Kenny Lau, Ken Ono, Jujian Zhang
 Status: verified
 Main declarations: `analyticEngine_lower_bound`
-Tags: number-theory, combinatorics
+Tags: number-theory
 -/
 
 /-!
