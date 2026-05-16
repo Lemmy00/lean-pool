@@ -444,3 +444,36 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: monlib4
+    title: Monlib4 utility lemmas
+    summary: Vendors a foundational subset of monlib4 — matrix reshape and conjugate, direct-sum projection, and base-(b+1) divisibility tests.
+    branch: linear algebra
+    entry_module: LeanPool.Monlib4
+    authors:
+      - Monica Omar
+    source:
+      url: https://github.com/themathqueen/monlib4
+      github_repo: themathqueen/monlib4
+    status: verified
+    main_declarations:
+      - Matrix.reshape
+      - Matrix.conj
+      - directSumFromTo
+    main_results:
+      - declaration: Matrix.reshape
+        informal: Linear equivalence between matrices `Mₙₓₘ(R)` and functions `n × m → R`.
+      - declaration: Matrix.conj
+        informal: Entrywise conjugate of a matrix (denoted `xᴴᵀ`).
+      - declaration: directSumFromTo
+        informal: Linear map projecting between summands of a dependent direct sum.
+      - declaration: spectrum.comm
+        informal: The spectrum of `x ∘ₗ y` equals the spectrum of `y ∘ₗ x` for finite-dim endomorphisms.
+      - declaration: nat_dvd_repr_iff_nat_dvd_sum_repr
+        informal: A base-`(a+1)` digit representation is divisible by `a` iff the sum of its digits is.
+    tags:
+      - linear-algebra
+      - matrices
+      - operator-algebras
+    msc:
+      - "15A99"
+      - "16-XX"

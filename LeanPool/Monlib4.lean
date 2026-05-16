@@ -1,0 +1,44 @@
+/-
+Copyright (c) 2026 Monica Omar. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Monica Omar
+-/
+
+import LeanPool.Monlib4.LinearAlgebra
+import LeanPool.Monlib4.Other
+import LeanPool.Monlib4.Preq
+
+/-!
+# Monlib4 utility lemmas
+
+Source: url:https://github.com/themathqueen/monlib4
+Authors: Monica Omar
+Status: verified
+Main declarations: `Matrix.reshape`, `Matrix.conj`, `directSumFromTo`
+Tags: linear-algebra, matrices, operator-algebras
+MSC: 15A99, 16-XX
+-/
+
+/-!
+## Mathematical overview
+
+A core subset of `monlib4` — a Lean 4 formalization of non-commutative graph
+theory. The full upstream library builds quantum-graph and quantum-set theory
+on substantial matrix / inner-product-space infrastructure.
+
+This vendored subset preserves the foundational utility lemmas that build
+warning-free under Lean Pool's toolchain: a `Matrix.reshape` linear equivalence
+between `Mₙₓₘ(R)` and `Rⁿˣᵐ`, the entrywise conjugate `Matrix.conj` with the
+`ᴴᵀ` notation, the projection `directSumFromTo` between summands of a dependent
+direct sum, basic spectrum commutativity (`isUnit_comm`, `spectrum.comm`), and
+helper lemmas for finite sums, ites/dites, `RCLike`-valued order relations,
+and base-`b+1` divisibility tests.
+
+## Provenance
+
+Imported from <https://github.com/themathqueen/monlib4> (originally Lean
+`v4.21.0-rc3`) and ported to Lean Pool's `v4.30.0-rc2` / Mathlib `v4.30.0-rc2`.
+The successor of <https://github.com/themathqueen/monlib> (the Lean 3 version).
+The bulk of the upstream library is not yet vendored — see the import-PR
+description for the porting status of individual modules.
+-/
