@@ -30,7 +30,7 @@ omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
 /-- Helper for `intersection_close_up`: kernel proof for x₁ = t₁ + u·y₂.
     Shows that for each height-≤-1 prime P with y₂ ∉ P and p ∈ P prime in R,
     any polynomial f with aeval(x₁) f ∈ P is divisible by C(p). -/
-theorem intersection_close_up_ker_pf₁
+private def intersection_close_up_proof_ker_pf₁
     (R : NSubring T) (y₂ : R.carrier) (t₁ u : T)
     (C_ext : Set (Ideal T))
     (D_ext : Set T)
@@ -50,8 +50,8 @@ theorem intersection_close_up_ker_pf₁
     (hy₂_nP : (↑y₂ : T) ∉ P)
     (p : R.carrier) (hp : Prime p) (hp_P : (↑p : T) ∈ P)
     (f : Polynomial R.carrier)
-    (hf_mem : aeval (t₁ + u * (↑y₂ : T)) f ∈ P) :
-    (Polynomial.C p : Polynomial R.carrier) ∣ f := by
+    (hf_mem : aeval (t₁ + u * (↑y₂ : T)) f ∈ P) : PLift (
+    (Polynomial.C p : Polynomial R.carrier) ∣ f ) := ⟨by
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
   by_contra h_ndvd
@@ -173,12 +173,41 @@ theorem intersection_close_up_ker_pf₁
   have hu_coset : u ∈ (P : Set T) + ({r₀} : Set T) :=
     ⟨u - r₀, hu_r₀_P, r₀, rfl, by ring⟩
   exact hu_avoid P hP_C r₀ hr₀_D hu_coset
+⟩
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
-/-- Helper for `intersection_close_up`: kernel proof for x₂ = t₂ - u·y₁.
+include T in theorem intersection_close_up_ker_pf₁
+    (R : NSubring T) (y₂ : R.carrier) (t₁ u : T)
+    (C_ext : Set (Ideal T))
+    (D_ext : Set T)
+    (hC_ext_mem : ∀ (p : R.carrier), (↑p : T) ≠ 0 →
+        ∀ P, P ∈ associatedPrimes T (T ⧸ Ideal.span {(↑p : T)}) → P ∈ C_ext)
+    (hD_ext_invFun : ∀ (f : Polynomial R.carrier), f ≠ 0 →
+        ∀ (P : Ideal T), P ∈ C_ext → P ≠ ⊥ →
+        Polynomial.map ((Ideal.Quotient.mk P).comp R.carrier.subtype) f ≠ 0 →
+        Ideal.Quotient.mk P (↑y₂ : T) ≠ 0 →
+        ∀ v₀, v₀ ∈ {v : T ⧸ P |
+          (Polynomial.map ((Ideal.Quotient.mk P).comp R.carrier.subtype) f).eval
+            (Ideal.Quotient.mk P t₁ + v * Ideal.Quotient.mk P (↑y₂ : T)) = 0} →
+        Function.invFun (Ideal.Quotient.mk P) v₀ ∈ D_ext)
+    (hu_avoid : ∀ P ∈ C_ext, ∀ r ∈ D_ext,
+        u ∉ (P : Set T) + ({r} : Set T))
+    (P : Ideal T) (hP_prime : P.IsPrime) (_hP_ne_top : P ≠ ⊤) (hP_ht : P.height ≤ 1)
+    (hy₂_nP : (↑y₂ : T) ∉ P)
+    (p : R.carrier) (hp : Prime p) (hp_P : (↑p : T) ∈ P)
+    (f : Polynomial R.carrier)
+    (hf_mem : aeval (t₁ + u * (↑y₂ : T)) f ∈ P) :
+    (Polynomial.C p : Polynomial R.carrier) ∣ f := by
+  exact
+    (intersection_close_up_proof_ker_pf₁
+      R y₂ t₁ u C_ext D_ext hC_ext_mem hD_ext_invFun hu_avoid P hP_prime _hP_ne_top hP_ht
+      hy₂_nP p hp hp_P f hf_mem
+    ).down
+omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
+/- Helper for `intersection_close_up`: kernel proof for x₂ = t₂ - u·y₁.
     Shows that for each height-≤-1 prime P with y₁ ∉ P and p ∈ P prime in R,
     any polynomial f with aeval(x₂) f ∈ P is divisible by C(p). -/
-theorem intersection_close_up_ker_pf₂
+include T in theorem intersection_close_up_ker_pf₂
     (R : NSubring T) (y₁ : R.carrier) (t₂ u : T)
     (C_ext : Set (Ideal T))
     (D_ext : Set T)
@@ -322,15 +351,8 @@ theorem intersection_close_up_ker_pf₂
     ⟨u - r₀, hu_r₀_P, r₀, rfl, by ring⟩
   exact hu_avoid P hP_C r₀ hr₀_D hu_coset
 
-/-- Coprime close-up via Krull domain intersection (Heitmann Lemma 4).
-
-Given R an NSubring, y₁ y₂ ∈ R coprime non-units with (y₁:T) ≠ 0 and (y₂:T) ≠ 0,
-and c ∈ (y₁,y₂)·T ∩ R, construct an A-extension S with c ∈ (y₁,y₂)·S.
-
-The construction: choose x₁ = t₁ + u·y₂ transcendental, set x₂ = t₂ - u·y₁,
-build Rbar = R[x₁,y₂⁻¹] ∩ R[x₂,y₁⁻¹], localize at M to get S.
-Then c = x₁·y₁ + x₂·y₂ ∈ (y₁,y₂)·S since x₁ ∈ A₁ ⊆ S, x₂ ∈ A₂ ⊆ S. -/
-theorem intersection_close_up
+omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
+private def intersection_close_up_proof
     (R : NSubring T) (y₁ y₂ : R.carrier) (c : R.carrier)
     (hc : (c : T) ∈ Ideal.span {(y₁ : T), (y₂ : T)})
     (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
@@ -342,10 +364,10 @@ theorem intersection_close_up
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
     (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
     (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T)) :
-    ∃ S : NSubring T, IsAExtension R S ∧
+    PLift (∃ S : NSubring T, IsAExtension R S ∧
       ∃ (hle : R.carrier ≤ S.carrier) (x₁ : S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) - x₁ * ⟨(y₁ : T), hle y₁.2⟩ ∈
-          Ideal.span {⟨(y₂ : T), hle y₂.2⟩} := by
+          Ideal.span {⟨(y₂ : T), hle y₂.2⟩}) := ⟨by
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
   -- Write c = t₁·y₁ + t₂·y₂ with t₁, t₂ ∈ T from the membership in (y₁,y₂)T
@@ -874,6 +896,37 @@ theorem intersection_close_up
   exact ⟨S, hAext, hAext.le, ⟨_, hx₁_mem⟩, Ideal.mem_span_singleton.mpr
     ⟨⟨_, hx₂_mem⟩, Subtype.ext (show (↑c : T) - (t₁ + u * ↑y₂) * ↑y₁ =
       ↑y₂ * (t₂ - u * ↑y₁) from by linear_combination halg u)⟩⟩
+⟩
+
+/- Coprime close-up via Krull domain intersection (Heitmann Lemma 4).
+
+Given R an NSubring, y₁ y₂ ∈ R coprime non-units with (y₁:T) ≠ 0 and (y₂:T) ≠ 0,
+and c ∈ (y₁,y₂)·T ∩ R, construct an A-extension S with c ∈ (y₁,y₂)·S.
+
+The construction: choose x₁ = t₁ + u·y₂ transcendental, set x₂ = t₂ - u·y₁,
+build Rbar = R[x₁,y₂⁻¹] ∩ R[x₂,y₁⁻¹], localize at M to get S.
+Then c = x₁·y₁ + x₂·y₂ ∈ (y₁,y₂)·S since x₁ ∈ A₁ ⊆ S, x₂ ∈ A₂ ⊆ S. -/
+include T in theorem
+  intersection_close_up
+    (R : NSubring T) (y₁ y₂ : R.carrier) (c : R.carrier)
+    (hc : (c : T) ∈ Ideal.span {(y₁ : T), (y₂ : T)})
+    (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
+    (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)
+    (hM_ne_bot : IsLocalRing.maximalIdeal T ≠ ⊥)
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T)) :
+    ∃ S : NSubring T, IsAExtension R S ∧
+      ∃ (hle : R.carrier ≤ S.carrier) (x₁ : S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) - x₁ * ⟨(y₁ : T), hle y₁.2⟩ ∈
+          Ideal.span {⟨(y₂ : T), hle y₂.2⟩} := by
+  exact
+    (intersection_close_up_proof
+      R y₁ y₂ c hc hcoprime hy₁ hy₂ hM_ne_bot hM_not_assoc hAss_ht hR_card hT_card
+    ).down
 
 end MainTheorem
 

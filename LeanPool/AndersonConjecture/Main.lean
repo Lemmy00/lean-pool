@@ -861,7 +861,7 @@ Combine: A is WQC + some quotient of A is not WQC
 
 /-- **Main Theorem**: There exists a weakly quasi-complete Noetherian
 local ring that is not quasi-complete. -/
-theorem main_theorem :
+theorem anderson_main_theorem :
     ∃ (R : Type) (_ : CommRing R) (_ : IsLocalRing R) (_ : IsNoetherianRing R),
       IsWeaklyQuasiComplete R ∧ ¬ IsQuasiComplete R := by
   obtain ⟨A, instCR, instLR, instDom, instUFM, instNoeth, hiso, htrivial⟩ :=

@@ -29,7 +29,7 @@ Given T a complete local domain with depth ≥ 2, |T/M| = |T|, ℵ₀ < |T|, cha
 there exists a local UFD A with Â ≅ T and trivial generic formal fiber.
 
 This version uses the cardinal bound `ℵ₀ < #T` instead of countability. -/
-theorem jensen_construction_p0_uncountable
+private def jensen_construction_p0_uncountable_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hdepth : ∃ (a b : T), a ∈ IsLocalRing.maximalIdeal T ∧
       b ∈ IsLocalRing.maximalIdeal T ∧
@@ -37,11 +37,11 @@ theorem jensen_construction_p0_uncountable
     (hcard : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
     (hchar : ∀ (n : ℤ), n ≠ 0 → (algebraMap ℤ T n) ≠ 0)
     (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
-    (hht : ∀ (P : Ideal T), P.IsPrime → P ≠ IsLocalRing.maximalIdeal T → P.height ≤ 1) :
+    (hht : ∀ (P : Ideal T), P.IsPrime → P ≠ IsLocalRing.maximalIdeal T → P.height ≤ 1) : PLift (
     ∃ (A : Type u) (_ : CommRing A) (_ : IsLocalRing A) (_ : IsDomain A)
       (_ : UniqueFactorizationMonoid A) (_ : IsNoetherianRing A),
       Nonempty (AdicCompletion (@IsLocalRing.maximalIdeal A _ _) A ≃+* T) ∧
-      @HasTrivialGenericFormalFiber A _ _ := by
+      @HasTrivialGenericFormalFiber A _ _ ) := ⟨by
   have hM_not_assoc := maximal_not_assoc_of_depth_ge_two hdepth
   have hAss_ht := assoc_height_le_one_of_domain hdepth hht
   -- Run the transfinite construction to obtain A ⊆ T with surjectivity, closure, and prime data
@@ -307,6 +307,23 @@ theorem jensen_construction_p0_uncountable
     exact ht_ne (congrArg A.carrier.subtype h_bot)
   exact ⟨↥A.carrier, inferInstance, inferInstance, inferInstance, inferInstance,
     hA_noeth, ⟨φ_equiv⟩, hA_tgff⟩
+⟩
 
-
+theorem jensen_construction_p0_uncountable
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hdepth : ∃ (a b : T), a ∈ IsLocalRing.maximalIdeal T ∧
+      b ∈ IsLocalRing.maximalIdeal T ∧
+      RingTheory.Sequence.IsRegular T [a, b])
+    (hcard : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hchar : ∀ (n : ℤ), n ≠ 0 → (algebraMap ℤ T n) ≠ 0)
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (hht : ∀ (P : Ideal T), P.IsPrime → P ≠ IsLocalRing.maximalIdeal T → P.height ≤ 1) :
+    ∃ (A : Type u) (_ : CommRing A) (_ : IsLocalRing A) (_ : IsDomain A)
+      (_ : UniqueFactorizationMonoid A) (_ : IsNoetherianRing A),
+      Nonempty (AdicCompletion (@IsLocalRing.maximalIdeal A _ _) A ≃+* T) ∧
+      @HasTrivialGenericFormalFiber A _ _ := by
+  exact
+    (jensen_construction_p0_uncountable_proof
+      hdepth hcard hchar hT_aleph0 hht
+    ).down
 end

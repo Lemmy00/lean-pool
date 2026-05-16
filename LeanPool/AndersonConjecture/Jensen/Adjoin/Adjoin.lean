@@ -35,7 +35,7 @@ there exists an A-extension S of R with some c ∈ S satisfying u - c ∈ M².
 
 Proof: Choose t ∈ M² via avoidance so that u + t is transcendental
 over R modulo relevant primes. Set S = R[u + t] ∩ M. Then c = u + t. -/
-theorem adjoin_surjectivity
+private def adjoin_surjectivity_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (R : NSubring T)
     (u : T)
@@ -45,10 +45,10 @@ theorem adjoin_surjectivity
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
     (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
     (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
-    (hM_ne_bot : IsLocalRing.maximalIdeal T ≠ ⊥) :
+    (hM_ne_bot : IsLocalRing.maximalIdeal T ≠ ⊥) : PLift (
     ∃ S : NSubring T,
       IsAExtension R S ∧
-      ∃ (c : S.carrier), (u - (c : T)) ∈ IsLocalRing.maximalIdeal T ^ 2 := by
+      ∃ (c : S.carrier), (u - (c : T)) ∈ IsLocalRing.maximalIdeal T ^ 2 ) := ⟨by
   have hfind : ∃ (t : T), t ∈ IsLocalRing.maximalIdeal T ^ 2 ∧
       Transcendental R.carrier (u + t) ∧
       (∀ (P : Ideal T), P.IsPrime → P.height ≤ 1 →
@@ -382,6 +382,24 @@ theorem adjoin_surjectivity
   change u - (u + t) ∈ IsLocalRing.maximalIdeal T ^ 2
   rw [sub_add_cancel_left]
   exact neg_mem ht_M2
+⟩
 
-
+theorem adjoin_surjectivity
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (R : NSubring T)
+    (u : T)
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hM_ne_bot : IsLocalRing.maximalIdeal T ≠ ⊥) :
+    ∃ S : NSubring T,
+      IsAExtension R S ∧
+      ∃ (c : S.carrier), (u - (c : T)) ∈ IsLocalRing.maximalIdeal T ^ 2 := by
+  exact
+    (adjoin_surjectivity_proof
+      R u hM_not_assoc hAss_ht hR_card hT_card hM_ne_bot
+    ).down
 end

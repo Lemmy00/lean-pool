@@ -23,7 +23,7 @@ open Cardinal Ideal
 
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-theorem close_up_aux_factor_intersection
+private def close_up_aux_factor_intersection_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -70,11 +70,11 @@ theorem close_up_aux_factor_intersection
     (hM_bot : IsLocalRing.maximalIdeal T ≠ ⊥)
     (ha_zero : (a : T) ≠ 0)
     (hc_n : (c_n : T) ∈ Ideal.map R.carrier.subtype
-      (span (↑(insert a rest) : Set R.carrier))) :
+      (span (↑(insert a rest) : Set R.carrier))) : PLift (
     ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
       (⟨(c_n : T), hle c_n.2⟩ : S.carrier) ∈
         Ideal.map (Subring.inclusion hle)
-          (span (↑(insert a rest) : Set R.carrier)) := by
+          (span (↑(insert a rest) : Set R.carrier)) ) := ⟨by
   classical
   -- Derive c_n ∈ span{a, q'}·T
   have hspan_le_aq' : span (↑(insert a rest) : Set R.carrier) ≤ span {a} ⊔ span {q'} := by
@@ -257,7 +257,66 @@ theorem close_up_aux_factor_intersection
         hq' hq'_dvd hAext₁ hle₁ hS₁_card w
         div_q_b2 hdiv_b2 rest'2 rfl h_ml_b2 hw_mem_T
         ha_rest'2 hrest'2_card_eq hb_rest'2
+⟩
 
+theorem close_up_aux_factor_intersection
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (n'' : ℕ)
+    (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
+      (s : Finset R.carrier) (_ : s.card ≤ n'' + 1 + 1) (c : R.carrier)
+      (_ : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier))),
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    (m : ℕ)
+    (ih_m : ∀ m_1, m_1 < m →
+      ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T),
+      letI : IsDomain R.carrier := NSubring.isDomain R
+      letI : UniqueFactorizationMonoid R.carrier := R.isUFD
+      ∀ (a : R.carrier) (s : Finset R.carrier),
+      gcd_complexity s ≤ m_1 →
+      s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
+      (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    {a : R.carrier}
+    {s : Finset R.carrier}
+    (hs_gcd : gcd_complexity s ≤ m)
+    (rest : Finset R.carrier)
+    (hrest_card : rest.card ≤ n'' + 1 + 1)
+    (ha_rest : a ∉ rest)
+    {b : R.carrier} (hb_rest : b ∈ rest)
+    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    {q' : R.carrier} (hq' : Prime q')
+    (hq'_dvd : ∀ x ∈ rest, q' ∣ x)
+    (hq'_na : ¬q' ∣ a)
+    {c_n : R.carrier}
+    (_hq'_nc : ¬q' ∣ c_n)
+    (hrest_le_q' : span (↑rest : Set R.carrier) ≤ span {q'})
+    (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ a ∧ p ∣ q'))
+    (hM_bot : IsLocalRing.maximalIdeal T ≠ ⊥)
+    (ha_zero : (a : T) ≠ 0)
+    (hc_n : (c_n : T) ∈ Ideal.map R.carrier.subtype
+      (span (↑(insert a rest) : Set R.carrier))) :
+    ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+      (⟨(c_n : T), hle c_n.2⟩ : S.carrier) ∈
+        Ideal.map (Subring.inclusion hle)
+          (span (↑(insert a rest) : Set R.carrier)) := by
+  exact
+    (close_up_aux_factor_intersection_proof
+      (R := R) (a := a) (s := s) (b := b) (q' := q') (c_n := c_n) hM_not_assoc hAss_ht
+      hT_card hT_aleph0 n'' ih m ih_m hR_card hs_gcd rest hrest_card ha_rest hb_rest
+      hgcd_rest hq' hq'_dvd hq'_na _hq'_nc hrest_le_q' hcoprime hM_bot ha_zero hc_n
+    ).down
 theorem close_up_aux_factor_no_factor
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →

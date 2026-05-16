@@ -24,11 +24,11 @@ open Cardinal Ideal Polynomial Set Pointwise
 
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-/-- Derive mod-principal transcendence from the stronger mod-P version.
+/- Derive mod-principal transcendence from the stronger mod-P version.
 If for every associated prime P of T/(p) with y ∉ P, the polynomial
 evaluation aeval x f ∈ P implies C(p) | f, then aeval x f ∈ span{p}
 already implies C(p) | f. -/
-theorem derive_mod_principal_trans
+include T in theorem derive_mod_principal_trans
     (R : NSubring T) (x : T) (y : R.carrier)
     (hAss_ht : ∀ (r : T), r ≠ 0 →
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
@@ -105,12 +105,12 @@ section MainTheorem
 variable [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
-/-- Well-founded descent argument for the height bound: if P ∩ R ≠ ⊥ and
+/- Well-founded descent argument for the height bound: if P ∩ R ≠ ⊥ and
 every element of P ∩ S_sub is divisible by a prime p₀ generating P ∩ R,
 then every nonzero element of any prime q ⊊ P ∩ S_sub would be infinitely
 divisible by p₀, contradicting WfDvdMonoid. Hence q = ⊥, giving the
 height bound contradiction. -/
-theorem height_bound_wf_descent
+include T in theorem height_bound_wf_descent
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
     (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
     (hR_le : R.carrier ≤ S_sub)
@@ -277,7 +277,7 @@ omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
 /-- Height bound for primes of S_sub: every associated prime P of T/(t)
 contracts to an ideal of height ≤ 1 in S_sub. Uses the K[X] PID argument
 for the P∩R = ⊥ case and well-founded descent for P∩R ≠ ⊥. -/
-theorem build_height_bound
+private def build_height_bound_proof
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
     (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
     [UniqueFactorizationMonoid S_sub]
@@ -309,10 +309,10 @@ theorem build_height_bound
         b ∉ IsLocalRing.maximalIdeal T ∧ t * b = a})
     (hRbar_le_S : ∀ t, t ∈ intersectionSet R x₁ x₂ y₁ y₂ → t ∈ (S_sub : Set T))
     (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂)
-    (hx₂_Rbar : x₂ ∈ intersectionSet R x₁ x₂ y₁ y₂) :
+    (hx₂_Rbar : x₂ ∈ intersectionSet R x₁ x₂ y₁ y₂) : PLift (
     ∀ (t : T), t ≠ 0 →
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {t}),
-        Ideal.height (P.comap S_sub.subtype) ≤ 1 := by
+        Ideal.height (P.comap S_sub.subtype) ≤ 1 ) := ⟨by
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
   -- Set up Rbar = R[x₁,y₂⁻¹] ∩ R[x₂,y₁⁻¹] and its localization S = Rbar[units⁻¹]
@@ -591,12 +591,53 @@ theorem build_height_bound
         hR_prime_in_S (fun s => hS_mem_rep s) P hP_ht hR_bound hPR_bot hP_le_M
         x_eval y_elem hy_nP hx_ker_branch heval_S
         get_witness_Rbar q hq_lt s hs_ne hs_q).elim
-
+⟩
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
+include T in theorem build_height_bound
+    (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
+    (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
+    [UniqueFactorizationMonoid S_sub]
+    (hR_le : R.carrier ≤ S_sub)
+    (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
+    (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hx₁_trans : Transcendental R.carrier x₁)
+    (hx₂_trans : Transcendental R.carrier x₂)
+    (hx₁_ker : ∀ (P : Ideal T), P.IsPrime → P ≠ ⊤ → P.height ≤ 1 → (↑y₂ : T) ∉ P →
+      ∀ (p : R.carrier), Prime p → (↑p : T) ∈ P →
+      ∀ (f : Polynomial R.carrier),
+        aeval x₁ f ∈ P → (C p : Polynomial R.carrier) ∣ f)
+    (hx₂_ker : ∀ (P : Ideal T), P.IsPrime → P ≠ ⊤ → P.height ≤ 1 → (↑y₁ : T) ∉ P →
+      ∀ (p : R.carrier), Prime p → (↑p : T) ∈ P →
+      ∀ (f : Polynomial R.carrier),
+        aeval x₂ f ∈ P → (C p : Polynomial R.carrier) ∣ f)
+    (hinv : ∀ (s : S_sub), (s : T) ∉ IsLocalRing.maximalIdeal T → IsUnit s)
+    (hR_prime_in_S : ∀ (p : R.carrier), Prime p →
+      (↑p : T) ∈ IsLocalRing.maximalIdeal T →
+      Prime (⟨(↑p : T), hR_le p.2⟩ : S_sub))
+    (hS_sub_eq : (S_sub : Set T) =
+      {t : T | ∃ (a : T) (b : T),
+        a ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
+        b ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
+        b ∉ IsLocalRing.maximalIdeal T ∧ t * b = a})
+    (hRbar_le_S : ∀ t, t ∈ intersectionSet R x₁ x₂ y₁ y₂ → t ∈ (S_sub : Set T))
+    (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂)
+    (hx₂_Rbar : x₂ ∈ intersectionSet R x₁ x₂ y₁ y₂) :
+    ∀ (t : T), t ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {t}),
+        Ideal.height (P.comap S_sub.subtype) ≤ 1 := by
+  exact
+    (build_height_bound_proof
+      R x₁ x₂ y₁ y₂ S_sub hR_le hcoprime hy₁ hy₂ hAss_ht hM_not_assoc hx₁_trans hx₂_trans
+      hx₁_ker hx₂_ker hinv hR_prime_in_S hS_sub_eq hRbar_le_S hx₁_Rbar hx₂_Rbar
+    ).down
 /-- Helper: the Krull domain intersection construction produces an NSubring
 containing both x₁ and x₂. Core algebraic construction from Heitmann (1993) Lemma 4. -/
-theorem build_intersection_nsubring
+private def build_intersection_nsubring_proof
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier) (c : R.carrier)
     (hc_eq : (↑c : T) = x₁ * ↑y₁ + x₂ * ↑y₂)
     (hx₁_trans : Transcendental R.carrier x₁)
@@ -617,8 +658,8 @@ theorem build_intersection_nsubring
     (hx₂_ker : ∀ (P : Ideal T), P.IsPrime → P ≠ ⊤ → P.height ≤ 1 → (↑y₁ : T) ∉ P →
       ∀ (p : R.carrier), Prime p → (↑p : T) ∈ P →
       ∀ (f : Polynomial R.carrier),
-        aeval x₂ f ∈ P → (C p : Polynomial R.carrier) ∣ f) :
-    ∃ S : NSubring T, IsAExtension R S ∧ x₁ ∈ S.carrier ∧ x₂ ∈ S.carrier := by
+        aeval x₂ f ∈ P → (C p : Polynomial R.carrier) ∣ f) : PLift (
+    ∃ S : NSubring T, IsAExtension R S ∧ x₁ ∈ S.carrier ∧ x₂ ∈ S.carrier ) := ⟨by
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
   -- Derive mod-principal transcendence for both x₁ (mod y₂) and x₂ (mod y₁)
@@ -990,7 +1031,37 @@ theorem build_intersection_nsubring
         hmax_eq hS_sub_eq hR_prime_div_Rbar
     card_le := hCard_S
   }
+⟩
 
+omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
+include T in theorem build_intersection_nsubring
+    (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier) (c : R.carrier)
+    (hc_eq : (↑c : T) = x₁ * ↑y₁ + x₂ * ↑y₂)
+    (hx₁_trans : Transcendental R.carrier x₁)
+    (hx₂_trans : Transcendental R.carrier x₂)
+    (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
+    (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)
+    (_hM_ne_bot : IsLocalRing.maximalIdeal T ≠ ⊥)
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (_hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    (_hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hx₁_ker : ∀ (P : Ideal T), P.IsPrime → P ≠ ⊤ → P.height ≤ 1 → (↑y₂ : T) ∉ P →
+      ∀ (p : R.carrier), Prime p → (↑p : T) ∈ P →
+      ∀ (f : Polynomial R.carrier),
+        aeval x₁ f ∈ P → (C p : Polynomial R.carrier) ∣ f)
+    (hx₂_ker : ∀ (P : Ideal T), P.IsPrime → P ≠ ⊤ → P.height ≤ 1 → (↑y₁ : T) ∉ P →
+      ∀ (p : R.carrier), Prime p → (↑p : T) ∈ P →
+      ∀ (f : Polynomial R.carrier),
+        aeval x₂ f ∈ P → (C p : Polynomial R.carrier) ∣ f) :
+    ∃ S : NSubring T, IsAExtension R S ∧ x₁ ∈ S.carrier ∧ x₂ ∈ S.carrier := by
+  exact
+    (build_intersection_nsubring_proof
+      R x₁ x₂ y₁ y₂ c hc_eq hx₁_trans hx₂_trans hcoprime hy₁ hy₂ _hM_ne_bot hM_not_assoc
+      hAss_ht _hR_card _hT_card hx₁_ker hx₂_ker
+    ).down
 end MainTheorem
 
 end

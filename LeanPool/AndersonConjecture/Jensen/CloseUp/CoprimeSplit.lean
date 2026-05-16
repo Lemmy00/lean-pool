@@ -21,7 +21,7 @@ open Cardinal Ideal
 
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-theorem close_up_aux_b2_nonzero
+private def close_up_aux_b2_nonzero_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -65,10 +65,10 @@ theorem close_up_aux_b2_nonzero
     (ht_eq : u = R.carrier.subtype a * t)
     (huv : u + v = (c : T))
     (ha_zero : (a : T) ≠ 0)
-    (_hI_s'_bot : Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)) ≠ ⊥) :
+    (_hI_s'_bot : Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)) ≠ ⊥) : PLift (
     ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
       (⟨(c : T), hle c.2⟩ : S.carrier) ∈
-        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) := by
+        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) ) := ⟨by
   by_cases hM_bot : IsLocalRing.maximalIdeal T = ⊥
   · -- M = ⊥: T is a field, a is a unit, trivial
     refine ⟨R, ⟨le_refl _, fun r hr => hr, le_max_right _ _⟩,
@@ -327,8 +327,63 @@ theorem close_up_aux_b2_nonzero
         convert hw_S₂ using 1
         congr 1
         rw [Ideal.map_span, ← Finset.coe_image]
+⟩
 
 -- Extracted: Sub-case B2 of close_up_aux_wf (p∤a, no common prime divides both a and c).
+theorem close_up_aux_b2_nonzero
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (n'' : ℕ)
+    (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
+      (s : Finset R.carrier) (_ : s.card ≤ n'' + 1 + 1) (c : R.carrier)
+      (_ : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier))),
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    (m : ℕ)
+    (ih_m : ∀ m_1, m_1 < m →
+      ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T),
+      letI : IsDomain R.carrier := NSubring.isDomain R
+      letI : UniqueFactorizationMonoid R.carrier := R.isUFD
+      ∀ (a : R.carrier) (s : Finset R.carrier),
+      gcd_complexity s ≤ m_1 →
+      s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
+      (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    {a : R.carrier} {s : Finset R.carrier}
+    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
+    {c : R.carrier}
+    (s' : Finset R.carrier) (hs'_def : s' = s.erase a)
+    (hs_insert : s = insert a s')
+    (hs'_card : s'.card ≤ n'' + 1 + 1)
+    {p : R.carrier} (hp : Prime p) (hp_dvd : ∀ x ∈ s', p ∣ x)
+    (hpa : ¬p ∣ a)
+    (_hgcd_factor : ∀ (q : R.carrier), Prime q → (∀ x ∈ s', q ∣ x) → ¬q ∣ a ∧ ¬q ∣ c)
+    (t : T) (u : T) (v : T)
+    (hv : v ∈ Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)))
+    (ht_eq : u = R.carrier.subtype a * t)
+    (huv : u + v = (c : T))
+    (ha_zero : (a : T) ≠ 0)
+    (_hI_s'_bot : Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)) ≠ ⊥) :
+    ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+      (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) := by
+  exact
+    (close_up_aux_b2_nonzero_proof
+      (R := R) (a := a) (s := s) (c := c) (p := p) hM_not_assoc hAss_ht hT_card hT_aleph0
+      n'' ih m ih_m hR_card hs_gcd hs_eq ha_mem s' hs'_def hs_insert hs'_card hp hp_dvd hpa
+      _hgcd_factor t u v hv ht_eq huv ha_zero _hI_s'_bot
+    ).down
 theorem close_up_aux_b2
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →

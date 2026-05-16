@@ -39,7 +39,7 @@ there exists an N-subring S ⊇ R with q ∩ S ≠ {0},
 
 Proof idea: Use avoidance (Lemma 3) to find t ∈ q that is transcendental
 over R modulo all relevant primes. Then S = R[t]_{R[t] ∩ M}. -/
-theorem adjoin_from_prime
+private def adjoin_from_prime_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (R : NSubring T)
     (q : Ideal T) (hq_prime : q.IsPrime) (hq_ne_bot : q ≠ ⊥)
@@ -48,10 +48,10 @@ theorem adjoin_from_prime
     (hAss_ht : ∀ (r : T), r ≠ 0 →
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
     (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T)) :
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T)) : PLift (
     ∃ S : NSubring T,
       IsAExtension R S ∧
-      ∃ (t : S.carrier), (t : T) ∈ q ∧ (t : T) ≠ 0 := by
+      ∃ (t : S.carrier), (t : T) ∈ q ∧ (t : T) ≠ 0 ) := ⟨by
   -- Case split on q ∩ R
   by_cases hqR : q.comap R.carrier.subtype = ⊥
   swap
@@ -421,6 +421,23 @@ theorem adjoin_from_prime
   obtain ⟨S, hext, ht_mem⟩ := adjoin_transcendental_isNSubring R t ht_trans
     hAss_ht ht_mod_trans
   exact ⟨S, hext, ⟨⟨t, ht_mem⟩, ht_q, ht_ne⟩⟩
+⟩
 
-
+theorem adjoin_from_prime
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (R : NSubring T)
+    (q : Ideal T) (hq_prime : q.IsPrime) (hq_ne_bot : q ≠ ⊥)
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T)) :
+    ∃ S : NSubring T,
+      IsAExtension R S ∧
+      ∃ (t : S.carrier), (t : T) ∈ q ∧ (t : T) ≠ 0 := by
+  exact
+    (adjoin_from_prime_proof
+      R q hq_prime hq_ne_bot hM_not_assoc hAss_ht hR_card hT_card
+    ).down
 end

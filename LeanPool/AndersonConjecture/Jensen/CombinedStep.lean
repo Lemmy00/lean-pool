@@ -22,8 +22,8 @@ open Cardinal Ideal
 universe u
 variable {T : Type u} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-/-- Transitivity of A-extensions: if R → S and S → U are A-extensions, so is R → U. -/
-theorem isAExtension_trans {R S U : NSubring T}
+/- Transitivity of A-extensions: if R → S and S → U are A-extensions, so is R → U. -/
+include T in theorem isAExtension_trans {R S U : NSubring T}
     (h₁ : IsAExtension R S) (h₂ : IsAExtension S U) : IsAExtension R U where
   le := le_trans h₁.le h₂.le
   -- Primality lifts through each link of the chain R ≤ S ≤ U
@@ -38,15 +38,15 @@ theorem isAExtension_trans {R S U : NSubring T}
       _ = max Cardinal.aleph0 (Cardinal.mk R.carrier) := by
           rw [← max_assoc, max_self]
 
-lemma card_lt_of_aext' (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+include T in lemma card_lt_of_aext' (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
     {A B : NSubring T} (hAB : IsAExtension A B)
     (hA : Cardinal.mk A.carrier < Cardinal.mk T) :
     Cardinal.mk B.carrier < Cardinal.mk T :=
   lt_of_le_of_lt hAB.card_le (max_lt hT_aleph0 hA)
 
-/-- Build an NSubring from a chain with explicit carrier = unionSubring.
+/- Build an NSubring from a chain with explicit carrier = unionSubring.
 Unlike `transfinite_union_isNSubring`, the carrier is accessible (not opaque via .choose). -/
-theorem build_union_isNSubring
+include T in theorem build_union_isNSubring
     {ι' : Type u} [LinearOrder ι'] [Nonempty ι']
     (chain : NSubringChain T ι')
     (h_card : ∀ (α : ι'),
@@ -166,9 +166,9 @@ theorem build_union_isNSubring
       omega
     ) ⊥ Ideal.isPrime_bot (bot_lt_iff_ne_bot.mpr hq'_ne)) not_lt_bot
 
-/-- Process one (gens, c) pair: given NSubring Sk with R' ≤ Sk and #Sk < #T,
+/- Process one (gens, c) pair: given NSubring Sk with R' ≤ Sk and #Sk < #T,
 produce an A-extension Sk1 that closes the pair if c ∈ I·T. -/
-private theorem close_up_all_mk_next
+include T in private theorem close_up_all_mk_next
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -215,9 +215,9 @@ private theorem close_up_all_mk_next
     exact ⟨Sk, ⟨le_refl _, fun r hr => hr, le_max_right _ _⟩, hCk, hle_k,
       fun h => absurd h hcond⟩
 
-/-- Cardinality bound for a union of NSubrings in a chain. -/
+/- Cardinality bound for a union of NSubrings in a chain. -/
 -- #(⋃_α R_α) ≤ #ι · sup(#R_α) ≤ κ² = κ where κ = max(ℵ₀, #R')
-private theorem union_card_le_max
+include T in private theorem union_card_le_max
     {ι : Type u} [LinearOrder ι] [Nonempty ι]
     (R' : NSubring T)
     (chain : NSubringChain T ι)
@@ -240,7 +240,7 @@ private theorem union_card_le_max
     _ = κ := max_self κ
 
 /-- Build the transfinite recursion and prove its invariant for close_up_all. -/
-private theorem close_up_all_one_pass_aux
+private def close_up_all_one_pass_aux_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -248,13 +248,13 @@ private theorem close_up_all_one_pass_aux
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
     (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
     (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
-    (R' : NSubring T) (hR' : Cardinal.mk R'.carrier < Cardinal.mk T) :
+    (R' : NSubring T) (hR' : Cardinal.mk R'.carrier < Cardinal.mk T) : PLift (
     ∃ S : NSubring T, IsAExtension R' S ∧ Cardinal.mk S.carrier < Cardinal.mk T ∧
       (∀ (I : Ideal R'.carrier) (_ : I.FG) (c : R'.carrier),
         (c : T) ∈ Ideal.map R'.carrier.subtype I →
         ∃ (hle : R'.carrier ≤ S.carrier),
           (⟨(c : T), hle c.2⟩ : S.carrier) ∈
-            Ideal.map (Subring.inclusion hle) I) := by
+            Ideal.map (Subring.inclusion hle) I) ) := ⟨by
   -- Instantiate the one-step close-up lemma for R'
   have mk_next := close_up_all_mk_next hM_not_assoc hAss_ht hT_card hT_aleph0 R'
   -- Index the transfinite recursion by pairs (generators, element) from R'
@@ -500,10 +500,30 @@ private theorem close_up_all_one_pass_aux
       rw [Ideal.map_map]
       congr 1]
     exact Ideal.mem_map_of_mem _ hc_fp
+⟩
 
-/-- One-pass transfinite close-up: given NSubring R' with #R' < #T, produce an A-extension S
+include T in private theorem close_up_all_one_pass_aux
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (R' : NSubring T) (hR' : Cardinal.mk R'.carrier < Cardinal.mk T) :
+    ∃ S : NSubring T, IsAExtension R' S ∧ Cardinal.mk S.carrier < Cardinal.mk T ∧
+      (∀ (I : Ideal R'.carrier) (_ : I.FG) (c : R'.carrier),
+        (c : T) ∈ Ideal.map R'.carrier.subtype I →
+        ∃ (hle : R'.carrier ≤ S.carrier),
+          (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+            Ideal.map (Subring.inclusion hle) I) := by
+  exact
+    (close_up_all_one_pass_aux_proof
+      hM_not_assoc hAss_ht hT_card hT_aleph0 R' hR'
+    ).down
+/- One-pass transfinite close-up: given NSubring R' with #R' < #T, produce an A-extension S
 such that every (I, c) pair from R' with c ∈ IT is closed in S. -/
-theorem close_up_all_one_pass
+include T in theorem close_up_all_one_pass
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -520,9 +540,9 @@ theorem close_up_all_one_pass
             Ideal.map (Subring.inclusion hle) I) :=
   close_up_all_one_pass_aux hM_not_assoc hAss_ht hT_card hT_aleph0 R' hR'
 
-/-- Build an NSubring from an ℕ-indexed chain (cross-universe: ℕ : Type 0, T : Type u).
+/- Build an NSubring from an ℕ-indexed chain (cross-universe: ℕ : Type 0, T : Type u).
 Returns the NSubring with carrier = unionSubring. -/
-theorem build_union_isNSubring_nat
+include T in theorem build_union_isNSubring_nat
     (chain : NSubringChain T ℕ)
     (h_card : ∀ (n : ℕ),
       Cardinal.mk (chain.ring n).carrier ≤
@@ -637,8 +657,8 @@ theorem build_union_isNSubring_nat
       omega
     ) ⊥ Ideal.isPrime_bot (bot_lt_iff_ne_bot.mpr hq'_ne)) not_lt_bot
 
-/-- ω-iteration: given a one-pass close-up procedure, iterate it to close all f.g. ideals. -/
-theorem close_up_all_omega
+/- ω-iteration: given a one-pass close-up procedure, iterate it to close all f.g. ideals. -/
+include T in theorem close_up_all_omega
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (R : NSubring T)
     (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
@@ -799,9 +819,9 @@ theorem close_up_all_omega
         exact Ideal.mem_map_of_mem _ hx
       exact h_le hc_step
 
-/-- Transfinite close-up: given NSubring R with #R < #T, produce an A-extension S
+/- Transfinite close-up: given NSubring R with #R < #T, produce an A-extension S
 with IT ∩ S = I for all f.g. ideals I of S. -/
-theorem close_up_all
+include T in theorem close_up_all
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (R : NSubring T)
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
@@ -819,8 +839,8 @@ theorem close_up_all
   close_up_all_omega R hR_card hT_card hT_aleph0
     (fun R' hR' => close_up_all_one_pass hM_not_assoc hAss_ht hT_card hT_aleph0 R' hR')
 
-/-- Heitmann Lemma 7 (adapted for Jensen P = (0)). -/
-theorem combined_step
+/- Heitmann Lemma 7 (adapted for Jensen P = (0)). -/
+include T in theorem combined_step
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (R : NSubring T)
     (ℓ : T ⧸ IsLocalRing.maximalIdeal T ^ 2)
@@ -877,8 +897,8 @@ theorem combined_step
         -(u - (c₁ : T)) from by ring, neg_mem_iff]
     exact hc₁
 
-/-- Variant without the prime-catching requirement, just surjectivity + closing up. -/
-theorem combined_step_surj
+/- Variant without the prime-catching requirement, just surjectivity + closing up. -/
+include T in theorem combined_step_surj
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (R : NSubring T)
     (ℓ : T ⧸ IsLocalRing.maximalIdeal T ^ 2)

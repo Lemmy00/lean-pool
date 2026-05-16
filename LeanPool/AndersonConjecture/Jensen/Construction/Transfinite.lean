@@ -25,12 +25,13 @@ open Cardinal Ideal
 
 /-- For `i : (Cardinal.ord c).ToType`, the cardinality of the initial segment
 below `i` is strictly less than `c`. -/
-private theorem mk_Iio_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Set.Iio i) < c := by
+private def mk_Iio_ord_lt_proof {c : Cardinal} (i : c.ord.ToType) :
+    PLift ( #(Set.Iio i) < c ) := ⟨by
   have hlt := mk_Iio_lt i (h := by rw [mk_ord_toType, Ordinal.type_toType])
   rwa [mk_ord_toType] at hlt
+⟩
 
 variable {T : Type u} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
-
 /-! ## Ordinal-indexed transfinite construction
 
 Replace the Zorn approach (which needs `hk_countable`) with ordinal recursion
@@ -270,7 +271,7 @@ nontrivially, and satisfies the closedness condition IT ∩ A = I.
 This replaces the Zorn-based `transfinite_construction_zorn` which required
 `hk_countable : #k ≤ ℵ₀` (false for our T). Instead takes `hT_aleph0 : ℵ₀ < #T`
 and propagates cardinal bounds `#R < #T` through the chain. -/
-theorem transfinite_construction
+private def transfinite_construction_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hdepth : ∃ (a b : T), a ∈ IsLocalRing.maximalIdeal T ∧
       b ∈ IsLocalRing.maximalIdeal T ∧
@@ -281,14 +282,14 @@ theorem transfinite_construction
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
     (hAss_ht : ∀ (r : T), r ≠ 0 →
       ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
-    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T) :
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T) : PLift (
     ∃ (A : NSubring T),
       (Function.Surjective (fun r : A.carrier =>
         Ideal.Quotient.mk (IsLocalRing.maximalIdeal T ^ 2) (r : T))) ∧
       (∀ (I : Ideal A.carrier), I.FG →
         ∀ (c : A.carrier), (c : T) ∈ Ideal.map A.carrier.subtype I → c ∈ I) ∧
       (∀ (q : Ideal T), q.IsPrime → q ≠ ⊥ →
-        ∃ (t : A.carrier), (t : T) ∈ q ∧ (t : T) ≠ 0) := by
+        ∃ (t : A.carrier), (t : T) ∈ q ∧ (t : T) ≠ 0) ) := ⟨by
   obtain ⟨R₀, hR₀_count⟩ := initial_NSubring hchar
   have hR₀_card : Cardinal.mk R₀.carrier < Cardinal.mk T :=
     lt_of_le_of_lt hR₀_count hT_aleph0
@@ -450,7 +451,8 @@ theorem transfinite_construction
             Prime (⟨(r : T), hmem⟩ : U.carrier)) := by
     intro α IH hne hgood hIH_cb
     exact mk_union_nsub_aux α (fun β hβ => (IH β hβ).1) hne hgood.1 hgood.2
-      hIH_cb hcard hT_aleph0 (lt_of_lt_of_le (mk_Iio_ord_lt (c := Cardinal.mk V) α) hV_card)
+      hIH_cb hcard hT_aleph0
+        (lt_of_lt_of_le ((mk_Iio_ord_lt_proof (c := Cardinal.mk V) α).down) hV_card)
   -- prevF: predecessor ring (min→S₀, limit→union, successor→ring(γ))
   let prevF : (α : κ.ToType) → (∀ β, β < α → RD β) → NSubring T :=
     fun α IH =>
@@ -792,5 +794,29 @@ theorem transfinite_construction
     obtain ⟨t, ht_q, ht_ne⟩ := (data α).2.2.2.2.2.2.1
     have : (enum α).1.1 = q := by simp [α, v]
     exact ⟨α, t, this ▸ ht_q, ht_ne⟩
+⟩
 
+include T in theorem transfinite_construction
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hdepth : ∃ (a b : T), a ∈ IsLocalRing.maximalIdeal T ∧
+      b ∈ IsLocalRing.maximalIdeal T ∧
+      RingTheory.Sequence.IsRegular T [a, b])
+    (hcard : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hchar : ∀ (n : ℤ), n ≠ 0 → (algebraMap ℤ T n) ≠ 0)
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T) :
+    ∃ (A : NSubring T),
+      (Function.Surjective (fun r : A.carrier =>
+        Ideal.Quotient.mk (IsLocalRing.maximalIdeal T ^ 2) (r : T))) ∧
+      (∀ (I : Ideal A.carrier), I.FG →
+        ∀ (c : A.carrier), (c : T) ∈ Ideal.map A.carrier.subtype I → c ∈ I) ∧
+      (∀ (q : Ideal T), q.IsPrime → q ≠ ⊥ →
+        ∃ (t : A.carrier), (t : T) ∈ q ∧ (t : T) ≠ 0) := by
+  exact
+    (transfinite_construction_proof
+      hdepth hcard hchar hM_not_assoc hAss_ht hT_aleph0
+    ).down
 end

@@ -30,10 +30,10 @@ section MainTheorem
 variable [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
-/-- R-primes in the maximal ideal are prime in S_sub.
+/- R-primes in the maximal ideal are prime in S_sub.
 If p is prime in R with (p:T) ∈ M_T, then the image of p in S_sub is prime.
 The proof uses denominator clearing in Rbar and coprime prime_in_adjoinLocSet. -/
-theorem build_R_prime_in_S
+include T in theorem build_R_prime_in_S
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
     (S_sub : Subring T) [IsDomain S_sub]
     (hR_le : R.carrier ≤ S_sub)
@@ -174,7 +174,7 @@ theorem build_R_prime_in_S
 
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
-theorem build_loc_away_ufd
+private def build_loc_away_ufd_proof
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
     (S_sub : Subring T) [IsDomain S_sub]
     (hR_le : R.carrier ≤ S_sub)
@@ -187,11 +187,11 @@ theorem build_loc_away_ufd
         b ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
         b ∉ IsLocalRing.maximalIdeal T ∧ t * b = a})
     (hRbar_le_S : ∀ t, t ∈ intersectionSet R x₁ x₂ y₁ y₂ → t ∈ (S_sub : Set T))
-    (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂) :
+    (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂) : PLift (
     UniqueFactorizationMonoid
       (Localization.Away
         (Subring.inclusion hR_le y₁ *
-          Subring.inclusion hR_le y₂)) := by
+          Subring.inclusion hR_le y₂)) ) := ⟨by
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
   set Rbar := intersectionSet R x₁ x₂ y₁ y₂
@@ -416,11 +416,34 @@ theorem build_loc_away_ufd
           (↑y₂ : T) ^ kw * hw_eq
     · exact ⟨1, by rw [hφ_inj hab]⟩
   exact localization_submonoid_UFD hM_le
+⟩
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
+include T in theorem build_loc_away_ufd
+    (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
+    (S_sub : Subring T) [IsDomain S_sub]
+    (hR_le : R.carrier ≤ S_sub)
+    (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)
+    (hx₁_trans : Transcendental R.carrier x₁)
+    (hinv : ∀ (s : S_sub), (s : T) ∉ IsLocalRing.maximalIdeal T → IsUnit s)
+    (hS_sub_eq : (S_sub : Set T) =
+      {t : T | ∃ (a : T) (b : T),
+        a ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
+        b ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
+        b ∉ IsLocalRing.maximalIdeal T ∧ t * b = a})
+    (hRbar_le_S : ∀ t, t ∈ intersectionSet R x₁ x₂ y₁ y₂ → t ∈ (S_sub : Set T))
+    (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂) :
+    UniqueFactorizationMonoid
+      (Localization.Away
+        (Subring.inclusion hR_le y₁ *
+          Subring.inclusion hR_le y₂)) := by
+  exact
+    (build_loc_away_ufd_proof
+      R x₁ x₂ y₁ y₂ S_sub hR_le hy₁ hy₂ hx₁_trans hinv hS_sub_eq hRbar_le_S hx₁_Rbar
+    ).down
 /-- S_sub is a UFD via Kaplansky criterion. Uses the intersection construction
 and Nagata-type arguments for the P∩R = ⊥ case. -/
-theorem build_ufd_proof
+private def build_ufd_proof_proof
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
     (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
     (hR_le : R.carrier ≤ S_sub)
@@ -445,8 +468,8 @@ theorem build_ufd_proof
         b ∉ IsLocalRing.maximalIdeal T ∧ t * b = a})
     (hRbar_le_S : ∀ t, t ∈ intersectionSet R x₁ x₂ y₁ y₂ → t ∈ (S_sub : Set T))
     (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂)
-    (_hx₂_Rbar : x₂ ∈ intersectionSet R x₁ x₂ y₁ y₂) :
-    UniqueFactorizationMonoid S_sub := by
+    (_hx₂_Rbar : x₂ ∈ intersectionSet R x₁ x₂ y₁ y₂) : PLift (
+    UniqueFactorizationMonoid S_sub ) := ⟨by
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
   set Rbar := intersectionSet R x₁ x₂ y₁ y₂
@@ -776,11 +799,45 @@ theorem build_ufd_proof
       by_contra h
       exact hP_prime.ne_top (Ideal.eq_top_of_isUnit_mem P hq_P (hinv (ι q) h))
     exact ⟨ι q, hq_P, by convert hR_prime_in_S q hq_prime hq_M using 1⟩
+⟩
 
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
-/-- R-primes stay prime in S_sub: given the intersection subring construction,
+include T in theorem build_ufd_proof
+    (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
+    (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
+    (hR_le : R.carrier ≤ S_sub)
+    (_hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
+    (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)
+    (hx₁_trans : Transcendental R.carrier x₁)
+    (_hx₂_trans : Transcendental R.carrier x₂)
+    (_hx₁_mod_trans : ∀ (p : R.carrier), Prime p → ¬p ∣ y₂ →
+      ∀ (f : Polynomial R.carrier),
+        aeval x₁ f ∈ Ideal.span {(↑p : T)} → (C p : Polynomial R.carrier) ∣ f)
+    (_hx₂_mod_trans : ∀ (p : R.carrier), Prime p → ¬p ∣ y₁ →
+      ∀ (f : Polynomial R.carrier),
+        aeval x₂ f ∈ Ideal.span {(↑p : T)} → (C p : Polynomial R.carrier) ∣ f)
+    (hinv : ∀ (s : S_sub), (s : T) ∉ IsLocalRing.maximalIdeal T → IsUnit s)
+    (hR_prime_in_S : ∀ (p : R.carrier), Prime p →
+      (↑p : T) ∈ IsLocalRing.maximalIdeal T →
+      Prime (⟨(↑p : T), hR_le p.2⟩ : S_sub))
+    (hS_sub_eq : (S_sub : Set T) =
+      {t : T | ∃ (a : T) (b : T),
+        a ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
+        b ∈ intersectionSet R x₁ x₂ y₁ y₂ ∧
+        b ∉ IsLocalRing.maximalIdeal T ∧ t * b = a})
+    (hRbar_le_S : ∀ t, t ∈ intersectionSet R x₁ x₂ y₁ y₂ → t ∈ (S_sub : Set T))
+    (hx₁_Rbar : x₁ ∈ intersectionSet R x₁ x₂ y₁ y₂)
+    (_hx₂_Rbar : x₂ ∈ intersectionSet R x₁ x₂ y₁ y₂) :
+    UniqueFactorizationMonoid S_sub := by
+  exact
+    (build_ufd_proof_proof
+      R x₁ x₂ y₁ y₂ S_sub hR_le _hcoprime hy₁ hy₂ hx₁_trans _hx₂_trans _hx₁_mod_trans
+      _hx₂_mod_trans hinv hR_prime_in_S hS_sub_eq hRbar_le_S hx₁_Rbar _hx₂_Rbar
+    ).down
+omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
+/- R-primes stay prime in S_sub: given the intersection subring construction,
 every prime element of R maps to a prime element of S_sub. -/
-theorem build_primes_preserved
+include T in theorem build_primes_preserved
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
     (S_sub : Subring T) [IsDomain S_sub] [IsLocalRing S_sub] [UniqueFactorizationMonoid S_sub]
     (hR_le : R.carrier ≤ S_sub)

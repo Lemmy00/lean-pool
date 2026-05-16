@@ -23,7 +23,7 @@ open Cardinal Ideal
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
 -- Helper: a prime P of height ≤ 1 with P ∩ R ≠ ⊥ lies in Ass(T/r₀T) for some nonzero r₀ ∈ R.
-theorem prime_height_le_one_mem_assoc
+include T in theorem prime_height_le_one_mem_assoc
     {R : NSubring T}
     (P : Ideal T) (hP_prime : P.IsPrime) (hP_ht : P.height ≤ 1)
     (hPR_ne : P.comap R.carrier.subtype ≠ ⊥) :
@@ -71,7 +71,7 @@ theorem prime_height_le_one_mem_assoc
   exact ⟨r₀, hr₀T_ne, hP_assoc⟩
 
 -- Helper: I_s' ⊄ P for associated primes P when no common prime divides s'.
-theorem no_common_I_not_le_assoc
+include T in theorem no_common_I_not_le_assoc
     {R : NSubring T}
     [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
     [DecidableEq R.carrier]
@@ -122,7 +122,7 @@ theorem no_common_I_not_le_assoc
       exact (Ideal.mem_span_singleton (α := R.carrier)).mp hx_Q
     exact hno_common_prime q hq_prime hdvd_all
 
-theorem close_up_aux_no_common_nonzero
+private def close_up_aux_no_common_nonzero_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -153,10 +153,10 @@ theorem close_up_aux_no_common_nonzero
     (ht_eq : u = R.carrier.subtype a * t)
     (huv : u + v = (c : T))
     (ha_zero : (a : T) ≠ 0)
-    (hI_s'_bot : Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)) ≠ ⊥) :
+    (hI_s'_bot : Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)) ≠ ⊥) : PLift (
     ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
       (⟨(c : T), hle c.2⟩ : S.carrier) ∈
-        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) := by
+        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) ) := ⟨by
   by_cases hM_bot : IsLocalRing.maximalIdeal T = ⊥
   · refine ⟨R, ⟨le_refl _, fun r hr => hr, le_max_right _ _⟩, le_refl _, ?_⟩
     have h_id : Subring.inclusion (le_refl R.carrier) = RingHom.id R.carrier :=
@@ -620,10 +620,52 @@ theorem close_up_aux_no_common_nonzero
   · exact Subtype.ext (by
                          simp only [Subring.coe_add, Subring.coe_mul]
                          ring)
+⟩
 
 -- Extracted: no-common-factor branch of close_up_aux_wf.
 -- When no prime divides all generators in s', use Heitmann reparametrization.
-theorem close_up_aux_no_common
+include T in theorem close_up_aux_no_common_nonzero
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (n'' : ℕ)
+    (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
+      (s : Finset R.carrier) (_ : s.card ≤ n'' + 1 + 1) (c : R.carrier)
+      (_ : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier))),
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
+    [DecidableEq R.carrier]
+    {a : R.carrier} {s : Finset R.carrier}
+    (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
+    {c : R.carrier}
+    (s' : Finset R.carrier) (hs'_def : s' = s.erase a)
+    (hs_insert : s = insert a s')
+    (hs'_card : s'.card ≤ n'' + 1 + 1)
+    (_hgcd : ¬∃ p : R.carrier, Prime p ∧ ∀ x ∈ s', p ∣ x)
+    (hno_common_prime : ∀ (p : R.carrier), Prime p → ¬(∀ x ∈ s', p ∣ x))
+    (t : T) (u : T) (v : T)
+    (hv : v ∈ Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)))
+    (ht_eq : u = R.carrier.subtype a * t)
+    (huv : u + v = (c : T))
+    (ha_zero : (a : T) ≠ 0)
+    (hI_s'_bot : Ideal.map R.carrier.subtype (span (↑s' : Set R.carrier)) ≠ ⊥) :
+    ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+      (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) := by
+  exact
+    (close_up_aux_no_common_nonzero_proof
+      (R := R) (a := a) (s := s) (c := c) hM_not_assoc hAss_ht hT_card hT_aleph0 n'' ih
+      hR_card hs_eq ha_mem s' hs'_def hs_insert hs'_card _hgcd hno_common_prime t u v hv
+      ht_eq huv ha_zero hI_s'_bot
+    ).down
+include T in theorem close_up_aux_no_common
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))

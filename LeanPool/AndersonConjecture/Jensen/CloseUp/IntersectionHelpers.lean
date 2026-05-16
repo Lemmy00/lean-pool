@@ -21,7 +21,7 @@ open Cardinal Ideal
 
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-theorem close_up_aux_factor_intersection_large
+private def close_up_aux_factor_intersection_large_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (n'' : ℕ)
     (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
@@ -69,14 +69,14 @@ theorem close_up_aux_factor_intersection_large
       (span (↑(insert a rest'2) : Set R.carrier)))
     (ha_rest'2 : a ∉ rest'2)
     (hrest'2_card : rest'2.card = n'' + 1 + 1)
-    (hb_rest'2 : div_q_b2 b ∈ rest'2) :
+    (hb_rest'2 : div_q_b2 b ∈ rest'2) : PLift (
     ∃ S₂ : NSubring T,
       IsAExtension S₁ S₂ ∧
       ∃ (hle₂ : S₁.carrier ≤ S₂.carrier),
         (⟨(↑w : T), hle₂ w.2⟩ : S₂.carrier) ∈
         Ideal.map (Subring.inclusion hle₂)
           (Ideal.map (Subring.inclusion hle₁)
-            (span (↑(insert a rest'2) : Set R.carrier))) := by
+            (span (↑(insert a rest'2) : Set R.carrier))) ) := ⟨by
   classical
   by_cases hdb2_zero : div_q_b2 b = 0
   · have hspan_eq_b2 : span (↑rest'2 : Set R.carrier) =
@@ -235,8 +235,70 @@ theorem close_up_aux_factor_intersection_large
       convert hw_S₂ using 1
       congr 1
       rw [Ideal.map_span, ← Finset.coe_image]
+⟩
 
-
+theorem close_up_aux_factor_intersection_large
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (n'' : ℕ)
+    (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
+      (s : Finset R.carrier) (_ : s.card ≤ n'' + 1 + 1) (c : R.carrier)
+      (_ : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier))),
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    (m : ℕ)
+    (ih_m : ∀ m_1, m_1 < m →
+      ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T),
+      letI : IsDomain R.carrier := NSubring.isDomain R
+      letI : UniqueFactorizationMonoid R.carrier := R.isUFD
+      ∀ (a : R.carrier) (s : Finset R.carrier),
+      gcd_complexity s ≤ m_1 →
+      s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
+      (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    {R : NSubring T}
+    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    {a : R.carrier}
+    {s : Finset R.carrier}
+    (hs_gcd : gcd_complexity s ≤ m)
+    (rest : Finset R.carrier)
+    (_hrest_card : rest.card ≤ n'' + 1 + 1)
+    (ha_rest : a ∉ rest)
+    {b : R.carrier} (hb_rest : b ∈ rest)
+    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    {q' : R.carrier} (hq' : Prime q')
+    (_hq'_dvd : ∀ x ∈ rest, q' ∣ x)
+    {S₁ : NSubring T} (hAext₁ : IsAExtension R S₁)
+    (hle₁ : R.carrier ≤ S₁.carrier)
+    (hS₁_card : Cardinal.mk S₁.carrier < Cardinal.mk T)
+    [IsDomain S₁.carrier] [UniqueFactorizationMonoid S₁.carrier]
+    (w : S₁.carrier)
+    (div_q_b2 : R.carrier → R.carrier)
+    (hdiv_b2 : ∀ x ∈ rest, x = q' * div_q_b2 x)
+    (rest'2 : Finset R.carrier)
+    (hrest'2_def : rest'2 = rest.image div_q_b2)
+    (_h_ml_b2 : span {q'} * span (↑(insert a rest'2) : Set R.carrier) ≤
+      span (↑(insert a rest) : Set R.carrier))
+    (hw_mem_T : (↑w : T) ∈ Ideal.map R.carrier.subtype
+      (span (↑(insert a rest'2) : Set R.carrier)))
+    (ha_rest'2 : a ∉ rest'2)
+    (hrest'2_card : rest'2.card = n'' + 1 + 1)
+    (hb_rest'2 : div_q_b2 b ∈ rest'2) :
+    ∃ S₂ : NSubring T,
+      IsAExtension S₁ S₂ ∧
+      ∃ (hle₂ : S₁.carrier ≤ S₂.carrier),
+        (⟨(↑w : T), hle₂ w.2⟩ : S₂.carrier) ∈
+        Ideal.map (Subring.inclusion hle₂)
+          (Ideal.map (Subring.inclusion hle₁)
+            (span (↑(insert a rest'2) : Set R.carrier))) := by
+  exact
+    (close_up_aux_factor_intersection_large_proof
+      (R := R) (a := a) (s := s) (b := b) (q' := q') (S₁ := S₁) n'' ih m ih_m hs_gcd rest
+      _hrest_card ha_rest hb_rest hgcd_rest hq' _hq'_dvd hAext₁ hle₁ hS₁_card w div_q_b2
+      hdiv_b2 rest'2 hrest'2_def _h_ml_b2 hw_mem_T ha_rest'2 hrest'2_card hb_rest'2
+    ).down
 theorem gcd_complexity_div_prime_strict
     {R : NSubring T}
     [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]

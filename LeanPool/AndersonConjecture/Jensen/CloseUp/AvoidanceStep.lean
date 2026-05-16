@@ -22,7 +22,7 @@ open Cardinal Ideal
 
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-lemma close_up_avoidance_step
+private def close_up_avoidance_step_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -42,11 +42,11 @@ lemma close_up_avoidance_step
     (c : R.carrier)
     (hc : (c : T) ∈ Ideal.map R.carrier.subtype
       (span (insert (a : R.carrier) (↑s' : Set R.carrier))))
-    (h_no_common : ∀ (q : R.carrier), Prime q → ¬(∀ x ∈ s', q ∣ x)) :
+    (h_no_common : ∀ (q : R.carrier), Prime q → ¬(∀ x ∈ s', q ∣ x)) : PLift (
     ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
       (⟨(c : T), hle c.2⟩ : S.carrier) ∈
         Ideal.map (Subring.inclusion hle)
-          (span (insert (a : R.carrier) (↑s' : Set R.carrier))) := by
+          (span (insert (a : R.carrier) (↑s' : Set R.carrier))) ) := ⟨by
   haveI : DecidableEq R.carrier := Classical.decEq _
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
@@ -524,6 +524,36 @@ lemma close_up_avoidance_step
         · exact Subtype.ext (by
                                simp only [Subring.coe_add, Subring.coe_mul]
                                ring)
+⟩
 
-
+lemma close_up_avoidance_step
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    {m : ℕ}
+    (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
+      (s : Finset R.carrier) (_ : s.card ≤ m) (c : R.carrier)
+      (_ : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier))),
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    (R : NSubring T) (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (a : R.carrier) (s' : Finset R.carrier) (hs'_card : s'.card ≤ m)
+    (c : R.carrier)
+    (hc : (c : T) ∈ Ideal.map R.carrier.subtype
+      (span (insert (a : R.carrier) (↑s' : Set R.carrier))))
+    (h_no_common : ∀ (q : R.carrier), Prime q → ¬(∀ x ∈ s', q ∣ x)) :
+    ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+      (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+        Ideal.map (Subring.inclusion hle)
+          (span (insert (a : R.carrier) (↑s' : Set R.carrier))) := by
+  exact
+    (close_up_avoidance_step_proof
+      (m := m) hM_not_assoc hAss_ht ih R hR_card hT_card hT_aleph0 a s' hs'_card c hc
+      h_no_common
+    ).down
 end

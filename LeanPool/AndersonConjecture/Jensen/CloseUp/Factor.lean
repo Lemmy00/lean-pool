@@ -20,7 +20,7 @@ open Cardinal Ideal
 
 variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain T]
 
-theorem close_up_aux_factor
+private def close_up_aux_factor_proof
     [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
     (hM_not_assoc : ∀ (r : T), r ≠ 0 →
       IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
@@ -69,10 +69,10 @@ theorem close_up_aux_factor
     (_hgcd : ∃ p : R.carrier, Prime p ∧ ∀ x ∈ s', p ∣ x)
     {p : R.carrier} (_hp : Prime p) (_hp_dvd : ∀ x ∈ s', p ∣ x)
     (hpa : ¬p ∣ a)
-    (hgcd_factor : ∃ q : R.carrier, Prime q ∧ (∀ x ∈ s', q ∣ x) ∧ (q ∣ a ∨ q ∣ c)) :
+    (hgcd_factor : ∃ q : R.carrier, Prime q ∧ (∀ x ∈ s', q ∣ x) ∧ (q ∣ a ∨ q ∣ c)) : PLift (
     ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
       (⟨(c : T), hle c.2⟩ : S.carrier) ∈
-        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) := by
+        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) ) := ⟨by
   obtain ⟨q, hq, hq_dvd_s', hq_ac⟩ := hgcd_factor
   by_cases hqa : q ∣ a
   · -- Sub-case A: q | a. Factor out q from ALL of s, use ih_a.
@@ -368,6 +368,65 @@ theorem close_up_aux_factor
           hM_not_assoc hAss_ht hT_card hT_aleph0 n'' ih m ih_m
           hR_card ih_a hs_gcd rest hrest_card ha_rest hb_rest hgcd_rest
           h_factor hc_n
+⟩
 
-
+theorem close_up_aux_factor
+    [IsAdicComplete (IsLocalRing.maximalIdeal T) T]
+    (hM_not_assoc : ∀ (r : T), r ≠ 0 →
+      IsLocalRing.maximalIdeal T ∉ associatedPrimes T (T ⧸ Ideal.span {r}))
+    (hAss_ht : ∀ (r : T), r ≠ 0 →
+      ∀ P ∈ associatedPrimes T (T ⧸ Ideal.span {r}), P.height ≤ 1)
+    (hT_card : Cardinal.mk T = Cardinal.mk (IsLocalRing.ResidueField T))
+    (hT_aleph0 : Cardinal.aleph0 < Cardinal.mk T)
+    (n'' : ℕ)
+    (ih : ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T)
+      (s : Finset R.carrier) (_ : s.card ≤ n'' + 1 + 1) (c : R.carrier)
+      (_ : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier))),
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    (m : ℕ)
+    (ih_m : ∀ m_1, m_1 < m →
+      ∀ (R : NSubring T) (_ : Cardinal.mk R.carrier < Cardinal.mk T),
+      letI : IsDomain R.carrier := NSubring.isDomain R
+      letI : UniqueFactorizationMonoid R.carrier := R.isUFD
+      ∀ (a : R.carrier) (s : Finset R.carrier),
+      gcd_complexity s ≤ m_1 →
+      s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
+      (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
+    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    {a : R.carrier}
+    (ih_a : ∀ (y : R.carrier), DvdNotUnit y a →
+      ∀ (s : Finset R.carrier),
+      gcd_complexity s ≤ m →
+      s.card = n'' + 1 + 1 + 1 → y ∈ s → ∀ (c : R.carrier),
+      (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
+      ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+        (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+          Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
+    {s : Finset R.carrier}
+    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
+    {c : R.carrier}
+    (hc : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)))
+    (s' : Finset R.carrier) (hs'_def : s' = s.erase a)
+    (hs_insert : s = insert a s')
+    (hs'_card : s'.card ≤ n'' + 1 + 1)
+    (_hgcd : ∃ p : R.carrier, Prime p ∧ ∀ x ∈ s', p ∣ x)
+    {p : R.carrier} (_hp : Prime p) (_hp_dvd : ∀ x ∈ s', p ∣ x)
+    (hpa : ¬p ∣ a)
+    (hgcd_factor : ∃ q : R.carrier, Prime q ∧ (∀ x ∈ s', q ∣ x) ∧ (q ∣ a ∨ q ∣ c)) :
+    ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
+      (⟨(c : T), hle c.2⟩ : S.carrier) ∈
+        Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) := by
+  exact
+    (close_up_aux_factor_proof
+      (R := R) (a := a) (s := s) (c := c) (p := p) hM_not_assoc hAss_ht hT_card hT_aleph0
+      n'' ih m ih_m hR_card ih_a hs_gcd hs_eq ha_mem hc s' hs'_def hs_insert hs'_card _hgcd
+      _hp _hp_dvd hpa hgcd_factor
+    ).down
 end

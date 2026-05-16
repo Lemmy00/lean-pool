@@ -3,6 +3,7 @@ Copyright (c) 2026 FrenzyMath. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: FrenzyMath
 -/
+
 import LeanPool.AndersonConjecture.AdicKerEval
 import LeanPool.AndersonConjecture.AdicLocal
 import LeanPool.AndersonConjecture.AdicNoetherian
@@ -18,7 +19,7 @@ import LeanPool.AndersonConjecture.QuasiCompleteRing
 Source: url:https://github.com/frenzymath/Anderson-Conjecture
 Authors: FrenzyMath
 Status: verified
-Main declarations: `main_theorem`
+Main declarations: `anderson_main_theorem`
 Tags: commutative-algebra, ring-theory
 -/
 
@@ -31,7 +32,7 @@ sequence of ideals `Aₙ` and every `k` there is `s` with
 `⨅ n, A n = ⊥`. Anderson (2014) asked whether weak quasi-completeness implies
 quasi-completeness (Problem 8a of *Open Problems in Commutative Ring Theory*).
 
-The answer is no. The main result, `main_theorem`, exhibits a weakly
+The answer is no. The main result, `anderson_main_theorem`, exhibits a weakly
 quasi-complete Noetherian local ring that is not quasi-complete: a
 two-dimensional local UFD `A` whose `M`-adic completion is the complete local
 domain `T = ℂ[[x, y, z]]/(x² − yz)`, built via the Jensen–Heitmann–Loepp
