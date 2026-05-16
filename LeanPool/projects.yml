@@ -444,3 +444,27 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: sardmoreira
+    title: Moreira's version of Sard's theorem
+    summary: Vendors infrastructure toward Moreira's strengthening of Sard's theorem on the Hausdorff dimension of critical-value sets.
+    branch: geometric measure theory
+    entry_module: LeanPool.SardMoreira
+    authors:
+      - Yury G. Kudryashov
+    source:
+      url: https://github.com/urkud/SardMoreira
+      github_repo: urkud/SardMoreira
+    status: verified
+    main_declarations:
+      - MeasureTheory.Measure.hasudorffMeasure_image_le_mul
+    main_results:
+      - declaration: MeasureTheory.Measure.hasudorffMeasure_image_le_mul
+        informal: Bounds the Hausdorff measure of the image of a set under a Hölder continuous map by the measure of the set scaled by the Hölder constant.
+    tags:
+      - analysis
+      - measure-theory
+      - sard-theorem
+      - hausdorff-measure
+    msc:
+      - "28A78"
+      - "58C25"
