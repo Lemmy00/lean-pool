@@ -440,13 +440,12 @@ case "$AGENT" in
     fi
     (
       cd "$WORKTREE"
-      "${AGENT_RUNNER[@]}" exec \
+      "${AGENT_RUNNER[@]}" --ask-for-approval never exec \
         -C "$WORKTREE" \
         --add-dir "$SOURCE_DIR" \
         --model "$MODEL" \
         --config "model_reasoning_effort=\"$EFFORT\"" \
         --sandbox danger-full-access \
-        --ask-for-approval never \
         --json \
         "$PROMPT"
     ) > "$AGENT_LOG" 2>&1 || AGENT_EXIT=$?
