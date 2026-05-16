@@ -419,6 +419,32 @@ projects:
       - "28A75"
       - "52A40"
       - "49Q20"
+  - slug: fo-zfc
+    title: First Order Language of ZFC
+    summary: Formalizes ZFC set theory inside Lean's `FirstOrder.Language` framework, enabling meta-mathematical arguments such as elementary submodels.
+    branch: mathematical logic
+    entry_module: LeanPool.FoZfc
+    authors:
+      - Tetsuya Ishiu
+    source:
+      url: https://github.com/ishiut/fo_zfc
+      github_repo: ishiut/fo_zfc
+    status: verified
+    main_declarations:
+      - FirstOrder.ZFC.ModelZF
+      - FirstOrder.ZFC.ext_induction
+    main_results:
+      - declaration: FirstOrder.ZFC.ModelZF
+        informal: Bundles the ZF axioms (Emptyset, Pairing, Union, Powerset, Infinity, Regularity, Comprehension, Replacement) into a single model class.
+      - declaration: FirstOrder.ZFC.ext_induction
+        informal: States the principle of mathematical induction over ω externally for any bounded formula in LZFC.
+    tags:
+      - model-theory
+      - set-theory
+      - zfc
+    msc:
+      - "03B10"
+      - "03E30"
   - slug: sumsthreesquares
     title: Sums of Three Squares
     summary: Formalizes a blueprint step in the three-squares theorem using quadratic forms and geometry of numbers.

@@ -90,6 +90,13 @@ import LeanPool.Erdos1196.PreliminariesTailAux
 import LeanPool.Erdos1196.PrimitiveWeight
 import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
+import LeanPool.FoZfc
+import LeanPool.FoZfc.Axioms
+import LeanPool.FoZfc.Basic
+import LeanPool.FoZfc.BoundedFormulaOps
+import LeanPool.FoZfc.FixedSnoc
+import LeanPool.FoZfc.Replacement
+import LeanPool.FoZfc.Tostring
 import LeanPool.FormalLearningTheory
 import LeanPool.FormalLearningTheory.Basic
 import LeanPool.FormalLearningTheory.Bridge
