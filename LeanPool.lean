@@ -90,6 +90,8 @@ import LeanPool.Erdos1196.PreliminariesTailAux
 import LeanPool.Erdos1196.PrimitiveWeight
 import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
+import LeanPool.Fineqs
+import LeanPool.Fineqs.Main
 import LeanPool.FormalLearningTheory
 import LeanPool.FormalLearningTheory.Basic
 import LeanPool.FormalLearningTheory.Bridge
