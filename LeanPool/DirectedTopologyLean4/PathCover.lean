@@ -79,7 +79,7 @@ lemma covered_split_path {γ : Dipath x₀ x₁} {hX : X₀ ∪ X₁ = Set.univ}
     covered hX (SplitDipath.FirstPart γ T) ∧ covered hX (SplitDipath.SecondPart γ T) := by
   apply covered_of_covered_trans
   apply (covered_reparam_iff _ hX (SplitDipath.trans_reparam_map hT₀ hT₁) _ _).mpr
-  · rw [SplitDipath.first_trans_second_reparam_eq_self γ hT₀ hT₁] at hγ
+  rw [SplitDipath.first_trans_second_reparam_eq_self γ hT₀ hT₁] at hγ
   exact hγ
 
 end covered
@@ -344,11 +344,9 @@ lemma covered_partwise_trans {hX : X₀ ∪ X₁ = Set.univ} {n : ℕ} {x₀ x�
   have h₁ : Fraction (Nat.succ_pos (n + n).succ) (le_of_lt h_lt) = Fraction.ofPos two_pos := by
     simp only [Nat.succ_eq_add_one, Subtype.mk.injEq, Nat.cast_add, Nat.cast_one, zero_add, Nat.cast_ofNat, one_div]
     rw [←one_div]
-    apply (div_eq_div_iff _ _).mpr
-    · ring
-    · have : (n : ℝ) ≥ 0 := Nat.cast_nonneg n
-    · linarith
-    linarith
+    apply (div_eq_div_iff (by positivity) (by positivity)).mpr
+    have : (n : ℝ) ≥ 0 := Nat.cast_nonneg n
+    ring
   by_cases h : i < n.succ
   · rw [←SplitProperties.firstPart_range_interval_partial_coe (γ₁.trans γ₂) h_lt h]
     rw [SplitProperties.firstPart_eq_of_split_point_eq (γ₁.trans γ₂) h₁]
