@@ -18,11 +18,12 @@ import LeanPool.Duality.LinearProgrammingB
 Source: arxiv:2409.08119
 Authors: Martin Dvorak
 Status: verified
-Main declarations: `equalityFarkas`, `inequalityFarkas`, `extendedFarkas`,
-  `ValidELP.strongDuality`, `StandardLP.strongDuality`
+Main declarations: `extendedFarkas`, `StandardLP.strongDuality`
 Tags: linear-programming, optimization, farkas-lemma
 MSC: 90C05, 90C46
+-/
 
+/-!
 ## Mathematical overview
 
 Farkas established that a system of linear inequalities has a solution if and only if we cannot

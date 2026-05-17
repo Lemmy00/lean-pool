@@ -150,8 +150,8 @@ theorem inequalityFarkas (A : Matrix I J F) (b : I → F) :
     · intro k
       simp only [A', Matrix.transpose_fromCols, Matrix.transpose_one] at hAy
       apply hAy
-    refine ⟨y, fun i : I => ?_, fun j : J => h1Ay ◪j, hby⟩
-    simpa using h1Ay ◩i
+    refine ⟨y, fun i : I => ?_, fun j : J => h1Ay (Sum.inr j), hby⟩
+    simpa using h1Ay (Sum.inl i)
 
 /-- A system of linear inequalities over nonnegative variables has a solution if and only if
 we cannot obtain a contradiction by taking a nonnegative linear combination of the inequalities;

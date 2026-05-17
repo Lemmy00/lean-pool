@@ -46,23 +46,23 @@ def StandardLP.IsSolution [Semiring R] [PartialOrder R]
 /-- Linear program `P` reaches objective value `r` iff there is a solution `x` such that,
     when its entries are elementwise multiplied by the the coefficients `c` and summed up,
     the result is the value `r`. -/
-def StandardLP.Reaches [Semiring R] [PartialOrder R] [IsOrderedRing R]
+def StandardLP.Reaches [Semiring R] [PartialOrder R]
     (P : StandardLP I J R) (r : R) : Prop :=
   ∃ x : J → R≥0, P.IsSolution x ∧ P.c ⬝ᵥ x = r
 
 /-- Linear program `P` is feasible iff there exists a solution to `P`. -/
-def StandardLP.IsFeasible [Semiring R] [PartialOrder R] [IsOrderedRing R]
+def StandardLP.IsFeasible [Semiring R] [PartialOrder R]
     (P : StandardLP I J R) : Prop :=
   ∃ r : R, P.Reaches r
 
 /-- Linear program `P` is bounded by `r` iff every value reached by `P` is
     greater or equal to `r` (i.e., `P` is bounded by `r` from below). -/
-def StandardLP.IsBoundedBy [Semiring R] [PartialOrder R] [IsOrderedRing R]
+def StandardLP.IsBoundedBy [Semiring R] [PartialOrder R]
     (P : StandardLP I J R) (r : R) : Prop :=
   ∀ p : R, P.Reaches p → r ≤ p
 
 /-- Linear program `P` is unbounded iff values reached by `P` have no lower bound. -/
-def StandardLP.IsUnbounded [Semiring R] [PartialOrder R] [IsOrderedRing R]
+def StandardLP.IsUnbounded [Semiring R] [PartialOrder R]
     (P : StandardLP I J R) : Prop :=
   ¬∃ r : R, P.IsBoundedBy r
 

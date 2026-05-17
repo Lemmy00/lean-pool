@@ -27,15 +27,12 @@ private def withoutLastMap {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W
     simp
   ⟩
 
-/-- `▀A` is shorthand notation for `withoutLastMap A`, the restriction of `A` to its first
-    `m` coordinates (dropping the last). -/
-prefix:max "▀" => withoutLastMap
 
 private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Module R W]
     (A : W →ₗ[R] Fin m.succ → R) (y : W) :
     W →ₗ[R] Fin m → R :=
   ⟨⟨
-    ▀A - (A · ⟨m, m.lt_add_one⟩ • ▀A y),
+    withoutLastMap A - (A · ⟨m, m.lt_add_one⟩ • withoutLastMap A y),
   by
     intros
     ext
@@ -94,7 +91,7 @@ variable {R V W : Type*}
 private lemma finishing_piece {m : ℕ} [Semiring R]
     [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
     {A : W →ₗ[R] Fin m.succ → R} {w : W} {x : Fin m → V} :
-    ∑ i : Fin m, ▀A w i • x i =
+    ∑ i : Fin m, withoutLastMap A w i • x i =
     ∑ i : { j : Fin m.succ // j ∈ Finset.univ.filter (·.val < m) }, A w i.val •
       x ⟨i.val.val, by aesop⟩ := by
   apply
@@ -119,9 +116,9 @@ lemma industepFarkasBartl {m : ℕ} [DivisionRing R] [LinearOrder R] [IsStrictOr
     {A : W →ₗ[R] Fin m.succ → R} {b : W →ₗ[R] V} (hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y) :
     ∃ x : Fin m.succ → V, 0 ≤ x ∧ ∀ w : W, ∑ i : Fin m.succ, A w i • x i = b w := by
   if
-    is_easy : ∀ y : W, 0 ≤ ▀A y → 0 ≤ b y
+    is_easy : ∀ y : W, 0 ≤ withoutLastMap A y → 0 ≤ b y
   then
-    obtain ⟨x, hx, hxb⟩ := ih ▀A b is_easy
+    obtain ⟨x, hx, hxb⟩ := ih (withoutLastMap A) b is_easy
     use (fun i : Fin m.succ => if hi : i.val < m then x ⟨i.val, hi⟩ else 0)
     constructor
     · intro i
@@ -159,7 +156,7 @@ lemma industepFarkasBartl {m : ℕ} [DivisionRing R] [LinearOrder R] [IsStrictOr
     have hAA : ∀ w : W, A (w - (A w M • y)) M = 0
     · intro w
       simp [hAy]
-    have hbA : ∀ w : W, 0 ≤ ▀A (w - (A w M • y)) → 0 ≤ b (w - (A w M • y))
+    have hbA : ∀ w : W, 0 ≤ withoutLastMap A (w - (A w M • y)) → 0 ≤ b (w - (A w M • y))
     · intro w hw
       apply hAb
       intro i
@@ -170,11 +167,12 @@ lemma industepFarkasBartl {m : ℕ} [DivisionRing R] [LinearOrder R] [IsStrictOr
       else
         exfalso
         exact impossible_index hi hiM
-    have hbAb : ∀ w : W, 0 ≤ (▀A - (A · M • ▀A y)) w → 0 ≤ (b - (A · M • b y)) w
+    have hbAb : ∀ w : W,
+        0 ≤ (withoutLastMap A - (A · M • withoutLastMap A y)) w → 0 ≤ (b - (A · M • b y)) w
     · simpa using hbA
     obtain ⟨x', hx', hxb'⟩ := ih (auxLinMaps A y) (auxLinMap A b y) hbAb
     use (fun i : Fin m.succ =>
-      if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, ▀A y i • x' i)
+      if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, withoutLastMap A y i • x' i)
     constructor
     · intro i
       if hi : i.val < m then
@@ -183,7 +181,7 @@ lemma industepFarkasBartl {m : ℕ} [DivisionRing R] [LinearOrder R] [IsStrictOr
       else
         have hAy'' : (A y' M)⁻¹ ≤ 0
         · exact (inv_lt_zero.mpr hAy').le
-        have hay : ▀A y ≤ 0
+        have hay : withoutLastMap A y ≤ 0
         · simpa [y] using smul_nonpos_of_nonpos_of_nonneg hAy'' hay'
         have hby : 0 ≤ b y
         · simpa [y] using smul_nonneg_of_nonpos_of_nonpos hAy'' hby'.le
@@ -191,7 +189,8 @@ lemma industepFarkasBartl {m : ℕ} [DivisionRing R] [LinearOrder R] [IsStrictOr
           (Finset.sum_nonpos
             (fun i : Fin m => ↓(smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i)))).trans hby
     · intro w
-      have haAa : ∑ i : Fin m, (▀A w i - A w M * ▀A y i) • x' i = b w - A w M • b y
+      have haAa : ∑ i : Fin m, (withoutLastMap A w i - A w M * withoutLastMap A y i) • x' i =
+          b w - A w M • b y
       · simpa using hxb' w
       rw [←add_eq_of_eq_sub haAa]
       simp_rw [smul_dite]

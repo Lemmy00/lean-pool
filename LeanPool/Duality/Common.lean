@@ -67,11 +67,6 @@ postfix:max ".→" => Iff.mp
 /-- The right-to-left direction of `↔`. -/
 postfix:max ".←" => Iff.mpr
 
-/-- The "left" or "top" variant (mostly used downstream by the VCSP project). -/
-prefix:max "◩" => Sum.inl
-
-/-- The "right" or "bottom" variant (mostly used downstream by the VCSP project). -/
-prefix:max "◪" => Sum.inr
 
 end notations
 
