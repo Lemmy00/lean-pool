@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Matevž Miščič, Maša Žaucer, Job Petrovčič. All rights reserved.
+Copyright (c) 2026 Matevz Miščič, Maša Žaucer, Job Petrovčič. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Matevž Miščič, Maša Žaucer, Job Petrovčič
+Authors: Matevz Miščič, Maša Žaucer, Job Petrovčič
 -/
 
 import LeanPool.ArtinWedderburn.IdealProd
@@ -21,7 +21,7 @@ import LeanPool.ArtinWedderburn.ArtinWedderburnTheorem
 # Artin-Wedderburn Theorem
 
 Source: url:https://github.com/JobPetrovcic/ArtinWedderburn
-Authors: Matevž Miščič, Maša Žaucer, Job Petrovčič
+Authors: Matevz Miščič, Maša Žaucer, Job Petrovčič
 Status: verified
 Main declarations: `LeanPool.ArtinWedderburn.ArtinWedderburnForPrime`
 Tags: ring-theory, noncommutative-algebra, artinian-rings
