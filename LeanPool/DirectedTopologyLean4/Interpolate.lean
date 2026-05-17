@@ -47,15 +47,18 @@ lemma interp_const_le_of_le_of_le {a b T₀ T₁ : I} (hab : a ≤ b) (hT : T₀
   rw [hσT₀, hσT₁]
   nlinarith
 
+/-- The continuous map `t ↦ (1 - t) * a + t * b` interpolating between `a` and `b` in `I`. -/
 def interpolate_const (a b : I) : C(I, I) where
   toFun := fun t => ⟨_, interp_mem_I t a b⟩
 
+/-- The directed-map version of `interpolate_const` when `a ≤ b`. -/
 def directed_interpolate_const {a b : I} (h : a ≤ b) : D(I,I) where
   toContinuousMap := interpolate_const a b
   directed_toFun := fun _ _ _ hγ _ _ hxy => interp_const_le_of_le_of_le h (hγ hxy)
 
 variable (f g : C(I, I))
 
+/-- Two-parameter interpolation `(s, t) ↦ (1 - s) * f t + s * g t`. -/
 def interpolate : C(I × I, I) where
   toFun := fun t => ⟨(σ t.1 : ℝ) * (f t.2) + t.1 * (g t.2), interp_mem_I t.1 (f t.2) (g t.2)⟩
 

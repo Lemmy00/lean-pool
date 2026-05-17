@@ -59,6 +59,7 @@ namespace Dihomotopy
 
 variable {X : dTopCat} {f g : D(I,X)}
 
+/-- Flip a dihomotopy by swapping its two coordinates. -/
 def flip (F : Dihomotopy f g)
     : Dihomotopy (F.eval_at_right 0).toDirectedMap (F.eval_at_right 1).toDirectedMap :=
 {

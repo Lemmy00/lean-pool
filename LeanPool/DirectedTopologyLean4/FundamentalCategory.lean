@@ -59,6 +59,8 @@ lemma transAssocReparamAux_directed : DirectedMap.Directed
   · apply (mul_le_mul_iff_of_pos_left (show 0 < (2⁻¹ : ℝ) by norm_num)).mpr
     linarith
 
+/-- The directed self-map of the unit interval used to associate triple concatenations of
+dipaths. -/
 def transAssocReparamAuxMap : D(I,I) where
   toFun := fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩
   continuous_toFun := Continuous.subtype_mk continuous_transAssocReparamAux _
@@ -75,9 +77,9 @@ lemma trans_assoc_reparam_directed {x₀ x₁ x₂ x₃ : X} (p : Dipath x₀ x�
   rw [this, trans_assoc_reparam p.toPath q.toPath r.toPath]
   rfl
 
-/-- For any three dipaths `p q r`, `(p.trans q).trans r` is dihomotopic with `p.trans (q.trans r)`.
--/
-def trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Dipath x₀ x₁) (q : Dipath x₁ x₂) (r : Dipath x₂ x₃) :
+/-- For any three dipaths `p q r`, `(p.trans q).trans r` is dihomotopic with
+`p.trans (q.trans r)`. -/
+theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Dipath x₀ x₁) (q : Dipath x₁ x₂) (r : Dipath x₂ x₃) :
     ((p.trans q).trans r).Dihomotopic (p.trans (q.trans r)) := by
   have := Dihomotopic.reparam (p.trans (q.trans r)) transAssocReparamAuxMap
     (Subtype.ext transAssocReparamAux_zero)
@@ -95,12 +97,15 @@ end Dipath
  Definition of the fundamental category and of the functor sending a directed space to its
  fundamental category
 -/
+/-- The fundamental category of a type, wrapping the underlying element as `as`. -/
 @[ext]
 structure FundamentalCategory (X : Type u) where
+  /-- The underlying element of the type. -/
   as : X
 
 namespace FundamentalCategory
 
+/-- The fundamental-category wrapper is type-equivalent to the underlying type. -/
 @[simps]
 def equiv (X : Type*) : FundamentalCategory X ≃ X where
   toFun x := x.as
@@ -202,6 +207,8 @@ protected theorem mapFunctor_comp {X Y Z : Type*} [DirectedSpace X] [DirectedSpa
     simp
     rfl
 
+/-- The fundamental-category functor `dTopCat ⥤ Cat` sending a directed space to its
+fundamental category. -/
 def fundamentalCategoryFunctor : dTopCat ⥤ CategoryTheory.Cat where
   obj X := Cat.of (FundamentalCategory X)
   map f := (mapFunctor f.hom).toCatHom
@@ -212,7 +219,9 @@ def fundamentalCategoryFunctor : dTopCat ⥤ CategoryTheory.Cat where
     apply Cat.Hom.ext
     exact FundamentalCategory.mapFunctor_comp f.hom g.hom
 
+/-- Notation for the fundamental-category functor `dTopCat ⥤ Cat`. -/
 scoped notation "dπ" => FundamentalCategory.fundamentalCategoryFunctor
+/-- Notation for the object part of the fundamental-category functor. -/
 scoped notation "dπₓ" => FundamentalCategory.fundamentalCategoryFunctor.obj
 
 /-- The underlying functor (not just `Cat.Hom`) induced by a `dTopCat` map. -/
@@ -221,6 +230,7 @@ def fundamentalCategoryMap {X Y : dTopCat} (f : X ⟶ Y) :
     (fundamentalCategoryFunctor.obj X) ⥤ (fundamentalCategoryFunctor.obj Y) :=
   (fundamentalCategoryFunctor.map f).toFunctor
 
+/-- Notation for the underlying functor on fundamental categories induced by a `dTopCat` map. -/
 scoped notation "dπₘ" => FundamentalCategory.fundamentalCategoryMap
 
 lemma map_eq {X Y : dTopCat} {x₀ x₁ : X} (f : X ⟶ Y) (p : Dipath.Dihomotopic.Quotient x₀ x₁) :

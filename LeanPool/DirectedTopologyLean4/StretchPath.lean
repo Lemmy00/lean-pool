@@ -26,6 +26,8 @@ lemma double_mem_I_of_bounded {t₀ t₁ : I} (t : I) (γ : Dipath t₀ t₁) (h
     : 2 * (γ t : ℝ) ∈ I :=
   double_mem_I <| le_trans (monotone_path_bounded γ.dipath_toPath t).2 (ht₁)
 
+/-- Stretch a path whose image lies in `[0, 1/2]` to a path on the full unit interval by doubling
+all parameter values. -/
 def stretch_up_path {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ)) : Path
   (⟨2 * ↑t₀, by { rw [←γ.source']; exact double_mem_I_of_bounded 0 γ ht₁ }⟩ : I)
   ⟨2 * ↑t₁, double_mem_I ht₁⟩ where
@@ -41,6 +43,8 @@ lemma isDipath_stretch_up {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₁ : ↑t�
     mul_le_mul_iff_right₀, Subtype.coe_le_coe]
   exact γ.dipath_toPath hxy
 
+/-- The dipath obtained by stretching a dipath whose image lies in `[0, 1/2]` to the full unit
+interval. -/
 def stretch_up {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ)) : Dipath
   (⟨2 * ↑t₀, by { rw [←γ.source']; exact double_mem_I_of_bounded 0 γ ht₁ }⟩ : I)
   ⟨2 * ↑t₁, double_mem_I ht₁⟩ where
@@ -53,6 +57,8 @@ lemma double_sub_one_mem_I_of_bounded {t₀ t₁ : I} (t : I) (γ : Dipath t₀ 
  : 2 * (γ t : ℝ) - 1 ∈ I :=
   double_sub_one_mem_I <| le_trans ht₀ (monotone_path_bounded γ.dipath_toPath t).1
 
+/-- Stretch a path whose image lies in `[1/2, 1]` to a path on the full unit interval by mapping
+each parameter `s` to `2s - 1`. -/
 def stretch_down_path {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₀ : (2⁻¹ : ℝ) ≤ ↑t₀) : Path
   (⟨2 * ↑t₀ - 1, double_sub_one_mem_I ht₀⟩ : I)
   ⟨2 * ↑t₁ - 1, by { rw [←γ.target']; exact double_sub_one_mem_I_of_bounded 1 γ ht₀ }⟩ where
@@ -68,6 +74,8 @@ lemma isDipath_stretch_down {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₀ : (2�
     sub_add_cancel, Nat.ofNat_pos, mul_le_mul_iff_right₀, Subtype.coe_le_coe]
   exact γ.dipath_toPath hxy
 
+/-- The dipath obtained by stretching a dipath whose image lies in `[1/2, 1]` to the full unit
+interval. -/
 def stretch_down {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₀ : (2⁻¹ : ℝ) ≤ ↑t₀) : Dipath
   (⟨2 * ↑t₀ - 1, double_sub_one_mem_I ht₀⟩ : I)
   ⟨2 * ↑t₁ - 1, by { rw [←γ.target']; exact double_sub_one_mem_I_of_bounded 1 γ ht₀ }⟩ where

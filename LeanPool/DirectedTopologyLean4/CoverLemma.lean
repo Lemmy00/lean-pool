@@ -101,6 +101,7 @@ theorem lebesgue_number_lemma_unit_interval {ι : Sort u} {c : ι → Set ℝ}
 
 /-! ### Covering lemma for the unit square -/
 
+/-- The full unit square as a subset of `I × I`. -/
 def UnitSquare : Set (I × I) := Set.univ
 
 lemma compact_unitSquare : IsCompact UnitSquare := isCompact_univ

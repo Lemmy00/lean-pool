@@ -27,14 +27,17 @@ variable {X : dTopCat} {f g : D(I,X)} {X₀ X₁ : Set X}
 
 /-- A dihomotopy of directed maps is covered if its image lies entirely in X₀ or in X₁.
 -/
-def covered (F : Dihomotopy f g) (_ : X₀ ∪ X₁ = univ) : Prop := range F ⊆ X₀ ∨ range F ⊆ X₁
+def covered (F : Dihomotopy f g) (hX : X₀ ∪ X₁ = univ) : Prop :=
+  let _ : X₀ ∪ X₁ = univ := hX
+  range F ⊆ X₀ ∨ range F ⊆ X₁
 
 /-- A dihomotopy of directed maps is covered partwise n m if it can be covered by
   rectangles (n+1 vertically, m+1 horizontally)
       such that each rectangle is covered by either X₀ or X₁
 -/
-def coveredPartwise (_ : X₀ ∪ X₁ = univ) (F : Dihomotopy f g) (n m : ℕ) : Prop :=
+def coveredPartwise (hX : X₀ ∪ X₁ = univ) (F : Dihomotopy f g) (n m : ℕ) : Prop :=
   ∀ (i j : ℕ) (hi : i < n.succ) (hj : j < m.succ),
+    let _ : X₀ ∪ X₁ = univ := hX
     F '' (UnitSubrectangle hi hj) ⊆ X₀ ∨ F '' (UnitSubrectangle hi hj) ⊆ X₁
 
 /-- A dihomotopy that can be covered partwise by `1 × 1` squares is covered.
@@ -398,7 +401,9 @@ lemma range_right_subset (F : Dihomotopy γ₁ γ₂) : range γ₂ ⊆ range F 
 
 /-- A dihomotopy of directed paths is covered if its image lies entirely in X₀ or in X₁.
 -/
-def covered (_ : X₀ ∪ X₁ = univ) (F : Dihomotopy γ₁ γ₂) : Prop := range F ⊆ X₀ ∨ range F ⊆ X₁
+def covered (hX : X₀ ∪ X₁ = univ) (F : Dihomotopy γ₁ γ₂) : Prop :=
+  let _ : X₀ ∪ X₁ = univ := hX
+  range F ⊆ X₀ ∨ range F ⊆ X₁
 
 /-- If `F : γ₁ ∼ γ₂` is a dihomotopy of directed paths, and `F` is covered, then `γ₁` is covered.
 -/

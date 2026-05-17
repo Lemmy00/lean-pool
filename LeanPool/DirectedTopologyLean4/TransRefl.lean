@@ -35,8 +35,6 @@ namespace Dihomotopy
 
 open Path.Homotopy
 
-section TransRefl
-
 lemma directed_transReflReparamAux : DirectedMap.Directed
     ({ toFun := fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩
        continuous_toFun := Continuous.subtype_mk continuous_transReflReparamAux _ } :
@@ -54,6 +52,8 @@ lemma directed_transReflReparamAux : DirectedMap.Directed
   · linarith
   · linarith
 
+/-- The auxiliary reparametrization map `I → I` used to show that `p.trans (refl _)` is
+dihomotopic to `p`, packaged as a directed map. -/
 def TransReflReparamAuxMap : D(I,I) where
   toFun := fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩
   continuous_toFun := Continuous.subtype_mk continuous_transReflReparamAux _
@@ -66,10 +66,6 @@ lemma trans_refl_reparam_dipath (p : Dipath x₀ x₁) : p.trans (Dipath.refl x�
   have : (p.trans (Dipath.refl x₁)) t = p.toPath.trans (Path.refl x₁) t := rfl
   rw [this, Path.Homotopy.trans_refl_reparam p.toPath]
   rfl
-
-end TransRefl
-
-section ReflTrans
 
 /-- Auxilliary function for `ReflTransReparam` -/
 def ReflTransReparamAux (t : I) : ℝ :=
@@ -115,6 +111,8 @@ lemma directed_ReflTransReparamAux : DirectedMap.Directed
   · linarith
   · linarith
 
+/-- The auxiliary reparametrization map `I → I` used to show that `(refl _).trans p` is
+dihomotopic to `p`, packaged as a directed map. -/
 def ReflTransReparamAuxMap : D(I,I) where
   toFun := fun t => ⟨ReflTransReparamAux t, reflTransReparamAux_mem_I t⟩
   continuous_toFun := Continuous.subtype_mk continuous_ReflTransReparamAux _
@@ -140,8 +138,6 @@ lemma refl_trans_reparam_dipath (p : Dipath x₀ x₁) : (Dipath.refl x₀).tran
   have : ((Dipath.refl x₀).trans p) t =  (Path.refl x₀).trans p.toPath t := rfl
   rw [this, refl_trans_reparam p.toPath]
   rfl
-
-end ReflTrans
 
 end Dihomotopy
 

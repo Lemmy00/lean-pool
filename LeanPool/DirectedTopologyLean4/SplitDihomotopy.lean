@@ -72,7 +72,8 @@ lemma directedSnd_apply (T t : I) : DirectedSnd T t = ⟨_, interp_left_mem_I T 
   change (1 - t : ℝ) * T + t * 1 = (1 - T : ℝ) * t + T
   ring
 
-/- Splitting a dipath-dihomotopy vertically -/
+/-- The first part of a dipath-dihomotopy split vertically at `T`: a dihomotopy from `γ₁` to the
+slice `F.eval T`. -/
 def FirstPartVerticallyDihomotopy {x y : X} {γ₁ γ₂ : Dipath x y} (F : Dipath.Dihomotopy γ₁ γ₂)
     (T : I) :
     Dipath.Dihomotopy γ₁ (F.eval T) where
@@ -88,7 +89,8 @@ lemma fpv_apply {x y : X} {γ₁ γ₂ : Dipath x y} (F : Dipath.Dihomotopy γ�
   rw [directedFst_apply]
   rfl
 
-/- Splitting a dipath-dihomotopy vertically -/
+/-- The second part of a dipath-dihomotopy split vertically at `T`: a dihomotopy from the slice
+`F.eval T` to `γ₂`. -/
 def SecondPartVerticallyDihomotopy {x y : X} {γ₁ γ₂ : Dipath x y} (F : Dipath.Dihomotopy γ₁ γ₂)
     (T : I) :
     Dipath.Dihomotopy (F.eval T) γ₂ where
@@ -108,7 +110,8 @@ lemma spv_apply {x y : X} {γ₁ γ₂ : Dipath x y} (F : Dipath.Dihomotopy γ�
   change F (DirectedSnd T s, t) = F (_, t)
   rw [directedSnd_apply]
 
-/- Splitting a dihomotopy horizontally -/
+/-- The first part of a dihomotopy split horizontally at `T`: a dihomotopy between the first parts
+of `f` and `g` as dipaths. -/
 def FirstPartHorizontallyDihomotopy {f g : D(I,X)} (F : Dihomotopy f g) (T : I) :
     Dihomotopy (SplitDipath.FirstPart (Dipath.of_directedMap f) T).toDirectedMap
                (SplitDipath.FirstPart (Dipath.of_directedMap g) T).toDirectedMap where
@@ -130,7 +133,8 @@ lemma fph_apply {f g : D(I,X)} (F : Dihomotopy f g) (T s t : I) :
   rw [directedFst_apply]
   rfl
 
-/- Splitting a dihomotopy horizontally -/
+/-- The second part of a dihomotopy split horizontally at `T`: a dihomotopy between the second
+parts of `f` and `g` as dipaths. -/
 def SecondPartHorizontallyDihomotopy {f g : D(I,X)} (F : Dihomotopy f g) (T : I) :
     Dihomotopy (SplitDipath.SecondPart (Dipath.of_directedMap f) T).toDirectedMap
                (SplitDipath.SecondPart (Dipath.of_directedMap g) T).toDirectedMap where

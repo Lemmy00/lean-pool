@@ -41,12 +41,14 @@ lemma source_elt_of_image_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) : x
 lemma target_elt_of_image_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) : y ∈ X₀
     := γ.target ▸ (hγ (mem_range_self 1))
 
+/-- Lift a path whose range lies inside `X₀` to a path in the subtype `X₀`. -/
 def SubtypePath {γ : Dipath x y} (hγ : range γ ⊆ X₀) :
     Path (⟨x, source_elt_of_image_subset hγ⟩ : X₀) ⟨y, target_elt_of_image_subset hγ⟩ where
   toFun := fun t => ⟨γ t, hγ (mem_range_self t)⟩
   source' := by simp
   target' := by simp
 
+/-- Lift a dipath whose range lies inside `X₀` to a dipath in the subtype `X₀`. -/
 def SubtypeDipath (γ : Dipath x y) (hγ : range γ ⊆ X₀) :
     Dipath (⟨x, source_elt_of_image_subset hγ⟩ : X₀) ⟨y, target_elt_of_image_subset hγ⟩ where
   toPath := SubtypePath hγ
@@ -103,6 +105,7 @@ lemma reparam_subset_of_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) {f : 
   rw [Dipath.range_reparam]
   exact hγ
 
+/-- Lift a dihomotopy whose range lies inside `X₀` to a dihomotopy of subtype dipaths. -/
 def DihomotopyOfSubtype {γ γ' : Dipath x y} (hγ : range γ ⊆ X₀) (hγ' : range γ' ⊆ X₀)
   {F : Dipath.Dihomotopy γ γ'} (hF : range F ⊆ X₀) :
     Dipath.Dihomotopy (SubtypeDipath γ hγ) (SubtypeDipath γ' hγ') where

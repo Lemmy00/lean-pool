@@ -53,9 +53,13 @@ instance concreteCategory : ConcreteCategory.{u} dTopCat (fun X Y => D(X,Y)) whe
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 
+namespace Hom
+
 /-- Turn a morphism in `dTopCat` back into a `DirectedMap`. -/
-abbrev Hom.hom {X Y : dTopCat.{u}} (f : Hom X Y) : D(X,Y) :=
+abbrev hom {X Y : dTopCat.{u}} (f : Hom X Y) : D(X,Y) :=
   ConcreteCategory.hom (C := dTopCat) f
+
+end Hom
 
 /-- Typecheck a `DirectedMap` as a morphism in `dTopCat`. -/
 abbrev ofHom {X Y : Type u} [DirectedSpace X] [DirectedSpace Y] (f : D(X,Y)) : of X ⟶ of Y :=

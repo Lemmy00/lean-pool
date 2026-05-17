@@ -147,30 +147,28 @@ section
 
 variable {p₀ q₀ : Dipath x y} {p₁ q₁ : Dipath y z}
 
-section hcomp_aux
-
 variable (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) (s t : I) (ht : t = half_I)
 
-lemma hcomp_apply_half_left (ht : t = half_I) :
+lemma _root_.Dipath.Dihomotopy.hcomp_apply_half_left (ht : t = half_I) :
     (dihom_to_hom F).hcomp (dihom_to_hom G) (s, t) = F (s, 1) := by
   rw [Path.Homotopy.hcomp_apply]
   have ht_coe : (t : ℝ) = 2⁻¹ := Subtype.coe_inj.mpr ht
   have : (t : ℝ) ≤ 2⁻¹ := by linarith
   simp [ht_coe]
 
-lemma hcomp_apply_half_right (ht : t = half_I) :
+lemma _root_.Dipath.Dihomotopy.hcomp_apply_half_right (ht : t = half_I) :
     (dihom_to_hom F).hcomp (dihom_to_hom G) (s, t) = G (s, 0) := by
   rw [Path.Homotopy.hcomp_apply]
   have ht_coe : (t : ℝ) = 2⁻¹ := Subtype.coe_inj.mpr ht
   split_ifs <;> simp [ht_coe]
 
-lemma hcomp_apply_left (ht : (t : ℝ) ≤ 2⁻¹) :
+lemma _root_.Dipath.Dihomotopy.hcomp_apply_left (ht : (t : ℝ) ≤ 2⁻¹) :
     (dihom_to_hom F).hcomp (dihom_to_hom G) (s, t) = F (s, ⟨2 * t, double_mem_I ht⟩) := by
   rw [Path.Homotopy.hcomp_apply]
   simp [ht]
   rfl
 
-lemma hcomp_apply_right (ht : 2⁻¹ ≤ (t : ℝ)) :
+lemma _root_.Dipath.Dihomotopy.hcomp_apply_right (ht : 2⁻¹ ≤ (t : ℝ)) :
     (dihom_to_hom F).hcomp (dihom_to_hom G) (s, t) = G (s, ⟨2 * t - 1, double_sub_one_mem_I ht⟩)
         := by
   rw [Path.Homotopy.hcomp_apply]
@@ -180,7 +178,7 @@ lemma hcomp_apply_right (ht : 2⁻¹ ≤ (t : ℝ)) :
     simp [this]
   · rfl
 
-lemma hcomp_first_case (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) {a₀ a₁ : I × I}
+lemma _root_.Dipath.Dihomotopy.hcomp_first_case (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) {a₀ a₁ : I × I}
     {γ : Path a₀ a₁}
   (γ_dipath : IsDipath γ) (ht₁ : (a₁.2 : ℝ) ≤ 2⁻¹) :
     IsDipath (γ.map ((dihom_to_hom F).hcomp (dihom_to_hom G)).continuous_toFun) := by
@@ -209,7 +207,7 @@ lemma hcomp_first_case (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) {a�
   exact h _ _ (le_trans (directed_path_bounded γ_dipath.2 _).2 ht₁)
 
 
-lemma hcomp_second_case (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) {a₀ a₁ : I × I}
+lemma _root_.Dipath.Dihomotopy.hcomp_second_case (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) {a₀ a₁ : I × I}
   {γ : Path a₀ a₁} (γ_dipath : IsDipath γ) (ht₀ : 2⁻¹ ≤ (a₀.2 : ℝ)) :
     IsDipath (γ.map ((dihom_to_hom F).hcomp (dihom_to_hom G)).continuous_toFun) := by
   obtain ⟨s₀, t₀⟩ := a₀
@@ -240,14 +238,12 @@ lemma hcomp_second_case (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) {a
     DirectedMap.Dihomotopy.coe_to_directed_map, DirectedMap.DihomotopyWith.coe_to_dihomotopy]
   exact h (γ x).1 (γ x).2 (le_trans ht₀ (directed_path_bounded γ_dipath.2 _).1)
 
-end hcomp_aux
-
 /-- Suppose `p₀` and `q₀` are dipaths from `x` to `y`, `p₁` and `q₁` are dipaths from `y` to `z`.
 Furthermore, suppose `F : Dihomotopy p₀ q₀` and `G
     : Dihomotopy p₁ q₁`. Then we can define a dihomotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
 -/
-def hcomp (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) :
+def _root_.Dipath.Dihomotopy.hcomp (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) :
     Dihomotopy (p₀.trans p₁) (q₀.trans q₁) := by
   set Fₕ := dihom_to_hom F
   set Gₕ := dihom_to_hom G
@@ -364,7 +360,7 @@ def hcomp (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) :
             := rfl
   exact hom_to_dihom Γ this
 
-lemma hcomp_apply (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) (x : I × I) :
+lemma _root_.Dipath.Dihomotopy.hcomp_apply (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) (x : I × I) :
     F.hcomp G x =
       if h : (x.2 : ℝ) ≤ 1/2 then
         F.eval x.1 ⟨2 * x.2, (unitInterval.mul_pos_mem_iff two_pos).2 ⟨x.2.2.1, h⟩⟩
@@ -373,7 +369,7 @@ lemma hcomp_apply (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) (x : I �
             :=
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
-lemma hcomp_half (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) (t : I) :
+lemma _root_.Dipath.Dihomotopy.hcomp_half (F : Dihomotopy p₀ q₀) (G : Dihomotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1/2, by norm_num, by norm_num⟩) = y :=
   show ite _ _ _ = _ by norm_num
 
@@ -384,7 +380,7 @@ dominated by `g`,
 i.e. `∀ t, f t ≤ g t`, then we obtain a dihomotopy between the two subparametrization of `p` as
 the interpolation between the two becomes directed.
 -/
-def reparam (p : Dipath x y) (f : D(I,I)) (g : D(I,I)) (hf_le_g : ∀ (t : I), f t ≤ g t)
+def _root_.Dipath.Dihomotopy.reparam (p : Dipath x y) (f : D(I,I)) (g : D(I,I)) (hf_le_g : ∀ (t : I), f t ≤ g t)
   (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) (hg₀ : g 0 = 0) (hg₁ : g 1 = 1) :
     Dihomotopy (p.reparam f hf₀ hf₁) (p.reparam g hg₀ hg₁) where
   toFun := p.toContinuousMap.comp (interpolate f.toContinuousMap g.toContinuousMap)
@@ -425,7 +421,7 @@ def reparam (p : Dipath x y) (f : D(I,I)) (g : D(I,I)) (hf_le_g : ∀ (t : I), f
 
 /-- For any `p : Dipath x y`, there is a dihomotopy from `p` to `p.trans (Dipath.refl y)`.
 -/
-def trans_refl (p : Dipath x y) : Dihomotopy p (p.trans (Dipath.refl y)) := by
+def _root_.Dipath.Dihomotopy.trans_refl (p : Dipath x y) : Dihomotopy p (p.trans (Dipath.refl y)) := by
   set f : D(I,I) := DirectedMap.id I
   set g : D(I,I) := TransReflReparamAuxMap
   have hf_le_g : ∀ (t : I), f t ≤ g t := by
@@ -447,7 +443,7 @@ def trans_refl (p : Dipath x y) : Dihomotopy p (p.trans (Dipath.refl y)) := by
 
 /-- For any `p : Dipath x y`, there is a dihomotopy from `(Dipath.refl x).trans p` to `p`.
 -/
-def refl_trans (p : Dipath x y) : Dihomotopy ((Dipath.refl x).trans p) p := by
+def _root_.Dipath.Dihomotopy.refl_trans (p : Dipath x y) : Dihomotopy ((Dipath.refl x).trans p) p := by
   set f : D(I,I) := ReflTransReparamAuxMap
   set g : D(I,I) := DirectedMap.id I
   have hf_le_g : ∀ (t : I), f t ≤ g t := fun t => by
@@ -467,7 +463,7 @@ def refl_trans (p : Dipath x y) : Dihomotopy ((Dipath.refl x).trans p) p := by
 (Dipath.refl y)`,
 where `q` is any directed reparametrization of `p`.
 -/
-def refl_trans_to_reparam_trans_refl (p : Dipath x y) (f : D(I,I)) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
+def _root_.Dipath.Dihomotopy.refl_trans_to_reparam_trans_refl (p : Dipath x y) (f : D(I,I)) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
     Dihomotopy ((Dipath.refl x).trans p) ((p.reparam f hf₀ hf₁).trans (Dipath.refl y)) := by
   set φ₁ : D(I,I) := ReflTransReparamAuxMap
   set φ₂ : D(I,I) := f.comp TransReflReparamAuxMap
@@ -519,7 +515,7 @@ def refl_trans_to_reparam_trans_refl (p : Dipath x y) (f : D(I,I)) (hf₀ : f 0 
 `q.map f` given by `f ∘ F`.
 -/
 @[simps!]
-def map {p q : Dipath x y} (F : Dihomotopy p q) (f : D(X,Y)) :
+def _root_.Dipath.Dihomotopy.map {p q : Dipath x y} (F : Dihomotopy p q) (f : D(X,Y)) :
     Dihomotopy (p.map f) (q.map f) where
   toFun := f ∘ F
   map_zero_left := fun _ => by simp
@@ -544,21 +540,21 @@ variable (p₀ p₁ : Dipath x y)
 /-- Two dipaths `p₀` and `p₁` are `Dipath.PreDihomotopic` if there exists a `Dihomotopy` from `p₀`
 to `p₁`.
 -/
-def PreDihomotopic : Prop := Nonempty (Dihomotopy p₀ p₁)
+def _root_.Dipath.PreDihomotopic : Prop := Nonempty (Dihomotopy p₀ p₁)
 
 /-- `Dipath.Dihomotopic` is the equivalence generated by `Dipath.PreDihomotopic`.
 -/
-def Dihomotopic : Prop := Relation.EqvGen PreDihomotopic p₀ p₁
+def _root_.Dipath.Dihomotopic : Prop := Relation.EqvGen PreDihomotopic p₀ p₁
 
 end
 
 namespace Dihomotopic
 
-lemma equivalence : Equivalence (@Dihomotopic X _ x y) := by apply Relation.EqvGen.is_equivalence
+lemma _root_.Dipath.Dihomotopic.equivalence : Equivalence (@Dihomotopic X _ x y) := by apply Relation.EqvGen.is_equivalence
 
 /-- If `p` is dihomotopic with `q`, then `f ∘ p` is dihomotopic with `f ∘ q` for any directed map
 `f` -/
-lemma map {p q : Dipath x y} (h : p.Dihomotopic q) (f : D(X,Y)) :
+lemma _root_.Dipath.Dihomotopic.map {p q : Dipath x y} (h : p.Dihomotopic q) (f : D(X,Y)) :
     Dihomotopic (p.map f) (q.map f) :=
   Relation.EqvGen.rec
     (fun _ _ h => Relation.EqvGen.rel _ _ ⟨h.some.map f⟩)
@@ -567,7 +563,7 @@ lemma map {p q : Dipath x y} (h : p.Dihomotopic q) (f : D(X,Y)) :
     (fun _ _ _ _ _ h₁ h₂ => Relation.EqvGen.trans _ _ _ h₁ h₂)
   h
 
-lemma hcomp_aid_left {p₀ p₁ : Dipath x y} (q : Dipath y z) (hp : p₀.Dihomotopic p₁) :
+lemma _root_.Dipath.Dihomotopic.hcomp_aid_left {p₀ p₁ : Dipath x y} (q : Dipath y z) (hp : p₀.Dihomotopic p₁) :
     (p₀.trans q).Dihomotopic (p₁.trans q) :=
   Relation.EqvGen.rec
     (fun _ _ h => Relation.EqvGen.rel _ _ ⟨h.some.hcomp (Dihomotopy.refl q)⟩)
@@ -576,7 +572,7 @@ lemma hcomp_aid_left {p₀ p₁ : Dipath x y} (q : Dipath y z) (hp : p₀.Dihomo
     (fun _ _ _ _ _ h₁ h₂ => Relation.EqvGen.trans _ _ _ h₁ h₂)
   hp
 
-lemma hcomp_aid_right (p : Dipath x y) {q₀ q₁ : Dipath y z} (hq : q₀.Dihomotopic q₁) :
+lemma _root_.Dipath.Dihomotopic.hcomp_aid_right (p : Dipath x y) {q₀ q₁ : Dipath y z} (hq : q₀.Dihomotopic q₁) :
     (p.trans q₀).Dihomotopic (p.trans q₁) :=
   Relation.EqvGen.rec
     (fun _ _ h => Relation.EqvGen.rel _ _ ⟨(Dihomotopy.refl p).hcomp h.some⟩)
@@ -589,7 +585,7 @@ lemma hcomp_aid_right (p : Dipath x y) {q₀ q₁ : Dipath y z} (hq : q₀.Dihom
 If `p₀` is dihomotopic with `p₁` and `q₀` is dihomotopic with `q₁`,
 then `p₀.trans q₀` is dihomotopic with `p₁.trans q₁`.
 -/
-lemma hcomp {p₀ p₁ : Dipath x y} {q₀ q₁ : Dipath y z} (hp : p₀.Dihomotopic p₁)
+lemma _root_.Dipath.Dihomotopic.hcomp {p₀ p₁ : Dipath x y} {q₀ q₁ : Dipath y z} (hp : p₀.Dihomotopic p₁)
     (hq : q₀.Dihomotopic q₁) : (p₀.trans q₀).Dihomotopic (p₁.trans q₁) :=
   Relation.EqvGen.rec
     (fun p₀ p₁ hp₀_p₁ => by
@@ -674,7 +670,7 @@ lemma hcomp {p₀ p₁ : Dipath x y} {q₀ q₁ : Dipath y z} (hp : p₀.Dihomot
 
 /-- If `p` is a dipath, then it is dihomotopic with any monotonic subparametrization.
 -/
-lemma reparam (p : Dipath x y) (f : D(I,I)) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
+lemma _root_.Dipath.Dihomotopic.reparam (p : Dipath x y) (f : D(I,I)) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
   p.Dihomotopic (p.reparam f hf₀ hf₁) := by
   set p' := p.reparam f hf₀ hf₁
   set p₁ := ((refl x).trans p)
@@ -691,40 +687,41 @@ lemma reparam (p : Dipath x y) (f : D(I,I)) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) 
 paths are
 equivalent if there is a chain of `Dihomotopies` starting in one and ending in the other.
 -/
-@[reducible] protected def setoid (x y : X) : Setoid (Dipath x y) := ⟨Dihomotopic, equivalence⟩
+@[reducible] protected def _root_.Dipath.Dihomotopic.setoid (x y : X) : Setoid (Dipath x y) := ⟨Dihomotopic, equivalence⟩
 
 /-- The quotient on `Dipath x y` by the equivalence relation `Dipath.Dihomotopic`.
 -/
-protected def Quotient (x y : X) := Quotient (Dihomotopic.setoid x y)
+protected def _root_.Dipath.Dihomotopic.Quotient (x y : X) :=
+  Quotient (Dihomotopic.setoid x y)
 
 attribute [local instance] Dihomotopic.setoid
 
 instance : Inhabited (Dihomotopic.Quotient x x) :=
   ⟨Quotient.mk' <| Dipath.refl x⟩
 
-/- The composition of dipath dihomotopy classes. This is `Dipath.trans` descended to the quotient.
--/
-def Quotient.comp (P₀ : Dipath.Dihomotopic.Quotient x y) (P₁ : Dipath.Dihomotopic.Quotient y z) :
+/-- The composition of dipath dihomotopy classes. This is `Dipath.trans` descended to the
+quotient. -/
+def _root_.Dipath.Dihomotopic.Quotient.comp (P₀ : Dipath.Dihomotopic.Quotient x y) (P₁ : Dipath.Dihomotopic.Quotient y z) :
   Dipath.Dihomotopic.Quotient x z :=
 Quotient.map₂ Dipath.trans (fun (_ : Dipath x y) _ hp (_ : Dipath y z) _ hq => (hcomp hp hq)) P₀ P₁
 
-lemma comp_lift (P₀ : Dipath x y) (P₁ : Dipath y z) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ := rfl
+lemma _root_.Dipath.Dihomotopic.comp_lift (P₀ : Dipath x y) (P₁ : Dipath y z) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ := rfl
 
-/- The image of a dipath dihomotopy class `P₀` under a directed map `f`.
-    This is `Dipath.map` descended to the quotient -/
-def Quotient.mapFn (P₀ : Dipath.Dihomotopic.Quotient x y) (f : D(X,Y)) :
+/-- The image of a dipath dihomotopy class `P₀` under a directed map `f`. This is `Dipath.map`
+descended to the quotient. -/
+def _root_.Dipath.Dihomotopic.Quotient.mapFn (P₀ : Dipath.Dihomotopic.Quotient x y) (f : D(X,Y)) :
   Dipath.Dihomotopic.Quotient (f x) (f y) :=
 Quotient.map (fun (q : Dipath x y) => q.map f) (fun _ _ h => Dipath.Dihomotopic.map h f) P₀
 
-lemma map_lift (P₀ : Dipath x y) (f : D(X,Y)) :
+lemma _root_.Dipath.Dihomotopic.map_lift (P₀ : Dipath x y) (f : D(X,Y)) :
   ⟦P₀.map f⟧ = Quotient.mapFn ⟦P₀⟧ f := rfl
 
-lemma quot_reparam (γ : Dipath x y) {f : D(I,I)} (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
+lemma _root_.Dipath.Dihomotopic.quot_reparam (γ : Dipath x y) {f : D(I,I)} (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
     @Eq (Dipath.Dihomotopic.Quotient _ _) ⟦γ.reparam f hf₀ hf₁⟧ ⟦γ⟧ := by
   symm
   exact Quotient.eq.mpr (Dipath.Dihomotopic.reparam γ f hf₀ hf₁)
 
-lemma hpath_hext {x₀ x₁ x₂ x₃ : X} {p₁ : Dipath x₀ x₁} {p₂ : Dipath x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
+lemma _root_.Dipath.Dihomotopic.hpath_hext {x₀ x₁ x₂ x₃ : X} {p₁ : Dipath x₀ x₁} {p₂ : Dipath x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     @HEq (Dipath.Dihomotopic.Quotient _ _) ⟦p₁⟧ (Dipath.Dihomotopic.Quotient _ _) ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp

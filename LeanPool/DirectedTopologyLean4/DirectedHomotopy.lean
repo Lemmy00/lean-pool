@@ -37,8 +37,6 @@ structure Dihomotopy (f₀ f₁ : DirectedMap X Y) extends D((I × X),Y) where
   map_zero_left : ∀ x, toFun (0, x) = f₀.toFun x
   map_one_left : ∀ x, toFun (1, x) = f₁.toFun x
 
-section
-
 /-- `DirectedMap.DihomotopyLike F f₀ f₁` states that `F` is a type of homotopies between `f₀` and
 `f₁` -/
 class DihomotopyLike {X Y : outParam (Type*)} [DirectedSpace X] [DirectedSpace Y]
@@ -47,11 +45,7 @@ class DihomotopyLike {X Y : outParam (Type*)} [DirectedSpace X] [DirectedSpace Y
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   map_one_left (f : F) : ∀x, f (1, x) = f₁ x
 
-end
-
 namespace Dihomotopy
-
-section
 
 variable {f₀ f₁ : D(X,Y)}
 
@@ -68,15 +62,15 @@ instance : DihomotopyLike (Dihomotopy f₀ f₁) f₀ f₁ where
   map_zero_left f := f.map_zero_left
   map_one_left f := f.map_one_left
 
-end
-
-variable {f₀ f₁ : D(X,Y)}
-
 @[ext] theorem ext {f g : Dihomotopy f₀ f₁} (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
+
+namespace Simps
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
-def Simps.apply (F : Dihomotopy f₀ f₁) : I × X → Y := F
+def apply (F : Dihomotopy f₀ f₁) : I × X → Y := F
+
+end Simps
 
 initialize_simps_projections Dihomotopy (toDirectedMap_toContinuousMap_toFun → apply,
     -toDirectedMap_toContinuousMap)
@@ -104,6 +98,7 @@ def curry_snd (F : Dihomotopy f₀ f₁) : X → D(I,Y) := by
 @[simp]
 lemma curry_snd_apply (F : Dihomotopy f₀ f₁) (x : X) (t : I) : F.curry_snd x t = F (t, x) := rfl
 
+/-- Promote a continuous-map homotopy together with a proof of directedness to a dihomotopy. -/
 def hom_to_dihom (F : ContinuousMap.Homotopy (↑f₀ : C(X, Y)) ↑f₁) (HF : Directed (F : C(I × X, Y)))
     :
   Dihomotopy f₀ f₁ where
@@ -113,6 +108,7 @@ def hom_to_dihom (F : ContinuousMap.Homotopy (↑f₀ : C(X, Y)) ↑f₁) (HF : 
     map_zero_left := F.map_zero_left
     map_one_left := F.map_one_left
 
+/-- Forget the directedness of a dihomotopy to obtain the underlying continuous-map homotopy. -/
 def dihom_to_hom (F : Dihomotopy f₀ f₁) : ContinuousMap.Homotopy (f₀ : C(X, Y)) ↑f₁ where
   toFun := F.toFun
   continuous_toFun := F.continuous_toFun
@@ -121,8 +117,6 @@ def dihom_to_hom (F : Dihomotopy f₀ f₁) : ContinuousMap.Homotopy (f₀ : C(X
 
 instance coe_dihom_to_hom : Coe (Dihomotopy f₀ f₁) (ContinuousMap.Homotopy (f₀ : C(X, Y)) ↑f₁) :=
   ⟨fun F => F.dihom_to_hom⟩
-
-section
 
 /-! Evaluating dihomotopies at intermidiate points -/
 
@@ -149,8 +143,6 @@ def eval_at_right {X : Type*} {Y : Type*} [DirectedSpace X] [DirectedSpace Y] {f
         convert H.directed_toFun { toFun := fun t => (t, x), source' := rfl, target' := rfl}
           ⟨DirectedUnitInterval.isDipath_identityPath, isDipath_constant _⟩ <;> simp
 
-end
-
 /-- Given a directed map `f`, we can define a `Dihomotopy f f` by `F (t, x) = f x`
 -/
 lemma directed_refl (f : D(X,Y))
@@ -158,6 +150,7 @@ lemma directed_refl (f : D(X,Y))
   fun _ _ γ γ_dipath =>
     (f.directed_toFun (γ.map continuous_snd) (directed_snd.directed_toFun γ γ_dipath))
 
+/-- The trivial reflexive dihomotopy `F (t, x) = f x`. -/
 @[simps!]
 def refl (f : D(X,Y)) : Dihomotopy f f := hom_to_dihom _ (directed_refl f)
 
@@ -167,15 +160,13 @@ instance : Inhabited (Dihomotopy (DirectedMap.id X) (DirectedMap.id X)) := ⟨Di
 
 /- Auxiliary functions to prove that homotopy.trans is directed if the given homotopies are directed
 -/
-section trans_aux
-
-section trans_aux₁
 
 open SplitPath SplitDipath
 
 variable {t₀ t₁ : I} (γ : Dipath t₀ t₁) {T : I}
 variable (hT : γ T = half_I)
 
+/-- The first half of a split dipath, stretched to the interval `[2 t₀, 1]`. -/
 def FirstPartStretch (ht₀ : (t₀ : ℝ) ≤ 2⁻¹) : Dipath (⟨2 * (t₀.1 : ℝ), double_mem_I ht₀⟩ : I)
     (1 : I) where
   toFun := Dipath.stretch_up (FirstPart γ T) (by { convert le_refl (2⁻¹ : ℝ); simp [hT] })
@@ -183,6 +174,7 @@ def FirstPartStretch (ht₀ : (t₀ : ℝ) ≤ 2⁻¹) : Dipath (⟨2 * (t₀.1 
   target' := by simp [hT]
   dipath_toPath := Dipath.isDipath_stretch_up (_) (by { convert le_refl (2⁻¹ : ℝ); simp [hT] })
 
+/-- The second half of a split dipath, stretched to the interval `[0, 2 t₁ - 1]`. -/
 def SecondPartStretch (ht₁ : 2⁻¹ ≤ (t₁ : ℝ)) : Dipath (0 : I) ⟨2 * (t₁.1 : ℝ)
     - 1, double_sub_one_mem_I ht₁⟩ where
   toFun := Dipath.stretch_down (SecondPart γ T) (by { convert le_refl (2⁻¹ : ℝ); simp [hT] })
@@ -190,10 +182,6 @@ def SecondPartStretch (ht₁ : 2⁻¹ ≤ (t₁ : ℝ)) : Dipath (0 : I) ⟨2 * 
   target' := by simp
   dipath_toPath := Dipath.isDipath_stretch_down (_) (by { convert le_refl (2⁻¹ : ℝ); simp [hT] })
 
-
-end trans_aux₁
-
-section trans_aux₂
 
 variable {f₂ : D(X,Y)} (F : Dihomotopy f₀ f₁) (G : Dihomotopy f₁ f₂) (t : I) (x : X)
 
@@ -227,12 +215,6 @@ lemma trans_apply_right (t : I) (x : X) (ht : 2⁻¹ ≤ (t : ℝ)) :
     simp [this]
   }
   rfl
-
-end trans_aux₂
-
-section trans_aux₃
-
-variable {f₂ : D(X,Y)} (F : Dihomotopy f₀ f₁) (G : Dihomotopy f₁ f₂)
 
 lemma trans_first_case {a₀ a₁ : I × X} {γ : Path a₀ a₁} (γ_dipath : IsDipath γ)
     (ht₁ : (a₁.1 : ℝ) ≤ 2⁻¹) :
@@ -291,14 +273,8 @@ lemma trans_second_case {a₀ a₁ : I × X} {γ : Path a₀ a₁} (γ_dipath : 
     Function.comp_apply, DirectedMap.coe_coe]
   exact h _ _ (le_trans ht₀ (directed_path_bounded γ_dipath.1 _).1)
 
-end trans_aux₃
-
-end trans_aux
-
-/-
-Given `Dihomotopy f₀ f₁` and `Dihomotopy f₁ f₂`, we can define a `Dihomotopy f₀ f₂` by putting the
-first dihomotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
--/
+/-- Given `Dihomotopy f₀ f₁` and `Dihomotopy f₁ f₂`, we can define a `Dihomotopy f₀ f₂` by putting
+the first dihomotopy on `[0, 1/2]` and the second on `[1/2, 1]`. -/
 def trans {f₂ : D(X,Y)} (F : Dihomotopy f₀ f₁) (G : Dihomotopy f₁ f₂) : Dihomotopy f₀ f₂ := by
   set Fₕ := dihom_to_hom F
   set Gₕ := dihom_to_hom G
@@ -477,8 +453,6 @@ structure DihomotopyWith (f₀ f₁ : D(X,Y)) (P : D(X,Y) → Prop) extends Diho
 
 namespace DihomotopyWith
 
-section
-
 variable {f₀ f₁ : D(X,Y)} {P : D(X,Y) → Prop}
 
 instance instFunLike : FunLike (DihomotopyWith f₀ f₁ P) (I × X) Y where
@@ -500,9 +474,13 @@ theorem coeFn_injective : @Function.Injective (DihomotopyWith f₀ f₁ P) (I ×
 lemma ext {F G : DihomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G :=
 coeFn_injective <| funext h
 
+namespace Simps
+
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
-def Simps.apply (F : DihomotopyWith f₀ f₁ P) : I × X → Y := F
+def apply (F : DihomotopyWith f₀ f₁ P) : I × X → Y := F
+
+end Simps
 
 initialize_simps_projections DihomotopyWith (toDihomotopy_toDirectedMap_toContinuousMap_toFun
     → apply,
@@ -524,10 +502,6 @@ lemma coe_to_continuous_map (F : DihomotopyWith f₀ f₁ P) : ⇑F.toContinuous
 lemma coe_to_dihomotopy (F : DihomotopyWith f₀ f₁ P) : ⇑F.toDihomotopy = F := rfl
 
 lemma prop (F : DihomotopyWith f₀ f₁ P) (t : I) : P (F.toDihomotopy.curry t) := F.prop' t
-
-end
-
-variable {P : D(X,Y) → Prop}
 
 /-- Given a directed map `f`, and a proof `h : P f`, we can define a `DihomotopyWith f f P` by `F
 (t, x) = f x`
@@ -608,9 +582,7 @@ abbrev DihomotopyRel (f₀ f₁ : D(X,Y)) (S : Set X) :=
 
 namespace DihomotopyRel
 
-section
-
-variable {f₀ f₁ : D(X,Y)} {S : Set X}
+variable {f₀ f₁ f₂ : D(X,Y)} {S : Set X}
 
 lemma eq_fst (F : DihomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₀ x :=
   F.prop t x hx
@@ -620,10 +592,6 @@ lemma eq_snd (F : DihomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F 
 
 lemma fst_eq_snd (F : DihomotopyRel f₀ f₁ S) {x : X} (hx : x ∈ S) : f₀ x = f₁ x :=
   F.eq_fst 0 hx ▸ F.eq_snd 0 hx
-
-end
-
-variable {f₀ f₁ f₂ : D(X,Y)} {S : Set X}
 
 /-- Given a map `f : D(X,Y)` and a set `S`, we can define a `DihomotopyRel f f S` by setting
 `F (t, x) = f x` for all `t`. This is defined using `DihomotopyWith.refl`, but with the proof

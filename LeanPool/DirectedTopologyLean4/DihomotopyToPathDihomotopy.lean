@@ -34,6 +34,7 @@ namespace Dihomotopy
 
 variable {X : dTopCat} {x y : X} (γ : Dipath x y)
 
+/-- The directed map taking the pointwise minimum of the two coordinates on `I × I`. -/
 def MinDirected : D(I × I, I) where
   toFun := fun t => min t.1 t.2
   continuous_toFun := by
@@ -43,6 +44,7 @@ def MinDirected : D(I × I, I) where
   directed_toFun := fun t₀ t₁ γ ⟨h₁, h₂⟩ a b hab =>
     le_min (min_le_of_left_le (h₁ hab)) (min_le_of_right_le (h₂ hab))
 
+/-- The directed map taking the pointwise maximum of the two coordinates on `I × I`. -/
 def MaxDirected : D(I × I, I) where
   toFun := fun t => max t.1 t.2
   continuous_toFun := by
@@ -52,6 +54,8 @@ def MaxDirected : D(I × I, I) where
   directed_toFun := fun t₀ t₁ γ ⟨h₁, h₂⟩ a b hab =>
     max_le (le_max_of_le_left (h₁ hab)) (le_max_of_le_right (h₂ hab))
 
+/-- Dihomotopy from the constant path at the source to a dipath, given by
+`SourceToPath γ (s, t) = γ (min s t)`. -/
 def SourceToPath : Dihomotopy (Dipath.refl x).toDirectedMap γ.toDirectedMap where
   toDirectedMap := γ.toDirectedMap.comp MinDirected
   map_zero_left := fun t => by
@@ -79,6 +83,8 @@ lemma sourceToPath_range : Set.range (SourceToPath γ) = Set.range γ := by
     rw [←ht, sourceToPath_apply]
     exact congr_arg γ (min_self t)
 
+/-- Dihomotopy from a dipath to the constant path at the target, given by
+`PathToTarget γ (s, t) = γ (max s t)`. -/
 def PathToTarget : Dihomotopy γ.toDirectedMap (Dipath.refl y).toDirectedMap where
   toDirectedMap := γ.toDirectedMap.comp MaxDirected
   map_zero_left := fun t => by
@@ -113,6 +119,8 @@ namespace DihomToPathDihom
 
 variable {X : dTopCat} {f g : D(I,X)}
 
+/-- Reinterpret a dihomotopy between directed maps `f g : D(I, X)` as a dihomotopy between the
+associated dipaths `Dipath.of_directedMap f` and `Dipath.of_directedMap g`. -/
 def dihom_to_dihom_of_paths (F : Dihomotopy f g) :
     Dihomotopy (Dipath.of_directedMap f).toDirectedMap (Dipath.of_directedMap g).toDirectedMap where
   toDirectedMap := F.toDirectedMap

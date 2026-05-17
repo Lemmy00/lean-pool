@@ -36,6 +36,7 @@ namespace Dipath
 lemma directed (γ : Dipath x y) : DirectedMap.Directed γ.toContinuousMap :=
   fun _ _ _ φ_dipath => isDipath_reparam φ_dipath γ.dipath_toPath
 
+/-- Convert a dipath to its underlying directed map `D(I, X)`. -/
 def toDirectedMap (γ : Dipath x y) : D(I,X) where
   toFun := γ.toFun
   continuous_toFun := γ.continuous_toFun
@@ -61,6 +62,7 @@ protected lemma Dipath.ext : ∀ {γ₁ γ₂ : Dipath x y}, (γ₁ : I → X) =
 
 namespace Dipath
 
+/-- Promote a path with a proof of directedness into a dipath. -/
 def of_isDipath {γ : Path x y} (hγ : IsDipath γ) : Dipath x y := {
   toPath := γ,
   dipath_toPath := hγ,
@@ -89,15 +91,18 @@ protected lemma continuous : Continuous γ :=
 @[simp] protected lemma target : γ 1 = y :=
   γ.target'
 
+namespace simps
+
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
-def simps.apply : I → X :=
+def apply : I → X :=
   γ
+
+end simps
 
 initialize_simps_projections Dipath
   (toPath_toContinuousMap_toFun → simps.apply, -toPath_toContinuousMap)
 
-@[simp]
 lemma coe_toContinuousMap : ⇑γ.toContinuousMap = γ := rfl
 @[simp]
 lemma coe_toDirectedMap : ⇑γ.toDirectedMap = γ := rfl
@@ -111,7 +116,7 @@ instance hasUncurryDipath {X α : Type*} [DirectedSpace X] {x y : α → X} :
 /-! ### Properites about the range of dipaths -/
 
 @[simp] lemma coe_range (γ : Dipath x y) : range γ = range γ.toPath := rfl
-@[simp] lemma range_eq_image (γ : Dipath x y) : range γ = γ.extend '' I :=
+lemma range_eq_image (γ : Dipath x y) : range γ = γ.extend '' I :=
   Set.ext (fun z =>
     ⟨fun ⟨t, ht⟩ => ⟨t, t.2, by
       simp only [Subtype.coe_prop, Path.extend_apply, Subtype.coe_eta]
@@ -120,7 +125,7 @@ instance hasUncurryDipath {X α : Type*} [DirectedSpace X] {x y : α → X} :
       rw [ht.symm, Path.extend_apply γ.toPath t_mem_I]
       rfl⟩⟩)
 
-@[simp] lemma range_eq_image_I (γ : Dipath x y) : range γ = γ '' Icc 0 1 :=
+lemma range_eq_image_I (γ : Dipath x y) : range γ = γ '' Icc 0 1 :=
   Set.ext (fun _ =>
     ⟨fun ⟨t, ht⟩ => ⟨t, t.2, ht⟩,
     fun ⟨t, t_mem_I, ht⟩ => ⟨⟨t, t_mem_I⟩, ht⟩⟩)
@@ -147,7 +152,7 @@ def refl (x : X) : Dipath x x where
   toPath := Path.refl x
   dipath_toPath := isDipath_constant x
 
-@[simp] lemma refl_range {a : X} : range (Dipath.refl a) = {a} := Path.refl_range
+lemma refl_range {a : X} : range (Dipath.refl a) = {a} := Path.refl_range
 
 /-! ### Concatenation of dipaths -/
 
@@ -236,6 +241,7 @@ lemma dipath_of_directed_map_of_to_dimap (γ : Dipath x y) :
 
 /-! ### Reparametrising a path -/
 
+/-- Reparametrize a dipath by precomposing it with a directed self-map of the unit interval. -/
 def subparam (γ : Dipath x y) (f : D(I,I)) : Dipath (γ (f 0)) (γ (f 1)) :=
 {
   toFun := γ ∘ f

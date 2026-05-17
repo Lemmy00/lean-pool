@@ -23,7 +23,10 @@ namespace Dipath
 
 variable {X : dTopCat} {X₀ X₁ : Set X}
 
-def covered {x₀ x₁ : X} (_ : X₀ ∪ X₁ = univ) (γ : Dipath x₀ x₁) : Prop :=
+/-- A dipath `γ` is *covered* by the cover `X₀ ∪ X₁ = univ` when its range lies inside one of
+the two sets. -/
+def covered {x₀ x₁ : X} (hX : X₀ ∪ X₁ = univ) (γ : Dipath x₀ x₁) : Prop :=
+  let _ : X₀ ∪ X₁ = univ := hX
   (range γ ⊆ X₀) ∨ (range γ ⊆ X₁)
 
 namespace covered

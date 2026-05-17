@@ -71,12 +71,16 @@ lemma directed_induced {α : Type u} {β : Type v} [TopologicalSpace α] [hβ : 
   (f : C(α, β)) :
   @DirectedMap.Directed α β (DirectedSpace.Induced f.continuous_toFun) hβ f := fun _ _ _ hγ => hγ
 
+/-- The inclusion of a subtype with the induced directed structure into the ambient space
+is a directed map. -/
 def DirectedSubtypeInclusion {α : Type u} (p : α → Prop) [DirectedSpace α] :
     D(Subtype p, α) where
   toFun := fun x => ↑x
   continuous_toFun := continuous_induced_dom
   directed_toFun := directed_induced _
 
+/-- The inclusion of one subset into another, when both carry the induced directed structure,
+is a directed map. -/
 def DirectedSubsetInclusion {α : Type u} [t : DirectedSpace α] {X Y : Set α} (h : X ⊆ Y) : D(X,Y)
     where
   toFun := Set.inclusion h

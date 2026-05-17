@@ -52,6 +52,7 @@ noncomputable section
 lemma half_mem_I : (2⁻¹ : ℝ) ∈ I :=
 ⟨inv_nonneg.mpr zero_le_two, inv_le_one_of_one_le₀ one_le_two⟩
 
+/-- The midpoint `1/2` of the unit interval. -/
 abbrev half_I : I := ⟨(2⁻¹ : ℝ), half_mem_I⟩
 
 lemma has_T_half {t₀ t₁ : I} (γ : Path t₀ t₁) (ht₀ : ↑t₀ < (2⁻¹ : ℝ)) (ht₁ : ↑t₁ > (2⁻¹ : ℝ)) :

@@ -34,8 +34,10 @@ notation "D("α","β")" => DirectedMap α β
 
 section
 
+/-- Type class for the bundled directed maps from `α` to `β`. -/
 class DirectedMapClass (F : Type*) (α β : outParam <| Type*) [DirectedSpace α] [DirectedSpace β]
   [FunLike F α β] : Prop extends ContinuousMapClass F α β where
+  /-- Each element of the class is directed when viewed as a continuous map. -/
   map_directed (f : F) : DirectedMap.Directed (f : C(α, β))
 
 end
@@ -46,6 +48,7 @@ section DirectedMapClass
 
 variable {F α β : Type*} [DirectedSpace α] [DirectedSpace β] [FunLike F α β]
     [hF : DirectedMapClass F α β]
+/-- Coerce a member of a `DirectedMapClass` to the bundled directed map type `D(α, β)`. -/
 @[coe] def toDirectedMap (f : F) : D(α,β) := ⟨f, map_directed f⟩
 instance : CoeTC F D(α,β) := ⟨toDirectedMap⟩
 
