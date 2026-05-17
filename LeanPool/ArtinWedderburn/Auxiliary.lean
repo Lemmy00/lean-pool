@@ -22,10 +22,14 @@ namespace LeanPool.ArtinWedderburn
 
 variable {R : Type*} [Ring R]
 
+/-- `S` is a division subring with identity `e` when it contains a nonzero element
+and every nonzero member has a left inverse inside `S` equal to `e`. -/
 def IsDivisionSubring (S : NonUnitalSubring R) (e : R) : Prop :=
   (∃ x : R, x ∈ S ∧ x ≠ 0) ∧
     (∀ x : R, x ∈ S → x ≠ 0 → ∃ y : R, y ∈ S ∧ y * x = e)
 
+/-- A ring `R` is a division ring when it is nontrivial and every nonzero element has
+a two-sided multiplicative inverse. -/
 def IsDivisionRing (R : Type*) [Ring R] : Prop :=
   (∃ x : R, x ≠ 0) ∧ (∀ x : R, x ≠ 0 → ∃ y : R, y * x = 1 ∧ x * y = 1)
 
@@ -46,6 +50,7 @@ theorem left_inv_implies_divring [Nontrivial R]
   rw [x_eq_z]
   exact hz
 
+/-- Promote a proof of `IsDivisionRing R` to a Mathlib `DivisionRing R` instance. -/
 @[reducible]
 noncomputable
 def IsDivisionRing_to_DivisionRing (div : IsDivisionRing R) : DivisionRing R := by

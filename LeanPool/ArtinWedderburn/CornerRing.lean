@@ -29,6 +29,7 @@ namespace LeanPool.ArtinWedderburn
 variable {R : Type*} [Ring R]
 variable {e : R}
 
+/-- The carrier set of the corner ring `eRe`, defined as `{e * x * e | x : R}`. -/
 def CornerRingSet (e : R) : Set R := both_mul e e
 
 -- an element x of R is in the corner ring if and only if x = e * x * e
@@ -121,6 +122,7 @@ theorem right_unit_mul (idem_e : IsIdempotentElem e) (h : x ∈ CornerSubringNon
 
 open NonUnitalSubringClass
 
+/-- The non-unital ring instance on the corner subring `eRe`. -/
 abbrev CornerSubringIsNonUNitalRing := toNonUnitalRing (CornerSubringNonUnital e)
 
 -- inclusion homomorphism of the corner subring
@@ -165,6 +167,7 @@ theorem both_mul_one_one_eq_R : both_mul (1 : R) 1 = ⊤ := by
     noncomm_ring
 
 -- if a nonunital subring's carrier is R it is isomorphic to R
+/-- A non-unital subring whose carrier is all of `R` is ring-isomorphic to `R`. -/
 def top_subring_equiv_ring (S : NonUnitalSubring R) (h : S.carrier = ⊤) : S ≃+* R :=
   { toFun := fun a => a,
     invFun := fun a => ⟨a, by
@@ -176,6 +179,7 @@ def top_subring_equiv_ring (S : NonUnitalSubring R) (h : S.carrier = ⊤) : S �
     map_add' := by intro a b; simp }
 
 -- 1 R 1 is isomorphic to R
+/-- The corner subring of `1` is ring-isomorphic to the ambient ring `R`. -/
 def iso_corner_one :
     CornerSubring ((IsIdempotentElem.one : IsIdempotentElem (1 : R))) ≃+* R := by
   apply top_subring_equiv_ring
@@ -214,6 +218,8 @@ instance CornerRingIsRing (idem_e : IsIdempotentElem e) : Ring (CornerSubring id
   non_unital_w_e_is_ring 1 (is_left_unit idem_e) (is_right_unit idem_e)
 
 -- an element in the cornersubring of f (where f is in eRe) can be lifted to eRe
+/-- Lift an element of the corner subring `fRf` (where `f` lies in `eRe`) to an element of
+the outer corner subring `eRe`. -/
 def coercion_to_eRe (e f : R) (idem_e : IsIdempotentElem e) (idem_f : IsIdempotentElem f)
     (f_mem : f ∈ CornerSubring idem_e) (x : CornerSubring idem_f) : CornerSubring idem_e := by
   refine ⟨x.val, ?_⟩
@@ -240,6 +246,8 @@ lemma corner_ring_division_e_nonzero
   obtain ⟨⟨x, hx⟩, _⟩ := heRe
   exact hx (h_zero x)
 
+/-- If `e = f`, then the corner subrings `eRe` and `fRf` are ring-isomorphic via the
+identity on carriers. -/
 def eq_el_iso_corner (e f : R) (idem_e : IsIdempotentElem e) (idem_f : IsIdempotentElem f)
     (e_eq_f : e = f) : (CornerSubring idem_e) ≃+* (CornerSubring idem_f) :=
   { toFun := fun x => ⟨x.val, by
@@ -255,6 +263,8 @@ def eq_el_iso_corner (e f : R) (idem_e : IsIdempotentElem e) (idem_f : IsIdempot
     map_mul' := fun _ _ => rfl,
     map_add' := fun _ _ => rfl }
 
+/-- Equal idempotents induce a ring isomorphism between the matrix rings over their
+corner subrings. -/
 def equal_el_iso_matrix_rings' (e f : R) (idem_e : IsIdempotentElem e) (idem_f : IsIdempotentElem f)
     (e_eq_f : e = f) (n : ℕ) :
     Matrix (Fin n) (Fin n) (CornerSubring idem_e) ≃+*
@@ -262,6 +272,8 @@ def equal_el_iso_matrix_rings' (e f : R) (idem_e : IsIdempotentElem e) (idem_f :
   RingEquiv.mapMatrix (eq_el_iso_corner e f idem_e idem_f e_eq_f)
 
 -- same element produce same Matrix rings over corner subrings
+/-- Equal idempotents induce a ring isomorphism between matrix rings over their non-unital
+corner subrings. -/
 def equal_el_iso_matrix_rings (e f : R) (idem_e : IsIdempotentElem e) (idem_f : IsIdempotentElem f)
     (e_eq_f : e = f) (n : ℕ) :
     Matrix (Fin n) (Fin n) (CornerSubringNonUnital e) ≃+*
@@ -277,6 +289,8 @@ instance : CoeOut (Set (CornerSubring idem_e)) (Set R) :=
   { coe := fun X => Set.image Subtype.val X }
 
 -- I left ideal in eRe -> RI is a left ideal in R
+/-- Lift a (left) ideal of the corner subring `eRe` to a (left) ideal of `R` by taking the
+`R`-span of its carrier. -/
 def ideal_lift (I : Ideal (CornerSubring idem_e)) : Ideal R := Ideal.span (I.carrier)
 
 -- coercion from Ideals of CornerSubrings to Ideals of R
@@ -290,9 +304,12 @@ theorem lift_monotonicity (I J : Ideal (CornerSubring idem_e)) :
   exact Set.image_mono I_leq_J
 
 -- pushing an element into eRe: x |-> e x e
+/-- Push an element `x : R` into the corner subring `eRe` via `x ↦ e * x * e`. -/
 def el_push (x : R) : CornerSubring idem_e := ⟨e * x * e, e_x_e_in_corner idem_e x⟩
 
 -- A left ideal I can be pushed down to eRe by eIe
+/-- Push a (left) ideal of `R` down to a (left) ideal of `eRe` by taking the elementwise
+image under `el_push`. -/
 def ideal_push (idem_e : IsIdempotentElem e) (J : Ideal R) : Ideal (CornerSubring idem_e) where
   carrier := {el_push idem_e x | x ∈ J}
   zero_mem' := by

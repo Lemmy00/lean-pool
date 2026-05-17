@@ -27,8 +27,10 @@ variable {R : Type*} [Ring R]
 variable (I J : Ideal R)
 variable {e f : R}
 
+/-- Two elements are orthogonal when their products in both orders vanish. -/
 def IsOrthogonal (e f : R) : Prop := e * f = 0 ∧ f * e = 0
 
+/-- `e` and `f` are orthogonal idempotents when each is idempotent and they are orthogonal. -/
 def AreOrthogonalIdempotents (e f : R) : Prop :=
   IsIdempotentElem e ∧ IsIdempotentElem f ∧ IsOrthogonal e f
 
@@ -86,12 +88,16 @@ theorem e_span_larger_e_sub_f (e f : R) (h : AreOrthogonalIdempotents (1 - e) f)
   simp only [sub_sub_cancel] at h'
   exact h'
 
+/-- `R` has a system of `n × n` matrix units when there exist `n^2` elements `es i j`
+summing to `1` on the diagonal and multiplying like matrix units. -/
 def HasMatrixUnits (R : Type*) [Ring R] (n : ℕ) : Prop :=
   ∃ (es : Fin n → Fin n → R), (∑ i, es i i = 1) ∧
     (∀ i j k l, es i j * es k l = (if j = k then es i l else 0))
 
+/-- Kronecker delta valued in `R`: equal to `1` when `i = j` and `0` otherwise. -/
 def kronecker_delta (n : ℕ) (i j : Fin n) : R := if i = j then 1 else 0
 
+/-- Two elements are pairwise orthogonal when both of their products vanish. -/
 def PairwiseOrthogonal (a b : R) : Prop := a * b = 0 ∧ b * a = 0
 
 -- Lemma 2.18
@@ -198,8 +204,12 @@ lemma both_mul_mul :
   rw [ha, hb]
   noncomm_ring
 
+/-- Witnesses for the "nice idempotents" property: elements `u ∈ eRf`, `v ∈ fRe`
+with `u * v = e` and `v * u = f`. -/
 structure two_nice_idempotents (e f : R) where
+  /-- The element of `eRf` whose product with `v` recovers `e`. -/
   u : R
+  /-- The element of `fRe` whose product with `u` recovers `f`. -/
   v : R
   u_mem : u ∈ both_mul e f
   v_mem : v ∈ both_mul f e
@@ -298,6 +308,7 @@ theorem lemma_2_19 (h : IsPrimeRing R) (e f : R)
         _ = 0 := by rw [v_eq_zero]; noncomm_ring
     exact he e_eq_zero
 
+/-- Packaging of `lemma_2_19` as a `two_nice_idempotents` structure. -/
 noncomputable
 def lemma_2_19' (h : IsPrimeRing R) (e f : R)
     (idem_e : IsIdempotentElem e) (idem_f : IsIdempotentElem f)
@@ -412,17 +423,22 @@ theorem prime_and_artinian_esists_idem_corner_div [Nontrivial R]
     minimal_ideal_I_sq_nonzero_exists_idem_and_div I hI I_sq_nonzero
   exact ⟨e, henz, he_idem, hdiv⟩
 
+/-- A finite system of pairwise orthogonal idempotents of `R` summing to `1`. -/
 structure OrtIdem (R : Type*) [Ring R] where
+  /-- Number of idempotents in the system. -/
   n : ℕ
+  /-- The idempotents indexed by `Fin n`. -/
   f : Fin n → R
   h : (i : Fin n) → IsIdempotentElem (f i)
   sum_one : ∑ i, f i = 1
   orthogonal : ∀ i j, i ≠ j → IsOrthogonal (f i) (f j)
 
+/-- An `OrtIdem` whose corner rings are all division rings. -/
 structure OrtIdemDiv (R : Type*) [Ring R] extends OrtIdem R where
   div : ∀ i, IsDivisionRing (CornerSubring (h i))
 
 -- A ring, isomorphic to OrtIdem ring, is itself OrtIdem
+/-- Transport an `OrtIdem R` along a ring isomorphism `φ : R ≃+* R'`. -/
 def isomorphic_OrtIdem (R' : Type*) [Ring R'] (φ : R ≃+* R') (hoi : OrtIdem R) : OrtIdem R' :=
   { n := hoi.n,
     f := fun i => φ (hoi.f i),
@@ -437,6 +453,8 @@ def isomorphic_OrtIdem (R' : Type*) [Ring R'] (φ : R ≃+* R') (hoi : OrtIdem R
       exact hoi.orthogonal i j hij }
 
 -- canonical isomorphism between corner rings
+/-- A ring isomorphism `φ : R ≃+* R'` induces a ring isomorphism between the corner rings
+of an idempotent and of its image under `φ`. -/
 def ring_iso_to_corner_iso (R' : Type*) [Ring R'] (φ : R ≃+* R') (e : R)
     (idem_e : IsIdempotentElem e) :
     CornerSubring idem_e ≃+* CornerSubring (iso_idem_to_idem R' φ e idem_e) :=
@@ -463,6 +481,7 @@ def ring_iso_to_corner_iso (R' : Type*) [Ring R'] (φ : R ≃+* R') (e : R)
     map_add' := by intro x y; simp }
 
 -- A ring, isomorphic to OrtIdemDiv ring, is itself OrtIdemDiv
+/-- Transport an `OrtIdemDiv R` along a ring isomorphism `φ : R ≃+* R'`. -/
 def isomorphic_OrtIdemDiv {R' : Type*} [Ring R'] (φ : R ≃+* R') (hoi : OrtIdemDiv R) :
     OrtIdemDiv R' :=
   { toOrtIdem := isomorphic_OrtIdem R' φ hoi.toOrtIdem,

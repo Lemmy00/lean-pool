@@ -24,7 +24,9 @@ isomorphism `R ≃+* Matrix (Fin n) (Fin n) (e₀₀ R e₀₀)`.
 namespace LeanPool.ArtinWedderburn
 
 -- first we introduce the notion of rings with abstract matrix units
+/-- Class packaging a system of `n × n` matrix units `eᵢⱼ` in a ring `R`. -/
 class hasMatrixUnits (R : Type*) [Ring R] (n : ℕ) where
+  /-- The matrix units indexed by `Fin n × Fin n`. -/
   es : Fin n → Fin n → R
   diag_sum_eq_one : ∑ i, es i i = 1
   mul_ij_kl_eq_kron_delta_jk_mul_es_il :
@@ -133,6 +135,7 @@ variable {n : ℕ} {hn : 0 < n} [mu : hasMatrixUnits R n]
 theorem e00_idem : IsIdempotentElem (mu.es ⟨0, hn⟩ ⟨0, hn⟩) :=
   mu.mul_ij_kl_eq_kron_delta_jk_mul_es_il ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩
 
+/-- The corner ring of the `(0, 0)` matrix unit. -/
 abbrev e00_cornerring := CornerSubring (@e00_idem R _ n hn mu)
 
 -- some trivial rewriting lemmas
@@ -153,15 +156,18 @@ lemma ei0e0j_eq_eij (i j : Fin n) : mu.es i ⟨0, hn⟩ * mu.es ⟨0, hn⟩ j = 
   simp only [↓reduceIte]
 
 -- the projection of a's "i, j"-th element according to the (abstract) matrix units
+/-- The `(i, j)`-component `e₀ᵢ * a * eⱼ₀` of `a : R` in the corner ring of `e₀₀`. -/
 def ij_corner (i j : Fin n) (a : R) : @CornerSubring R _ _ (@e00_idem R _ n hn mu) :=
   ⟨es ⟨0, hn⟩ i * a * es j ⟨0, hn⟩, by
     rw [subring_mem_idem, ← mul_assoc, ← mul_assoc, e00e0i_eq_e_0i,
       mul_assoc, mul_assoc, mul_assoc, ei0e00_eq_e_ei0]⟩
 
 -- abbreviations for the matrix ring over the corner ring of the first matrix unit
+/-- The matrix ring `Matrix (Fin n) (Fin n) (e₀₀ R e₀₀)`. -/
 abbrev matrix_corner := Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu)
 
 -- define the map from R to matrix ring by a ↦ e_{0i}ae_{j0} for all i, j
+/-- The map sending `a : R` to the matrix with entries `e₀ᵢ * a * eⱼ₀`. -/
 def ring_to_matrix_ring (n : ℕ) (hn : 0 < n) (mu : hasMatrixUnits R n) :
     R → Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu) :=
   fun a => fun i j => (ij_corner R i j a)
@@ -277,6 +283,7 @@ theorem corner_matrix_zero_crit (a : R) :
   exact h''
 
 -- the actual definition of the homomorphism
+/-- The ring homomorphism from `R` to the matrix ring over its `e₀₀` corner ring. -/
 def ring_to_matrix_ring_hom :
     R →+* Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu) :=
   { toFun := ring_to_matrix_ring R n hn mu,
@@ -301,6 +308,8 @@ def ring_to_matrix_ring_hom :
       rfl }
 
 -- define the reverse map from matrix ring to R
+/-- Reassemble a ring element from its matrix of corner components by summing
+`eᵢ₀ * M i j * e₀ⱼ`. -/
 def matrix_to_ring (n : ℕ) (hn : 0 < n) (mu : hasMatrixUnits R n) :
     Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu) → R :=
   fun M => ∑ i, ∑ j, (mu.es i ⟨0, hn⟩) * M i j * (mu.es ⟨0, hn⟩ j)
@@ -352,6 +361,8 @@ lemma unit_e00 (a : @e00_cornerring R _ n hn mu) :
 
 -- the main statement of this file: if a ring has matrix units then it is isomorphic to the
 -- matrix ring over the corner ring of the first matrix unit
+/-- A ring with matrix units `eᵢⱼ` is ring-isomorphic to the matrix ring over the corner
+ring of `e₀₀`. -/
 noncomputable
 def ring_to_matrix_iso [mu : hasMatrixUnits R n] :
     R ≃+* Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu) := by
@@ -392,11 +403,15 @@ def ring_to_matrix_iso [mu : hasMatrixUnits R n] :
 -- Lemma 2.17
 -- hypothesis: R is a ring with matrix units
 -- conclusion: R is isomorphic to matrix ring over ring e_11Re_11
+/-- Lemma 2.17: a ring with matrix units is ring-isomorphic to the matrix ring over the
+corner ring of `e₀₀`. -/
 noncomputable
 def ring_with_matrix_units_isomorphic_to_matrix_ring (n : ℕ) (hn : 0 < n)
     (mu : hasMatrixUnits R n) :
     R ≃+* Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu) := ring_to_matrix_iso R
 
+/-- Convert a proof of `HasMatrixUnits` (a `Prop`) into a `hasMatrixUnits` instance
+(a `class`) via choice. -/
 @[reducible]
 noncomputable
 def HasMatrixUnits_to_hasMatrixUnits (mu : HasMatrixUnits R n) : hasMatrixUnits R n := by

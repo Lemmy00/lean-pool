@@ -28,6 +28,7 @@ variable (is_right_unit : ∀ x : R, x * e = x)
 
 -- if we have a nonunital ring where one element is the left and right unit simultaneously
 -- then it is a regular ring
+/-- Promote a non-unital ring `R` with a two-sided identity `e` to a unital `Ring R`. -/
 @[reducible]
 def non_unital_w_e_is_ring : Ring R :=
   @Ring.ofMinimalAxioms R (by exact inferInstance) (by exact inferInstance) (by exact inferInstance)

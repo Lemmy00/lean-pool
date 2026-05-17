@@ -21,8 +21,10 @@ variable {R : Type*} [Ring R]
 variable (I J : Ideal R)
 
 -- the set Ia
+/-- The set `I * a = {x * a | x ∈ I}` as a subset of `R`. -/
 def sub_ideal_set (I : Ideal R) (a : R) : Set R := {r | ∃ x ∈ I, r = x * a}
 
+/-- The left ideal `I * a` consisting of elements `x * a` for `x ∈ I`. -/
 def sub_ideal (I : Ideal R) (a : R) : Ideal R :=
   { carrier := sub_ideal_set I a,
     zero_mem' := by
@@ -129,6 +131,7 @@ theorem minimal_ideal_I_sq_nonzero_exists_els (hI : IsAtom I) (hII : I * I ≠ �
   obtain ⟨e, ⟨he, hey⟩⟩ := hy
   exact ⟨e, he, hey⟩
 
+/-- The left ideal of elements in `I` that annihilate `a` on the right. -/
 def elem_ann (I : Ideal R) (a : R) : Ideal R :=
   { carrier := {x | x ∈ I ∧ x * a = 0},
     zero_mem' := by simp,
