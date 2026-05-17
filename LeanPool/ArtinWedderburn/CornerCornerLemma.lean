@@ -43,7 +43,7 @@ def non_unital_subring_eq
   have h''' (b : B) : ⟨b.val, h'' b⟩ ∈ A := by
     have hx : b.val ∈ Subtype.val '' A.carrier := by rw [← h']; exact b.property
     obtain ⟨w, ⟨ca, weqb⟩⟩ := hx
-    simp [← weqb]
+    simp only [← weqb, Subtype.coe_eta]
     exact ca
   exact
     { toFun := fun a => ⟨a.val, by rw [h']; simp⟩
@@ -52,7 +52,7 @@ def non_unital_subring_eq
       right_inv := by intro b; simp,
       map_mul' := by
         intro a b
-        simp
+        simp only [NonUnitalSubring.val_mul, MulMemClass.mk_mul_mk, Subtype.mk.injEq]
         rw [hs a b]
       map_add' := by
         simp [ha] }
@@ -76,13 +76,13 @@ theorem double_corner_set_eq :
   · intro hx
     obtain ⟨y, ⟨hy, rfl⟩⟩ := hx
     obtain ⟨z, ⟨hz, rfl⟩⟩ := hy
-    simp
+    simp only [NonUnitalSubring.val_mul]
     exact ⟨z, rfl⟩
   · intro hx
     obtain ⟨y, ⟨hy, rfl⟩⟩ := hx
     let a : CornerSubring idem_e := ⟨e * y * e, ⟨y, rfl⟩⟩
     refine ⟨f * a * f, ⟨a, rfl⟩, ?_⟩
-    simp
+    simp only [NonUnitalSubring.val_mul]
     have h1f : f = 1 * f := by simp
     have heff : e * (f : R) = f := by nth_rewrite 2 [h1f]; rfl
     have hf1 : f = f * 1 := by simp

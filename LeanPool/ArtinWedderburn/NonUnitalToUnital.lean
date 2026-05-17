@@ -18,7 +18,10 @@ namespace LeanPool.ArtinWedderburn
 variable {R : Type*} [NonUnitalRing R]
 variable (e : R)
 
-instance e_one : One R := ⟨e⟩
+/-- Designate `e` as the `1` element when building a unital `Ring` structure
+on `R` via `Ring.ofMinimalAxioms`. -/
+@[reducible]
+def e_one : One R := ⟨e⟩
 
 variable (is_left_unit : ∀ x : R, e * x = x)
 variable (is_right_unit : ∀ x : R, x * e = x)

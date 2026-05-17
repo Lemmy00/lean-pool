@@ -45,8 +45,9 @@ theorem corner_ring_set_mem {x : R} (idem_e : IsIdempotentElem e) :
 theorem x_in_corner_x_eq_e_y_e {x : R} (h : x ∈ CornerRingSet e) :
     ∃ (y : R), x = e * y * e := h
 
--- the nonunital corner subring definition
-instance CornerSubringNonUnital (e : R) : NonUnitalSubring R where
+/-- The nonunital corner subring `eRe` as a `NonUnitalSubring`. -/
+@[reducible]
+def CornerSubringNonUnital (e : R) : NonUnitalSubring R where
   carrier := both_mul e e
   zero_mem' := ⟨0, by simp⟩
   add_mem' := by
@@ -76,7 +77,13 @@ theorem eq_carrier_eq_corner (x y : R) (h : both_mul x x = both_mul y y) :
   apply NonUnitalSubring.ext
   simp only [← el_in_corner_ring, h, implies_true]
 
-def CornerSubring (_idem_e : IsIdempotentElem e) := CornerSubringNonUnital e
+/-- The corner subring `eRe` packaged as a `NonUnitalSubring`, tagged with the
+proof that `e` is idempotent. The proof argument lets later constructions
+attach the unital ring structure on `eRe`. -/
+@[reducible]
+def CornerSubring (idem_e : IsIdempotentElem e) : NonUnitalSubring R :=
+  have : IsIdempotentElem e := idem_e
+  CornerSubringNonUnital e
 
 theorem CornerSubringEq (idem_e idem_e' : IsIdempotentElem e) :
     CornerSubring idem_e = CornerSubring idem_e' := rfl

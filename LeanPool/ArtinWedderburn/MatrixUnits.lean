@@ -130,7 +130,7 @@ theorem lemma_2_20' (prime : IsPrimeRing R) (ort_idem : OrtIdemDiv R) (n_pos : 0
 variable {n : ℕ} {hn : 0 < n} [mu : hasMatrixUnits R n]
 
 -- abbreviations for the corner ring of the first matrix unit
-abbrev e00_idem : IsIdempotentElem (mu.es ⟨0, hn⟩ ⟨0, hn⟩) :=
+theorem e00_idem : IsIdempotentElem (mu.es ⟨0, hn⟩ ⟨0, hn⟩) :=
   mu.mul_ij_kl_eq_kron_delta_jk_mul_es_il ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩
 
 abbrev e00_cornerring := CornerSubring (@e00_idem R _ n hn mu)
@@ -172,7 +172,7 @@ theorem ring_to_matrix_ring_additive (a b : R) :
       (ring_to_matrix_ring R n hn mu) a + (ring_to_matrix_ring R n hn mu) b := by
   ext i j
   unfold ring_to_matrix_ring
-  simp [ij_corner]
+  simp only [ij_corner, Matrix.add_apply, NonUnitalSubring.val_add]
   noncomm_ring
 
 theorem matrixunit_iz_zi_eq_ii :
@@ -203,7 +203,7 @@ theorem ring_to_matrix_ring_multiplicative (a b : R) :
   have hab : a * b = a * 1 * b := by simp
   rw [hab]
   rw [one_eq_sum_es_00e_00e R n hn mu]
-  simp [Matrix.mul_apply]
+  simp only [Matrix.mul_apply, SetLike.coe_eq_coe]
   unfold ij_corner
   apply Subtype.ext
   simp only [MulMemClass.mk_mul_mk]
@@ -227,10 +227,11 @@ theorem ring_to_matrix_ring_multiplicative (a b : R) :
   rw [_lift_sum]
 
 -- auxiliary lemma to rewrite matrix 1
-def matrix_one : (1 : Matrix (Fin n) (Fin n) R) = (fun i j => if i = j then 1 else 0) := rfl
+theorem matrix_one (S : Type*) [One S] [Zero S] [DecidableEq (Fin n)] :
+    (1 : Matrix (Fin n) (Fin n) S) = (fun i j => if i = j then 1 else 0) := rfl
 
 -- a criterion that element is 0 if all its matrix elements are 0
-def corner_matrix_zero_equiv (a : R) :
+theorem corner_matrix_zero_equiv (a : R) :
     (∀ (i j : Fin n), (es i i) * a * (es j j) = 0) ↔ a = 0 := by
   constructor
   · intro hij
@@ -255,7 +256,7 @@ def corner_matrix_zero_equiv (a : R) :
     simp only [mul_zero, zero_mul, implies_true]
 
 -- same as previous but in a more applicable form
-def corner_matrix_zero_crit (a : R) :
+theorem corner_matrix_zero_crit (a : R) :
     (∀ (i j : Fin n), @ij_corner R _ n hn mu i j a = 0) → a = 0 := by
   rw [← (@corner_matrix_zero_equiv R _ n)]
   intro h
@@ -272,7 +273,7 @@ def corner_matrix_zero_crit (a : R) :
     repeat rw [mul_assoc]
   simp only [mu.mul_ij_kl_eq_kron_delta_jk_mul_es_il i ⟨0, hn⟩ ⟨0, hn⟩ i] at h''
   simp only [mu.mul_ij_kl_eq_kron_delta_jk_mul_es_il j ⟨0, hn⟩ ⟨0, hn⟩ j] at h''
-  simp at h''
+  simp only [↓reduceIte] at h''
   exact h''
 
 -- the actual definition of the homomorphism
@@ -360,9 +361,9 @@ def ring_to_matrix_iso [mu : hasMatrixUnits R n] :
     intro a
     simp only [ring_to_matrix_ring_hom]
     unfold ring_to_matrix_ring
-    simp
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     intro h
-    apply (@corner_matrix_zero_crit R _ n)
+    apply @corner_matrix_zero_crit R _ n hn mu
     intro i j
     have fn_lemma {α β} {f g : α → β} (h : f = g) (a : α) : f a = g a := by rw [h]
     have h := fn_lemma h i
@@ -370,12 +371,13 @@ def ring_to_matrix_iso [mu : hasMatrixUnits R n] :
   · intro A
     let a : R := ∑ i, ∑ j, es i ⟨0, hn⟩ * ((A i j : R) * es ⟨0, hn⟩ j)
     refine ⟨a, ?_⟩
-    simp [ring_to_matrix_ring_hom]
+    simp only [ring_to_matrix_ring_hom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     unfold ring_to_matrix_ring
     ext i j
     unfold ij_corner
     simp only [a]
-    have h : (es ⟨0, hn⟩ i * ∑ i : Fin n, ∑ j : Fin n, es i ⟨0, hn⟩ * ((A i j : R) * es ⟨0, hn⟩ j)) =
+    have h : (es ⟨0, hn⟩ i *
+          ∑ i : Fin n, ∑ j : Fin n, es i ⟨0, hn⟩ * ((A i j : R) * es ⟨0, hn⟩ j)) =
         (es ⟨0, hn⟩ i * ∑ i : Fin n, es i ⟨0, hn⟩ * ∑ j : Fin n,
             ((A i j : R) * es ⟨0, hn⟩ j)) := by
       rw [Finset.sum_congr]
@@ -395,6 +397,7 @@ def ring_with_matrix_units_isomorphic_to_matrix_ring (n : ℕ) (hn : 0 < n)
     (mu : hasMatrixUnits R n) :
     R ≃+* Matrix (Fin n) (Fin n) (@e00_cornerring R _ n hn mu) := ring_to_matrix_iso R
 
+@[reducible]
 noncomputable
 def HasMatrixUnits_to_hasMatrixUnits (mu : HasMatrixUnits R n) : hasMatrixUnits R n := by
   let es := Classical.choose mu

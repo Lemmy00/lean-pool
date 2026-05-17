@@ -444,3 +444,28 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: artin-wedderburn
+    title: Artin-Wedderburn Theorem
+    summary: Formalizes the Artin-Wedderburn theorem for prime and simple Artinian rings.
+    branch: ring theory
+    entry_module: LeanPool.ArtinWedderburn
+    authors:
+      - Matevž Miščič
+      - Maša Žaucer
+      - Job Petrovčič
+    source:
+      url: https://github.com/JobPetrovcic/ArtinWedderburn
+      github_repo: JobPetrovcic/ArtinWedderburn
+    status: verified
+    main_declarations:
+      - LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
+    main_results:
+      - declaration: LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
+        informal: A nontrivial prime Artinian ring is isomorphic to a matrix ring over a division ring.
+    tags:
+      - ring-theory
+      - noncommutative-algebra
+      - artinian-rings
+    msc:
+      - "16K20"
+      - "16P20"

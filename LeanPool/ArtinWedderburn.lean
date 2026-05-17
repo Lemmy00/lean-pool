@@ -23,7 +23,7 @@ import LeanPool.ArtinWedderburn.ArtinWedderburnTheorem
 Source: url:https://github.com/JobPetrovcic/ArtinWedderburn
 Authors: Matevž Miščič, Maša Žaucer, Job Petrovčič
 Status: verified
-Main declarations: `LeanPool.ArtinWedderburn.ArtinWedderburnForPrime`, `LeanPool.ArtinWedderburn.ArtinWedderburnForSimple`
+Main declarations: `LeanPool.ArtinWedderburn.ArtinWedderburnForPrime`
 Tags: ring-theory, noncommutative-algebra, artinian-rings
 MSC: 16K20, 16P20
 -/
