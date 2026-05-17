@@ -608,18 +608,19 @@ lemma mapsTo_Icc_image (hC : IsChain (· ≤ ·) C) {a b c d n : ℕ}
   simp only [coe_image, coe_Icc, embed_image_Icc]
   exact f.mapsTo_Icc_self hC hab hcd
 
-open Classical Finset in
+open Finset in
 /--
 The collection of points between `(xl, yl, n)` and `(xh, yh, n)` that are also in `C` has at least
 `xh + yh + 1 - (xl + yl)` elements.
 In other words, this collection must be a maximal chain relative to the interval it is contained in.
 Note `card_C_inter_Icc_eq` strengthens this to an equality.
 -/
-lemma C_inter_Icc_large (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
+lemma C_inter_Icc_large [DecidablePred (· ∈ C)] (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
     (hx : xl ≤ xh) (hy : yl ≤ yh)
     (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) :
     xh + yh + 1 - (xl + yl) ≤ #{x ∈ (Icc (xl, yl) (xh, yh)).image (embed n) | x ∈ C} := by
+  classical
   set int : Finset Hollom := (Icc (xl, yl) (xh, yh)).image (embed n)
   set I : Finset Hollom := {x ∈ int | x ∈ C}
   let D : Finset Hollom := (chainBetween xl yl xh yh).image (embed n)
@@ -633,18 +634,19 @@ lemma C_inter_Icc_large (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
   rw [← this]
   exact Finset.card_le_card_of_injOn f D_maps f_inj
 
-open Classical Finset in
+open Finset in
 /--
 The collection of points between `(xl, yl, n)` and `(xh, yh, n)` that are also in `C` has exactly
 `xh + yh + 1 - (xl + yl)` elements.
 In other words, this collection must be a maximal chain relative to the interval it is contained in.
 Alternatively speaking, it has the same size as any maximal chain in that interval.
 -/
-theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
+theorem card_C_inter_Icc_eq [DecidablePred (· ∈ C)] (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
     (hx : xl ≤ xh) (hy : yl ≤ yh)
     (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) :
     #{x ∈ (Icc (xl, yl) (xh, yh)).image (embed n) | x ∈ C} = xh + yh + 1 - (xl + yl) := by
+  classical
   set int : Finset Hollom := (Icc (xl, yl) (xh, yh)).image (embed n)
   set I : Finset Hollom := {x ∈ int | x ∈ C}
   have int_eq : int = Set.Icc h(xl, yl, n) h(xh, yh, n) := by
@@ -874,14 +876,14 @@ lemma not_R_hits_same {x : Hollom} (hx : x ∈ R n C) (hx' : x ∉ C ∩ level n
   apply f.incomp_apply _ (hx.2 _ hfx).symm
   exact ne_of_mem_of_not_mem hfx hx'
 
-open Classical in
 /--
 Given a subset `C` of the Hollom partial order, and an index `n`, find the smallest element of
 `C ∩ level (n + 1)`, expressed as `(x₀, y₀, n + 1)`.
 This is only the global minimum provided `C` is a chain, which it is in context.
 -/
-noncomputable def x0y0 (n : ℕ) (C : Set Hollom) : ℕ × ℕ :=
-  if h : (C ∩ level (n + 1)).Nonempty
+noncomputable def x0y0 (n : ℕ) (C : Set Hollom) : ℕ × ℕ := by
+  classical
+  exact if h : (C ∩ level (n + 1)).Nonempty
     then wellFounded_lt.min {x | embed (n + 1) x ∈ C} <| by
       rw [level_eq_range] at h
       obtain ⟨_, h, y, rfl⟩ := h
@@ -916,7 +918,6 @@ lemma x0_y0_mem (h : (C ∩ level (n + 1)).Nonempty) : h(x0 n C, y0 n C, n + 1) 
 lemma x0_y0_min (hC : IsChain (· ≤ ·) C) {a b : ℕ} (h : h(a, b, n + 1) ∈ C) :
     h(x0 n C, y0 n C, n + 1) ≤ h(a, b, n + 1) := x0y0_min (a, b) hC h
 
-open Classical in
 /--
 Construction of the set `S`, which has the following key properties:
 * It is a subset of `R`.
@@ -928,8 +929,9 @@ If `C ∩ level (n + 1)` is finite, it is all elements of `R` which are comparab
 Otherwise, say `(x0, y0, n + 1)` is the smallest element of `C ∩ level (n + 1)`, and take all
 elements of `R` of the form `(a, b, n)` with `max x0 y0 + 1 ≤ min a b`.
 -/
-noncomputable def S (n : ℕ) (C : Set Hollom) : Set Hollom :=
-  if (C ∩ level (n + 1)).Finite
+noncomputable def S (n : ℕ) (C : Set Hollom) : Set Hollom := by
+  classical
+  exact if (C ∩ level (n + 1)).Finite
     then {x ∈ R n C | ∀ y ∈ C ∩ level (n + 1), x ≤ y ∨ y ≤ x}
     else {x ∈ R n C | max (x0 n C) (y0 n C) + 1 ≤ min (ofHollom x).1 (ofHollom x).2.1}
 
