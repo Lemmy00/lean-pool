@@ -25,14 +25,14 @@ namespace SplitPath
 /-- The part of a path on the interval [0, T] -/
 def FirstPart (γ : Path x₀ x₁) (T : I) : Path x₀ (γ T) where
   toFun := fun t => γ ⟨(T : ℝ) * ↑t, unitInterval.mul_mem T.2 t.2⟩
-  source' := by simp [γ.source']
+  source' := by simp
   target' := by simp
 
 /-- The part of a path on the interval [T, 1] -/
 def SecondPart (γ : Path x₀ x₁) (T : I) : Path (γ T) x₁ where
   toFun := fun t => γ ⟨(σ T : ℝ) * ↑t + ↑T, interp_left_mem_I T t⟩
   source' := by simp
-  target' := by simp [γ.target']
+  target' := by simp
 
 /-- The map needed to reparametrize the concatenation of the first and second part of a path
   back into the original pat
@@ -44,14 +44,16 @@ else
   (1 + t - 2*T) / (2 * (1-T))
 
 @[continuity]
-lemma continuous_trans_reparam {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) : Continuous (trans_reparam T) := by
+lemma continuous_trans_reparam {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) : Continuous (trans_reparam T)
+    := by
   refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
   · continuity
   · continuity
   · continuity
   · continuity
   intro x hx
-  apply (div_eq_div_iff (ne_of_gt (unitIAux.double_pos_of_pos hT₀)) (ne_of_gt (unitIAux.double_sigma_pos_of_lt_one hT₁))).mpr
+  apply (div_eq_div_iff (ne_of_gt (unitIAux.double_pos_of_pos hT₀))
+    (ne_of_gt (unitIAux.double_sigma_pos_of_lt_one hT₁))).mpr
   simp [hx]
   ring
 
@@ -73,7 +75,8 @@ lemma trans_reparam_mem_I (t : I) {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) :
 
 lemma trans_reparam_zero (T : I) : trans_reparam T 0 = 0 := by
   unfold trans_reparam
-  simp only [Set.Icc.coe_zero, zero_div, add_zero, ite_eq_left_iff, not_le, div_eq_zero_iff, mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
+  simp only [Set.Icc.coe_zero, zero_div, add_zero, ite_eq_left_iff, not_le, div_eq_zero_iff,
+    mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
   intro hT
   linarith [unitInterval.nonneg T]
 
@@ -114,24 +117,27 @@ lemma first_trans_second_reparam_eq_self_aux (γ : Path x₀ x₁) (t : I) {T : 
     (Subtype.ext <| trans_reparam_zero T) (Subtype.ext <| trans_reparam_one hT₁) t := by
   have hT_ne_zero : (T : ℝ) ≠ 0 := (lt_iff_le_and_ne.mp (Subtype.coe_lt_coe.mpr hT₀)).2.symm
   rw [Path.reparam]
-  simp [Path.trans_apply, FirstPart, SecondPart, trans_reparam]
+  simp only [trans_reparam, Path.trans_apply, FirstPart, SecondPart, Path.coe_mk',
+    ContinuousMap.coe_mk, Function.comp_apply, Subtype.coe_le_coe]
   split_ifs with h₁ h₂ h₂
   · congr
     apply Subtype.coe_inj.mp
-    simp
+    change (t : ℝ) = (T : ℝ) * (2 * ((t : ℝ) / (2 * (T : ℝ))))
     calc (t : ℝ)
       _ = t * 1 := (mul_one (t : ℝ)).symm
       _ = t * ((2 * T) / (2 * T)) := by rw [div_self (mul_ne_zero two_ne_zero hT_ne_zero)]
       _ = T * (2 * (t / (2 * T))) := by ring
   · exfalso
     have hT_lt_t : ↑T < ↑t := by
-      simp at h₂
+      have h₂' : (2⁻¹ : ℝ) < ↑t / (2 * ↑T) := by
+        rw [show (2⁻¹ : ℝ) = 1 / 2 from by norm_num]
+        exact lt_of_not_ge h₂
       have h2T : (0 : ℝ) < 2 * T := unitIAux.double_pos_of_pos hT₀
       calc (T : ℝ)
         _ = 1 * T                     := (one_mul (T : ℝ)).symm
         _ = (2⁻¹ * 2) * T             := by norm_num
         _ = 2⁻¹ * (2 * T)             := by ring
-        _ < (t / (2 * T)) * (2 * T) := (mul_lt_mul_iff_of_pos_right h2T).mpr h₂
+        _ < (t / (2 * T)) * (2 * T) := (mul_lt_mul_iff_of_pos_right h2T).mpr h₂'
         _ = t * ((2 * T) / (2 * T)) := by ring
         _ = t * 1                     := by rw [div_self (mul_ne_zero two_ne_zero hT_ne_zero)]
         _ = t                         := (mul_one (t : ℝ))
@@ -146,7 +152,8 @@ lemma first_trans_second_reparam_eq_self_aux (γ : Path x₀ x₁) (t : I) {T : 
     linarith
   · congr
     apply Subtype.coe_inj.mp
-    simp
+    change (t : ℝ) = ((σ T : ℝ)) * (2 * ((1 + ↑t - 2 * ↑T) / (2 * (1 - ↑T))) - 1) + ↑T
+    rw [unitInterval.coe_symm_eq]
     calc (t : ℝ)
       _ = (1 + t - 2 * T) - 1 + 2 * T := by ring
       _ = (1 + t - 2 * T) * (2 * (1 - T)) / (2 * (1 - T)) - 1 + 2 * ↑T

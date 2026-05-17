@@ -40,12 +40,14 @@ universe u v
       exact False.elim (h₁ (le_trans hab h₂))
     · -- a > 1/2 and b > 1/2, so use monotonicity of γ₂
       apply hγ₂
-      simp only [Subtype.mk_le_mk, tsub_le_iff_right, sub_add_cancel, Nat.ofNat_pos, mul_le_mul_iff_right₀, Subtype.coe_le_coe]
+      simp only [Subtype.mk_le_mk, tsub_le_iff_right, sub_add_cancel, Nat.ofNat_pos,
+        mul_le_mul_iff_right₀, Subtype.coe_le_coe]
       exact hab
 
   isDipath_reparam := fun {x y : α} γ t₀ t₁ f hf_mono hγ_mono a b hab => hγ_mono (hf_mono hab)
 
-/-- A continuous map `f : α → β` with α an (undirected) topological space and β a directed topological space
+/-- A continuous map `f : α → β` with α an (undirected) topological space and β a directed
+topological space
   creates a directed structure on α by pulling back paths.
 -/
 @[reducible] def DirectedSpace.Induced {α : Type u} {β : Type v} [TopologicalSpace α]
@@ -75,7 +77,8 @@ def DirectedSubtypeInclusion {α : Type u} (p : α → Prop) [DirectedSpace α] 
   continuous_toFun := continuous_induced_dom
   directed_toFun := directed_induced _
 
-def DirectedSubsetInclusion {α : Type u} [t : DirectedSpace α] {X Y : Set α} (h : X ⊆ Y) : D(X,Y) where
+def DirectedSubsetInclusion {α : Type u} [t : DirectedSpace α] {X Y : Set α} (h : X ⊆ Y) : D(X,Y)
+    where
   toFun := Set.inclusion h
   continuous_toFun := continuous_inclusion h
   directed_toFun := by
@@ -92,11 +95,13 @@ end subtype
 
 instance DirectedProduct {α : Type u} {β : Type v} [t₁ : DirectedSpace α] [t₂ : DirectedSpace β] :
   DirectedSpace (α × β) where
-  IsDipath := fun {x y : α × β} γ => (IsDipath (γ.map continuous_fst) ∧ IsDipath (γ.map continuous_snd))
+  IsDipath := fun {x y : α × β}
+      γ => (IsDipath (γ.map continuous_fst) ∧ IsDipath (γ.map continuous_snd))
   isDipath_constant := fun ⟨x₁, x₂⟩ => ⟨isDipath_constant x₁, isDipath_constant x₂⟩
   isDipath_concat := by
       rintro _ _ _ p q ⟨p₁_dipath, p₂_dipath⟩ ⟨q₁_dipath, q₂_dipath⟩
-      convert (And.intro (isDipath_concat p₁_dipath q₁_dipath) (isDipath_concat p₂_dipath q₂_dipath))
+      convert (And.intro (isDipath_concat p₁_dipath q₁_dipath)
+        (isDipath_concat p₂_dipath q₂_dipath))
       · rw [Path.map_trans]
       rw [Path.map_trans]
   isDipath_reparam := fun {a b : α × β} γ t₀ t₁ φ hφ_mono ⟨γ₁_dipath, γ₂_dipath⟩ =>
@@ -123,7 +128,8 @@ protected def DirectedMap.prod_map_mk (f : D(α,β)) (g : D(α,γ)) : D(α, β �
   toFun := fun x => (f x, g x)
   directed_toFun := fun x y γ hγ => ⟨f.directed_toFun γ hγ, g.directed_toFun γ hγ⟩
 
-/-- Two directed maps `f : α → γ` and `g : β → δ` can be turned into a directed map `α × β → β × γ` by
+/-- Two directed maps `f : α → γ` and `g : β → δ` can be turned into a directed map `α × β → β × γ`
+by
   mapping `(a, b) : α × β` to `(f a, g b)`.
 -/
 protected def DirectedMap.prod_map_mk' (f : D(α,γ)) (g : D(β,δ)) : D(α × β, γ × δ) where

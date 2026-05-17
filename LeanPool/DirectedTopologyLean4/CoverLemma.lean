@@ -67,7 +67,8 @@ end UnitIntervalSub
 
 theorem lebesgue_number_lemma_unit_interval {ι : Sort u} {c : ι → Set ℝ}
   (hc₁ : ∀ (i : ι), IsOpen (c i)) (hc₂ : I ⊆ ⋃ (i : ι), c i) :
-    ∃ (n : ℕ), (n > 0) ∧ ∀ (i : ℕ) (_ : i < n), ∃ (j : ι), Set.Icc ((i : ℝ) / n) ((i + 1) / n) ⊆ c j := by
+    ∃ (n : ℕ), (n > 0) ∧ ∀ (i : ℕ) (_ : i < n), ∃ (j : ι), Set.Icc ((i : ℝ) / n) ((i + 1) / n) ⊆ c j
+        := by
   rcases (lebesgue_number_lemma_of_metric (isCompact_Icc) hc₁ hc₂) with ⟨δ, δ_pos, hδ⟩
   rcases Real.instArchimedean.arch 2 δ_pos with ⟨n, hn⟩
   use n
@@ -82,7 +83,8 @@ theorem lebesgue_number_lemma_unit_interval {ι : Sort u} {c : ι → Set ℝ}
   · exact n_pos
   intros i hi
   have mid_point_I : (2 * i + 1 : ℝ)/(2 * n : ℝ) ∈ I := mid_point_I hi
-  have mid_point_Icc : (2 * i + 1 : ℝ)/(2 * n : ℝ) ∈ Set.Icc ((i :ℝ)/(n :ℝ)) ((i+1 :ℝ)/(n :ℝ)) := mid_point_Icc n_pos
+  have mid_point_Icc : (2 * i + 1 : ℝ)/(2 * n : ℝ) ∈ Set.Icc ((i :ℝ)/(n :ℝ)) ((i+1 :ℝ)/(n :ℝ))
+      := mid_point_Icc n_pos
   rcases (hδ ((2 * i + 1 : ℝ)/(2 * n : ℝ)) mid_point_I) with ⟨j, hj⟩
   use j
   apply subset_trans _ hj
@@ -108,8 +110,10 @@ we have the rectangle `[i/(n+1), (i+1)/(n+1)] × [j/(m+1), (j+1)/(m+1)]` in the 
 -/
 def UnitSubrectangle {n m i j : ℕ} (hi : i < n.succ) (hj : j < m.succ) : Set (I × I) := setOf <|
   fun (a : I × I) =>
-    ((Fraction (Nat.succ_pos n) (le_of_lt hi)) ≤ a.1 ∧ a.1 ≤ (Fraction (Nat.succ_pos n) (Nat.succ_le_of_lt hi))) ∧
-    (Fraction (Nat.succ_pos m) (le_of_lt hj)) ≤ a.2 ∧ a.2 ≤ (Fraction (Nat.succ_pos m) (Nat.succ_le_of_lt hj))
+    ((Fraction (Nat.succ_pos n) (le_of_lt hi)) ≤ a.1 ∧
+        a.1 ≤ (Fraction (Nat.succ_pos n) (Nat.succ_le_of_lt hi))) ∧
+    (Fraction (Nat.succ_pos m) (le_of_lt hj))
+        ≤ a.2 ∧ a.2 ≤ (Fraction (Nat.succ_pos m) (Nat.succ_le_of_lt hj))
 
 namespace UnitSubrectangle
 
@@ -131,7 +135,8 @@ end UnitSubrectangle
 
 theorem lebesgue_number_lemma_unit_square {ι : Sort u} {c : ι → Set (I × I)}
   (hc₁ : ∀ (i : ι), IsOpen (c i)) (hc₂ : UnitSquare ⊆ (⋃ (i : ι), c i)) :
-    ∃ (n : ℕ), ∀ (i j : ℕ) (hi : i < n.succ) (hj : j < n.succ), ∃ (a : ι), UnitSubrectangle hi hj ⊆ c a := by
+    ∃ (n : ℕ), ∀ (i j : ℕ) (hi : i < n.succ)
+        (hj : j < n.succ), ∃ (a : ι), UnitSubrectangle hi hj ⊆ c a := by
   rcases (lebesgue_number_lemma_of_metric (compact_unitSquare) hc₁ hc₂) with ⟨δ, δ_pos, hδ⟩
   rcases Real.instArchimedean.arch 2 δ_pos with ⟨n, hn⟩
   use n
@@ -142,14 +147,16 @@ theorem lebesgue_number_lemma_unit_square {ι : Sort u} {c : ι → Set (I × I)
   let mp_v : ℝ := (2 * j + 1 : ℝ)/(2 * n.succ : ℝ)
   have mid_point_h_Icc : mp_h ∈ Set.Icc ((i :ℝ)/n.succ) ((i+1)/n.succ) := mid_point_Icc n_pos
   have mid_point_h_I : mp_h ∈ I := mid_point_I hi
-  have mid_point_v_Icc : mp_v ∈ Set.Icc ((j :ℝ)/(n.succ :ℝ)) ((j+1 :ℝ)/(n.succ :ℝ)) := mid_point_Icc n_pos
+  have mid_point_v_Icc : mp_v ∈ Set.Icc ((j :ℝ)/(n.succ :ℝ)) ((j+1 :ℝ)/(n.succ :ℝ))
+      := mid_point_Icc n_pos
   have mid_point_v_I : mp_v ∈ I := mid_point_I hj
   rcases hδ (⟨mp_h, mid_point_h_I⟩, ⟨mp_v, mid_point_v_I⟩) (Set.mem_univ _) with ⟨a, ha⟩
   use a
   apply subset_trans _ ha
   intros x hx
   change dist x _ < δ
-  have : dist _ _ ≤ dist _ _ + dist _ _ := dist_triangle x (x.1, ⟨mp_v, mid_point_v_I⟩)  (⟨mp_h, mid_point_h_I⟩, ⟨mp_v, mid_point_v_I⟩)
+  have : dist _ _ ≤ dist _ _ + dist _ _ := dist_triangle x (x.1, ⟨mp_v, mid_point_v_I⟩)
+      (⟨mp_h, mid_point_h_I⟩, ⟨mp_v, mid_point_v_I⟩)
   apply lt_of_le_of_lt this
   have hδ_bound : 1/(n.succ : ℝ) < δ/2 := by
     apply (div_lt_iff₀' n_cast_pos).mpr

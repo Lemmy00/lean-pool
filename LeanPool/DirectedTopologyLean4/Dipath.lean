@@ -94,7 +94,8 @@ because it is a composition of multiple projections. -/
 def simps.apply : I → X :=
   γ
 
-initialize_simps_projections Dipath (toPath_toContinuousMap_toFun → simps.apply, -toPath_toContinuousMap)
+initialize_simps_projections Dipath
+  (toPath_toContinuousMap_toFun → simps.apply, -toPath_toContinuousMap)
 
 @[simp]
 lemma coe_toContinuousMap : ⇑γ.toContinuousMap = γ := rfl
@@ -112,7 +113,9 @@ instance hasUncurryDipath {X α : Type*} [DirectedSpace X] {x y : α → X} :
 @[simp] lemma coe_range (γ : Dipath x y) : range γ = range γ.toPath := rfl
 @[simp] lemma range_eq_image (γ : Dipath x y) : range γ = γ.extend '' I :=
   Set.ext (fun z =>
-    ⟨fun ⟨t, ht⟩ => ⟨t, t.2, by simp only [Subtype.coe_prop, Path.extend_apply, Subtype.coe_eta]; exact ht⟩,
+    ⟨fun ⟨t, ht⟩ => ⟨t, t.2, by
+      simp only [Subtype.coe_prop, Path.extend_apply, Subtype.coe_eta]
+      exact ht⟩,
     fun ⟨t, t_mem_I, ht⟩ => ⟨⟨t, t_mem_I⟩, by
       rw [ht.symm, Path.extend_apply γ.toPath t_mem_I]
       rfl⟩⟩)
@@ -188,7 +191,8 @@ def map (γ : Dipath x y) {Y : Type*} [DirectedSpace Y] (f : D(X,Y)) : Dipath (f
   (γ.map f : I → Y) = f ∘ γ :=
 by { ext t; rfl }
 
-@[simp] lemma map_trans (γ : Dipath x y) (γ' : Dipath y z) {Y : Type*} [DirectedSpace Y] (f : D(X,Y)) :
+@[simp] lemma map_trans (γ : Dipath x y) (γ' : Dipath y z) {Y : Type*} [DirectedSpace Y]
+    (f : D(X,Y)) :
   (γ.trans γ').map f = (γ.map f).trans (γ'.map f) := by
   ext t
   rw [trans_apply, map_coe, Function.comp_apply, trans_apply]
@@ -276,8 +280,8 @@ variable {Y : Type*} [DirectedSpace Y] {x₀ x₁ : X} {y₀ y₁ : Y}
 /-- Two dipaths together form a dipath in the product space -/
 def dipath_product (γ₁ : Dipath x₀ x₁) (γ₂ : Dipath y₀ y₁) : Dipath (x₀, y₀) (x₁, y₁) where
   toFun := fun t => (γ₁ t, γ₂ t)
-  source' := by { simp [γ₁.source', γ₂.source'] }
-  target' := by { simp [γ₁.target', γ₂.target'] }
+  source' := by simp
+  target' := by simp
   dipath_toPath := by
       constructor
       { convert γ₁.dipath_toPath }

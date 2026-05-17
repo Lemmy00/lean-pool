@@ -43,7 +43,8 @@ import LeanPool.DirectedTopologyLean4.DirectedHomotopy
     |                       |
     A----- p₀.trans p₁ -----C
 
-  This is a variation of dipath.dihomotopy.hcomp of dihomotopies that are not necessarily dipath dihomotopies.
+  This is a variation of dipath.dihomotopy.hcomp of dihomotopies that are not necessarily dipath
+  dihomotopies.
 -/
 
 universe u v
@@ -58,7 +59,8 @@ namespace Dihomotopy
 
 variable {X : dTopCat} {f g : D(I,X)}
 
-def flip (F : Dihomotopy f g) : Dihomotopy (F.eval_at_right 0).toDirectedMap (F.eval_at_right 1).toDirectedMap :=
+def flip (F : Dihomotopy f g)
+    : Dihomotopy (F.eval_at_right 0).toDirectedMap (F.eval_at_right 1).toDirectedMap :=
 {
   toFun := fun t => F (t.2, t.1)
   directed_toFun := fun ⟨x₀, y₀⟩ ⟨x₁, y₁⟩ γ ⟨h₁, h₂⟩ => by
@@ -90,7 +92,8 @@ variable {p₀ : Dipath x₀ x₁} {p₁ : Dipath x₁ x₂} {q₀ : Dipath y₀
 Then we can compose these horizontally to obtain:
   `dihomotopy (p₀.trans p₁).toDirectedMap (q₀.trans q₁).toDirectedMap`
 -/
-def hcomp' (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
+def hcomp' (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap)
+    (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
   (h : (F.eval_at_right 1).toDirectedMap = (G.eval_at_right 0).toDirectedMap) :
     Dihomotopy (p₀.trans p₁).toDirectedMap (q₀.trans q₁).toDirectedMap :=
   ((F.flip.cast rfl h).trans G.flip).flip.cast
@@ -115,13 +118,15 @@ def hcomp' (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : Dihomotop
         exact G.map_one_left _
     )
 
-lemma hcomp'_apply (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
+lemma hcomp'_apply (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap)
+    (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
   (h : (F.eval_at_right 1).toDirectedMap = (G.eval_at_right 0).toDirectedMap) (t₁ t₂ : I) :
     (hcomp' F G h) (t₁, t₂) =
     if h : (t₂ : ℝ) ≤ 1/2 then
       F.eval_at_left t₁ ⟨2 * t₂, (unitInterval.mul_pos_mem_iff two_pos).2 ⟨t₂.2.1, h⟩⟩
     else
-      G.eval_at_left t₁ ⟨2 * t₂ - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t₂.2.2⟩⟩ := by
+      G.eval_at_left t₁ ⟨2 * t₂ - 1,
+        unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t₂.2.2⟩⟩ := by
   unfold hcomp'
   rw [cast_apply, flip_apply, trans_apply]
   split_ifs
@@ -130,7 +135,8 @@ lemma hcomp'_apply (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : D
   · rw [flip_apply]
     rfl
 
-lemma hcomp'_apply_zero_right (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
+lemma hcomp'_apply_zero_right (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap)
+    (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
   (h : (F.eval_at_right 1).toDirectedMap = (G.eval_at_right 0).toDirectedMap) (x : I) :
     (hcomp' F G h) (x, 0) = F (x, 0) := by
   rw [hcomp'_apply]
@@ -145,7 +151,8 @@ lemma hcomp'_apply_zero_right (F : Dihomotopy p₀.toDirectedMap q₀.toDirected
     change (0 : ℝ) ≤ 1/2
     linarith
 
-lemma hcomp'_apply_one_right (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
+lemma hcomp'_apply_one_right (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap)
+    (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
   (h : (F.eval_at_right 1).toDirectedMap = (G.eval_at_right 0).toDirectedMap) (x : I) :
     (hcomp' F G h) (x, 1) = G (x, 1) := by
   rw [hcomp'_apply]
@@ -161,7 +168,8 @@ lemma hcomp'_apply_one_right (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedM
     simp
     norm_num
 
-lemma hcomp'_range (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap) (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
+lemma hcomp'_range (F : Dihomotopy p₀.toDirectedMap q₀.toDirectedMap)
+    (G : Dihomotopy p₁.toDirectedMap q₁.toDirectedMap)
   (h : (F.eval_at_right 1).toDirectedMap = (G.eval_at_right 0).toDirectedMap) :
     Set.range (hcomp' F G h) ⊆ Set.range F ∪ Set.range G := fun z ⟨⟨t₁, t₂⟩, ht⟩ =>  by
   rw [hcomp'_apply] at ht

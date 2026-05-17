@@ -3,6 +3,7 @@ Copyright (c) 2026 Dominique Lawson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dominique Lawson, Henning Basold, Peter Bruin
 -/
+
 import LeanPool.DirectedTopologyLean4.Constructions
 import LeanPool.DirectedTopologyLean4.CoverLemma
 import LeanPool.DirectedTopologyLean4.DihomotopyCover
@@ -31,12 +32,12 @@ import LeanPool.DirectedTopologyLean4.TransRefl
 import LeanPool.DirectedTopologyLean4.UnitIntervalAux
 
 /-!
-# Directed Topology Lean 4
+# Directed Topology in Lean 4
 
 Source: url:https://github.com/Dominique-Lawson/Directed-Topology-Lean-4
 Authors: Dominique Lawson, Henning Basold, Peter Bruin
 Status: verified
-Main declarations: `DirectedVanKampen.directed_van_kampen`
+Main declarations: `DirectedSpace`, `Dipath`, `Dipath.Dihomotopic`
 Tags: directed-topology, algebraic-topology, category-theory
 MSC: 55U40, 55Q05, 18A30
 -/

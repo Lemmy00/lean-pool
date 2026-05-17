@@ -33,7 +33,8 @@ def IdentityPath : Path (0 : I) (1 : I) :=
 /-- The identity path is a directed path. -/
 lemma isDipath_identityPath : IsDipath IdentityPath := fun _ _ hab => hab
 
-/-- If `γ` is path and the identity path on I composed with `γ` is a directed path, then `γ` is a directed path.
+/-- If `γ` is path and the identity path on I composed with `γ` is a directed path, then `γ` is a
+directed path.
 -/
 lemma isDipath_of_isDipath_comp_id {X : Type u} [DirectedSpace X] {x y : X} {γ : Path x y}
   (h : IsDipath <| IdentityPath.map γ.continuous_toFun) : IsDipath γ := by
@@ -48,11 +49,13 @@ lemma directed_of_monotone (f : C(I, I)) (hf_mono : Monotone f) : DirectedMap.Di
   fun _ _ _ γ_dipath _ _ ht₀t₁ => hf_mono (γ_dipath ht₀t₁)
 
 /-- A directed path on I is bounded by its source and target -/
-lemma directed_path_bounded {t₀ t₁ : I} {γ : Path t₀ t₁} (γ_dipath : IsDipath γ) : ∀ t, t₀ ≤ γ t ∧ γ t ≤ t₁ :=
+lemma directed_path_bounded {t₀ t₁ : I} {γ : Path t₀ t₁} (γ_dipath : IsDipath γ)
+    : ∀ t, t₀ ≤ γ t ∧ γ t ≤ t₁ :=
   monotone_path_bounded γ_dipath
 
 /-- The source of a directed path on I is `≤` than its target -/
-lemma directed_path_source_le_target {t₀ t₁ : I} {γ : Path t₀ t₁} (γ_dipath : IsDipath γ) : t₀ ≤ t₁ :=
+lemma directed_path_source_le_target {t₀ t₁ : I} {γ : Path t₀ t₁} (γ_dipath : IsDipath γ) : t₀ ≤ t₁
+    :=
   monotone_path_source_le_target γ_dipath
 
 end DirectedUnitInterval

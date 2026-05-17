@@ -64,7 +64,8 @@ def transAssocReparamAuxMap : D(I,I) where
   continuous_toFun := Continuous.subtype_mk continuous_transAssocReparamAux _
   directed_toFun := transAssocReparamAux_directed
 
-lemma trans_assoc_reparam_directed {x₀ x₁ x₂ x₃ : X} (p : Dipath x₀ x₁) (q : Dipath x₁ x₂) (r : Dipath x₂ x₃) :
+lemma trans_assoc_reparam_directed {x₀ x₁ x₂ x₃ : X} (p : Dipath x₀ x₁) (q : Dipath x₁ x₂)
+    (r : Dipath x₂ x₃) :
     (p.trans q).trans r = (p.trans (q.trans r)).reparam
       transAssocReparamAuxMap
       (Subtype.ext transAssocReparamAux_zero)
@@ -146,10 +147,13 @@ instance : CategoryTheory.Category (FundamentalCategory X) where
   comp {_ _ _} := Dipath.Dihomotopic.Quotient.comp
   id_comp {x _} f :=
     Quotient.inductionOn f fun a =>
-      show ⟦(Dipath.refl x.as).trans a⟧ = ⟦a⟧ from Quotient.sound (Relation.EqvGen.rel _ _ ⟨Dipath.Dihomotopy.refl_trans a⟩)
+      show ⟦(Dipath.refl x.as).trans a⟧ = ⟦a⟧ from
+        Quotient.sound (Relation.EqvGen.rel _ _ ⟨Dipath.Dihomotopy.refl_trans a⟩)
   comp_id {_ y} f :=
     Quotient.inductionOn f fun a =>
-      show ⟦a.trans (Dipath.refl y.as)⟧ = ⟦a⟧ from Quotient.sound (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨Dipath.Dihomotopy.trans_refl a⟩))
+      show ⟦a.trans (Dipath.refl y.as)⟧ = ⟦a⟧ from
+        Quotient.sound (Relation.EqvGen.symm _ _
+          (Relation.EqvGen.rel _ _ ⟨Dipath.Dihomotopy.trans_refl a⟩))
   assoc {_ _ _ _} f g h :=
     Quotient.inductionOn₃ f g h fun p q r =>
       show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from

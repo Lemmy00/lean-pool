@@ -8,7 +8,8 @@ import Mathlib.Topology.Connected.PathConnected
 open scoped unitInterval
 noncomputable section
 
-/-- For any natural numbers `i n : ℕ` such that `n` is positive and `i ≤ n`, we have that the fraction
+/-- For any natural numbers `i n : ℕ` such that `n` is positive and `i ≤ n`, we have that the
+fraction
 `i/n : ℝ` lives in the unit interval
 -/
 @[reducible]

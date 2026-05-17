@@ -21,7 +21,8 @@ variable {X : dTopCat} {X₀ : Set X}
 
 lemma subtypeHom_eq_coe (x : X₀) : (dTopCat.DirectedSubtypeHom X₀) x = (x : X) := rfl
 
-lemma range_dipath_map_inclusion {x y : X₀} (γ : Dipath x y) : range (γ.map (DirectedSubtypeInclusion X₀)) ⊆ X₀ := by
+lemma range_dipath_map_inclusion {x y : X₀} (γ : Dipath x y)
+    : range (γ.map (DirectedSubtypeInclusion X₀)) ⊆ X₀ := by
   rintro z ⟨t, ht⟩
   rw [←ht]
   change (dTopCat.DirectedSubtypeHom X₀) (γ t) ∈ X₀
@@ -35,8 +36,10 @@ lemma subtype_path_class_eq_map {x y : X₀} (γ : Dipath x y) :
 
 variable {x y z : X}
 
-lemma source_elt_of_image_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) : x ∈ X₀ := γ.source ▸ (hγ (mem_range_self 0))
-lemma target_elt_of_image_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) : y ∈ X₀ := γ.target ▸ (hγ (mem_range_self 1))
+lemma source_elt_of_image_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) : x ∈ X₀
+    := γ.source ▸ (hγ (mem_range_self 0))
+lemma target_elt_of_image_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) : y ∈ X₀
+    := γ.target ▸ (hγ (mem_range_self 1))
 
 def SubtypePath {γ : Dipath x y} (hγ : range γ ⊆ X₀) :
     Path (⟨x, source_elt_of_image_subset hγ⟩ : X₀) ⟨y, target_elt_of_image_subset hγ⟩ where
@@ -64,7 +67,9 @@ lemma range_refl_subset_of_mem {x : X} (hx : x ∈ X₀) : range (Dipath.refl x)
   rw [Dipath.refl_range]
   exact singleton_subset_iff.mpr hx
 
-lemma subtype_refl {x : X} (hx : x ∈ X₀) : (SubtypeDipath (Dipath.refl x) (range_refl_subset_of_mem hx)) = Dipath.refl (⟨x, hx⟩ : X₀) := rfl
+lemma subtype_refl {x : X} (hx : x ∈ X₀)
+    : (SubtypeDipath (Dipath.refl x) (range_refl_subset_of_mem hx)) = Dipath.refl (⟨x, hx⟩ : X₀)
+        := rfl
 
 lemma subsets_of_trans_subset {γ₁ : Dipath x y} {γ₂ : Dipath y z} (hγ : range (γ₁.trans γ₂) ⊆ X₀) :
     range γ₁ ⊆ X₀ ∧ range γ₂ ⊆ X₀ := by
@@ -78,8 +83,9 @@ lemma trans_subset_of_subsets {γ₁ : Dipath x y} {γ₂ : Dipath y z}
   exact union_subset hγ₁ hγ₂
 
 lemma subtype_trans {γ₁ : Dipath x y} {γ₂ : Dipath y z} (hγ : range (γ₁.trans γ₂) ⊆ X₀) :
-    (SubtypeDipath γ₁ (subsets_of_trans_subset hγ).1).trans (SubtypeDipath γ₂ (subsets_of_trans_subset hγ).2) =
-    SubtypeDipath (γ₁.trans γ₂) hγ := by
+    (SubtypeDipath γ₁ (subsets_of_trans_subset hγ).1).trans
+        (SubtypeDipath γ₂ (subsets_of_trans_subset hγ).2) =
+      SubtypeDipath (γ₁.trans γ₂) hγ := by
   ext t
   change _ = (γ₁.trans γ₂) t
   rw [Dipath.trans_apply, Dipath.trans_apply,]
@@ -91,7 +97,8 @@ lemma subtype_reparam {γ : Dipath x y} (hγ : range γ ⊆ X₀) {f : D(I,I)}
     (SubtypeDipath γ hγ).reparam f hf₀ hf₁ :=
   rfl
 
-lemma reparam_subset_of_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) {f : D(I,I)} (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
+lemma reparam_subset_of_subset {γ : Dipath x y} (hγ : range γ ⊆ X₀) {f : D(I,I)} (hf₀ : f 0 = 0)
+    (hf₁ : f 1 = 1) :
     range (γ.reparam f hf₀ hf₁) ⊆ X₀ := by
   rw [Dipath.range_reparam]
   exact hγ
@@ -110,7 +117,8 @@ def DihomotopyOfSubtype {γ γ' : Dipath x y} (hγ : range γ ⊆ X₀) (hγ' : 
     rw [←this]
     rfl
 
-lemma dihomSubtype_of_dihom_range_subset {γ γ' : Dipath x y} (hγ : range γ ⊆ X₀) (hγ' : range γ' ⊆ X₀)
+lemma dihomSubtype_of_dihom_range_subset {γ γ' : Dipath x y} (hγ : range γ ⊆ X₀)
+    (hγ' : range γ' ⊆ X₀)
   {F : Dipath.Dihomotopy γ γ'} (hF : range F ⊆ X₀) :
     @Eq (Dipath.Dihomotopic.Quotient _ _) ⟦SubtypeDipath γ hγ⟧ ⟦SubtypeDipath γ' hγ'⟧ :=
 Quotient.eq.mpr (Relation.EqvGen.rel _ _ ⟨DihomotopyOfSubtype hγ hγ' hF⟩)

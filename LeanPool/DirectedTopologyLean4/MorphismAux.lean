@@ -33,6 +33,7 @@ lemma obj_eq_obj_of_eq {F₁ F₂ : C ⥤ C'} (h : F₁ = F₂) (x : C) : F₁.o
 /-- If two functors are equal, they map morphisms to the same image
 -/
 lemma map_eq_map_of_eq {F₁ F₂ : C ⥤ C'} (h : F₁ = F₂) {x y : C} (f : x ⟶ y) :
-    F₁.map f = (eqToHom (obj_eq_obj_of_eq h x)) ≫ F₂.map f ≫ (eqToHom (obj_eq_obj_of_eq h y).symm) := by
+    F₁.map f = (eqToHom (obj_eq_obj_of_eq h x)) ≫ F₂.map f ≫ (eqToHom (obj_eq_obj_of_eq h y).symm)
+        := by
   subst_vars
   simp

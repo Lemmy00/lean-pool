@@ -30,7 +30,8 @@ variable {X : dTopCat} {f g : D(I,X)} {X₀ X₁ : Set X}
 def covered (F : Dihomotopy f g) (_ : X₀ ∪ X₁ = univ) : Prop := range F ⊆ X₀ ∨ range F ⊆ X₁
 
 /-- A dihomotopy of directed maps is covered partwise n m if it can be covered by
-  rectangles (n+1 vertically, m+1 horizontally) such that each rectangle is covered by either X₀ or X₁
+  rectangles (n+1 vertically, m+1 horizontally)
+      such that each rectangle is covered by either X₀ or X₁
 -/
 def coveredPartwise (_ : X₀ ∪ X₁ = univ) (F : Dihomotopy f g) (n m : ℕ) : Prop :=
   ∀ (i j : ℕ) (hi : i < n.succ) (hj : j < m.succ),
@@ -38,7 +39,8 @@ def coveredPartwise (_ : X₀ ∪ X₁ = univ) (F : Dihomotopy f g) (n m : ℕ) 
 
 /-- A dihomotopy that can be covered partwise by `1 × 1` squares is covered.
 -/
-lemma covered_of_coveredPartwise {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ} (hF : coveredPartwise hX F 0 0) :
+lemma covered_of_coveredPartwise {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ}
+    (hF : coveredPartwise hX F 0 0) :
     covered F hX := by
   unfold covered
   cases hF 0 0 zero_lt_one zero_lt_one
@@ -53,10 +55,12 @@ lemma covered_of_coveredPartwise {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ
     rw [←ht]
     exact h ⟨(t₀, t₁), UnitSubrectangle.mem_unitSquare _, rfl⟩
 
-/-- If `F : f ∼ g` is a dihomotopy of directed maps, then the image of `f` restricted to `[i/(m+1), (i+1)/(m+1)]`
+/-- If `F : f ∼ g` is a dihomotopy of directed maps, then the image of `f` restricted to `[i/(m+1),
+(i+1)/(m+1)]`
 is contained in the image of `F` restricted to `[0, 1/(n+1)] × [i/(m+1), (i+1)/(m+1)]`.
 -/
-lemma left_path_image_interval_subset_of_dihomotopy_subset (F : Dihomotopy f g) (n : ℕ) {i m : ℕ} (hi : i < m.succ) :
+lemma left_path_image_interval_subset_of_dihomotopy_subset (F : Dihomotopy f g) (n : ℕ) {i m : ℕ}
+    (hi : i < m.succ) :
     (Dipath.of_directedMap f).toPath.extend '' Icc (↑i / (↑m + 1)) ((↑i + 1) / (↑m + 1)) ⊆
       F ''  UnitSubrectangle (Nat.succ_pos n) hi := by
   rintro x ⟨t, ⟨ht, rfl⟩⟩
@@ -73,9 +77,11 @@ lemma left_path_image_interval_subset_of_dihomotopy_subset (F : Dihomotopy f g) 
     · convert ht <;> exact Nat.cast_succ _
   · simp; rfl
 
-/-- If `F : f ∼ g` is a dihomotopy of directed maps, and `F` is `n × m`-covered, then `f` is `m`-covered.
+/-- If `F : f ∼ g` is a dihomotopy of directed maps, and `F` is `n × m`-covered, then `f` is
+`m`-covered.
 -/
-lemma path_covered_partiwse_of_dihomotopy_coveredPartwise_left {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ}
+lemma path_covered_partiwse_of_dihomotopy_coveredPartwise_left {F : Dihomotopy f g}
+    {hX : X₀ ∪ X₁ = univ}
   {n m : ℕ} (hF : coveredPartwise hX F n m) :
     Dipath.covered_partwise hX (Dipath.of_directedMap f) m := by
   apply Dipath.covered_partwise.covered_partwise_of_covered_by_intervals
@@ -88,10 +94,12 @@ lemma path_covered_partiwse_of_dihomotopy_coveredPartwise_left {F : Dihomotopy f
     right
     exact subset_trans (left_path_image_interval_subset_of_dihomotopy_subset F n hi) h
 
-/-- If `F : f ∼ g` is a dihomotopy of directed maps, then the image of `g` restricted to `[i/(m+1), (i+1)/(m+1)]`
+/-- If `F : f ∼ g` is a dihomotopy of directed maps, then the image of `g` restricted to `[i/(m+1),
+(i+1)/(m+1)]`
 is contained in the image of `F` restricted to `[n/(n+1), 1] × [i/(m+1), (i+1)/(m+1)]`.
 -/
-lemma right_path_image_interval_subset_of_dihomotopy_subset (F : Dihomotopy f g) (n : ℕ) {i m : ℕ} (hi : i < m.succ) :
+lemma right_path_image_interval_subset_of_dihomotopy_subset (F : Dihomotopy f g) (n : ℕ) {i m : ℕ}
+    (hi : i < m.succ) :
     (Dipath.of_directedMap g).toPath.extend '' Icc (↑i / (↑m + 1)) ((↑i + 1) / (↑m + 1)) ⊆
       F ''  UnitSubrectangle (Nat.lt_succ_self n) hi := by
   rintro x ⟨t, ⟨ht, rfl⟩⟩
@@ -108,7 +116,8 @@ lemma right_path_image_interval_subset_of_dihomotopy_subset (F : Dihomotopy f g)
     · convert ht <;> exact Nat.cast_succ _
   · simp; rfl
 
-/-- If `F : f ∼ g` is a dihomotopy of directed maps, and `F` is `n × m`-covered, then `g` is `m`-covered.
+/-- If `F : f ∼ g` is a dihomotopy of directed maps, and `F` is `n × m`-covered, then `g` is
+`m`-covered.
 -/
 lemma path_covered_partiwse_of_dihomotopy_coveredPartwise_right {F : Dihomotopy f g}
   {hX : X₀ ∪ X₁ = univ} {n m : ℕ} (hF : coveredPartwise hX F n m) :
@@ -123,18 +132,20 @@ lemma path_covered_partiwse_of_dihomotopy_coveredPartwise_right {F : Dihomotopy 
     right
     exact subset_trans (right_path_image_interval_subset_of_dihomotopy_subset F n hi) h
 
-/-- If `F : f ∼ g` is a dihomotopy of directed maps, there exist `n m : ℕ` such that `F` is `n × m`-covered.
+/-- If `F : f ∼ g` is a dihomotopy of directed maps, there exist `n m : ℕ` such that `F` is `n ×
+m`-covered.
 -/
-lemma coveredPartwise_exists (F : Dihomotopy f g) (hX : X₀ ∪ X₁ = univ) (X₀_open : IsOpen X₀) (X₁_open : IsOpen X₁) :
+lemma coveredPartwise_exists (F : Dihomotopy f g) (hX : X₀ ∪ X₁ = univ) (X₀_open : IsOpen X₀)
+    (X₁_open : IsOpen X₁) :
     ∃ (n m : ℕ), coveredPartwise hX F n m := by
   set c : ℕ → Set (I × I) := fun i => if i = 0 then F ⁻¹' X₀ else F ⁻¹'  X₁ with c_def
   have h₁ : ∀ i, IsOpen (c i) := by
     intro i
     rw [c_def]
     by_cases h : i = 0
-    · simp [h]
+    · simp only [h, if_pos]
       exact F.continuous_toFun.isOpen_preimage X₀ X₀_open
-    · simp [h]
+    · simp only [if_neg h]
       exact F.continuous_toFun.isOpen_preimage X₁ X₁_open
   have h₂ : UnitSquare ⊆ (⋃ (i : ℕ), c i) := by
     intros x _
@@ -148,24 +159,28 @@ lemma coveredPartwise_exists (F : Dihomotopy f g) (hX : X₀ ∪ X₁ = univ) (X
   intros i j hi hj
   obtain ⟨ι, hι⟩ := hn i j hi hj
   rw [c_def] at hι
-  simp at hι
   by_cases h : ι = 0
   · left
-    simp [h] at hι
+    simp only [h, if_pos] at hι
     exact Set.image_subset_iff.mpr hι
   · right
-    simp [h] at hι
+    simp only [if_neg h] at hι
     exact Set.image_subset_iff.mpr hι
 
 /-- The image of a dihomotopy F of the subrectangles `[0, 1/(n+2)] × [j/(m+1), (j+1)/(m+1)]`
-  contains the image of the first part of F, split at `1/(n+2)`, of `[0, 1] × [j/(m+1), (j+1)/(m+1)]`.
+  contains the image of the first part of F, split at `1/(n+2)`, of `[0, 1]
+      × [j/(m+1), (j+1)/(m+1)]`.
 -/
-lemma fpv_subrectangle {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomotopy γ₁ γ₂} {n m j : ℕ} (hj : j < m.succ) :
-    (SplitDihomotopy.FirstPartVerticallyDihomotopy F (Fraction.ofPos (Nat.succ_pos n.succ))).toDihomotopy ''
-    (UnitSubrectangle zero_lt_one hj) ⊆ F '' (UnitSubrectangle (Nat.zero_lt_succ n.succ) hj) := by
+lemma fpv_subrectangle {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomotopy γ₁ γ₂} {n m j : ℕ}
+    (hj : j < m.succ) :
+    (SplitDihomotopy.FirstPartVerticallyDihomotopy F
+        (Fraction.ofPos (Nat.succ_pos n.succ))).toDihomotopy ''
+      (UnitSubrectangle zero_lt_one hj) ⊆
+    F '' (UnitSubrectangle (Nat.zero_lt_succ n.succ) hj) := by
   rintro z ⟨⟨t₀, t₁⟩, ⟨tI, ht⟩⟩
   have : ((SplitDihomotopy.FirstPartVerticallyDihomotopy F _).toDihomotopy) (t₀, t₁) =
-    (SplitDihomotopy.FirstPartVerticallyDihomotopy F (Fraction.ofPos (Nat.succ_pos n.succ))) (t₀, t₁) := rfl
+    (SplitDihomotopy.FirstPartVerticallyDihomotopy F (Fraction.ofPos (Nat.succ_pos n.succ)))
+        (t₀, t₁) := rfl
   rw [this, SplitDihomotopy.fpv_apply] at ht
   change ∃ a, a ∈ UnitSubrectangle _ hj ∧ F a = z
   refine ⟨_, ?_, ht⟩
@@ -176,7 +191,8 @@ lemma fpv_subrectangle {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomoto
   · exact unitInterval.mul_le_left
   · exact tI.2
 
-/-- If F is `(n+1) × m`-covered, then the first part of F, split at `T = 1/(n+2)` is `0 x m`-covered.
+/-- If F is `(n+1) × m`-covered, then the first part of F, split at `T = 1/(n+2)` is `0 x
+m`-covered.
 -/
 lemma coveredPartwise_first_vpart {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomotopy γ₁ γ₂}
   {hX : X₀ ∪ X₁ = univ} {n m : ℕ} (hF : coveredPartwise hX F.toDihomotopy n.succ m) :
@@ -219,14 +235,15 @@ lemma spv_aux₁_coed {t : ℝ} {n i : ℕ} (_ : i < n.succ) (ht : (i : ℝ) / (
 
 /-- If `i/(n+1) ≤ t`, then `(i+1)/(n+2) ≤ (σ q) * t + q`, where `q = 1/(n+2)`
 -/
-lemma spv_aux₁ {t : I} {n i : ℕ} (hi : i < n.succ) (ht : Fraction (Nat.succ_pos n) (le_of_lt hi) ≤ t) :
+lemma spv_aux₁ {t : I} {n i : ℕ} (hi : i < n.succ)
+    (ht : Fraction (Nat.succ_pos n) (le_of_lt hi) ≤ t) :
   Fraction (Nat.succ_pos n.succ) (le_of_lt (Nat.succ_lt_succ hi)) ≤
-    (⟨_, interp_left_mem_I (Fraction (Nat.succ_pos n.succ) (Nat.succ_le_succ (Nat.zero_le n.succ))) t⟩ : I) := by
+    (⟨_, interp_left_mem_I
+      (Fraction (Nat.succ_pos n.succ) (Nat.succ_le_succ (Nat.zero_le n.succ))) t⟩ : I) := by
   apply Subtype.coe_le_coe.mp
   convert spv_aux₁_coed hi ht using 1
-  · rw [Fraction.Fraction_coe]
-  congr 1 <;> simp; · ring
-  simp
+  · rw [Fraction.Fraction_coe]; push_cast; ring
+  · dsimp; push_cast; ring
 
 /-- If `t ≤ (i+1)/(n+1)`, then `(σ q) * t + q ≤ (i+2)/(n+2)`, where `q = 1/(n+2)`
 -/
@@ -249,8 +266,10 @@ lemma spv_aux₂_coed {t : ℝ} {n i : ℕ} (_ : i < n.succ) (_ : 0 ≤ t)
 
 /-- If `t ≤ (i+1)/(n+1)`, then `(σ q) * t + q ≤ (i+2)/(n+2)`, where `q = 1/(n+2)`
 -/
-lemma spv_aux₂ {t : I} {n i : ℕ} (hi : i < n.succ) (ht : t ≤ Fraction (Nat.succ_pos n) (Nat.succ_le_of_lt hi)) :
-    (⟨_, interp_left_mem_I (Fraction (Nat.succ_pos n.succ) (Nat.succ_le_succ (Nat.zero_le n.succ))) t⟩ : I) ≤
+lemma spv_aux₂ {t : I} {n i : ℕ} (hi : i < n.succ)
+    (ht : t ≤ Fraction (Nat.succ_pos n) (Nat.succ_le_of_lt hi)) :
+    (⟨_, interp_left_mem_I
+      (Fraction (Nat.succ_pos n.succ) (Nat.succ_le_succ (Nat.zero_le n.succ))) t⟩ : I) ≤
       Fraction (Nat.succ_pos n.succ) (Nat.succ_le_of_lt (Nat.succ_lt_succ hi)) := by
   apply Subtype.coe_le_coe.mp
   convert spv_aux₂_coed hi t.2.1 ht using 1
@@ -258,16 +277,21 @@ lemma spv_aux₂ {t : I} {n i : ℕ} (hi : i < n.succ) (ht : t ≤ Fraction (Nat
   rw [Fraction.Fraction_coe]
   congr 1 <;> rw [Nat.cast_succ, Nat.cast_succ] <;> linarith
 
-/-- The image of a dihomotopy F of the subrectangle `[(i+1)/(n+2), (i+2)/(n+2)] × [j/(m+1), (j+1)/(m+1)]`
-  contains the image of the second part of F, split at `1/(n+2)`, of `[i/(n+1), (i+1)/(n+1)] × [j/(m+1), (j+1)/(m+1)]`.
+/-- The image of a dihomotopy F of the subrectangle `[(i+1)/(n+2), (i+2)/(n+2)] × [j/(m+1),
+(j+1)/(m+1)]`
+  contains the image of the second part of F, split at `1/(n+2)`, of `[i/(n+1), (i+1)/(n+1)]
+      × [j/(m+1), (j+1)/(m+1)]`.
 -/
 lemma spv_subrectangle {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomotopy γ₁ γ₂} {n m i j : ℕ}
   (hi : i < n.succ) (hj : j < m.succ) :
-    (SplitDihomotopy.SecondPartVerticallyDihomotopy F (Fraction.ofPos (Nat.succ_pos n.succ))).toDihomotopy ''
-    (UnitSubrectangle hi hj) ⊆ F '' (UnitSubrectangle (Nat.succ_lt_succ hi) hj) := by
+    (SplitDihomotopy.SecondPartVerticallyDihomotopy F
+        (Fraction.ofPos (Nat.succ_pos n.succ))).toDihomotopy ''
+      (UnitSubrectangle hi hj) ⊆
+    F '' (UnitSubrectangle (Nat.succ_lt_succ hi) hj) := by
   rintro z ⟨⟨t₀, t₁⟩, ⟨tI, ht⟩⟩
   have : ((SplitDihomotopy.SecondPartVerticallyDihomotopy F _).toDihomotopy) (t₀, t₁) =
-          (SplitDihomotopy.SecondPartVerticallyDihomotopy F (Fraction.ofPos (Nat.succ_pos n.succ))) (t₀, t₁) := rfl
+          (SplitDihomotopy.SecondPartVerticallyDihomotopy F
+              (Fraction.ofPos (Nat.succ_pos n.succ))) (t₀, t₁) := rfl
   rw [this, SplitDihomotopy.spv_apply] at ht
   change ∃ a, a ∈ UnitSubrectangle _ hj ∧ F a = z
   refine ⟨_, ?_, ht⟩
@@ -277,7 +301,8 @@ lemma spv_subrectangle {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomoto
   · exact spv_aux₂ hi tI.1.2
   · exact tI.2
 
-/-- If F is  `(n + 1) × m`-covered, then the second part of F, split at `T = 1/(n+1)` is `n × m`-covered.
+/-- If F is `(n + 1) × m`-covered, then the second part of F, split at `T = 1/(n+1)` is `n ×
+m`-covered.
 -/
 lemma coveredPartwise_second_vpart {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dipath.Dihomotopy γ₁ γ₂}
   {hX : X₀ ∪ X₁ = univ} {n m : ℕ} (hF : coveredPartwise hX F.toDihomotopy n.succ m) :
@@ -291,7 +316,8 @@ lemma coveredPartwise_second_vpart {x y : X} {γ₁ γ₂ : Dipath x y} {F : Dip
   case inr h => right; exact subset_trans (spv_subrectangle _ _) h
 
 /-- The image of a dihomotopy F of the rectangle `[i/(n+1), (i+1)/(n+1)] × [0, 1/(m+2)]`
-  contains the image of the first part of F, split at `1/(m+2)`, of `[i/(n+1), (i+1)/(n+1)] × [0, 1]`.
+  contains the image of the first part of F, split at `1/(m+2)`, of `[i/(n+1), (i+1)/(n+1)]
+      × [0, 1]`.
 -/
 lemma fph_subrectangle {f g : D(I,X)} {F : Dihomotopy f g} {n m i : ℕ} (hi : i < n.succ) :
     (SplitDihomotopy.FirstPartHorizontallyDihomotopy F (Fraction.ofPos (Nat.succ_pos m.succ))) ''
@@ -307,9 +333,11 @@ lemma fph_subrectangle {f g : D(I,X)} {F : Dihomotopy f g} {n m i : ℕ} (hi : i
       unit_interval
     · exact unitInterval.mul_le_left
 
-/-- If `F` is `n × (m+1)`-covered, then the first part of `F`, split at `T = 1/(m+2)`, is `n × 0`-covered.
+/-- If `F` is `n × (m+1)`-covered, then the first part of `F`, split at `T = 1/(m+2)`, is `n ×
+0`-covered.
 -/
-lemma coveredPartwise_first_hpart {f g : D(I,X)} {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ} {n m : ℕ}
+lemma coveredPartwise_first_hpart {f g : D(I,X)} {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ}
+    {n m : ℕ}
   (hF : coveredPartwise hX F n m.succ) :
     coveredPartwise hX (SplitDihomotopy.FirstPartHorizontallyDihomotopy F
       (Fraction.ofPos (Nat.succ_pos m.succ))) n 0 := by
@@ -321,11 +349,13 @@ lemma coveredPartwise_first_hpart {f g : D(I,X)} {F : Dihomotopy f g} {hX : X₀
   · left; exact subset_trans (fph_subrectangle _) h
   · right; exact subset_trans (fph_subrectangle _) h
 
-/-- The image of a dihomotopy F of the rectangle `[i/(n+1), (i+1)/(n+1)] × [(j+1)/(m+2), (j+2)/(m+2)]`
+/-- The image of a dihomotopy F of the rectangle `[i/(n+1), (i+1)/(n+1)] × [(j+1)/(m+2),
+(j+2)/(m+2)]`
   contains the image of the second part of F, split at `1/(m+2)`, of
   `[i/(n+1), (i+1)/(n+1)] × [j/(m+1), (j+1)/(m+1)]`.
 -/
-lemma sph_subrectangle {f g : D(I,X)} {F : Dihomotopy f g} {n m i j : ℕ} (hi : i < n.succ) (hj : j < m.succ) :
+lemma sph_subrectangle {f g : D(I,X)} {F : Dihomotopy f g} {n m i j : ℕ} (hi : i < n.succ)
+    (hj : j < m.succ) :
     (SplitDihomotopy.SecondPartHorizontallyDihomotopy F (Fraction.ofPos (Nat.succ_pos m.succ))) ''
       (UnitSubrectangle hi hj) ⊆ F '' (UnitSubrectangle hi (Nat.succ_lt_succ hj)) := by
   rintro z ⟨⟨t₀, t₁⟩, ⟨tI, ht⟩⟩
@@ -338,10 +368,11 @@ lemma sph_subrectangle {f g : D(I,X)} {F : Dihomotopy f g} {n m i j : ℕ} (hi :
     · exact spv_aux₁ hj tI.2.1
     · exact spv_aux₂ hj tI.2.2
 
-/-- If `F` is `n × (m+1)`-covered, then the second part of `F`, split at at `T = 1/(n+1)` is `n × m`-covered.
+/-- If `F` is `n × (m+1)`-covered, then the second part of `F`, split at at `T = 1/(n+1)` is `n ×
+m`-covered.
 -/
-lemma coveredPartwise_second_hpart {f g : D(I,X)} {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ} {n m : ℕ}
-  (hF : coveredPartwise hX F n m.succ) :
+lemma coveredPartwise_second_hpart {f g : D(I,X)} {F : Dihomotopy f g} {hX : X₀ ∪ X₁ = univ}
+    {n m : ℕ} (hF : coveredPartwise hX F n m.succ) :
     coveredPartwise hX (SplitDihomotopy.SecondPartHorizontallyDihomotopy F
       (Fraction.ofPos (Nat.succ_pos m.succ))) n m := by
   unfold coveredPartwise at hF
@@ -385,13 +416,16 @@ lemma covered_right_of_covered {F : Dihomotopy γ₁ γ₂} {hX : X₀ ∪ X₁ 
     (fun hF => Or.inl (subset_trans (range_right_subset F) hF))
     (fun hF => Or.inr (subset_trans (range_right_subset F) hF))
 
-/-- Two paths are `m × n`-dihomotopic if there is a dihomotopy between them that can be covered by `m × n` rectangles.
+/-- Two paths are `m × n`-dihomotopic if there is a dihomotopy between them that can be covered by
+`m × n` rectangles.
 -/
 def dihomotopicCovered (hX : X₀ ∪ X₁ = univ) (γ₁ γ₂ : Dipath x y) (n m : ℕ) : Prop :=
   ∃ (F : Dihomotopy γ₁ γ₂), DirectedMap.Dihomotopy.coveredPartwise hX F.toDihomotopy n m
 
-/-- If `γ₁` and `γ₂` are two paths connected by a path-dihomotopy `F` that is covered by `m × (n + 1)` rectangles,
-  then `γ₁` and `F.eval (1/(n+2))` are `m × 0`-dihomotopic and `F.eval (1/(n+2))` and `γ₂` are `m × n`-dihomotopic.
+/-- If `γ₁` and `γ₂` are two paths connected by a path-dihomotopy `F` that is covered by `m × (n +
+1)` rectangles,
+  then `γ₁` and `F.eval (1/(n+2))` are `m × 0`-dihomotopic and `F.eval (1/(n+2))` and `γ₂` are `m ×
+  n`-dihomotopic.
 -/
 lemma dihomotopicCovered_split {F : Dihomotopy γ₁ γ₂} (hX : X₀ ∪ X₁ = univ) {n m : ℕ}
   (hF : DirectedMap.Dihomotopy.coveredPartwise hX F.toDihomotopy n.succ m) :
@@ -407,7 +441,8 @@ lemma dihomotopicCovered_split {F : Dihomotopy γ₁ γ₂} (hX : X₀ ∪ X₁ 
 lemma dihomotopicCovered_exists_of_preDihomotopic (hX : X₀ ∪ X₁ = univ) (h : γ₁.PreDihomotopic γ₂)
   (X₀_open : IsOpen X₀) (X₁_open : IsOpen X₁) :
     ∃ (n m : ℕ), dihomotopicCovered hX γ₁ γ₂ n m := by
-  rcases (DirectedMap.Dihomotopy.coveredPartwise_exists h.some.toDihomotopy hX X₀_open X₁_open) with ⟨n, m, hnm⟩
+  rcases (DirectedMap.Dihomotopy.coveredPartwise_exists h.some.toDihomotopy hX X₀_open X₁_open)
+    with ⟨n, m, hnm⟩
   exact ⟨n, m, h.some, hnm⟩
 
 

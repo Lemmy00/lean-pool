@@ -12,8 +12,10 @@ import LeanPool.DirectedTopologyLean4.DirectedHomotopy
     refl_trans : from `(refl x₀).trans p` to `p`
     trans_refl : from `p` to `p.trans (refl x₁)`
 
-  Those for trans_refl can be based on the auxiliary lemmas found in algebraic_topology.fundamental_groupoid.basic.
-  They use symmetry for refl_trans which is not possible in the directed case, so we have to define them manually.
+  Those for trans_refl can be based on the auxiliary lemmas found in
+  algebraic_topology.fundamental_groupoid.basic.
+  They use symmetry for refl_trans which is not possible in the directed case, so we have to define
+  them manually.
 -/
 
 open DirectedSpace DirectedMap
@@ -124,7 +126,7 @@ lemma refl_trans_reparam (p : Path x₀ x₁) :
         (Subtype.ext reflTransReparamAux_zero) (Subtype.ext reflTransReparamAux_one) := by
   ext
   unfold ReflTransReparamAux
-  simp [Path.trans_apply, not_le, coe_to_fun, Function.comp_apply]
+  simp [Path.trans_apply, Function.comp_apply]
   split_ifs
   · simp
   · simp

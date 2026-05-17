@@ -8,7 +8,8 @@ import LeanPool.DirectedTopologyLean4.DirectedSpace
 /-
   # Definition of directed maps
   This file defines the directed map between two directed spaces `X` and `Y` :
-  it is a continuous map from `X` to `Y` that is also `Directed`, i.e. it maps any dipath in `X` to a dipath in `Y`.
+  it is a continuous map from `X` to `Y` that is also `Directed`, i.e. it maps any dipath in `X` to
+  a dipath in `Y`.
   We give the definitions of:
   * Constant maps
   * Identities
@@ -24,7 +25,8 @@ def Directed {α β : Type*} [DirectedSpace α] [DirectedSpace β] (f : C(α, β
 end DirectedMap
 
 /-- Define the type of a directed map -/
-structure DirectedMap (α β : Type*) [DirectedSpace α] [DirectedSpace β] extends ContinuousMap α β where
+structure DirectedMap (α β : Type*) [DirectedSpace α] [DirectedSpace β]
+    extends ContinuousMap α β where
   protected directed_toFun : DirectedMap.Directed toContinuousMap
 
 /-- Notation `D(X,Y)` for directed maps from `X` to `Y` -/
@@ -42,7 +44,8 @@ export DirectedMapClass (map_directed)
 
 section DirectedMapClass
 
-variable {F α β : Type*} [DirectedSpace α] [DirectedSpace β] [FunLike F α β] [hF : DirectedMapClass F α β]
+variable {F α β : Type*} [DirectedSpace α] [DirectedSpace β] [FunLike F α β]
+    [hF : DirectedMapClass F α β]
 @[coe] def toDirectedMap (f : F) : D(α,β) := ⟨f, map_directed f⟩
 instance : CoeTC F D(α,β) := ⟨toDirectedMap⟩
 
@@ -63,7 +66,8 @@ instance toDirectedMapClass : DirectedMapClass D(α,β) α β where
   map_continuous := fun f => f.continuous_toFun
   map_directed := fun f => f.directed_toFun
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun` directly. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun` directly.
+-/
 instance : CoeFun (D(α,β)) fun _ => α → β := DFunLike.hasCoeToFun
 
 /-- A directed map can be coerced into a continuous map -/
@@ -71,7 +75,8 @@ instance : Coe D(α,β) C(α, β) := ⟨fun f => f.toContinuousMap⟩
 
 @[simp] lemma toFun_eq_coe {f : D(α,β)} : f.toFun = (f : α → β) := rfl
 @[simp] lemma coe_to_continuous_map (f : D(α,β)) : ⇑f.toContinuousMap = f := rfl
-@[simp] protected lemma coe_coe {F : Type*} [FunLike F α β] [DirectedMapClass F α β] (f : F) : ⇑(f : D(α,β)) = f := rfl
+@[simp] protected lemma coe_coe {F : Type*} [FunLike F α β] [DirectedMapClass F α β] (f : F)
+    : ⇑(f : D(α,β)) = f := rfl
 
 @[ext] theorem ext {f g : D(α,β)} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -96,7 +101,8 @@ variable {α}
 /-- The composition of directed maps is directed -/
 def comp (f : D(β,γ)) (g : D(α,β)) : D(α,γ) where
   toFun := f ∘ g
-  directed_toFun := fun x y p hp => f.directed_toFun (p.map g.continuous_toFun) (g.directed_toFun p hp)
+  directed_toFun := fun x y p hp => f.directed_toFun (p.map g.continuous_toFun)
+      (g.directed_toFun p hp)
 
 
 @[simp] lemma id_apply (a : α) : DirectedMap.id α a = a := rfl
@@ -107,8 +113,10 @@ def comp (f : D(β,γ)) (g : D(α,β)) : D(α,γ) where
   (f.comp g).comp h = f.comp (g.comp h) := rfl
 @[simp] lemma id_comp (f : D(α,β)) : (DirectedMap.id β).comp f = f := ext fun _ => rfl
 @[simp] lemma comp_id (f : D(α,β)) : f.comp (DirectedMap.id α) = f := ext fun _ => rfl
-@[simp] lemma const_comp (c : γ) (f : D(α,β)) : (const β c).comp f = const α c := ext <| fun _ => rfl
-@[simp] lemma comp_const (f : D(β,γ)) (b : β) : f.comp (const α b) = const α (f b) := ext <| fun _ => rfl
+@[simp] lemma const_comp (c : γ) (f : D(α,β)) : (const β c).comp f = const α c
+    := ext <| fun _ => rfl
+@[simp] lemma comp_const (f : D(β,γ)) (b : β) : f.comp (const α b) = const α (f b)
+    := ext <| fun _ => rfl
 
 lemma coe_injective : @Function.Injective D(α,β) (α → β) (↑) :=
   fun f g h => by cases f; cases g; congr; exact ContinuousMap.ext (congrFun h)

@@ -24,8 +24,10 @@ Dipaths are closed under:
 class DirectedSpace (α : Type u) extends TopologicalSpace α where
   IsDipath : ∀ {x y : α}, Path x y → Prop
   isDipath_constant : ∀ (x : α), IsDipath (Path.refl x)
-  isDipath_concat : ∀ {x y z : α} {γ₁ : Path x y} {γ₂ : Path y z}, IsDipath γ₁ → IsDipath γ₂ → IsDipath (Path.trans γ₁ γ₂)
-  isDipath_reparam : ∀ {x y : α} {γ : Path x y} {t₀ t₁ : I} {f : Path t₀ t₁}, Monotone f → IsDipath γ → IsDipath (f.map (γ.continuous_toFun))
+  isDipath_concat : ∀ {x y z : α} {γ₁ : Path x y}
+      {γ₂ : Path y z}, IsDipath γ₁ → IsDipath γ₂ → IsDipath (Path.trans γ₁ γ₂)
+  isDipath_reparam : ∀ {x y : α} {γ : Path x y} {t₀ t₁ : I}
+      {f : Path t₀ t₁}, Monotone f → IsDipath γ → IsDipath (f.map (γ.continuous_toFun))
 
 section DirectedSpace
 
@@ -41,7 +43,8 @@ def isDipath_constant (x : α) : IsDipath (Path.refl x) :=
 def isDipath_concat (hγ : IsDipath γ) (hγ' : IsDipath γ') : IsDipath (γ.trans γ') :=
   DirectedSpace.isDipath_concat hγ hγ'
 
-def isDipath_reparam (hfmono : Monotone f) (hγ : IsDipath γ) : IsDipath (f.map γ.continuous_toFun) :=
+def isDipath_reparam (hfmono : Monotone f) (hγ : IsDipath γ) : IsDipath (f.map γ.continuous_toFun)
+    :=
   DirectedSpace.isDipath_reparam hfmono hγ
 
 /-- Casting a path that is directed into another path gives another directed path -/

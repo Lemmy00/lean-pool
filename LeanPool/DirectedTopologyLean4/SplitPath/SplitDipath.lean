@@ -76,7 +76,8 @@ def trans_reparam_map {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) : D(I,I) where
   continuous_toFun := Continuous.subtype_mk (continuous_trans_reparam hT₀ hT₁) _
   directed_toFun := DirectedUnitInterval.directed_of_monotone _ (monotone_trans_reparam hT₀ hT₁)
 
-lemma trans_reparam_map_zero {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) : trans_reparam_map hT₀ hT₁ 0 = 0 :=
+lemma trans_reparam_map_zero {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) : trans_reparam_map hT₀ hT₁ 0 = 0
+    :=
   Subtype.ext (trans_reparam_zero T)
 lemma trans_reparam_map_one {T : I} (hT₀ : 0 < T) (hT₁ : T < 1) : trans_reparam_map hT₀ hT₁ 1 = 1 :=
   Subtype.ext (trans_reparam_one hT₁)

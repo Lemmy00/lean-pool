@@ -22,21 +22,23 @@ namespace Dipath
 
 /-### Stretching a path that only lives in the first half of the unit interval upwards -/
 
-lemma double_mem_I_of_bounded {t₀ t₁ : I} (t : I) (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ)) : 2 * (γ t : ℝ) ∈ I :=
+lemma double_mem_I_of_bounded {t₀ t₁ : I} (t : I) (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ))
+    : 2 * (γ t : ℝ) ∈ I :=
   double_mem_I <| le_trans (monotone_path_bounded γ.dipath_toPath t).2 (ht₁)
 
 def stretch_up_path {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ)) : Path
   (⟨2 * ↑t₀, by { rw [←γ.source']; exact double_mem_I_of_bounded 0 γ ht₁ }⟩ : I)
   ⟨2 * ↑t₁, double_mem_I ht₁⟩ where
     toFun := fun t => ⟨2 * (γ t), double_mem_I_of_bounded t γ ht₁⟩
-    source' := by simp [γ.source']
-    target' := by simp [γ.target']
+    source' := by simp
+    target' := by simp
 
 lemma isDipath_stretch_up {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ)) :
   IsDipath (stretch_up_path γ ht₁) := by
   intros x y hxy
   unfold stretch_up_path
-  simp only [Path.coe_mk', ContinuousMap.coe_mk, Subtype.mk_le_mk, Nat.ofNat_pos, mul_le_mul_iff_right₀, Subtype.coe_le_coe]
+  simp only [Path.coe_mk', ContinuousMap.coe_mk, Subtype.mk_le_mk, Nat.ofNat_pos,
+    mul_le_mul_iff_right₀, Subtype.coe_le_coe]
   exact γ.dipath_toPath hxy
 
 def stretch_up {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₁ : ↑t₁ ≤ (2⁻¹ : ℝ)) : Dipath
@@ -55,14 +57,15 @@ def stretch_down_path {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₀ : (2⁻¹ :
   (⟨2 * ↑t₀ - 1, double_sub_one_mem_I ht₀⟩ : I)
   ⟨2 * ↑t₁ - 1, by { rw [←γ.target']; exact double_sub_one_mem_I_of_bounded 1 γ ht₀ }⟩ where
     toFun := fun t => ⟨2 * (γ t) - 1, double_sub_one_mem_I_of_bounded t γ ht₀⟩
-    source' := by simp [γ.source']
-    target' := by simp [γ.target']
+    source' := by simp
+    target' := by simp
 
 lemma isDipath_stretch_down {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₀ : (2⁻¹ : ℝ) ≤ ↑t₀) :
   IsDipath (stretch_down_path γ ht₀) := by
   intros x y hxy
   unfold stretch_down_path
-  simp only [Path.coe_mk', ContinuousMap.coe_mk, Subtype.mk_le_mk, tsub_le_iff_right, sub_add_cancel, Nat.ofNat_pos, mul_le_mul_iff_right₀, Subtype.coe_le_coe]
+  simp only [Path.coe_mk', ContinuousMap.coe_mk, Subtype.mk_le_mk, tsub_le_iff_right,
+    sub_add_cancel, Nat.ofNat_pos, mul_le_mul_iff_right₀, Subtype.coe_le_coe]
   exact γ.dipath_toPath hxy
 
 def stretch_down {t₀ t₁ : I} (γ : Dipath t₀ t₁) (ht₀ : (2⁻¹ : ℝ) ≤ ↑t₀) : Dipath
