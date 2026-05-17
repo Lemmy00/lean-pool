@@ -142,8 +142,10 @@ lemma herglotz_hasDerivAt (μ : ProbabilityMeasure (sphere (0 : ℂ) 1))
                 norm_num [show (x : ℂ) * n * 2 - x * w₀ * 2 = (n * 2 - w₀ * 2) * x from by ring,
                   norm_mul]
               by_cases h : n - w₀ = 0 <;>
-              simp_all [div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm]
-              positivity
+              simp_all only [div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm, norm_mul,
+                Complex.norm_ofNat, norm_zero, mul_zero, zero_mul, mul_inv_rev]
+              · positivity
+              · rw [← mul_assoc, mul_inv_cancel₀ (norm_ne_zero_iff.mpr h), one_mul]
             refine le_trans h_bound ?_
             rw [div_le_div_iff₀] <;> nlinarith [norm_nonneg (x - n), norm_nonneg (x - w₀)]
           exact h_bound
@@ -422,21 +424,30 @@ lemma u_n_mean_value (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
           mem_closedBall_zero_iff.mp hz) hr.1.le) hr.2
     have := @Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
     specialize @this 1 0 0 {0}; norm_num at this
-    specialize @this (fun z => p (r n * z)) ?_ ?_ <;> simp at hr
+    specialize @this (fun z => p (r n * z)) ?_ ?_ <;> simp only [mem_Ioo] at hr
     · exact h_analytic.continuousOn
     · intro z hz hz'; exact h_analytic.differentiableOn.differentiableAt (
         closedBall_mem_nhds_of_mem (by simp_all only [mem_ball, dist_zero_right]))
-    · simp_all [div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm, circleIntegral]
-      simp_all [mul_left_comm (circleMap 0 1 _), mul_comm]
-      rw [show (∫ (θ : ℝ) in 0..π * 2, I * p (↑(r n) * circleMap 0 1 θ)) =
-            I * ∫ (θ : ℝ) in 0..π * 2, p (↑(r n) * circleMap 0 1 θ) from
+    · suffices h_int : (∫ (θ : ℝ) in 0..π * 2, p (↑(r n) * circleMap 0 1 θ)) = ↑π * 2 by
+        rw [show (2 * π : ℝ) = π * 2 from by ring]
+        rw [h_int, hp0]
+        field_simp
+      have h_circle_ne : ∀ θ : ℝ, circleMap 0 1 θ ≠ 0 :=
+        fun θ => circleMap_ne_center (by norm_num : (1 : ℝ) ≠ 0)
+      simp only [circleIntegral, deriv_circleMap, smul_eq_mul, mul_zero, hp0] at this
+      have h_eq : ∀ θ : ℝ, circleMap 0 1 θ * I * (p (↑(r n) * circleMap 0 1 θ) /
+          circleMap 0 1 θ) = I * p (↑(r n) * circleMap 0 1 θ) := fun θ => by
+        field_simp
+      conv at this => lhs; rw [intervalIntegral.integral_congr (fun θ _ => h_eq θ)]
+      rw [show (∫ (θ : ℝ) in 0..2 * π, I * p (↑(r n) * circleMap 0 1 θ)) =
+            I * ∫ (θ : ℝ) in 0..2 * π, p (↑(r n) * circleMap 0 1 θ) from
           intervalIntegral.integral_const_mul _ _] at this
       have hI : I ≠ 0 := I_ne_zero
       have h_pi : (π : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt Real.pi_pos)
-      have h_int : (∫ (θ : ℝ) in 0..π * 2, p (↑(r n) * circleMap 0 1 θ)) = ↑π * 2 :=
-        mul_left_cancel₀ hI this
-      rw [h_int]
-      field_simp
+      have h_this : I * ∫ (θ : ℝ) in 0..π * 2, p (↑(r n) * circleMap 0 1 θ) = I * (↑π * 2) := by
+        rw [show (π * 2 : ℝ) = 2 * π from by ring]
+        convert this using 1; ring
+      exact mul_left_cancel₀ hI h_this
   have h_real_part : (1 / (2 * π)) * ∫ t in (0)..2 * π,
     (p (r n * circleMap 0 1 t)).re = (p 0).re := by
     convert congr_arg Complex.re h_mean_value_property using 1

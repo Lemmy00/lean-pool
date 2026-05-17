@@ -101,11 +101,16 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
                   have := h_diff_zero.tendsto_slope_zero
                   have := Metric.tendsto_nhdsWithin_nhds.mp this
                   obtain ⟨δ, hδ, H⟩ := this 1 zero_lt_one; use δ, hδ; intro y hy hy'
-                  filter_upwards [] with x hx; by_cases hx' : x = 0 <;> simp_all [div_eq_inv_mul]
+                  filter_upwards [] with x hx; by_cases hx' : x = 0 <;>
+                    simp_all only [div_eq_inv_mul,
+                      Set.mem_compl_iff, Set.mem_singleton_iff, ofReal_zero, zero_mul, sub_self,
+                      norm_zero, Set.uIoc_of_le (zero_le_one' ℝ), Set.mem_Ioc,
+                      dist_eq_norm, sub_zero, norm_mul, smul_eq_mul, zero_add,
+                      mul_zero]
                   have := H (show (x : ℂ) * y ≠ 0 from mul_ne_zero (
                     ofReal_ne_zero.mpr hx') hy') (
                       by simpa [abs_of_nonneg hx.1.le] using by nlinarith [norm_nonneg y])
-                  simp_all  [dist_eq_norm, mul_assoc, mul_comm]
+                  simp_all only [mul_assoc, mul_comm, mul_inv_rev, norm_inv]
                   have := norm_sub_le (y⁻¹ * ((x : ℂ) ⁻¹ * (deriv f (y * x) - deriv f 0)) -
                     deriv (deriv f) 0) (-deriv (deriv f) 0); simp_all  [mul_left_comm]
                   rw [abs_of_nonneg hx.1.le] at this
@@ -164,7 +169,8 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
                       mul_le_of_le_one_left (norm_nonneg _) <| show (|x| : ℝ) ≤ 1 by
                       cases Set.mem_uIcc.mp hx <;> exact abs_le.mpr ⟨by linarith, by linarith⟩) <|
                         by simpa using hz) continuousOn_const
-            have := h_ftc 0 1; simp_all
+            have := h_ftc 0 1; simp only [mem_ball, dist_zero_right, ne_eq, ofReal_zero,
+              zero_mul, ofReal_one, one_mul, zero_le_one, le_refl, forall_const] at *
             rw [intervalIntegral.integral_sub] <;> norm_num [h_ftc]
             · field_simp
               have := h_ftc 0 1; norm_num at this
@@ -201,7 +207,7 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
         by_cases h : z = 0 <;> simp_all  [div_eq_mul_inv, sq, mul_assoc, mul_comm]
         grind
       intro z hz
-      by_cases h : z = 0 <;> simp_all  [DifferentiableWithinAt]
+      by_cases h : z = 0 <;> simp_all only [DifferentiableWithinAt, mem_ball, dist_zero_right]
       · exact ⟨_, h.diff_zero.hasFDerivAt.hasFDerivWithinAt⟩
       · exact ⟨_, DifferentiableAt.hasFDerivAt (
           by exact DifferentiableAt.congr_of_eventuallyEq (
@@ -273,7 +279,9 @@ lemma hasDerivAt_integral_of_analytic_mul (f : ℂ → ℂ) (hf : AnalyticOn ℂ
       refine ContinuousOn.sub ?_ ?_
       · refine ContinuousOn.comp hf.continuousOn ?_ ?_
         · exact Continuous.continuousOn (by continuity)
-        · intro u hu; simp_all  [dist_eq_norm]
+        · intro u hu
+          simp_all only [mem_ball, dist_zero_right, Complex.norm_mul, norm_real,
+            Real.norm_eq_abs, Set.mem_Ioc]
           exact lt_of_le_of_lt (mul_le_of_le_one_left (norm_nonneg _) (abs_le.mpr ⟨
             by linarith, by linarith⟩)) (by linarith [norm_add_le z y])
       · exact ContinuousOn.comp hf.continuousOn (
@@ -289,7 +297,8 @@ lemma hasDerivAt_integral_of_analytic_mul (f : ℂ → ℂ) (hf : AnalyticOn ℂ
           Metric.closedBall 0 (‖z‖ + (1 - ‖z‖) / 2))) := by
         intro t ht
         have h_mean_value : (x * z + t * (x * y)) ∈ Metric.closedBall 0 (‖z‖ + (1 - ‖z‖) / 2) := by
-          simp_all  [dist_eq_norm]
+          rw [Set.uIoc_of_le (zero_le_one' ℝ), Set.mem_Ioc] at hx
+          simp_all only [Metric.mem_closedBall, dist_zero_right, Set.mem_Icc]
           refine le_trans (norm_add_le _ _) ?_
           norm_num [abs_of_nonneg hx.1.le, abs_of_nonneg ht.1]
           nlinarith [mul_le_mul_of_nonneg_left hx.2 (norm_nonneg z),
@@ -324,7 +333,9 @@ lemma hasDerivAt_integral_of_analytic_mul (f : ℂ → ℂ) (hf : AnalyticOn ℂ
           · exact h_f_deriv.continuousOn
           · exact Continuous.continuousOn (by continuity)
           · intro t ht
-            simp_all [dist_eq_norm]
+            rw [Set.uIoc_of_le (zero_le_one' ℝ), Set.mem_Ioc] at hx
+            rw [Set.uIcc_of_le (zero_le_one' ℝ), Set.mem_Icc] at ht
+            simp_all only [mem_ball, dist_zero_right, Set.mem_Icc]
             refine lt_of_le_of_lt (norm_add_le _ _) ?_
             norm_num [abs_of_nonneg hx.1.le, abs_of_nonneg ht.1]
             nlinarith [mul_le_mul_of_nonneg_left ht.2 hx.1.le,
@@ -507,7 +518,8 @@ lemma exists_log_of_analytic_nonzero_on_ball (f : ℂ → ℂ)
           differentiable_exp.comp_differentiableOn (hg0_anal.differentiableOn.neg))
       intro z hz
       have h_path : ∀ t ∈ Set.Icc (0 : ℝ) 1, t • z ∈ ball 0 1 := by
-        simp_all
+        simp_all only [Set.mem_Icc, real_smul, mem_ball, dist_zero_right, Complex.norm_mul,
+          norm_real, Real.norm_eq_abs, and_imp]
         exact fun t ht₁ ht₂ => by rw [abs_of_nonneg ht₁]; nlinarith [norm_nonneg z]
       have h_int : ∫ t in (0 : ℝ)..1, deriv H (t • z) * z = H z - H 0 := by
         rw [intervalIntegral.integral_eq_sub_of_hasDerivAt]
@@ -515,10 +527,13 @@ lemma exists_log_of_analytic_nonzero_on_ball (f : ℂ → ℂ)
         focus use fun t => H (t • z)
         · norm_num
         · intro t ht; have := h_diff.hasDerivAt (
-            IsOpen.mem_nhds isOpen_ball <| h_path t <| by simpa using ht); simp_all  [mul_comm]
+            IsOpen.mem_nhds isOpen_ball <| h_path t <| by simpa using ht)
+          simp only [real_smul, mul_comm (↑t : ℂ) z] at this
+          simp only [real_smul]
           convert this.comp t (HasDerivAt.const_mul z (hasDerivAt_id t |>
             HasDerivAt.ofReal_comp)) using 1
-          norm_num [mul_assoc, mul_comm, mul_left_comm]
+          · norm_num [mul_assoc, mul_comm, mul_left_comm, Function.comp_def]
+          · push_cast; ring
         · exact (ContinuousOn.intervalIntegrable (by rw [continuousOn_congr fun t ht =>
             by rw [hH_const _ (h_path t <| by simpa using ht)]]; exact continuousOn_const)) ..
       have h_zero : ∫ t in (0 : ℝ)..1, deriv H (t • z) * z = 0 := by
@@ -556,11 +571,14 @@ lemma exists_sqrt_f_div_z (f : ℂ → ℂ) (hf : f ∈ classS) :
       hg.1.differentiableOn.sub_const _) _)) (isOpen_ball)
   · norm_num [hn]
   · intro z hz hz'; rw [← exp_nat_mul] ; ring_nf
-    simp_all [exp_sub, mul_assoc, mul_comm, mul_left_comm]
-    simp_all [dslope]
-    rw [show exp (I * (Real.pi * (n * 2))) = 1 by rw [exp_eq_one_iff]; use n; ring]
-    simp  [slope_def_field]
-    have := hf.2.2.1; aesop
+    have h_exp := hg.2 z hz
+    simp only [dslope, Function.update_of_ne hz', slope_def_field, hf.2.2.1,
+      sub_zero] at h_exp
+    rw [exp_sub, h_exp,
+      show ((↑π * I * ↑n * 2 : ℂ)) = I * (Real.pi * (n * 2)) from by ring,
+      show cexp (I * (Real.pi * (n * 2))) = 1 from by
+        rw [exp_eq_one_iff]; use n; ring]
+    field_simp
 
 /--
 The class S consists of normalized analytic univalent functions on the unit disc.
@@ -597,8 +615,15 @@ theorem square_root_transform_in_S (f : ℂ → ℂ) (hf : f ∈ classS) :
     · convert HasDerivAt.deriv (HasDerivAt.mul (hasDerivAt_id 0) (HasDerivAt.comp 0 (
         h_analytic.differentiableOn.differentiableAt (isOpen_ball.mem_nhds <| by norm_num) |>
           DifferentiableAt.hasDerivAt) (hasDerivAt_pow 2 0))) using 1; norm_num [h_eq]
-  · intro z hz; by_cases hz' : z = 0 <;> simp_all [mul_pow]
-    rw [mul_div_cancel₀ _ (pow_ne_zero 2 hz')]
+  · intro z hz; by_cases hz' : z = 0
+    · subst hz'
+      simp [hf.2.2.1, h_eq.1]
+    · have hz2 : z ^ 2 ∈ ball (0 : ℂ) 1 := by
+        rw [mem_ball, dist_zero_right, norm_pow]
+        exact pow_lt_one₀ (norm_nonneg _) (by simpa using hz) (by norm_num)
+      rw [show (z * h (z ^ 2)) ^ 2 = z ^ 2 * h (z ^ 2) ^ 2 from by ring,
+        h_eq.2 (z ^ 2) hz2 (pow_ne_zero 2 hz')]
+      rw [mul_div_cancel₀ _ (pow_ne_zero 2 hz')]
 
 /--
 If `f` is in `classS`, then `1/f(z) - 1/z` extends to an analytic function on the unit disk.
@@ -618,7 +643,8 @@ lemma inv_f_sub_inv_id_analytic (f : ℂ → ℂ) (hf : f ∈ classS) :
     refine ⟨?_, ?_⟩
     · apply_rules [AnalyticOn.sub, AnalyticOn.div, analyticOn_const]
       · exact hh₁.1
-      · intro z hz; by_cases h : z = 0 <;> simp_all  [div_eq_inv_mul]
+      · intro z hz; by_cases h : z = 0 <;>
+          simp_all only [div_eq_inv_mul, ne_eq, mem_ball, dist_zero_right]
         · have h_lim : Filter.Tendsto (fun z => h₁ z) (nhdsWithin 0 {0}ᶜ) (nhds 1) := by
             have h_lim : Filter.Tendsto (fun z => z⁻¹ * f z) (nhdsWithin 0 {0}ᶜ) (nhds 1) := by
               have h_lim : HasDerivAt f 1 0 := by
@@ -631,14 +657,25 @@ lemma inv_f_sub_inv_id_analytic (f : ℂ → ℂ) (hf : f ∈ classS) :
               z hz₁ hz₂ using by rw [hh₁.2 z (by simpa using hz₂) hz₁]
           exact fun h => absurd (tendsto_nhds_unique h_lim (hh₁.1.continuousOn.continuousAt (
             ball_mem_nhds _ zero_lt_one) |> fun h => h.mono_left inf_le_left)) (by aesop)
-        · intro H; have := hf.2.1; simp_all  [Set.InjOn]
-          exact absurd (@this z hz 0 (by norm_num) (by simp  [H, hf.2.2.1])) (
-            by simpa [H, hf.2.2.1] using h)
+        · intro H
+          have hinj := hf.2.1
+          have hh1_z : h₁ z = z⁻¹ * f z := hh₁.2 z (by simpa using hz) h
+          rw [H] at hh1_z
+          have hf_z : f z = 0 := by
+            have : z⁻¹ * f z = 0 := hh1_z.symm
+            have hz_inv : z⁻¹ ≠ 0 := inv_ne_zero h
+            exact (mul_eq_zero.mp this).resolve_left hz_inv
+          simp only [Set.InjOn, mem_ball, dist_zero_right] at hinj
+          exact absurd (@hinj z (by simpa using hz) 0 (by norm_num)
+            (by simp [hf_z, hf.2.2.1])) h
     · aesop
   have h_h : ∃ h : ℂ → ℂ, AnalyticOn ℂ h (ball 0 1) ∧ ∀ z ∈ ball 0 1, z ≠ 0 → h z = h₁ z / z := by
     have h_h : ∃ h : ℂ → ℂ, AnalyticOn ℂ h (ball 0 1) ∧ ∀ z ∈ ball 0 1, h z * z = h₁ z := by
       have h_h : ∀ z ∈ ball 0 1, h₁ z = (dslope (fun z => h₁ z) 0 z) * z := by
-        intro z hz; by_cases hz' : z = 0 <;> simp  [dslope, hz']
+        intro z hz; by_cases hz' : z = 0
+        all_goals first
+          | (rw [hz']; simp only [dslope, Function.update_self, mul_zero])
+          | simp only [dslope, Function.update_of_ne hz']
         · have h_lim : Filter.Tendsto (fun z => h₁ z) (nhdsWithin 0 {0}ᶜ) (nhds 0) := by
             have h_lim : Filter.Tendsto (fun z =>
               (f z / z)⁻¹ - 1) (nhdsWithin 0 {0}ᶜ) (nhds 0) := by
@@ -680,8 +717,10 @@ lemma inv_f_sub_inv_id_analytic (f : ℂ → ℂ) (hf : f ∈ classS) :
       by rw [← h_h.choose_spec.2 z hz, mul_div_cancel_right₀ _ hz']⟩
   obtain ⟨h, hh⟩ := h_h
   use h
-  simp_all [div_eq_mul_inv, mul_comm]
-  intro z hz hz'; simp  [hz', mul_sub]
+  refine ⟨hh.1, ?_⟩
+  intro z hz hz'
+  rw [hh.2 z hz hz', hh₁.2 z hz hz']
+  field_simp
 
 /--
 The function `1/f(1/z)` is analytic on the exterior of the unit disk.
