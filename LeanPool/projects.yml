@@ -444,3 +444,41 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: brauergroup_new
+    title: Brauer Group Core
+    summary: Formalizes central simple algebra infrastructure and Wedderburn-Artin structure theorems toward Brauer groups.
+    branch: ring theory
+    entry_module: LeanPool.BrauerGroupNew
+    authors:
+      - Yunzhou Xie
+      - Yichen Feng
+      - Jujian Zhang
+      - Yael Dillies
+    source:
+      url: https://github.com/Whysoserioushah/BrauerGroup_new
+      github_repo: Whysoserioushah/BrauerGroup_new
+    status: verified
+    main_declarations:
+      - Wedderburn_Artin
+      - IsCentralSimple.TensorProduct.simple
+      - CSA_implies_CSA
+    main_results:
+      - declaration: Wedderburn_Artin
+        informal: Proves a Wedderburn-Artin decomposition for simple Artinian rings as matrix algebras over division rings.
+      - declaration: Wedderburn_Artin_algebra_version
+        informal: Gives an algebra equivalence form of Wedderburn-Artin for finite-dimensional central simple algebras.
+      - declaration: IsCentralSimple.TensorProduct.simple
+        informal: Proves simplicity of tensor products of central simple algebras over a field.
+      - declaration: IsCentralSimple.TensorProduct.isCentral
+        informal: Proves centrality of tensor products of central algebras over a field.
+      - declaration: CSA_implies_CSA
+        informal: Shows that base change preserves central simple algebra structure under the imported hypotheses.
+    tags:
+      - algebra
+      - ring-theory
+      - central-simple-algebras
+      - brauer-groups
+    msc:
+      - "16K20"
+      - "16K50"
+      - "16S35"
