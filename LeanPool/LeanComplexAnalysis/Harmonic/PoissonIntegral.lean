@@ -147,7 +147,7 @@ lemma cauchy_integral_formula_on_scaled_unitDisc {E : Type*} [NormedAddCommGroup
     rw [← mul_assoc I I⁻¹, mul_inv_cancel₀ I_ne_zero, one_mul]
     ring_nf
   rw [this, Complex.real_smul, mul_smul]
-  exact algebraMap_smul ℂ _ _
+  exact (algebraMap_smul ℂ _ _).symm
 
 /-- If `f` is analytic on the unit disc, then
 `ζ ↦ (star z / (I * (1 - star z * ζ))) • f (r * ζ)`
@@ -279,7 +279,10 @@ theorem poisson_formula_of_harmonicOn_scaled_unitDisc {u : ℂ → ℝ} {z : ℂ
   rw [← intervalIntegral.integral_congr hrt_eq]
   dsimp
   rw [congr_arg re (poisson_formula_of_analyticOn_scaled_unitDisc hf hr hz)]
-  simp only [Complex.smul_re, smul_eq_mul]
+  change (Complex.re ((1 / (2 * π) : ℝ) • ∫ (t : ℝ) in 0..2 * π,
+        ((1 - ‖z‖ ^ 2) / ‖cexp (↑t * I) - z‖ ^ 2) • f (↑r * cexp (↑t * I)))) = _
+  rw [Complex.smul_re]
+  simp only [smul_eq_mul]
   congr 1
   simp only [intervalIntegral.integral_of_le two_pi_pos.le]
   symm
@@ -288,9 +291,18 @@ theorem poisson_formula_of_harmonicOn_scaled_unitDisc {u : ℂ → ℝ} {z : ℂ
   · simp only [real_smul, RCLike.mul_re, RCLike.re_to_complex, ofReal_re, RCLike.im_to_complex,
                ofReal_im, zero_mul, sub_zero]
   · refine ContinuousOn.integrableOn_Icc ?_ |> fun h => h.mono_set <| Ioc_subset_Icc_self
-    refine ContinuousOn.smul ?_ ?_
-    · exact Continuous.continuousOn (Continuous.div (by fun_prop) (by fun_prop)
-              (fun t => by positivity [neq_in_unitDisc_of_exp_ofReal_mul_I hz t]))
+    have h_eq : (fun t : ℝ => ((1 - ‖z‖ ^ 2) / ‖cexp (↑t * I) - z‖ ^ 2) • f (↑r * cexp (↑t * I)))
+              = fun t : ℝ => (((1 - ‖z‖ ^ 2) / ‖cexp (↑t * I) - z‖ ^ 2 : ℝ) : ℂ) *
+                              f (↑r * cexp (↑t * I)) := by
+      funext t; rw [Complex.real_smul]
+    rw [h_eq]
+    refine ContinuousOn.mul ?_ ?_
+    · refine Continuous.continuousOn ?_
+      have hd : Continuous fun (t : ℝ) =>
+          ((1 - ‖z‖ ^ 2) / ‖cexp (↑t * I) - z‖ ^ 2 : ℝ) :=
+        Continuous.div (by fun_prop) (by fun_prop)
+          (fun t => by positivity [neq_in_unitDisc_of_exp_ofReal_mul_I hz t])
+      exact Complex.continuous_ofReal.comp hd
     · exact hf.continuousOn.comp (Continuous.continuousOn (by fun_prop))
                                  (fun t _ => mem_unitDisc_of_scaled_exp_ofReal_mul_I hr t)
 

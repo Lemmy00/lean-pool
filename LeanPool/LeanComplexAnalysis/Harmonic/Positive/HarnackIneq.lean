@@ -85,7 +85,7 @@ lemma harnack_ineq_cont_normalized_upper
       · exact sub_nonneg_of_le (pow_le_one₀ (norm_nonneg _) (le_of_lt (by simpa using hz)))
       · exact pow_pos (sub_pos.mpr (by simpa using hz)) _
       · exact sub_nonneg.2 (le_of_lt (by simpa using hz))
-      · have := norm_sub_norm_le (Complex.exp (t * Complex.I)) z ; aesop
+      · have := norm_sub_norm_le (Complex.exp (t * Complex.I)) z; aesop
   have h_integral : ∫ t in (0 : ℝ)..(2 * π), u (exp (t * Complex.I)) = 2 * π := by
     have h_integral : u 0 = (1 / (2 * π)) * ∫ t in (0 : ℝ)..(2 * π),
       u (exp (t * Complex.I)) := by
@@ -146,7 +146,7 @@ lemma harnack_ineq_cont_normalized_lower
           linarith [hz]
       · exact hc.comp (Continuous.continuousOn <| by continuity) fun x hx =>
          by simp [Complex.norm_exp]
-    · intro x hx₁ ; gcongr
+    · intro x hx₁; gcongr
       · exact non_neg_boundary u x h_pos hc
       · nlinarith only [show ‖z‖ < 1 from by simpa using hz, show ‖z‖ ≥ 0 from norm_nonneg z]
       · rw [mem_ball_zero_iff] at hz
@@ -164,7 +164,8 @@ lemma harnack_ineq_cont_normalized_lower
     have := @poisson_integral_of_harmonicOn_unitDisc_continuousOn_closedUnitDisc u 0
     simp at this
     grind
-  simp_all [division_def]
+  simp_all only [mem_ball, dist_zero_right, division_def, mul_inv_rev, one_mul,
+    intervalIntegral.integral_const_mul, mul_one, ge_iff_le]
   convert mul_le_mul_of_nonneg_left ‹_› (show 0 ≤ π⁻¹ * 2⁻¹ by positivity) using 1
   ring_nf
   field_simp
@@ -225,7 +226,7 @@ private lemma harmonic_scaling
       simp only [Set.mem_Ioo] at hr
       have hfu : ∃ (f : ℂ → ℂ), AnalyticOn ℂ f (ball 0 1) ∧
         EqOn (fun (z : ℂ) => (f z).re) u (ball 0 1) := by
-        obtain ⟨f,hf⟩ := @harmonic_is_realOfHolomorphic u (0 : ℂ) 1 hu
+        obtain ⟨f,hf⟩ := hu.exists_analyticOnNhd_ball_re_eq
         use f
         exact ⟨hf.1.analyticOn, hf.2⟩
       obtain ⟨f, hf, hf_eq⟩ := hfu
@@ -293,9 +294,9 @@ private lemma harnack_ineq_aux
         ring_nf
         simp [v]
       · have : v (z / r) = u (r * (z / r)) := rfl
-        simp [this] ; congr 1 ; field_simp [hr.1.ne']
+        simp [this]; congr 1; field_simp [hr.1.ne']
       · have : v (z / r) = u (r * (z / r)) := rfl
-        simp [this] ; congr 1 ; field_simp [hr.1.ne']
+        simp [this]; congr 1; field_simp [hr.1.ne']
       · have : v 0 = u 0 := by simp [v, mul_zero]
         rw [this]
         have hr_pos : 0 < r := hr.1

@@ -44,7 +44,8 @@ lemma moments_eq_integers (μ₁ μ₂ : ProbabilityMeasure (sphere (0 : ℂ) 1)
         ∫ x : sphere (0 : ℂ) 1, (x : ℂ) ^ (-m : ℤ) ∂ν =
         starRingEnd ℂ (∫ x : sphere (0 : ℂ) 1, (x : ℂ) ^ m ∂ν) := by
       intro ν
-      rw [← integral_conj]
+      rw [show (starRingEnd ℂ) (∫ (x : sphere (0 : ℂ) 1), (x : ℂ) ^ m ∂↑ν) =
+            ∫ (x : sphere (0 : ℂ) 1), (starRingEnd ℂ) ((x : ℂ) ^ m) ∂↑ν from integral_conj.symm]
       refine integral_congr_ae (Filter.Eventually.of_forall fun x => ?_)
       exact h_inv x
     have h_inv_integral : ∫ x : sphere (0 : ℂ) 1, (x : ℂ) ^ (-m : ℤ) ∂μ₁ =
@@ -147,8 +148,8 @@ lemma span_moments_dense : (Submodule.span ℂ (Set.range (fun n : ℤ => Contin
     dsimp at hx
     convert (zero_lt_one (α := ℝ)).trans_eq hx.symm using 1
     constructor
-    · intro _ ; rw [hx] ; exact zero_lt_one
-    · intro _ ; rw [← dist_pos, hx] ; exact zero_lt_one
+    · intro _; rw [hx]; exact zero_lt_one
+    · intro _; rw [← dist_pos, hx]; exact zero_lt_one
   | star =>
     rename_i h₁ h₂ h₃
     refine Submodule.span_induction ?_ ?_ ?_ ?_ h₃
@@ -190,12 +191,12 @@ lemma integral_eq_on_dense_set {X : Type*} [TopologicalSpace X] [CompactSpace X]
         refine le_trans this ?_
         calc  ‖g‖ = ‖f + (g - f)‖ := by simp
           _ ≤ ‖f‖ + ‖g - f‖ := norm_add_le _ _
-          _ ≤ ‖f‖ + 1 :=  by rw [<- dist_eq_norm] ; linarith
+          _ ≤ ‖f‖ + 1 :=  by rw [<- dist_eq_norm]; linarith
       · exact Filter.Eventually.of_forall fun x => Continuous.tendsto (by continuity) _
   intro f
   obtain ⟨f_n, hf_n⟩ : ∃ f_n : ℕ → C(X, ℂ), (∀ n, f_n n ∈ S) ∧
     Filter.Tendsto f_n Filter.atTop (𝓝 f) := by
-    have h_dense : f ∈ S.topologicalClosure := by rw [hS] ; exact Submodule.mem_top
+    have h_dense : f ∈ S.topologicalClosure := by rw [hS]; exact Submodule.mem_top
     exact mem_closure_iff_seq_limit.mp h_dense
   exact tendsto_nhds_unique (h_cont.1.continuousAt.tendsto.comp hf_n.2)
     (h_cont.2.continuousAt.tendsto.comp hf_n.2 |> Filter.Tendsto.congr (by
@@ -220,7 +221,14 @@ lemma measure_eq_of_moments (μ₁ μ₂ : Measure (sphere (0 : ℂ) 1))
       simp_rw [Finsupp.sum, ContinuousMap.coe_sum, ContinuousMap.coe_smul,
         ContinuousMap.coe_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
       rw [integral_finset_sum, integral_finset_sum]
-      · simp only [integral_const_mul, h_integrals]
+      · refine Finset.sum_congr rfl (fun i _ => ?_)
+        rw [show (∫ (a : ↑(sphere 0 1)), c i * (↑a : ℂ) ^ i ∂μ₁) =
+              c i * ∫ (a : ↑(sphere 0 1)), (↑a : ℂ) ^ i ∂μ₁ from
+            MeasureTheory.integral_const_mul _ _,
+            show (∫ (a : ↑(sphere 0 1)), c i * (↑a : ℂ) ^ i ∂μ₂) =
+              c i * ∫ (a : ↑(sphere 0 1)), (↑a : ℂ) ^ i ∂μ₂ from
+            MeasureTheory.integral_const_mul _ _,
+            h_integrals]
       · intro n hn; apply_rules [Integrable.const_mul, integrable_const]
         refine Integrable.mono' (g := fun _ => 1) ?_ ?_ ?_
         · norm_num
@@ -240,8 +248,8 @@ lemma measure_eq_of_moments (μ₁ μ₂ : Measure (sphere (0 : ℂ) 1))
     convert congr_arg re (h_integrals (ContinuousMap.mk (fun x =>
       f x : sphere (0 : ℂ) 1 → ℂ)
       (by continuity))) using 1 <;> norm_num [Complex.ext_iff, integral_sub, integral_const_mul]
-    · exact Eq.symm (by erw [integral_ofReal] ; norm_cast)
-    · exact Eq.symm (by erw [integral_ofReal] ; norm_cast)
+    · exact Eq.symm (by erw [integral_ofReal]; norm_cast)
+    · exact Eq.symm (by erw [integral_ofReal]; norm_cast)
   exact ext_of_forall_integral_eq_of_IsFiniteMeasure fun f ↦ h_eq f.toContinuousMap
 
 /-- If two power series are equal on the unit disc, then their coefficients are equal. -/
@@ -351,7 +359,7 @@ lemma kernel_expansion (z : ℂ) (hz : ‖z‖ < 1) (w : ℂ) (hw : ‖w‖ = 1)
     have h_expand : ∑' n : ℕ, (z / w) ^ (n + 1) = z / w / (1 - z / w) := by
       have h_geo_series : (∑' n : ℕ, (z / w) ^ (n + 1)) =
         (z / w) * (∑' n : ℕ, (z / w) ^ n) := by
-        rw [← tsum_mul_left] ; exact tsum_congr fun _ => by ring
+        rw [← tsum_mul_left]; exact tsum_congr fun _ => by ring
       rw [h_geo_series, tsum_geometric_of_norm_lt_one]
       · rfl
       · rw [norm_div, hw, div_one]
@@ -399,7 +407,7 @@ lemma integral_kernel_expansion
         · refine le_of_eq ?_
           congr 1
           ext i
-          simp [norm_mul, norm_pow, norm_star]
+          simp [norm_pow]
   rw [h_integral, integral_add (integrable_const 1)
         ((MeasureTheory.Integrable.const_mul h_integrable_tsum (2 : ℂ)))]
   rw [show ∫ a : sphere (0 : ℂ) 1, (2 : ℂ) *
@@ -407,15 +415,19 @@ lemma integral_kernel_expansion
       (2 : ℂ) * ∫ a : sphere (0 : ℂ) 1,
         (∑' (n : ℕ), z ^ (n + 1) * star ((a : ℂ) ^ (n + 1))) ∂μ from
       MeasureTheory.integral_const_mul _ _]
-  simp only [integral_const, smul_eq_mul, mul_one, measureReal_univ_eq_one]
+  simp only [integral_const, MeasureTheory.probReal_univ, one_smul]
   congr 1
   rw [integral_tsum]
-  · exact tsum_congr fun _ => MeasureTheory.integral_const_mul _ _
+  · congr 1
+    apply tsum_congr
+    intro i
+    exact MeasureTheory.integral_const_mul (z ^ (i + 1))
+      (fun a : sphere (0 : ℂ) 1 => star ((a : ℂ) ^ (i + 1)))
   · fun_prop (disch := norm_num)
   · refine ne_of_lt (lt_of_le_of_lt (ENNReal.tsum_le_tsum
       (g := fun n => ENNReal.ofReal (‖z‖ ^ (n + 1))) fun n => ?_) ?_)
     · refine le_trans (lintegral_mono_ae (g := fun _ => ENNReal.ofReal (‖z‖ ^ (n + 1))) ?_) ?_
-      · simp only [enorm, nnnorm_mul, nnnorm_pow, RCLike.nnnorm_conj, ENNReal.coe_mul,
+      · simp only [enorm, nnnorm_mul, nnnorm_pow, ENNReal.coe_mul,
         ENNReal.coe_pow, norm_nonneg, ENNReal.ofReal_pow, ofReal_norm]
         filter_upwards with a
         simp [show ‖(a : ℂ)‖₊ = 1 from by ext; simp]
@@ -461,9 +473,17 @@ theorem HerglotzRiesz_representation_uniqueness
     ext (_ | k) <;> simp only [star_pow, RCLike.star_def, pow_zero, integral_const, probReal_univ,
       one_smul] at h_coeffs ⊢
     convert congr_arg Star.star (h_coeffs k) using 1
-    · rw [Complex.star_def, ← integral_conj]
+    · rw [Complex.star_def]
+      rw [show (starRingEnd ℂ) (∫ (x : sphere (0 : ℂ) 1),
+              (starRingEnd ℂ) (x : ℂ) ^ (k + 1) ∂↑μ₁) =
+            ∫ (x : sphere (0 : ℂ) 1), (starRingEnd ℂ) ((starRingEnd ℂ) (x : ℂ) ^ (k + 1)) ∂↑μ₁
+          from integral_conj.symm]
       simp
-    · rw [Complex.star_def, ← integral_conj]
+    · rw [Complex.star_def]
+      rw [show (starRingEnd ℂ) (∫ (x : sphere (0 : ℂ) 1),
+              (starRingEnd ℂ) (x : ℂ) ^ (k + 1) ∂↑μ₂) =
+            ∫ (x : sphere (0 : ℂ) 1), (starRingEnd ℂ) ((starRingEnd ℂ) (x : ℂ) ^ (k + 1)) ∂↑μ₂
+          from integral_conj.symm]
       simp
   exact Subtype.ext h
 

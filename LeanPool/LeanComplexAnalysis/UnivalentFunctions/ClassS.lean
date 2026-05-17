@@ -107,7 +107,7 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
                       by simpa [abs_of_nonneg hx.1.le] using by nlinarith [norm_nonneg y])
                   simp_all  [dist_eq_norm, mul_assoc, mul_comm]
                   have := norm_sub_le (y⁻¹ * ((x : ℂ) ⁻¹ * (deriv f (y * x) - deriv f 0)) -
-                    deriv (deriv f) 0) (-deriv (deriv f) 0) ; simp_all  [mul_left_comm]
+                    deriv (deriv f) 0) (-deriv (deriv f) 0); simp_all  [mul_left_comm]
                   rw [abs_of_nonneg hx.1.le] at this
                   nlinarith [inv_mul_cancel_left₀ hx' (‖y‖⁻¹ * ‖deriv f (y * x) -
                     deriv f 0‖), inv_mul_cancel₀ hx', inv_mul_cancel₀ (show ‖y‖ ≠ 0 by aesop)]
@@ -117,17 +117,18 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
                     deriv f (x * z)) (deriv (deriv f) 0 * x) 0 := by
                     convert HasDerivAt.comp 0 (show HasDerivAt (fun z => deriv f z) (
                       deriv (deriv f) 0) (x * 0) by simpa using h_diff_zero) (
-                        HasDerivAt.const_mul (x : ℂ) (hasDerivAt_id 0)) using 1 ; norm_num
+                        HasDerivAt.const_mul (x : ℂ) (hasDerivAt_id 0)) using 1; norm_num
                   simpa [div_eq_inv_mul] using h_diff_zero.tendsto_slope_zero
               have h_aux : (deriv (deriv f) 0 / 2 : ℂ) =
                   ∫ (t : ℝ) in 0..1, deriv (deriv f) 0 * (↑t : ℂ) := by
-                rw [intervalIntegral.integral_const_mul (deriv (deriv f) 0)
-                    (fun t => (↑t : ℂ))]
+                rw [show ∫ (t : ℝ) in 0..1, deriv (deriv f) 0 * (↑t : ℂ) =
+                      deriv (deriv f) 0 * ∫ (t : ℝ) in 0..1, (↑t : ℂ) from
+                    intervalIntegral.integral_const_mul _ _]
                 rw [show ∫ (t : ℝ) in 0..1, (↑t : ℂ) = (1 / 2 : ℂ) from ?_]
                 · ring
                 · trans ((∫ (t : ℝ) in 0..1, t : ℝ) : ℂ)
                   · exact intervalIntegral.integral_ofReal
-                  · simp [integral_id]; norm_num
+                  · simp [integral_id]
               rw [h_aux]
               exact h_diff_zero
             refine h_diff_zero.congr fun z => ?_
@@ -167,7 +168,9 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
             rw [intervalIntegral.integral_sub] <;> norm_num [h_ftc]
             · field_simp
               have := h_ftc 0 1; norm_num at this
-              rw [intervalIntegral.integral_mul_const z (fun t => deriv f (↑t * z))] at this
+              rw [show ∫ (t : ℝ) in 0..1, deriv f ((↑t : ℂ) * z) * z =
+                    (∫ (t : ℝ) in 0..1, deriv f ((↑t : ℂ) * z)) * z from
+                  intervalIntegral.integral_mul_const _ _] at this
               linear_combination' this
             · apply_rules [ContinuousOn.intervalIntegrable]
               have h_cont : ContinuousOn (deriv f) (ball 0 1) := by
@@ -190,7 +193,7 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
           refine Filter.Tendsto.congr' (f₁ := fun z ↦
             (∫ (t : ℝ) in 0..1, deriv f (↑t * z) - deriv f 0) / z) ?_ ?_
           focus filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds (
-            ball_mem_nhds _ zero_lt_one)] with z hz₁ hz₂ using by rw [h_diff_zero z hz₂ hz₁] ; ring
+            ball_mem_nhds _ zero_lt_one)] with z hz₁ hz₂ using by rw [h_diff_zero z hz₂ hz₁]; ring
           assumption
         rw [hasDerivAt_iff_tendsto_slope_zero]
         refine h_diff_zero.congr' ?_
@@ -209,7 +212,7 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
                     if_neg hx) |> HasFDerivAt.hasFDerivWithinAt⟩
     convert h.diff_dslope using 1
     ext; simp  [dslope] ; ring_nf
-    simp  [Function.update, slope_def_field] ; ring_nf
+    simp  [Function.update, slope_def_field]; ring_nf
   · exact isOpen_ball
 
 /--
@@ -242,7 +245,8 @@ defined as the integral along the segment from 0 to `z`.
 def primitiveOnBall (f : ℂ → ℂ) (z : ℂ) : ℂ := z * ∫ t in (0 : ℝ)..1, f ((t : ℂ) * z)
 
 /--
-The derivative of the integral of `f(t*w)` with respect to `w` at `z` is the integral of `f'(t*z)*t`.
+The derivative of the integral of `f(t*w)` with respect to `w` at `z` is the integral of
+`f'(t*z)*t`.
 -/
 lemma hasDerivAt_integral_of_analytic_mul (f : ℂ → ℂ) (hf : AnalyticOn ℂ f (ball 0 1))
     (z : ℂ) (hz : z ∈ ball 0 1) :
@@ -348,17 +352,19 @@ lemma hasDerivAt_integral_of_analytic_mul (f : ℂ → ℂ) (hf : AnalyticOn ℂ
       have h_deriv : HasDerivAt (fun w => f (x * w)) (deriv f (x * z) * x) z := by
         convert HasDerivAt.comp z (hf.differentiableOn.differentiableAt (
           IsOpen.mem_nhds isOpen_ball <| ?_) |> DifferentiableAt.hasDerivAt) (
-            HasDerivAt.const_mul (x : ℂ) (hasDerivAt_id z)) using 1 ; focus aesop
+            HasDerivAt.const_mul (x : ℂ) (hasDerivAt_id z)) using 1; focus aesop
         simp_all
         nlinarith [abs_of_pos hx.1]
       simpa [div_eq_inv_mul] using h_deriv.tendsto_slope_zero
   refine h_dominated_convergence.congr' ?_
   rw [Filter.EventuallyEq, eventually_nhdsWithin_iff]
-  simp at *
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, smul_eq_mul, mem_ball_zero_iff] at hz ⊢
   rw [Metric.eventually_nhds_iff]
   refine ⟨(1 - ‖z‖) / 2, half_pos (sub_pos.mpr hz), ?_⟩
   refine fun y hy hy' => ?_
-  rw [intervalIntegral.integral_div y (fun u => f (↑u * (z + y)) - f (↑u * z)),
+  rw [show ∫ (u : ℝ) in 0..1, (f ((↑u : ℂ) * (z + y)) - f ((↑u : ℂ) * z)) / y =
+        (∫ (u : ℝ) in 0..1, (f ((↑u : ℂ) * (z + y)) - f ((↑u : ℂ) * z))) / y from
+      intervalIntegral.integral_div _ _,
       intervalIntegral.integral_sub]
   · ring
   · apply_rules [ContinuousOn.intervalIntegrable]
@@ -424,13 +430,13 @@ lemma hasDerivAt_primitiveOnBall (f : ℂ → ℂ)
               by simpa [abs_of_nonneg (show 0 ≤ x by
                 norm_num at hx; linarith)] using lt_of_le_of_lt (
                   mul_le_of_le_one_left (norm_nonneg _) <| show (|x| : ℝ) ≤ 1 by
-                  norm_num at hx ; exact abs_le.mpr ⟨by linarith, by linarith⟩) <| by simpa using hz
+                  norm_num at hx; exact abs_le.mpr ⟨by linarith, by linarith⟩) <| by simpa using hz
   rw [intervalIntegral.integral_add] at h_ftc_integral <;> norm_num at *
   · convert h_deriv using 1
     exact h_ftc_integral.symm.trans (
       by rw [show z * ∫ t in (0 : ℝ)..1, deriv f (↑t * z) * ↑t =
               ∫ t in (0 : ℝ)..1, z * (deriv f (↑t * z) * ↑t) from
-              (intervalIntegral.integral_const_mul z _).symm] ; congr; ext; ring)
+              (intervalIntegral.integral_const_mul z _).symm]; congr; ext; ring)
   · apply_rules [ContinuousOn.intervalIntegrable]
     exact hf.continuousOn.comp (Continuous.continuousOn <| by continuity) fun x hx =>
       by exact mem_ball_zero_iff.mpr <|
@@ -489,7 +495,7 @@ lemma exists_log_of_analytic_nonzero_on_ball (f : ℂ → ℂ)
         isOpen_ball.mem_nhds hz) |>
           DifferentiableAt.hasDerivAt) (HasDerivAt.comp z (hasDerivAt_exp _) (
             HasDerivAt.neg (hg0_anal.differentiableOn.differentiableAt (isOpen_ball.mem_nhds hz) |>
-              DifferentiableAt.hasDerivAt)))) using 1 ; ring!
+              DifferentiableAt.hasDerivAt)))) using 1; ring!
     grind
   have hH_const : ∀ z ∈ ball 0 1, H z = H 0 := by
     intro z hz
@@ -502,22 +508,22 @@ lemma exists_log_of_analytic_nonzero_on_ball (f : ℂ → ℂ)
       intro z hz
       have h_path : ∀ t ∈ Set.Icc (0 : ℝ) 1, t • z ∈ ball 0 1 := by
         simp_all
-        exact fun t ht₁ ht₂ => by rw [abs_of_nonneg ht₁] ; nlinarith [norm_nonneg z]
+        exact fun t ht₁ ht₂ => by rw [abs_of_nonneg ht₁]; nlinarith [norm_nonneg z]
       have h_int : ∫ t in (0 : ℝ)..1, deriv H (t • z) * z = H z - H 0 := by
         rw [intervalIntegral.integral_eq_sub_of_hasDerivAt]
         rotate_right
         focus use fun t => H (t • z)
         · norm_num
         · intro t ht; have := h_diff.hasDerivAt (
-            IsOpen.mem_nhds isOpen_ball <| h_path t <| by simpa using ht) ; simp_all  [mul_comm]
+            IsOpen.mem_nhds isOpen_ball <| h_path t <| by simpa using ht); simp_all  [mul_comm]
           convert this.comp t (HasDerivAt.const_mul z (hasDerivAt_id t |>
             HasDerivAt.ofReal_comp)) using 1
           norm_num [mul_assoc, mul_comm, mul_left_comm]
         · exact (ContinuousOn.intervalIntegrable (by rw [continuousOn_congr fun t ht =>
-            by rw [hH_const _ (h_path t <| by simpa using ht)]] ; exact continuousOn_const)) ..
+            by rw [hH_const _ (h_path t <| by simpa using ht)]]; exact continuousOn_const)) ..
       have h_zero : ∫ t in (0 : ℝ)..1, deriv H (t • z) * z = 0 := by
         rw [intervalIntegral.integral_congr fun t ht =>
-          by rw [hH_const _ (h_path t <| by simpa using ht)]] ; norm_num
+          by rw [hH_const _ (h_path t <| by simpa using ht)]]; norm_num
       have h_eq : H z = H 0 := by
         linear_combination' h_int.symm.trans h_zero
       exact h_eq
@@ -552,7 +558,7 @@ lemma exists_sqrt_f_div_z (f : ℂ → ℂ) (hf : f ∈ classS) :
   · intro z hz hz'; rw [← exp_nat_mul] ; ring_nf
     simp_all [exp_sub, mul_assoc, mul_comm, mul_left_comm]
     simp_all [dslope]
-    rw [show exp (I * (Real.pi * (n * 2))) = 1 by rw [exp_eq_one_iff] ; use n; ring]
+    rw [show exp (I * (Real.pi * (n * 2))) = 1 by rw [exp_eq_one_iff]; use n; ring]
     simp  [slope_def_field]
     have := hf.2.2.1; aesop
 
@@ -586,11 +592,11 @@ theorem square_root_transform_in_S (f : ℂ → ℂ) (hf : f ∈ classS) :
       have := hf.2.1 (
         show ‖w ^ 2‖ < 1
           from by simpa [hw] using pow_lt_one₀ (norm_nonneg _) ‹‖w‖ < 1› two_ne_zero) (
-            show ‖0‖ < 1 from by norm_num) ; simp_all  [sq]
+            show ‖0‖ < 1 from by norm_num); simp_all  [sq]
     · norm_num
     · convert HasDerivAt.deriv (HasDerivAt.mul (hasDerivAt_id 0) (HasDerivAt.comp 0 (
         h_analytic.differentiableOn.differentiableAt (isOpen_ball.mem_nhds <| by norm_num) |>
-          DifferentiableAt.hasDerivAt) (hasDerivAt_pow 2 0))) using 1 ; norm_num [h_eq]
+          DifferentiableAt.hasDerivAt) (hasDerivAt_pow 2 0))) using 1; norm_num [h_eq]
   · intro z hz; by_cases hz' : z = 0 <;> simp_all [mul_pow]
     rw [mul_div_cancel₀ _ (pow_ne_zero 2 hz')]
 
@@ -605,7 +611,7 @@ lemma inv_f_sub_inv_id_analytic (f : ℂ → ℂ) (hf : f ∈ classS) :
       ∀ z ∈ ball 0 1, z ≠ 0 → h₁ z = f z / z := by
       have h_f_div_z : AnalyticOn ℂ (fun z => dslope f 0 z) (ball 0 1) := by
         apply_rules [analyticOn_dslope_of_analyticOn, hf.1]
-      refine ⟨fun z => dslope f 0 z, h_f_div_z, fun z hz hz' => ?_⟩ ;
+      refine ⟨fun z => dslope f 0 z, h_f_div_z, fun z hz hz' => ?_⟩;
       simp [dslope, hz']
       simp [slope_def_field, hf.2.2.1]
     use fun z => 1 / h₁ z - 1
@@ -687,7 +693,7 @@ lemma inv_f_inv_analyticOn (f : ℂ → ℂ) (hf : f ∈ classS) :
     · apply AnalyticOn.div
       · exact analyticOn_const
       · exact analyticOn_id
-      · intro x hx h ; rw [h] at hx ; norm_num at hx
+      · intro x hx h; rw [h] at hx; norm_num at hx
     · exact fun x hx => by simpa [abs_of_pos] using inv_lt_one_of_one_lt₀ hx
   · intro z hz
     have h_f_ne_zero : ∀ w ∈ ball 0 1, w ≠ 0 → f w ≠ 0 := by
@@ -707,7 +713,7 @@ lemma inv_f_inv_injOn (f : ℂ → ℂ) (hf : f ∈ classS) :
     exact fun x hx y hy hxy => hf.2.1 (by simpa using hx) (by simpa using hy) hxy
   intro z hz w hw h_eq
   have := h_f_inj (show ‖1 / z‖ < 1 by simpa [abs_inv] using inv_lt_one_of_one_lt₀ hz) (
-    show ‖1 / w‖ < 1 by simpa [abs_inv] using inv_lt_one_of_one_lt₀ hw) ; aesop
+    show ‖1 / w‖ < 1 by simpa [abs_inv] using inv_lt_one_of_one_lt₀ hw); aesop
 
 /--
 If `f` is in `classS`, then `g(z) = 1/f(1/z)` is in `classSigma`.

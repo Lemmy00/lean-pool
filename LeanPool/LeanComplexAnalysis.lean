@@ -3,6 +3,7 @@ Copyright (c) 2026 seb488, Aristotle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: seb488, Aristotle
 -/
+
 import LeanPool.LeanComplexAnalysis.Harmonic
 import LeanPool.LeanComplexAnalysis.UnivalentFunctions
 
@@ -12,7 +13,7 @@ import LeanPool.LeanComplexAnalysis.UnivalentFunctions
 Source: url:https://github.com/seb488/LeanComplexAnalysis
 Authors: seb488, Aristotle
 Status: verified
-Main declarations: `LeanPool.LeanComplexAnalysis.poisson_integral_of_harmonicOn_unitDisc_continuousOn_closedUnitDisc`, `LeanPool.LeanComplexAnalysis.HerglotzRiesz_representation_harmonic`, `LeanPool.LeanComplexAnalysis.harnack_ineq`
+Main declarations: `LeanPool.LeanComplexAnalysis.harnack_ineq`
 Tags: complex-analysis, harmonic-functions, poisson-integral, univalent-functions
 MSC: 30A99, 31A05, 30C55
 -/
