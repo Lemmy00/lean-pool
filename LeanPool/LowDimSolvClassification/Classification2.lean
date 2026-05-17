@@ -196,7 +196,8 @@ theorem _root_.LieAlgebra.Dim2.solvable (dim2 : finrank K L = 2) :
       · intro hy
         obtain ⟨x, n, hxn⟩ := hy
         rw [Basis.repr_fin_two B x,Basis.repr_fin_two B n] at hxn
-        simp only [lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero, zero_add, add_zero] at hxn
+        simp only [lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero, zero_add,
+          add_zero] at hxn
         rw [<- lie_skew] at hxn
         rw [pfB] at hxn
         have u : y = ((-1: K) • B.repr n 0 • (B.repr x) 1 + (B.repr n) 1 • (B.repr x) 0) • B 1 := by
@@ -217,7 +218,8 @@ theorem _root_.LieAlgebra.Dim2.solvable (dim2 : finrank K L = 2) :
         rw [← hα]
         simp only [smul_lie]
         rw [pfB]
-     have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
+     have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y,
+       z⁆ = x} := commutator_eq_span
      rw [hh] at this
      rw [h1] at this
      have dimcomm : finrank K (commutator K L).toSubmodule = 1 := by

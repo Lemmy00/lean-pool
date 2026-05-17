@@ -79,7 +79,7 @@ def _root_.LieAlgebra.Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [
   map_lie' := by
     intro f g
     ext x
-    show (f * g - g * f) x = f (g x) - g (f x)
+    change (f * g - g * f) x = f (g x) - g (f x)
     simp
   invFun := LieDerivation.toLinearMap
   left_inv := by
@@ -135,10 +135,12 @@ def _root_.LieAlgebra.RealHyperbolicAux' : K →ₗ⁅K⁆ LieDerivation K L L :
 /-- TODO. -/
 def _root_.LieAlgebra.RealHyperbolicAux : K →ₗ⁅K⁆ LieDerivation K (mkAbelian K V) (mkAbelian K V) := RealHyperbolicAux' K (mkAbelian K V)
 
-/-- The almost abelian Lie algebra associated to real hyperbolic space, generalized to arbitrary `K`. -/
+/-- The almost abelian Lie algebra associated to real hyperbolic space,
+  generalized to arbitrary `K`. -/
 abbrev _root_.LieAlgebra.RealHyperbolic := K ⋉[RealHyperbolicAux K V] (mkAbelian K V)
 
-/-- The almost abelian Lie algebra associated to real hyperbolic `n`-space, generalized to arbitrary `K`. -/
+/-- The almost abelian Lie algebra associated to real hyperbolic `n`-space,
+  generalized to arbitrary `K`. -/
 abbrev _root_.LieAlgebra.RealHyperbolic' (n : ℕ) (K : Type*) [CommRing K] := K ⋉[RealHyperbolicAux K (Fin (n - 1) → K)] (mkAbelian K (Fin (n - 1) → K))
 --requires n > 0
 

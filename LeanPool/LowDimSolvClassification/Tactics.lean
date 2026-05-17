@@ -113,13 +113,16 @@ def eval [Add M] [Zero M] [SMul R M] [LieRing M] (l : NF R M) : M :=
   rw [List.map_cons]
   rw [List.sum_cons]
 
-theorem atom_eq_eval [AddMonoid M] [LieRing M] (x : M) : x = NF.eval [(1, Sum.inl x)] := by simp [eval, v]
-theorem atom_eq_evalD [AddMonoid M] [LieRing M] (x y : M) : ⁅x,y⁆ = NF.eval ((1, Sum.inr ⟨x,y⟩) ::ᵣ []) := by
+theorem atom_eq_eval [AddMonoid M] [LieRing M] (x : M) : x = NF.eval [(1,
+  Sum.inl x)] := by simp [eval, v]
+theorem atom_eq_evalD [AddMonoid M] [LieRing M] (x y : M) : ⁅x,y⁆ = NF.eval ((1,
+  Sum.inr ⟨x,y⟩) ::ᵣ []) := by
   simp [eval, v]
   dsimp!
   simp only [one_nsmul, add_zero]
   simp only [left_eq_add]
-theorem atom_eq_evalD_skew [LieRing M] (x y : M) : ⁅x,y⁆ = NF.eval ((-1, Sum.inr ⟨y,x⟩) ::ᵣ []) := by
+theorem atom_eq_evalD_skew [LieRing M] (x y : M) : ⁅x,y⁆ = NF.eval ((-1,
+  Sum.inr ⟨y,x⟩) ::ᵣ []) := by
   simp [eval, v]
   dsimp!
   simp only [Int.reduceNeg, neg_smul, one_smul, add_zero]
@@ -198,7 +201,7 @@ private lemma sum_map_neg_eq_neg_sum {M : Type*} [AddCommGroup M] (l : List M) :
   | cons _ _ ih => simp [ih, add_comm]
 
 theorem eval_neg [Ring R] [LieRing M] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
-  show NF.eval (l.map (fun (a, x) ↦ (-a, x))) = -l.eval
+  change NF.eval (l.map (fun (a, x) ↦ (-a, x))) = -l.eval
   unfold NF.eval
   rw [List.map_map]
   have heq : (fun (x : R × V M) ↦ x.1 • v x.2) ∘ (fun x : R × V M ↦ (-x.1, x.2)) =
@@ -456,12 +459,14 @@ def parseAux (fuel : Nat) (iMM : Q(LieRing $M)) (x : Q($M)) :
           q(NF.atom_eq_evalD_skew $x₁ $x₂)⟩
       | Sum.inr ⟨⟨x₁',x₂'⟩, ⟨_,_⟩⟩ =>
         assumeInstancesCommute
-        pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), q(Sum.inr ⟨$x₁', $x₂'⟩)), k)],
+        pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1),
+          q(Sum.inr ⟨$x₁', $x₂'⟩)), k)],
           q(NF.atom_eq_evalD $x₁ $x₂)⟩
     | _ =>
       let (k, ⟨x', _⟩) ← AtomD.addAtomQ x
       assumeInstancesCommute
-      pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), q(Sum.inl $x')), k)],
+      pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), q(Sum.inl $x')),
+        k)],
         q(NF.atom_eq_eval $x')⟩
 
 /-- TODO. -/

@@ -202,7 +202,7 @@ def rightIdeal_equiv_right : rightIdeal φ ≃ₗ⁅K⁆ J := {
     intro ⟨x, hx⟩ ⟨y, hy⟩
     change x.1 = 0 at hx
     change y.1 = 0 at hy
-    show (⁅(⟨x, hx⟩ : rightIdeal φ).val, (⟨y, hy⟩ : rightIdeal φ).val⁆ : L ⋉[φ] J).2 = ⁅x.2, y.2⁆
+    change (⁅(⟨x, hx⟩ : rightIdeal φ).val, (⟨y, hy⟩ : rightIdeal φ).val⁆ : L ⋉[φ] J).2 = ⁅x.2, y.2⁆
     simp only [bracket_def]
     rw [hx, hy]
     simp [map_zero]
@@ -267,14 +267,18 @@ lemma Prod.bracket_def (a b : L × J) :
 
 instance : LieRing (L × J) := {
   (inferInstance : AddCommGroup (L × J)) with
-  add_lie := fun _ _ _ ↦ by simp only [Prod.bracket_def, Prod.fst_add, add_lie, Prod.snd_add, Prod.mk_add_mk]
-  lie_add := fun _ _ ↦ by simp only [Prod.bracket_def, Prod.fst_add, lie_add, Prod.snd_add, Prod.mk_add_mk, implies_true]
+  add_lie := fun _ _ _ ↦ by simp only [Prod.bracket_def, Prod.fst_add, add_lie, Prod.snd_add,
+    Prod.mk_add_mk]
+  lie_add := fun _ _ ↦ by simp only [Prod.bracket_def, Prod.fst_add, lie_add, Prod.snd_add,
+    Prod.mk_add_mk, implies_true]
   lie_self := fun _ ↦ by simp only [Prod.bracket_def, lie_self, Prod.mk_zero_zero]
-  leibniz_lie := fun _ _ _ ↦ by simp only [Prod.bracket_def, lie_lie, Prod.mk_add_mk, sub_add_cancel]
+  leibniz_lie := fun _ _ _ ↦ by simp only [Prod.bracket_def, lie_lie, Prod.mk_add_mk,
+    sub_add_cancel]
 }
 
 instance : LieAlgebra K (L × J) := {
-  lie_smul := fun _ _ _ ↦ by simp only [Prod.bracket_def, Prod.smul_fst, lie_smul, Prod.smul_snd, Prod.smul_mk]
+  lie_smul := fun _ _ _ ↦ by simp only [Prod.bracket_def, Prod.smul_fst, lie_smul, Prod.smul_snd,
+    Prod.smul_mk]
 }
 
 variable (K L J : Type*) [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L] [LieAlgebra K J]
@@ -342,7 +346,8 @@ def leftIdeal_equiv_left : leftIdeal K L J ≃ₗ⁅K⁆ L := {
     RingHom.id_apply]
   map_lie' := by
     intro ⟨x, hx⟩ ⟨y, hy⟩
-    show (⁅(⟨x, hx⟩ : leftIdeal K L J).val, (⟨y, hy⟩ : leftIdeal K L J).val⁆ : L × J).1 = ⁅x.1, y.1⁆
+    change (⁅(⟨x, hx⟩ : leftIdeal K L J).val, (⟨y, hy⟩ : leftIdeal K L J).val⁆ : L × J).1 = ⁅x.1,
+      y.1⁆
     rfl
   invFun := fun x ↦ ⟨⟨x, 0⟩, rfl⟩
   left_inv := by
@@ -365,7 +370,8 @@ def rightIdeal_equiv_right : rightIdeal K L J ≃ₗ⁅K⁆ J := {
     RingHom.id_apply]
   map_lie' := by
     intro ⟨x, hx⟩ ⟨y, hy⟩
-    show (⁅(⟨x, hx⟩ : rightIdeal K L J).val, (⟨y, hy⟩ : rightIdeal K L J).val⁆ : L × J).2 = ⁅x.2, y.2⁆
+    change (⁅(⟨x, hx⟩ : rightIdeal K L J).val, (⟨y, hy⟩ : rightIdeal K L J).val⁆ : L × J).2 = ⁅x.2,
+      y.2⁆
     rfl
   invFun := fun x ↦ ⟨⟨0, x⟩, rfl⟩
   left_inv := by

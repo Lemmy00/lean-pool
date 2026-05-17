@@ -50,7 +50,8 @@ instance : LieRing (Affine K) := {
     ext i; fin_cases i <;> simp <;> ring
 }
 
-theorem _root_.LieAlgebra.Dim2.Affine.bracket {l r : Affine K} : ⁅l , r⁆ = ![0, l 0 * r 1 - r 0 * l 1] := by
+theorem _root_.LieAlgebra.Dim2.Affine.bracket {l r : Affine K} : ⁅l , r⁆ = ![0,
+  l 0 * r 1 - r 0 * l 1] := by
   rfl
 
 instance : LieAlgebra K (Affine K) := {
@@ -150,7 +151,8 @@ def _root_.LieAlgebra.Dim2.Affine.equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆
         Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
-    simp only [Bracket.bracket, Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+    simp only [Bracket.bracket, Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero,
+      Matrix.cons_val_one,
       Matrix.head_cons, add_zero]
     simp only [RealHyperbolicAux, RealHyperbolicAux']
     ext
@@ -158,7 +160,8 @@ def _root_.LieAlgebra.Dim2.Affine.equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆
     · simp only [Fin.isValue, LieHom.coe_comp, LieHom.coe_smulRight, Function.comp_apply,
       map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.id_coe,
       Pi.smul_apply, id_eq]
-      simp only [mkAbelian,Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons, LieHom.smulRight_apply,
+      simp only [mkAbelian,Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons,
+        LieHom.smulRight_apply,
        LinearMap.smul_apply,LinearMap.coe_mk, AddHom.coe_mk, Matrix.smul_cons, smul_eq_mul,
        mul_zero, Matrix.smul_empty, Pi.sub_apply, sub_self, Pi.neg_apply, neg_zero, neg_mul]
       ext i
@@ -217,7 +220,8 @@ instance : LieRing (Heisenberg K) := {
     ext i; fin_cases i <;> simp <;> ring
 }
 
-theorem _root_.LieAlgebra.Dim3.Heisenberg.bracket {l r : Heisenberg K} : ⁅l, r⁆ = ![l 1 * r 2 - r 1 * l 2, (0 : K), (0 : K)] := by
+theorem _root_.LieAlgebra.Dim3.Heisenberg.bracket {l r : Heisenberg K} : ⁅l,
+  r⁆ = ![l 1 * r 2 - r 1 * l 2, (0 : K), (0 : K)] := by
   rfl
 
 instance : LieAlgebra K (Heisenberg K) := {
@@ -252,7 +256,8 @@ instance : LieRing (AffinePlusAbelian K) := {
     ext i; fin_cases i <;> simp <;> ring
 }
 
-theorem _root_.LieAlgebra.Dim3.AffinePlusAbelian.bracket {l r : AffinePlusAbelian K} : ⁅l , r⁆ = ![(0 : K), l 1 * r 2 - r 1 * l 2, (0 : K)] := by
+theorem _root_.LieAlgebra.Dim3.AffinePlusAbelian.bracket {l r : AffinePlusAbelian K} : ⁅l ,
+  r⁆ = ![(0 : K), l 1 * r 2 - r 1 * l 2, (0 : K)] := by
   rfl
 
 instance : LieAlgebra K (AffinePlusAbelian K):= {
@@ -573,10 +578,13 @@ def _root_.LieAlgebra.Dim3.Hyperbolic.equivToRealHyperbolic : Hyperbolic K ≃�
           RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
-    simp only [Hyperbolic, RealHyperbolic, RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket, Matrix.cons_val_one,
+    simp only [Hyperbolic, RealHyperbolic, RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket,
+      Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two, Matrix.tail_cons,
-      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, map_smul, LieDerivation.coe_smul,
-      Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul,
+      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, map_smul,
+        LieDerivation.coe_smul,
+      Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons,
+        smul_eq_mul, zero_mul,
       Matrix.smul_empty, add_zero]
     ext
     · simp only
@@ -721,7 +729,8 @@ def _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr (x : Hyperbolic K) : (commutator 
   LinearMap.restrict (adjoint x) (ad_preserves_commutator x)
 
 theorem _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr_apply (x : Hyperbolic K)  (y : Hyperbolic K) (hy : y ∈ (commutator K (Hyperbolic K))) :
-    ad_restr x (⟨y, hy⟩ : (commutator K (Hyperbolic K))) = ⟨adjoint x y, ad_preserves_commutator x y hy⟩ :=
+    ad_restr x (⟨y, hy⟩ : (commutator K (Hyperbolic K))) = ⟨adjoint x y,
+      ad_preserves_commutator x y hy⟩ :=
   rfl
 
 theorem _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr_add (x y : Hyperbolic K) : ad_restr (x + y) = ad_restr x + ad_restr y := by
@@ -738,21 +747,24 @@ theorem _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr_smul (a : K) (x : Hyperbolic 
   unfold adjoint
   simp only [map_smul, LinearMap.smul_apply, ad_apply]
 
-theorem _root_.LieAlgebra.Dim3.Hyperbolic.lie_e₁e₂ : ⁅(e₁ : Hyperbolic K), (e₂ : Hyperbolic K)⁆ = e₂ := by
+theorem _root_.LieAlgebra.Dim3.Hyperbolic.lie_e₁e₂ : ⁅(e₁ : Hyperbolic K),
+  (e₂ : Hyperbolic K)⁆ = e₂ := by
   rw [Hyperbolic.bracket, e₁_def, e₂_def]
   unfold Hyperbolic
   simp only [Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.head_cons, mul_one, mul_zero, sub_zero, Matrix.cons_val_two,
     Matrix.tail_cons, sub_self]
 
-theorem _root_.LieAlgebra.Dim3.Hyperbolic.lie_e₁e₃ : ⁅(e₁ : Hyperbolic K), (e₃ : Hyperbolic K)⁆ = e₃ := by
+theorem _root_.LieAlgebra.Dim3.Hyperbolic.lie_e₁e₃ : ⁅(e₁ : Hyperbolic K),
+  (e₃ : Hyperbolic K)⁆ = e₃ := by
   rw [Hyperbolic.bracket, e₁_def, e₃_def]
   unfold Hyperbolic
   simp only [Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.head_cons, mul_one, mul_zero, sub_zero, Matrix.cons_val_two,
     Matrix.tail_cons, sub_self]
 
-theorem _root_.LieAlgebra.Dim3.Hyperbolic.lie_e₂e₃ : ⁅(e₂ : Hyperbolic K), (e₃ : Hyperbolic K)⁆ = 0 := by
+theorem _root_.LieAlgebra.Dim3.Hyperbolic.lie_e₂e₃ : ⁅(e₂ : Hyperbolic K),
+  (e₃ : Hyperbolic K)⁆ = 0 := by
   rw [Hyperbolic.bracket, e₂_def, e₃_def]
   unfold Hyperbolic
   simp only [Matrix.cons_val_zero,
@@ -813,7 +825,7 @@ def _root_.LieAlgebra.Dim3.Family.semidirectAux' : End K (Dim2.Abelian K) := {
       show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
       RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
     ext i; fin_cases i <;>
-      simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, smul_eq_mul] <;> ring
+      simp [Matrix.cons_val_zero, Matrix.cons_val_one, smul_eq_mul] <;> ring
 }
 
 /-- TODO. -/
@@ -844,7 +856,7 @@ def _root_.LieAlgebra.Dim3.Family.equivToSemidirect : Family K α β ≃ₗ⁅K�
     rw [Family.bracket, LieSemidirectProduct.bracket_def, semidirectAux, semidirectAux',
       ← LieHom.coe_toLinearMap]
     simp only [smul_eq_mul, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons, Bracket.bracket,
+      Matrix.cons_val_one, Matrix.cons_val_two, Matrix.tail_cons, Bracket.bracket,
       LieHom.toLinearMap_comp, LinearMap.coe_comp, LieHom.coe_toLinearMap, LieHom.coe_smulRight,
       Function.comp_apply, map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun',
       LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, Matrix.smul_empty, add_zero]
@@ -924,7 +936,8 @@ theorem _root_.LieAlgebra.Dim3.Family.commutator_is_span_e₂e₃ (hα : α ≠ 
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
-    simp_all only [ne_eq, isUnit_iff_ne_zero,not_false_eq_true, IsUnit.inv_mul_cancel,e₂_def, e₃_def]
+    simp_all only [ne_eq, isUnit_iff_ne_zero,not_false_eq_true, IsUnit.inv_mul_cancel,e₂_def,
+      e₃_def]
 
   have e₃_bracket : ⁅e₁, e₂⁆ = e₃ := by
     rw [Family.bracket]
@@ -993,15 +1006,18 @@ def _root_.LieAlgebra.Dim3.Family.e₁α : Family K α β := ![α⁻¹, 0, 0]
 /-- TODO. -/
 def _root_.LieAlgebra.Dim3.Family.e₂β : Family K α β := ![0, -β, 1]
 
-theorem _root_.LieAlgebra.Dim3.Family.e₂_bracket {hα : α ≠ 0} : ⁅(e₁α : Family K α β), (e₂β : Family K α β)⁆ = e₂ := by
+theorem _root_.LieAlgebra.Dim3.Family.e₂_bracket {hα : α ≠ 0} : ⁅(e₁α : Family K α β),
+  (e₂β : Family K α β)⁆ = e₂ := by
     rw [Family.bracket]
     unfold e₂β e₁α e₂
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
-    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def, e₃_def, hα]
+    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def,
+      e₃_def, hα]
 
-theorem _root_.LieAlgebra.Dim3.Family.e₃_bracket : ⁅(e₁ : Family K α β), (e₂ : Family K α β)⁆ = e₃ := by
+theorem _root_.LieAlgebra.Dim3.Family.e₃_bracket : ⁅(e₁ : Family K α β),
+  (e₂ : Family K α β)⁆ = e₃ := by
     rw [Family.bracket]
     unfold e₁ e₂ e₃
     simp only [Matrix.cons_val_zero,
@@ -1036,7 +1052,8 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
-    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def, e₃_def]
+    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def,
+      e₃_def]
 
   have e₃_bracket : ⁅e₁, e₂⁆ = e₃ := by
     rw [Family.bracket]
@@ -1052,7 +1069,8 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
     simp_all only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_setOf_eq]
     cases Be with
     | inl h => subst h; simp_all only [SetLike.mem_coe, B, e₁α, e₂β, e₂, e₁, e₃, e₃_in_comm]
-    | inr h => subst h; simp_all only [SetLike.mem_coe, B, e₁α, e₂β, e₂, e₁, e₃, e₂_in_comm (hα := hα)]
+    | inr h => subst h; simp_all only [SetLike.mem_coe, B, e₁α, e₂β, e₂, e₁, e₃,
+      e₂_in_comm (hα := hα)]
 
   have B_setrange_eq : Set.range (B α β) = {e₂, e₃} := by
     simp_all only [ne_eq, Matrix.range_cons,
@@ -1078,7 +1096,8 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         subst h_1
         simp_all only [true_or, e₁, e₂β, e₃, B, e₂, e₁α]
 
-  let B_is_li_comm := linearIndependent_from_ambient (K := K) (commutator K (Family K α β)) ![e₂, e₃] B_is_li_ambient (B_setrange (hα := hα))
+  let B_is_li_comm := linearIndependent_from_ambient (K := K) (commutator K (Family K α β)) ![e₂,
+    e₃] B_is_li_ambient (B_setrange (hα := hα))
 
   have : Set.range (Set.map_into_subtype (↑(↑(commutator K (Family K α β)))) (B α β) (B_setrange (hα:=hα) )) =
     ({⟨e₂, e₂_in_comm (hα := hα)⟩, ⟨e₃, e₃_in_comm⟩} : Set (↥(commutator K (Family K α β)))) := by
@@ -1226,7 +1245,8 @@ def _root_.LieAlgebra.Dim3.Family.ade₁ := ad K (Family K α β) e₁
 /-- TODO. -/
 def _root_.LieAlgebra.Dim3.Family.adjoint (x : Family K α β) := ad K (Family K α β) x
 
-theorem _root_.LieAlgebra.Dim3.Family.ade₁_pc : ∀ x ∈ (commutator K (Family K α β)), ade₁ x ∈ (commutator K (Family K α β)) := by
+theorem _root_.LieAlgebra.Dim3.Family.ade₁_pc : ∀ x ∈ (commutator K (Family K α β)),
+  ade₁ x ∈ (commutator K (Family K α β)) := by
   intro x hx
   unfold ade₁
   simp only [ad_apply]

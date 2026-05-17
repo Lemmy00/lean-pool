@@ -210,7 +210,8 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
           simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, mul_one,
             e, b, coef] at this
           assumption
-        · simp only [Fin.reduceFinMk, Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, coef] at this
+        · simp only [Fin.reduceFinMk, Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons,
+          mul_one, coef] at this
           assumption
       · simp only [zero_smul, implies_true]
     · simp only [zero_smul, implies_true]
@@ -346,7 +347,8 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     repeat rw [← B1f, ← B2e]
     apply linearIndependent_iff.mpr
     intro l hl
-    rw [Finsupp.linearCombination_apply (R:=K) (v:=![B 0 - b • B 1 + a • B 2, B 1, B 2]) (l:=l)] at hl
+    rw [Finsupp.linearCombination_apply (R:=K) (v:=![B 0 - b • B 1 + a • B 2, B 1,
+      B 2]) (l:=l)] at hl
     rw [Finsupp.sum_fintype] at hl
     · simp at hl
       rw [Fin.sum_univ_three] at hl
@@ -495,10 +497,12 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
       calc ⁅ Bn 0, Bn 2 ⁆ = ⁅ Bn 0, ⁅ Bn 1, Bn 2 ⁆ ⁆ := by rw [nl]
         _ = ⁅ ⁅ Bn 0, Bn 1 ⁆, Bn 2 ⁆ + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by rw [leibniz_lie]
         _ = ⁅ u , Bn 2 ⁆ + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by rfl
-        _ = ⁅ (B.repr ⟨u, ucomm⟩) 0 • B 0 + (B.repr ⟨u, ucomm⟩) 1 • B 1 , Bn 2 ⁆ + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by
+        _ = ⁅ (B.repr ⟨u, ucomm⟩) 0 • B 0 + (B.repr ⟨u, ucomm⟩) 1 • B 1 , Bn 2 ⁆ + ⁅ Bn 1, ⁅ Bn 0,
+          Bn 2 ⁆ ⁆  := by
          rw [← ucomp]
          rfl
-        _ =  (B.repr ⟨u, ucomm⟩) 0 •⁅  B 0 , Bn 2 ⁆ + (B.repr ⟨u, ucomm⟩) 1 • ⁅ B 1 , Bn 2 ⁆ + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by simp
+        _ =  (B.repr ⟨u, ucomm⟩) 0 •⁅  B 0 , Bn 2 ⁆ + (B.repr ⟨u, ucomm⟩) 1 • ⁅ B 1 ,
+          Bn 2 ⁆ + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by simp
         _ =  (B.repr ⟨u, ucomm⟩) 0 •⁅  B 0 , B 1 ⁆ + (B.repr ⟨u, ucomm⟩) 1 • ⁅ B 1 , B 1 ⁆
              + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by
               rw [Bn21]
@@ -507,15 +511,19 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
           rw [show ((⁅B 0, B 1⁆ : commutator K L) : L) = ((B 1 : commutator K L) : L) from
             congr_arg _ hB]
           simp
-        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 + ⁅ Bn 1, (B.repr ⟨v, vcomm⟩) 0 • B 0 + (B.repr ⟨v, vcomm⟩) 1 • B 1 ⁆  := by
+        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 + ⁅ Bn 1, (B.repr ⟨v, vcomm⟩) 0 • B 0 + (B.repr ⟨v,
+          vcomm⟩) 1 • B 1 ⁆  := by
           rw [← vcomp]
           rfl
-        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  ⁅ Bn 1, (B.repr ⟨v, vcomm⟩) 0 • B 0⁆ +  ⁅ Bn 1, (B.repr ⟨v, vcomm⟩) 1 • B 1 ⁆  := by
+        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  ⁅ Bn 1, (B.repr ⟨v, vcomm⟩) 0 • B 0⁆ +  ⁅ Bn 1,
+          (B.repr ⟨v, vcomm⟩) 1 • B 1 ⁆  := by
           rw [lie_add (Bn 1)]
           push_cast
           rw [add_assoc]
-        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  (B.repr ⟨v, vcomm⟩) 0 •  ⁅ Bn 1, B 0⁆ + (B.repr ⟨v, vcomm⟩) 1 • ⁅ Bn 1,  B 1 ⁆  := by rw[lie_smul,lie_smul];rfl
-        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  (B.repr ⟨v, vcomm⟩) 0 •  ⁅ B 0, B 0⁆ + (B.repr ⟨v, vcomm⟩) 1 • ⁅ B 0,  B 1 ⁆  := by rw[Bn10];rfl
+        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  (B.repr ⟨v, vcomm⟩) 0 •  ⁅ Bn 1, B 0⁆ + (B.repr ⟨v,
+          vcomm⟩) 1 • ⁅ Bn 1,  B 1 ⁆  := by rw[lie_smul,lie_smul];rfl
+        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  (B.repr ⟨v, vcomm⟩) 0 •  ⁅ B 0, B 0⁆ + (B.repr ⟨v,
+          vcomm⟩) 1 • ⁅ B 0,  B 1 ⁆  := by rw[Bn10];rfl
         _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +   (B.repr ⟨v, vcomm⟩) 1 • ⁅ B 0,  B 1 ⁆  := by simp
         _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +   (B.repr ⟨v, vcomm⟩) 1 • B 1:= by
           congr 1
@@ -535,8 +543,10 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         _ = ((B.repr ⟨u, ucomm⟩) 0)  • ( (-1 : K)•   ⁅Bn 1 , Bn 2⁆) := by rw [← smul_assoc]
         _ = ((B.repr ⟨u, ucomm⟩) 0)  • ( - ⁅Bn 1 , Bn 2⁆) := by rw [neg_one_smul]
         _ = ((B.repr ⟨u, ucomm⟩) 0)  •  ⁅Bn 2 , Bn 1⁆ := by rw [lie_skew]
-        _ = ((B.repr ⟨u, ucomm⟩) 0)  •  ⁅Bn 2 , Bn 1⁆ +  ((B.repr ⟨u, ucomm⟩) 1)  •  ⁅Bn 2 , Bn 2⁆ := by rw [lie_self]; simp
-        _ = ⁅Bn 2 ,((B.repr ⟨u, ucomm⟩) 0)  •   Bn 1⁆ +  ⁅Bn 2 ,((B.repr ⟨u, ucomm⟩) 1)  •  Bn 2⁆ := by simp
+        _ = ((B.repr ⟨u, ucomm⟩) 0)  •  ⁅Bn 2 , Bn 1⁆ +  ((B.repr ⟨u, ucomm⟩) 1)  •  ⁅Bn 2 ,
+          Bn 2⁆ := by rw [lie_self]; simp
+        _ = ⁅Bn 2 ,((B.repr ⟨u, ucomm⟩) 0)  •   Bn 1⁆ +  ⁅Bn 2 ,((B.repr ⟨u,
+          ucomm⟩) 1)  •  Bn 2⁆ := by simp
         _ = ⁅Bn 2 ,((B.repr ⟨u, ucomm⟩) 0)  •   Bn 1+((B.repr ⟨u, ucomm⟩) 1)  •  Bn 2⁆ := by simp
         _ = ⁅Bn 2 ,((B.repr ⟨u, ucomm⟩) 0)  •   B 0+((B.repr ⟨u, ucomm⟩) 1)  •  B 1⁆ := by
           push_cast
@@ -545,18 +555,27 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         _ = ⁅Bn 2 , ⁅ Bn 0,Bn 1⁆⁆ := by rfl
         _ = ⁅⁅Bn 2 ,  Bn 0⁆,Bn 1⁆ + ⁅ Bn 0, ⁅Bn 2, Bn 1⁆⁆:= by rw [leibniz_lie]
         _ = ⁅-⁅Bn 0 ,  Bn 2⁆,Bn 1⁆ + ⁅ Bn 0, -⁅Bn 1, Bn 2⁆⁆:= by rw [← lie_skew];simp
-        _ = ⁅-( (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1)) • B 1),Bn 1⁆ + ⁅ Bn 0, -Bn 2⁆:= by rw [br02,nl];simp
-        _ = ⁅(- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • B 1,Bn 1⁆ + (-⁅ Bn 0, Bn 2 ⁆):= by rw [@neg_smul]; rw [@lie_neg]
-        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • ⁅ B 1,Bn 1⁆ + (-⁅ Bn 0, Bn 2 ⁆):= by rw [@LieModule.smul_lie]
-        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • ⁅ Bn 2,Bn 1⁆ + (-⁅ Bn 0, Bn 2 ⁆):= by
+        _ = ⁅-( (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1)) • B 1),Bn 1⁆ + ⁅ Bn 0,
+          -Bn 2⁆:= by rw [br02,nl];simp
+        _ = ⁅(- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • B 1,Bn 1⁆ + (-⁅ Bn 0,
+          Bn 2 ⁆):= by rw [@neg_smul]; rw [@lie_neg]
+        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • ⁅ B 1,Bn 1⁆ + (-⁅ Bn 0,
+          Bn 2 ⁆):= by rw [@LieModule.smul_lie]
+        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • ⁅ Bn 2,Bn 1⁆ + (-⁅ Bn 0,
+          Bn 2 ⁆):= by
           rw [Bn21]
           rfl
-        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • ⁅ Bn 2,Bn 1⁆ + (-(((B.repr ⟨u, ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)):= by rw [br02]
+        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • ⁅ Bn 2,Bn 1⁆ + (-(((B.repr ⟨u,
+          ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)):= by rw [br02]
         _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • (-⁅ Bn 1,Bn 2⁆) + (-(((B.repr ⟨u, ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)):= by rw [← lie_skew]
-        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • (-Bn 2) + (-(((B.repr ⟨u, ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)):= by rw [nl]
-        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • (-B 1) + (-(((B.repr ⟨u, ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)) := by rw [Bn21]
-        _ = ( (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • B 1 + (-(((B.repr ⟨u, ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1)) • B 1) := by module
-        _ = (( (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) + (-(((B.repr ⟨u, ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1))))• B 1 := by module
+        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • (-Bn 2) + (-(((B.repr ⟨u,
+          ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)):= by rw [nl]
+        _ = (- (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • (-B 1) + (-(((B.repr ⟨u,
+          ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1) • B 1)) := by rw [Bn21]
+        _ = ( (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) • B 1 + (-(((B.repr ⟨u,
+          ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1)) • B 1) := by module
+        _ = (( (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1))) + (-(((B.repr ⟨u,
+          ucomm⟩) 0 + (B.repr ⟨v, vcomm⟩) 1))))• B 1 := by module
         _ = 0 := by module
     have B1n0 : B 1 ≠ 0 := by
       exact Basis.ne_zero B 1
@@ -639,7 +658,9 @@ private lemma case2_coarse_rat
               let cy := Basis.repr_fin_three B y
               let cz := Basis.repr_fin_three B z
               have cx : x = (((B.repr y) 0 • (B.repr z) 2 - (B.repr z) 0 • (B.repr y) 2) • c02) • B 2 := by
-                calc x = ⁅(B.repr y) 0 • B 0 + (B.repr y) 1 • B 1 + (B.repr y) 2 • B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw [← hz,← cy, ← cz]
+                calc x = ⁅(B.repr y) 0 • B 0 + (B.repr y) 1 • B 1 + (B.repr y) 2 • B 2,
+                  (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw [← hz,← cy,
+                    ← cz]
                      _ =  ⁅(B.repr y) 0 •  B 0, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
                         + ⁅ (B.repr y) 1 • B 1, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
                         + ⁅ (B.repr y) 2 • B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw[add_lie,add_lie]
@@ -652,26 +673,38 @@ private lemma case2_coarse_rat
                         + (B.repr y) 1 •  (B.repr z) 2 •⁅  B 1,  B 2 ⁆
                         + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
                         + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2, B 1  ⁆
-                        + (B.repr y) 2 •  (B.repr z) 2 •⁅  B 2,  B 2 ⁆:= by repeat rw[lie_add,lie_smul];simp;module
+                        + (B.repr y) 2 •  (B.repr z) 2 •⁅  B 2,
+                          B 2 ⁆:= by repeat rw[lie_add,lie_smul];simp;module
                      _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
                         + (B.repr y) 1 •  (B.repr z) 0 •⁅  B 1, B 0 ⁆
                         + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
-                        + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2, B 1  ⁆  :=by repeat rw[lie_self];rw[h01,br12];simp
+                        + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2,
+                          B 1  ⁆  :=by repeat rw[lie_self];rw[h01,br12];simp
                      _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
                         + (B.repr y) 1 •  (B.repr z) 0 • - ⁅  B 0, B 1 ⁆
                         + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
-                        + (B.repr y) 2 • (B.repr z) 1 • -⁅  B 1, B 2  ⁆  :=by nth_rw 2 [← lie_skew];nth_rw 4 [← lie_skew]
-                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆ + (B.repr y) 2 • ((B.repr z) 0 • ((-1 : K) • ⁅  B 0,  B 2  ⁆)) :=by rw[h01,br12];simp
-                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,  B 2  ⁆ :=by rw [smul_smul (a₂ := -1), smul_smul (a₁ := (B.repr y) 2)]
-                     _ =  ((B.repr y) 0 * (B.repr z) 2) • ⁅ B 0,  B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,  B 2  ⁆ :=by rw [smul_smul]
+                        + (B.repr y) 2 • (B.repr z) 1 • -⁅  B 1,
+                          B 2  ⁆  :=by nth_rw 2 [← lie_skew];nth_rw 4 [← lie_skew]
+                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,
+                       B 2 ⁆ + (B.repr y) 2 • ((B.repr z) 0 • ((-1 : K) • ⁅  B 0,
+                         B 2  ⁆)) :=by rw[h01,br12];simp
+                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,
+                       B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,
+                         B 2  ⁆ :=by rw [smul_smul (a₂ := -1), smul_smul (a₁ := (B.repr y) 2)]
+                     _ =  ((B.repr y) 0 * (B.repr z) 2) • ⁅ B 0,
+                       B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,
+                         B 2  ⁆ :=by rw [smul_smul]
                      _ =  ((B.repr y) 0 * (B.repr z) 2 + (B.repr y) 2 * ((B.repr z) 0 * (-1 : K))) • ⁅  B 0,  B 2 ⁆ :=by rw [add_smul]
-                     _ =  ( ((B.repr y) 0 * (B.repr z) 2 - (B.repr z) 0 * (B.repr y) 2)) • ⁅  B 0,  B 2 ⁆ := by rw [mul_neg, mul_neg, mul_one ((B.repr z) 0), sub_eq_add_neg, mul_comm ((B.repr y) 2)]
+                     _ =  ( ((B.repr y) 0 * (B.repr z) 2 - (B.repr z) 0 * (B.repr y) 2)) • ⁅  B 0,
+                       B 2 ⁆ := by rw [mul_neg, mul_neg, mul_one ((B.repr z) 0), sub_eq_add_neg,
+                         mul_comm ((B.repr y) 2)]
                      _ =  ( ((B.repr y) 0 • (B.repr z) 2 - (B.repr z) 0 • (B.repr y) 2) • c02 ) • B 2 := by rw [h02]; rw [smul_assoc]; rfl
               symm at cx
               have mm := Submodule.mem_span_singleton.mpr ⟨_, cx⟩
               assumption
             apply Submodule.span_le.mpr at cs
-            have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
+            have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y,
+              z⁆ = x} := commutator_eq_span
             rw [← this] at cs
             apply Submodule.finrank_mono at cs
             rw [finrank_span_singleton] at cs
@@ -718,7 +751,8 @@ private lemma case2_coarse_rat
               have mm := Submodule.mem_span_singleton.mpr ⟨_, cx⟩
               assumption
             apply Submodule.span_le.mpr at cs
-            have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
+            have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y,
+              z⁆ = x} := commutator_eq_span
             rw [← this] at cs
             apply Submodule.finrank_mono at cs
             rw [finrank_span_singleton] at cs
@@ -872,7 +906,8 @@ private lemma case2_coarse_Bnli
 --Case 2: The commutator has dimension 2.
 lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (commutator K L) = 2) :
     (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ =  B 1 ∧ ⁅B 0, B 2⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0) ∨ -- Hyperbolic
-    (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α β : K, α ≠ 0 ∧ ⁅B 0, B 2⁆ = α • B 1 + β • B 2)) := by --Family α β , α ≠ 0
+    (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α β : K, α ≠ 0 ∧ ⁅B 0,
+      B 2⁆ = α • B 1 + β • B 2)) := by --Family α β , α ≠ 0
   have _ : Module.Finite K (commutator K L) := by
     exact finite_of_finrank_eq_succ h₂
   -- take a basis of the commutator
@@ -1068,7 +1103,8 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
           contradiction
 
 lemma finrank_com_eq2_from_basis_bracket
-    (hb: (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α β : K, α ≠ 0 ∧ ⁅B 0, B 2⁆ = α • B 1 + β • B 2))) :
+    (hb: (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α β : K, α ≠ 0 ∧ ⁅B 0,
+      B 2⁆ = α • B 1 + β • B 2))) :
       Module.finrank K (LieAlgebra.commutator K L) = 2 := by
   obtain ⟨B,⟨pfB01,pfB12,⟨α,β, ⟨anz,pfB02⟩⟩⟩⟩ := hb
   have hcomm :  (LieAlgebra.commutator K L).toSubmodule = Submodule.span K {B 1, B 2} := by
@@ -1095,7 +1131,8 @@ lemma finrank_com_eq2_from_basis_bracket
         rw [Set.mem_setOf_eq]
         use α⁻¹ • B 0
         use B 2 - β • B 1
-        simp_all only [Fin.isValue, ne_eq, lie_sub, smul_lie, smul_add, not_false_eq_true, inv_smul_smul₀, lie_smul]
+        simp_all only [Fin.isValue, ne_eq, lie_sub, smul_lie, smul_add, not_false_eq_true,
+          inv_smul_smul₀, lie_smul]
         rw [smul_comm]
         simp
       have h2 :  B 2 ∈  {x | ∃ (y z:L), ⁅y, z⁆ = x} :=by
@@ -1105,7 +1142,8 @@ lemma finrank_com_eq2_from_basis_bracket
 
       apply  Submodule.span_monotone
       intro x hx
-      simp_all only [Fin.isValue, ne_eq, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+      simp_all only [Fin.isValue, ne_eq, Set.mem_setOf_eq, Set.mem_insert_iff,
+        Set.mem_singleton_iff]
       cases hx with
         | inl eq =>
           subst eq
@@ -1129,8 +1167,10 @@ lemma finrank_com_eq2_from_basis_bracket
 
 lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 ↔
     (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ =  B 1 ∧ ⁅B 0, B 2⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0) ∨ --Hyperbolic
-    (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α : K, α ≠ 0 ∧ ⁅B 0, B 2⁆ = α • B 1)) ∨ --Family α 0, α≠ 0
-    (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α : K, α ≠ 0 ∧ ⁅B 0, B 2⁆ = α • B 1 + B 2)):= by --Family α 1 , α≠ 0
+    (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α : K, α ≠ 0 ∧ ⁅B 0,
+      B 2⁆ = α • B 1)) ∨ --Family α 0, α≠ 0
+    (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α : K, α ≠ 0 ∧ ⁅B 0,
+      B 2⁆ = α • B 1 + B 2)):= by --Family α 1 , α≠ 0
   constructor
   · intro ⟨dim3, dim2c⟩
     obtain (⟨B, pfB⟩|⟨B',⟨pfB01,pfB12,⟨α,β, ⟨anz,pfB02⟩⟩⟩⟩) := case2_coarse dim3 dim2c
@@ -1158,7 +1198,8 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
         rw [B''0, B''1, B''2]
         constructor
         · dsimp [βunit, βinvunit, β2unit]
-          simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, lie_smul, smul_lie, βinvunit, βunit,
+          simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, lie_smul, smul_lie,
+            βinvunit, βunit,
             β2unit]
           match_scalars
           simp_all only [Fin.isValue, mul_one, isUnit_iff_ne_zero, ne_eq, not_false_eq_true,
@@ -1172,14 +1213,19 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
 
           · use α*(β^2)⁻¹
             constructor
-            · simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, mul_eq_zero, inv_eq_zero,
-              OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, or_self, βinvunit, βunit, β2unit]
-            · simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, lie_smul, smul_lie, smul_add,
-              not_false_eq_true, inv_smul_smul₀, smul_inv_smul₀, mul_inv_rev, add_left_inj, βinvunit, βunit, β2unit]
+            · simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, mul_eq_zero,
+              inv_eq_zero,
+              OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, or_self, βinvunit, βunit,
+                β2unit]
+            · simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, lie_smul, smul_lie,
+              smul_add,
+              not_false_eq_true, inv_smul_smul₀, smul_inv_smul₀, mul_inv_rev, add_left_inj,
+                βinvunit, βunit, β2unit]
               match_scalars
               simp only [mul_one, βinvunit, βunit, β2unit]
               ring_nf
-              simp_all only [Fin.isValue, inv_pow, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+              simp_all only [Fin.isValue, inv_pow, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
+                not_false_eq_true,
                 pow_eq_zero_iff, IsUnit.mul_inv_cancel_right, βinvunit, βunit, β2unit]
   · rintro (⟨B,hB01,hB02,hB12⟩|⟨B,hB01,hB02,⟨α, anz, hB12⟩⟩| ⟨B,hB01,hB02,⟨α, anz, hB12⟩⟩)
     · constructor

@@ -75,9 +75,9 @@ theorem heisenberg_iff : Nonempty (L ≃ₗ⁅K⁆ (Heisenberg K)) ↔
         let bxy : Heisenberg K := B.equivFun ⁅x, y⁆
         let bx : Heisenberg K := B.equivFun x
         let by_ : Heisenberg K := B.equivFun y
-        show bxy = ⁅bx, by_⁆
+        change bxy = ⁅bx, by_⁆
         rw [Heisenberg.bracket]
-        show bxy = ![bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K), (0 : K)]
+        change bxy = ![bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K), (0 : K)]
         simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
           Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, bxy, bx, by_]
         rw [Basis.repr_fin_three B x, Basis.repr_fin_three B y]
@@ -141,9 +141,9 @@ theorem affinePlusAbelian_iff : Nonempty (L ≃ₗ⁅K⁆ (AffinePlusAbelian K))
         let bxy : AffinePlusAbelian K := B.equivFun ⁅x, y⁆
         let bx : AffinePlusAbelian K := B.equivFun x
         let by_ : AffinePlusAbelian K := B.equivFun y
-        show bxy = ⁅bx, by_⁆
+        change bxy = ⁅bx, by_⁆
         rw [AffinePlusAbelian.bracket]
-        show bxy = ![(0 : K), bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K)]
+        change bxy = ![(0 : K), bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K)]
         simp only [Fin.isValue, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
           LinearEquiv.coe_coe, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
           bxy, bx, by_]
@@ -203,9 +203,9 @@ theorem hyperbolic_iff : Nonempty (L ≃ₗ⁅K⁆ (Hyperbolic K)) ↔
         let bxy : Hyperbolic K := B.equivFun ⁅x, y⁆
         let bx : Hyperbolic K := B.equivFun x
         let by_ : Hyperbolic K := B.equivFun y
-        show bxy = ⁅bx, by_⁆
+        change bxy = ⁅bx, by_⁆
         rw [Hyperbolic.bracket]
-        show bxy = ![(0 : K), bx 0 * by_ 1 - by_ 0 * bx 1, bx 0 * by_ 2 - by_ 0 * bx 2]
+        change bxy = ![(0 : K), bx 0 * by_ 1 - by_ 0 * bx 1, bx 0 * by_ 2 - by_ 0 * bx 2]
         simp only [Fin.isValue, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
           LinearEquiv.coe_coe, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
           bxy, bx, by_]
@@ -231,7 +231,8 @@ theorem hyperbolic_iff : Nonempty (L ≃ₗ⁅K⁆ (Hyperbolic K)) ↔
 
 /-- Choice of basis for the three-dimensional Lie algebra `Family`. -/
 theorem family_iff (α β : K) : Nonempty (L ≃ₗ⁅K⁆ (Family K α β)) ↔
-    ∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ ⁅B 0, B 2⁆ = α • B 1 + β • B 2 := by
+    ∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ ⁅B 0,
+      B 2⁆ = α • B 1 + β • B 2 := by
   constructor
   · intro ⟨f⟩
     use Basis.ofEquivFun {f with}
@@ -279,9 +280,9 @@ theorem family_iff (α β : K) : Nonempty (L ≃ₗ⁅K⁆ (Family K α β)) ↔
         let bxy : Family K α β := B.equivFun ⁅x, y⁆
         let bx : Family K α β := B.equivFun x
         let by_ : Family K α β := B.equivFun y
-        show bxy = ⁅bx, by_⁆
+        change bxy = ⁅bx, by_⁆
         rw [Family.bracket]
-        show bxy = ![(0 : K), (bx 0 * by_ 2 - bx 2 * by_ 0) * α,
+        change bxy = ![(0 : K), (bx 0 * by_ 2 - bx 2 * by_ 0) * α,
           (bx 0 * by_ 2 - bx 2 * by_ 0) * β + bx 0 * by_ 1 - bx 1 * by_ 0]
         simp only [Fin.isValue, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
           LinearEquiv.coe_coe, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
@@ -341,7 +342,8 @@ theorem classification (dim3 : finrank K L = 3) (hs : IsSolvable L) :
   · right
     right
     right -- dim commutator is 2
-    obtain (⟨B, hB⟩ | ⟨B, hB01, hB02, α, hα, hB12⟩ | ⟨B, hB01, hB02, α, hα, hB12⟩) := case2.mp ⟨dim3, dc₂⟩
+    obtain (⟨B, hB⟩ | ⟨B, hB01, hB02, α, hα, hB12⟩ | ⟨B, hB01, hB02, α, hα,
+      hB12⟩) := case2.mp ⟨dim3, dc₂⟩
     · left -- Hyperbolic
       exact hyperbolic_iff.mpr ⟨B, hB⟩
     · right
@@ -396,7 +398,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       unfold Family.e₂ Family.e₃ at h
       have h : (![(0 : K), a, b] : Fin 3 → K) = ![1, 0, 0] := by
         rw [← h]
-        show (![(0 : K), a, b] : Fin 3 → K) =
+        change (![(0 : K), a, b] : Fin 3 → K) =
           a • (![0, 1, 0] : Fin 3 → K) + b • (![0, 0, 1] : Fin 3 → K)
         ext i
         fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty]
@@ -440,7 +442,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
         unfold Family.e₂ Family.e₃ at h
         have h : (![(0 : K), a, b] : Fin 3 → K) = u := by
           rw [← h]
-          show (![(0 : K), a, b] : Fin 3 → K) =
+          change (![(0 : K), a, b] : Fin 3 → K) =
             a • (![0, 1, 0] : Fin 3 → K) + b • (![0, 0, 1] : Fin 3 → K)
           ext i
           fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty]
@@ -458,7 +460,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, one_mul,
         Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, zero_mul, sub_zero,
         Matrix.cons_val_one]
-      show v 0 • (![(0 : K), u.val 2 * α', u.val 2 * β' + u.val 1] : Fin 3 → K) =
+      change v 0 • (![(0 : K), u.val 2 * α', u.val 2 * β' + u.val 1] : Fin 3 → K) =
         ![0, (v 0 * u.val 2 - v 2 * u.val 0) * α',
           (v 0 * u.val 2 - v 2 * u.val 0) * β' + v 0 * u.val 1 - v 1 * u.val 0]
       ext i
@@ -628,19 +630,23 @@ theorem not_iso_hyperbolic {α β : K} (hα : α ≠ 0) : IsEmpty (Family K α �
     rw [LieEquiv.commutator_equiv_apply]
     simp only [LieEquiv.map_lie]
     congr
-    rw [LieEquiv.coe_toLinearEquiv, LieEquiv.commutator_equiv_symm, LieEquiv.commutator_equiv_apply, LieEquiv.apply_symm_apply]
+    rw [LieEquiv.coe_toLinearEquiv, LieEquiv.commutator_equiv_symm, LieEquiv.commutator_equiv_apply,
+      LieEquiv.apply_symm_apply]
   have adfe₁_id : adfe₁ = t • LinearMap.id := by
     unfold adfe₁
-    rw [hfe₁, Hyperbolic.ad_restr_add, Hyperbolic.ad_restr_smul, Hyperbolic.ade₁_restr_id, Hyperbolic.ad_comm_restr wcomm, add_zero]
+    rw [hfe₁, Hyperbolic.ad_restr_add, Hyperbolic.ad_restr_smul, Hyperbolic.ade₁_restr_id,
+      Hyperbolic.ad_comm_restr wcomm, add_zero]
   have ade₁_id : ade₁ = t • LinearMap.id := by
-    rw [ad_conj, ← LinearMap.comp_assoc, LieEquiv.symm_toLinearEquiv, ← LinearEquiv.conj_apply] at adfe₁_id
+    rw [ad_conj, ← LinearMap.comp_assoc, LieEquiv.symm_toLinearEquiv,
+      ← LinearEquiv.conj_apply] at adfe₁_id
     calc
       ade₁ = f'.toLinearEquiv.symm.conj (f'.toLinearEquiv.conj ade₁) := by rw [← LinearEquiv.conj_symm, LinearEquiv.symm_apply_apply]
       _ = f'.toLinearEquiv.symm.conj (t • LinearMap.id) := by congr
       _ = t • f'.toLinearEquiv.symm.conj (LinearMap.id) := by rw [map_smul]
       _ = t • LinearMap.id := by rw [LinearEquiv.conj_id]
   -- we show that ⁅Family.e₁, Family.e₂⁆ = t • Family.e₂
-  have : ade₁ ⟨Family.e₂, Family.e₂_in_comm (hα := hα)⟩ = t • ⟨Family.e₂, Family.e₂_in_comm (hα := hα)⟩ := by
+  have : ade₁ ⟨Family.e₂, Family.e₂_in_comm (hα := hα)⟩ = t • ⟨Family.e₂,
+    Family.e₂_in_comm (hα := hα)⟩ := by
     rw [ade₁_id]
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq, SetLike.mk_smul_mk]
   unfold ade₁ Family.ade₁_restr at this
