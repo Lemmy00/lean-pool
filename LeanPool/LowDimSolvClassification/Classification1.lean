@@ -56,7 +56,7 @@ end classification_dim_1
 
 section corollaries_dim_1
 
-theorem solvable (dim1 : Module.finrank K L = 1) :
+theorem _root_.LieAlgebra.Dim1.solvable (dim1 : Module.finrank K L = 1) :
     LieAlgebra.IsSolvable L := by
   obtain a := abelian dim1
   apply LieAlgebra.ofAbelianIsSolvable

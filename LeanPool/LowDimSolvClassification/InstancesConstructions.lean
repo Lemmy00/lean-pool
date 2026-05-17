@@ -53,7 +53,7 @@ end mkAbelian
 section abelianDerivation
 
 /-- TODO. -/
-def Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : End K L) :
+def _root_.LieAlgebra.Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : End K L) :
     LieDerivation K L L := {
   toLinearMap := f,
   leibniz' := by
@@ -62,7 +62,7 @@ def Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*} [LieRing
 }
 
 /-- If `L` is an abelian Lie algebra, any linear endomorphism of L is also a derivation of L. -/
-def Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [LieRing L] [LieAlgebra K L] [IsLieAbelian L] :
+def _root_.LieAlgebra.Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [LieRing L] [LieAlgebra K L] [IsLieAbelian L] :
     End K L ≃ₗ⁅K⁆ LieDerivation K L L := {
   toFun := Abelian.DerivationOfLinearMap',
   map_add' := by
@@ -91,15 +91,15 @@ def Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [LieRing L] [LieAlg
 }
 
 @[simp]
-theorem Abelian.DerivationCoeLinearMap {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
+theorem _root_.LieAlgebra.Abelian.DerivationCoeLinearMap {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
     (Abelian.DerivationOfLinearMap K L f).toLinearMap = f := rfl
 
 @[simp]
-theorem Abelian.DerivationCoeFun {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
+theorem _root_.LieAlgebra.Abelian.DerivationCoeFun {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
     ⇑(Abelian.DerivationOfLinearMap K L f) = ⇑f := rfl
 
 @[simp]
-theorem Abelian.DerivationCoeFun' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
+theorem _root_.LieAlgebra.Abelian.DerivationCoeFun' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
     ⇑((Abelian.DerivationOfLinearMap K L).toLieHom f) = ⇑f := rfl
 
 end abelianDerivation
@@ -111,11 +111,11 @@ variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V]
 example : LieAlgebra K (Module.End K V) := inferInstance
 
 /-- TODO. -/
-def ofAffineEquivAux := (Abelian.DerivationOfLinearMap K (mkAbelian K V)).toLieHom
+def _root_.LieAlgebra.ofAffineEquivAux := (Abelian.DerivationOfLinearMap K (mkAbelian K V)).toLieHom
 
 /-- The Lie algebra of the general affine group on a vector space `V`,
     constructed as semidirect product of `V →ₗ[K] V` with the abelian Lie algebra `V`. -/
-abbrev OfAffineEquiv :=
+abbrev _root_.LieAlgebra.OfAffineEquiv :=
   Module.End K (mkAbelian K V) ⋉[ofAffineEquivAux K V] mkAbelian K V
 -- one could also define it as V →ᵃ[K] V, but the Lie bracket is not defined using function composition (not left-distributive).
 
@@ -129,17 +129,17 @@ section liealghyperbolic
 variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] (L : Type*) [LieRing L] [LieAlgebra K L] [IsLieAbelian L]
 
 /-- TODO. -/
-def RealHyperbolicAux' : K →ₗ⁅K⁆ LieDerivation K L L :=
+def _root_.LieAlgebra.RealHyperbolicAux' : K →ₗ⁅K⁆ LieDerivation K L L :=
   LieHom.comp (Abelian.DerivationOfLinearMap K L) (LieHom.smulRight (LinearMap.id : End K L))
 
 /-- TODO. -/
-def RealHyperbolicAux : K →ₗ⁅K⁆ LieDerivation K (mkAbelian K V) (mkAbelian K V) := RealHyperbolicAux' K (mkAbelian K V)
+def _root_.LieAlgebra.RealHyperbolicAux : K →ₗ⁅K⁆ LieDerivation K (mkAbelian K V) (mkAbelian K V) := RealHyperbolicAux' K (mkAbelian K V)
 
 /-- The almost abelian Lie algebra associated to real hyperbolic space, generalized to arbitrary `K`. -/
-abbrev RealHyperbolic := K ⋉[RealHyperbolicAux K V] (mkAbelian K V)
+abbrev _root_.LieAlgebra.RealHyperbolic := K ⋉[RealHyperbolicAux K V] (mkAbelian K V)
 
 /-- The almost abelian Lie algebra associated to real hyperbolic `n`-space, generalized to arbitrary `K`. -/
-abbrev RealHyperbolic' (n : ℕ) (K : Type*) [CommRing K] := K ⋉[RealHyperbolicAux K (Fin (n - 1) → K)] (mkAbelian K (Fin (n - 1) → K))
+abbrev _root_.LieAlgebra.RealHyperbolic' (n : ℕ) (K : Type*) [CommRing K] := K ⋉[RealHyperbolicAux K (Fin (n - 1) → K)] (mkAbelian K (Fin (n - 1) → K))
 --requires n > 0
 
 @[inherit_doc]

@@ -182,9 +182,9 @@ section corollaries_dim_2
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
 
-theorem Dim2.solvable (dim2 : finrank K L = 2) :
+theorem _root_.LieAlgebra.Dim2.solvable (dim2 : finrank K L = 2) :
     IsSolvable L := by
-   obtain (a | ⟨ B, pfB ⟩) := abelian_or_basis dim2
+   obtain (a | ⟨ B, pfB ⟩) := Dim2.abelian_or_basis dim2
    · apply ofAbelianIsSolvable
    · have h1 : span K (span K {B 1}).carrier= span K {B 1} := by
       apply le_antisymm
@@ -229,7 +229,7 @@ theorem Dim2.solvable (dim2 : finrank K L = 2) :
      apply solvable_of_commutator_solvable (K := K)
      exact comsol
 
-theorem solvable_of_dim_comm_le_two [fin : FiniteDimensional K L] (dimcomm : finrank K (commutator K L) ≤ 2) :
+theorem _root_.LieAlgebra.solvable_of_dim_comm_le_two [fin : FiniteDimensional K L] (dimcomm : finrank K (commutator K L) ≤ 2) :
     IsSolvable L := by
   have hl : finrank K (commutator K L) ≥ 0 := by apply zero_le
   interval_cases s : (finrank K (commutator K L)) using hl, dimcomm
