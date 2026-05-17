@@ -282,6 +282,7 @@ abbrev u (p : ℂ → ℂ) (z : ℂ) : ℝ := (p z).re
 /-- `u_n` is `u` scaled by `r n`. -/
 abbrev u_n (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ) (z : ℂ) : ℝ := u p (r n * z)
 
+/-- TODO. -/
 abbrev C_unit_circle := C(↥(sphere (0 : ℂ) 1), ℝ)
 
 /-- The Poisson kernel function for a fixed z in the unit disc, viewed as a
@@ -328,6 +329,7 @@ noncomputable def Λ_n_linear (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
 noncomputable def Λ_n_bound (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ) : ℝ :=
   (1 / (2 * π)) * ∫ t in 0..2*π, |u_n p r n (circleMap 0 1 t)|
 
+/-- TODO. -/
 noncomputable def Λ_n (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
     (h : Continuous (u_n p r n ∘ circleMap 0 1)) : C_unit_circle →L[ℝ] ℝ :=
   LinearMap.mkContinuous (Λ_n_linear p r n h) (Λ_n_bound p r n) (by
@@ -360,10 +362,13 @@ noncomputable def Λ_n (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
   · norm_num [mul_assoc, mul_comm, mul_left_comm, abs_mul, abs_inv, abs_of_nonneg, Real.pi_pos.le]
   · ring)
 
+/-- TODO. -/
 abbrev C_unit_circleDual := C_unit_circle →L[ℝ] ℝ
 
+/-- TODO. -/
 def K : Set C_unit_circleDual := {Λ | ∀ f : C_unit_circle, ‖f‖ < 1 → |Λ f| ≤ 1}
 
+/-- TODO. -/
 def K_weak : Set (WeakDual ℝ C_unit_circle) := K
 
 /-- The complex Poisson kernel is integrable on the unit circle
@@ -563,6 +568,7 @@ lemma K_weak_compact : CompactSpace K_weak := by
 /-- As a separable space, `C_unit_circle` contains a dense sequence `dense_seq`. -/
 noncomputable def dense_seq : ℕ → C_unit_circle := TopologicalSpace.denseSeq C_unit_circle
 
+/-- TODO. -/
 noncomputable def embed (Λ : WeakDual ℝ C_unit_circle) : ℕ → ℝ := fun n => Λ (dense_seq n)
 
 lemma embed_continuous : Continuous embed := by
