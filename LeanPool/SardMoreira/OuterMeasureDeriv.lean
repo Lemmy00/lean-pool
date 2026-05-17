@@ -22,7 +22,7 @@ open Metric Set Filter Fin MeasureTheory TopologicalSpace Besicovitch.TauPackage
 
 attribute [norm_cast] ENNReal.ofReal_coe_nnreal
 
-theorem EMetric.diam_metricClosedBall_le {X : Type*} [PseudoMetricSpace X]
+theorem _root_.EMetric.diam_metricClosedBall_le {X : Type*} [PseudoMetricSpace X]
     (x : X) (r : ℝ) : Metric.ediam (Metric.closedBall x r) ≤ 2 * ENNReal.ofReal r := by
   rcases lt_or_ge r 0 with hr | hr
   · simp [ENNReal.ofReal_of_nonpos hr.le, Metric.closedBall_of_neg hr]

@@ -37,9 +37,11 @@ theorem comap_sum_countable {ι α β : Type*} {_ : MeasurableSpace α}
       nullMeasurableSet_sum, hfi, hf]
   · simp [comap_undef, hfi]
 
+namespace FiniteSpanningSetsIn
+
 /-- The `FiniteSpanningSetsIn` of `μ.comap f` obtained by pulling back a
 `FiniteSpanningSetsIn` of `μ` through a measurable preimage map. -/
-protected def FiniteSpanningSetsIn.comap {α β : Type*}
+protected def comap {α β : Type*}
     {_ : MeasurableSpace α} {_ : MeasurableSpace β} {μ : Measure β} {T : Set (Set β)}
     (sets : μ.FiniteSpanningSetsIn T) {S : Set (Set α)} {f : α → β} (hf : MapsTo (f ⁻¹' ·) T S)
     (hmeas : ∀ n, MeasurableSet (f ⁻¹' (sets.set n))) :
@@ -49,6 +51,8 @@ protected def FiniteSpanningSetsIn.comap {α β : Type*}
   finite n := (Measure.comap_apply_le _ _ (hmeas n).nullMeasurableSet).trans_lt <|
     (measure_mono (image_preimage_subset _ _)).trans_lt <| sets.finite n
   spanning := by simp [← preimage_iUnion, sets.spanning]
+
+end FiniteSpanningSetsIn
 
 protected theorem _root_.MeasureTheory.SigmaFinite.comap
     {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β} (μ : Measure β) {f : α → β}

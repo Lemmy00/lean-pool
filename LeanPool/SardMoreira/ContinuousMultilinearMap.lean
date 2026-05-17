@@ -13,9 +13,9 @@ import LeanPool.SardMoreira.ToMathlib.ContinuousLinearMap
 
 open scoped Asymptotics BigOperators
 
-namespace ContinuousMultilinearMap
-
 section AddMonoid
+
+namespace ContinuousMultilinearMap
 
 variable {ι R : Type*} {E : ι → Type*} {F G : Type*}
     [Semiring R] [∀ i, AddCommMonoid (E i)] [∀ i, Module R (E i)] [∀ i, TopologicalSpace (E i)]
@@ -34,9 +34,13 @@ theorem compContinuousLinearMap_sum_left {E' : ι → Type*} [∀ i, AddCommMono
     (∑ i ∈ s, f i).compContinuousLinearMap g = ∑ i ∈ s, (f i).compContinuousLinearMap g := by
   ext; simp
 
+end ContinuousMultilinearMap
+
 end AddMonoid
 
 section AddCommGroup
+
+namespace ContinuousMultilinearMap
 
 variable {ι R : Type*} {E : ι → Type*} {F G : Type*}
     [Ring R] [∀ i, AddCommGroup (E i)] [∀ i, Module R (E i)] [∀ i, TopologicalSpace (E i)]
@@ -62,7 +66,11 @@ theorem compContinuousLinearMap_sub {E' : ι → Type*} [∀ i, AddCommGroup (E'
       f.compContinuousLinearMap h - g.compContinuousLinearMap h := by
   ext; simp
 
+end ContinuousMultilinearMap
+
 end AddCommGroup
+
+namespace ContinuousMultilinearMap
 
 variable {ι α 𝕜 : Type*} {E F : ι → Type*} {G H : Type*}
   [NontriviallyNormedField 𝕜] [Fintype ι]
