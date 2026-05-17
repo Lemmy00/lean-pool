@@ -540,21 +540,20 @@ def equivToRealHyperbolic : Hyperbolic K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 3 K:={
   toFun := fun v ↦ ⟨v 0, ![v 1, v 2]⟩
   map_add' := by
     intro x y
-    simp only [Hyperbolic, RealHyperbolic, Pi.add_apply]
-    simp only [Nat.add_one_sub_one, Fin.isValue]
     ext
     · rfl
-    · simp only [mkAbelian]
-      simp only [Fin.isValue, LieSemidirectProduct.add_right, Nat.add_one_sub_one, Matrix.add_cons,
-        Matrix.head_cons, Matrix.tail_cons, Matrix.empty_add_empty]
+    · change ![(x + y) 1, (x + y) 2] = ![x 1, x 2] + ![y 1, y 2]
+      rw [show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+          show (x + y) 2 = x 2 + y 2 from Pi.add_apply _ _ _,
+          Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
   map_smul' := by
     intro a x
-    simp only [Hyperbolic]
-    rw [Prod.smul_def]
-    simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply]
     ext
     · rfl
-    · simp only [mkAbelian, Matrix.smul_cons, smul_eq_mul, mul_neg, Matrix.smul_empty]
+    · change ![(a • x) 1, (a • x) 2] = (RingHom.id K) a • ![x 1, x 2]
+      rw [show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+          show (a • x) 2 = a • x 2 from Pi.smul_apply _ _ _,
+          RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
     simp only [Hyperbolic, RealHyperbolic, RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket, Matrix.cons_val_one,
@@ -564,10 +563,9 @@ def equivToRealHyperbolic : Hyperbolic K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 3 K:={
       Matrix.smul_empty, add_zero]
     ext
     · simp only
-    · simp only [mkAbelian]
-      simp only [Nat.add_one_sub_one, Fin.isValue, LieHom.coe_smulRight, LinearMap.smul_apply,
-        LinearMap.id_coe, id_eq, Matrix.smul_cons, smul_eq_mul, Matrix.smul_empty, Matrix.sub_cons,
-        Matrix.head_cons, Matrix.tail_cons, sub_self, Matrix.zero_empty]
+    · change ![x 0 * y 1 - y 0 * x 1, x 0 * y 2 - y 0 * x 2] =
+        x 0 • ![y 1, y 2] - y 0 • ![x 1, x 2] + 0
+      ext i; fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
   invFun := fun ⟨k, v⟩ ↦ ![k, v 0, v 1]
   left_inv := by
     intro x
@@ -602,9 +600,17 @@ theorem commutator_is_span_e₂e₃ : (commutator K (Hyperbolic K)).toSubmodule 
     rw [SetLike.mem_coe, mem_span_pair]
     use y 0 * z 1 - z 0 * y 1, y 0 * z 2 - z 0 * y 2
     unfold e₂ e₃
-    rw [Hyperbolic.bracket, Matrix.smul_vec3, Matrix.smul_vec3, Matrix.vec3_add]
-    simp only [smul_eq_mul, mul_zero, add_zero,
-      mul_one, zero_add]
+    rw [Hyperbolic.bracket]
+    funext i
+    fin_cases i
+    · change (y 0 * z 1 - z 0 * y 1) * (0:K) + (y 0 * z 2 - z 0 * y 2) * 0 = 0
+      ring
+    · change (y 0 * z 1 - z 0 * y 1) * (1:K) + (y 0 * z 2 - z 0 * y 2) * 0 =
+        y 0 * z 1 - z 0 * y 1
+      ring
+    · change (y 0 * z 1 - z 0 * y 1) * (0:K) + (y 0 * z 2 - z 0 * y 2) * 1 =
+        y 0 * z 2 - z 0 * y 2
+      ring
   · rw [span_le]
     refine subset_trans ?_ subset_span
     intro x hx
@@ -766,14 +772,22 @@ def semidirectAux' : End K (Dim2.Abelian K) := {
   toFun := fun v ↦ ![α • v 1, v 0 + β • v 1]
   map_add' := by
     intro x y
-    simp only [mkAbelian, Pi.add_apply, smul_eq_mul, mul_add, Matrix.add_cons,
-      Matrix.head_cons, Matrix.tail_cons, Matrix.empty_add_empty]
-    rw [add_add_add_comm]
+    change ![α • (x + y) 1, (x + y) 0 + β • (x + y) 1] =
+      ![α • x 1, x 0 + β • x 1] + ![α • y 1, y 0 + β • y 1]
+    rw [show (x + y) 0 = x 0 + y 0 from Pi.add_apply _ _ _,
+      show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+      smul_add, smul_add, Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
+    ext i; fin_cases i <;>
+      simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] <;> ring
   map_smul' := by
     intro a x
-    simp only [mkAbelian, Pi.smul_apply, smul_eq_mul, RingHom.id_apply,
-      Matrix.smul_cons, Matrix.smul_empty]
-    rw [mul_left_comm α a, mul_left_comm β a, ← mul_add]
+    change ![α • (a • x) 1, (a • x) 0 + β • (a • x) 1] =
+      (RingHom.id K) a • ![α • x 1, x 0 + β • x 1]
+    rw [show (a • x) 0 = a • x 0 from Pi.smul_apply _ _ _,
+      show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+      RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
+    ext i; fin_cases i <;>
+      simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, smul_eq_mul] <;> ring
 }
 
 def semidirectAux : K →ₗ⁅K⁆ LieDerivation K (Dim2.Abelian K) (Dim2.Abelian K) :=
@@ -783,24 +797,20 @@ def equivToSemidirect : Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] 
   toFun := fun v ↦ ⟨v 0, ![v 1, v 2]⟩
   map_add' := by
     intro x y
-    rw [Prod.add_def]
-    simp only [Family, Pi.add_apply]
     ext
     · rfl
-    · simp only [mkAbelian]
-      ext i
-      fin_cases i
-      · simp only [Fin.zero_eta,
-        Matrix.cons_val_zero, Pi.add_apply]
-      · simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one,
-        Matrix.cons_val_one, Matrix.cons_val_fin_one, Pi.add_apply]
+    · change ![(x + y) 1, (x + y) 2] = ![x 1, x 2] + ![y 1, y 2]
+      rw [show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+          show (x + y) 2 = x 2 + y 2 from Pi.add_apply _ _ _,
+          Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
   map_smul' := by
     intro a x
-    rw [Prod.smul_def]
-    simp only [Family, Pi.smul_apply, smul_eq_mul, RingHom.id_apply]
     ext
     · rfl
-    · simp only [mkAbelian, Matrix.smul_cons, smul_eq_mul, Matrix.smul_empty]
+    · change ![(a • x) 1, (a • x) 2] = (RingHom.id K) a • ![x 1, x 2]
+      rw [show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+          show (a • x) 2 = a • x 2 from Pi.smul_apply _ _ _,
+          RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
     rw [Family.bracket, LieSemidirectProduct.bracket_def, semidirectAux, semidirectAux',
