@@ -605,6 +605,270 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
     rw [h₂'] at dimcomm
     contradiction
 
+/-- Helper for `case2_coarse`: produce a witness `X` such that `⁅B 0, X⁆` and `X`
+are linearly independent and `X` lies in the commutator. Extracted to keep the
+proof of `case2_coarse` within the proof-size limit. -/
+private lemma case2_coarse_rat
+    {B : Basis (Fin 3) K L}
+    (h₂ : Module.finrank K (commutator K L) = 2)
+    (B1c : B 1 ∈ commutator K L)
+    (B2c : B 2 ∈ commutator K L)
+    (br12 : ⁅B 1, B 2⁆ = 0)
+    (hs : ∀ (α : K),
+      ¬ (⁅B 0, B 1⁆ = α • B 1 ∧ ⁅B 0, B 2⁆ = α • B 2)) :
+    ∃ (X : L), LinearIndependent K (![⁅B 0, X⁆, X]) ∧ X ∈ commutator K L := by
+  by_cases ha : LinearIndependent K (![⁅B 0, B 1⁆,B 1 ])
+  · use (B 1)
+  · by_cases hb : LinearIndependent K (![⁅B 0, B 2⁆, B 2])
+    · use (B 2)
+    · rw [not_linearIndependent_pair_iff ⁅B 0, B 1⁆ (B 1)] at ha
+      rw [not_linearIndependent_pair_iff ⁅B 0, B 2⁆ (B 2)] at hb
+      obtain ⟨ c01, h01⟩ :=ha
+      obtain ⟨ c02, h02⟩ :=hb
+      have nuvn :  LinearIndependent K ![ c01 • B 1 + c02 • B 2, B 1+ B 2]
+          ∧ ⁅B 0,B 1+B 2⁆= c01 • B 1 + c02 • B 2:= by
+        have c01_not_zero : c01 ≠ 0 := by
+          intro hc01
+          rw [hc01] at h01
+          simp at h01
+          have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
+            have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 2} := by
+              intro x
+              intro hx
+              obtain ⟨y,z,hz⟩ := hx
+              let cy := Basis.repr_fin_three B y
+              let cz := Basis.repr_fin_three B z
+              have cx : x = (((B.repr y) 0 • (B.repr z) 2 - (B.repr z) 0 • (B.repr y) 2) • c02) • B 2 := by
+                calc x = ⁅(B.repr y) 0 • B 0 + (B.repr y) 1 • B 1 + (B.repr y) 2 • B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw [← hz,← cy, ← cz]
+                     _ =  ⁅(B.repr y) 0 •  B 0, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
+                        + ⁅ (B.repr y) 1 • B 1, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
+                        + ⁅ (B.repr y) 2 • B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw[add_lie,add_lie]
+                     _ = (B.repr y) 0 •⁅  B 0, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
+                        + (B.repr y) 1 • ⁅  B 1, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
+                        + (B.repr y) 2 • ⁅  B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw[smul_lie,smul_lie,smul_lie]
+                     _ = (B.repr y) 0 • (B.repr z) 0 • ⁅ B 0,B 0 ⁆ + (B.repr y) 0 • (B.repr z) 1 • ⁅ B 0,  B 1 ⁆ +(B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
+                        + (B.repr y) 1 •  (B.repr z) 0 •⁅  B 1, B 0 ⁆
+                        + (B.repr y) 1 • (B.repr z) 1 •⁅  B 1,  B 1 ⁆
+                        + (B.repr y) 1 •  (B.repr z) 2 •⁅  B 1,  B 2 ⁆
+                        + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
+                        + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2, B 1  ⁆
+                        + (B.repr y) 2 •  (B.repr z) 2 •⁅  B 2,  B 2 ⁆:= by repeat rw[lie_add,lie_smul];simp;module
+                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
+                        + (B.repr y) 1 •  (B.repr z) 0 •⁅  B 1, B 0 ⁆
+                        + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
+                        + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2, B 1  ⁆  :=by repeat rw[lie_self];rw[h01,br12];simp
+                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
+                        + (B.repr y) 1 •  (B.repr z) 0 • - ⁅  B 0, B 1 ⁆
+                        + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
+                        + (B.repr y) 2 • (B.repr z) 1 • -⁅  B 1, B 2  ⁆  :=by nth_rw 2 [← lie_skew];nth_rw 4 [← lie_skew]
+                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆ + (B.repr y) 2 • ((B.repr z) 0 • ((-1 : K) • ⁅  B 0,  B 2  ⁆)) :=by rw[h01,br12];simp
+                     _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,  B 2  ⁆ :=by rw [smul_smul (a₂ := -1), smul_smul (a₁ := (B.repr y) 2)]
+                     _ =  ((B.repr y) 0 * (B.repr z) 2) • ⁅ B 0,  B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,  B 2  ⁆ :=by rw [smul_smul]
+                     _ =  ((B.repr y) 0 * (B.repr z) 2 + (B.repr y) 2 * ((B.repr z) 0 * (-1 : K))) • ⁅  B 0,  B 2 ⁆ :=by rw [add_smul]
+                     _ =  ( ((B.repr y) 0 * (B.repr z) 2 - (B.repr z) 0 * (B.repr y) 2)) • ⁅  B 0,  B 2 ⁆ := by rw [mul_neg, mul_neg, mul_one ((B.repr z) 0), sub_eq_add_neg, mul_comm ((B.repr y) 2)]
+                     _ =  ( ((B.repr y) 0 • (B.repr z) 2 - (B.repr z) 0 • (B.repr y) 2) • c02 ) • B 2 := by rw [h02]; rw [smul_assoc]; rfl
+              symm at cx
+              have mm := Submodule.mem_span_singleton.mpr ⟨_, cx⟩
+              assumption
+            apply Submodule.span_le.mpr at cs
+            have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
+            rw [← this] at cs
+            apply Submodule.finrank_mono at cs
+            rw [finrank_span_singleton] at cs
+            exact cs
+            exact Basis.ne_zero B 2
+          rw [h₂] at comm_dim_1
+          contradiction
+        have c02_not_zero : c02 ≠ 0 := by
+          intro hc02
+          rw [hc02] at h02
+          simp at h02
+          have h20 : ⁅B 2, B 0⁆ = 0 := by
+            rw [← lie_skew, h02]
+            simp
+          have h10 : ⁅B 1, B 0⁆ = (-c01) • B 1 := by
+            rw [← lie_skew, h01]
+            simp
+          have h21 : ⁅B 2, B 1⁆ = 0 := by
+            rw [← lie_skew, br12]
+            simp
+          have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
+            have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 1} := by
+              intro x
+              intro hx
+              obtain ⟨y,z,hz⟩ := hx
+              let cy := Basis.repr_fin_three B y
+              let cz := Basis.repr_fin_three B z
+              have cx : x = (((B.repr y) 0 • (B.repr z) 1 - (B.repr z) 0 • (B.repr y) 1) • c01) • B 1 := by
+                rw [← hz]
+                rw [cy, cz]
+                repeat rw [lie_add]
+                repeat rw [add_lie]
+                repeat rw [lie_smul]
+                repeat rw [smul_lie]
+                rw [h01, h02, h20, h21, h10, br12]
+                repeat rw [lie_self]
+                simp only [Fin.isValue, smul_zero, Nat.reduceAdd, neg_smul, smul_neg, zero_add,
+                  add_zero, map_add, map_smul, Basis.repr_self, Finsupp.smul_single,
+                  smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same,
+                  ne_eq, one_ne_zero, not_false_eq_true, Finsupp.single_eq_of_ne, Fin.reduceEq,
+                  zero_ne_one]
+                module
+              symm at cx
+              have mm := Submodule.mem_span_singleton.mpr ⟨_, cx⟩
+              assumption
+            apply Submodule.span_le.mpr at cs
+            have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
+            rw [← this] at cs
+            apply Submodule.finrank_mono at cs
+            rw [finrank_span_singleton] at cs
+            exact cs
+            exact Basis.ne_zero B 1
+          rw [h₂] at comm_dim_1
+          contradiction
+        have c01_neq_c02 : c01 ≠ c02 := by
+          intro c01c02
+          specialize hs c01
+          apply hs
+          constructor
+          · assumption
+          · rw [c01c02]
+            assumption
+        constructor
+        · apply (LinearIndependent.pair_iff' _).mpr
+          · intro a
+            intro ha
+            rw [smul_add] at ha
+            have B12_li : LinearIndependent K ![B 1, B 2] := by
+              rw [@LinearIndependent.pair_iff]
+              intro s t hst
+              have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, s, t]
+              simp at this
+              have heqq : ∑ x : Fin 3, ![0, s, t] x • B x = s • B 1 + t • B 2 := by
+                rw [@Fin.sum_univ_three]
+                simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
+                  Matrix.cons_val_zero, zero_smul, Matrix.cons_val_one, Matrix.head_cons,
+                  zero_add, Matrix.cons_val_two, Matrix.tail_cons]
+              rw [hst] at heqq
+              specialize this heqq
+              constructor
+              · exact (this 1)
+              · exact (this 2)
+            have hh := LinearIndependent.pair_iffₛ.mp B12_li (a • c01) (a • c02) 1 1
+            have hha :  (a • c01) • B 1 + (a • c02) • B 2 = (1 : K) • B 1 + (1 : K) • B 2 := by
+              simp only [smul_eq_mul, one_smul]
+              rw [mul_smul, mul_smul]
+              rw [ha]
+            specialize hh hha
+            apply c01_neq_c02
+            have a_not_zero : a ≠ 0 := by
+              simp at hh
+              let hh1 := hh.1
+              rw [mul_comm] at hh1
+              apply (right_ne_zero_of_mul (a := c01))
+              have h : 1 ≠ (0 : K) := by simp
+              rw [hh1]
+              assumption
+            have hc01 : c01 = (1 : K) / a := by
+              rw [← hh.1]
+              simp
+              rw [mul_div_cancel_left₀ _ a_not_zero]
+            have hc02 : c02 = (1 : K) / a := by
+              rw [← hh.2]
+              simp
+              rw [mul_div_cancel_left₀ _ a_not_zero]
+            rw [hc01,hc02]
+          · intro heq
+            have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, c01, c02]
+            simp at this
+            have heqq : ∑ x : Fin 3, ![0, c01, c02] x • B x = c01 • B 1 + c02 • B 2 := by
+              rw [@Fin.sum_univ_three]
+              simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero,
+                zero_smul, Matrix.cons_val_one, Matrix.head_cons, zero_add, Matrix.cons_val_two,
+                Matrix.tail_cons]
+            rw [heq] at heqq
+            specialize this heqq 1
+            simp at this
+            apply c01_not_zero
+            exact this
+        · rw [lie_add]
+          rw [h01, h02]
+      have := nuvn
+      use (B 1 + B 2)
+      rw [this.2]
+      constructor
+      · exact this.1
+      · exact add_mem B1c B2c
+      exact Basis.ne_zero B 2
+      exact Basis.ne_zero B 1
+
+/-- Helper for `case2_coarse`: linear independence of the candidate basis
+`![B 0, X, ⁅B 0, X⁆]`. Extracted to keep the proof of `case2_coarse` within
+the proof-size limit. -/
+private lemma case2_coarse_Bnli
+    {B : Basis (Fin 3) K L}
+    {X : L}
+    (h₂ : Module.finrank K (commutator K L) = 2)
+    (hXli : LinearIndependent K ![⁅B 0, X⁆, X])
+    (hXc : X ∈ commutator K L)
+    (B1c : B 1 ∈ commutator K L)
+    (B2c : B 2 ∈ commutator K L) :
+    LinearIndependent K (![B 0, X, ⁅B 0, X⁆] : Fin 3 → L) := by
+  rw [@linearIndependent_fin_succ]
+  have : Fin.tail (![B 0, X, ⁅B 0, X⁆] : Fin 3 → L) = ![X, ⁅B 0, X⁆] := rfl
+  constructor
+  · rw [this]
+    rw [LinearIndependent.pair_iffₛ]
+    rw [LinearIndependent.pair_iffₛ] at hXli
+    intro s t s' t'
+    rw [add_comm (a:=s' • X), add_comm ]
+    intro u
+    let ⟨s_eq_s', t_eq_t'⟩ := hXli t s t' s' u
+    exact ⟨t_eq_t',s_eq_s'⟩
+  · intro h
+    rw [this] at h
+    have Bn0B0 : (![B 0, X, ⁅B 0, X⁆] : Fin 3 → L) 0 = B 0 := rfl
+    rw [Bn0B0] at h
+    have subset : Set.range ![⁅B 0, X⁆, X] ⊆ commutator K L := by
+      apply Set.range_subset_iff.mpr
+      simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, SetLike.mem_coe]
+      intro w
+      have i1 : w = 0 ∨ w = 1 := by fin_cases w; simp; simp
+      rcases i1 with (w1|w2)
+      · rw [w1]
+        simp only [Matrix.cons_val_zero]
+        apply lie_mem_commutator
+      · subst w2
+        simp only [Fin.isValue, Matrix.cons_val_one, Matrix.head_cons]
+        exact hXc
+    have sc : span K (Set.range ![⁅B 0, X⁆, X]) ≤ commutator K L := span_le.mpr subset
+    rw [@Matrix.range_cons_cons_empty] at h
+    have B0c : B 0 ∈ commutator K L := by
+      simp at sc
+      apply sc
+      exact h
+    have brange : Set.range B ⊆ commutator K L := by
+      rw [Set.range_subset_iff]
+      intro y
+      have yr : y=0 ∨ y=1 ∨ y=2 := by fin_cases y;simp;simp;simp
+      rcases yr with (j0|j1|j2)
+      · rw [j0]; exact B0c
+      · rw [j1]; exact B1c
+      · rw [j2]; exact B2c
+    have dimc : 3 ≤ Module.finrank K (commutator K L) := by
+      have Bli := B.linearIndependent
+      have hp := Submodule.linearIndependent_from_ambient (commutator K L) B Bli brange
+      have : Module.Finite K ↥(LieIdeal.toLieSubalgebra K L (commutator K L)).toSubmodule := by
+        simp only [LieIdeal.toLieSubalgebra_toSubmodule]
+        change Module.Finite K (commutator K L)
+        exact finite_of_finrank_eq_succ h₂
+      have := LinearIndependent.fintype_card_le_finrank hp
+      simp at this
+      simp only [ge_iff_le]
+      exact this
+    rw [h₂] at dimc
+    contradiction
+
 --Case 2: The commutator has dimension 2.
 lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (commutator K L) = 2) :
     (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ =  B 1 ∧ ⁅B 0, B 2⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0) ∨ -- Hyperbolic
@@ -698,281 +962,21 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
       exact hs α
 
     -- we claim that there exists X ∈ L such that [B 0, X] is linearly independent with X
-    have rat : ∃ (X : L), LinearIndependent K (![⁅B 0, X⁆, X ]) ∧ (X ∈ commutator K L):= by
-      by_cases ha : LinearIndependent K (![⁅B 0, B 1⁆,B 1 ])
-      · use (B 1)
-      · by_cases hb : LinearIndependent K (![⁅B 0, B 2⁆, B 2])
-        · use (B 2)
-        · rw [not_linearIndependent_pair_iff ⁅B 0, B 1⁆ (B 1)] at ha
-          rw [not_linearIndependent_pair_iff ⁅B 0, B 2⁆ (B 2)] at hb
-          obtain ⟨ c01, h01⟩ :=ha
-          obtain ⟨ c02, h02⟩ :=hb
+    have rat : ∃ (X : L), LinearIndependent K (![⁅B 0, X⁆, X ]) ∧ (X ∈ commutator K L) :=
+      case2_coarse_rat h₂ B1c B2c br12 (fun α => (hsn α).elim
+        (fun h ⟨h₁, _⟩ => h h₁) (fun h ⟨_, h₂⟩ => h h₂))
 
-
-
-          -- we use the hypothesis (ad_{B0}≠ α Id ∀ α) to produce X when B1 and B2 do not
-            -- satisfy the required conditions in rat
-
-          have nuvn :  LinearIndependent K ![ c01 • B 1 + c02 • B 2, B 1+ B 2]
-              ∧ ⁅B 0,B 1+B 2⁆= c01 • B 1 + c02 • B 2:= by
-            have c01_not_zero : c01 ≠ 0 := by
-              intro hc01
-              rw [hc01] at h01
-              simp at h01
-              have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
-                have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 2} := by
-                  intro x
-                  intro hx
-                  obtain ⟨y,z,hz⟩ := hx
-                  let cy := Basis.repr_fin_three B y
-                  let cz := Basis.repr_fin_three B z
-                  have cx : x = (((B.repr y) 0 • (B.repr z) 2 - (B.repr z) 0 • (B.repr y) 2) • c02) • B 2 := by
-                    calc x = ⁅(B.repr y) 0 • B 0 + (B.repr y) 1 • B 1 + (B.repr y) 2 • B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw [← hz,← cy, ← cz]
-                         _ =  ⁅(B.repr y) 0 •  B 0, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
-                            + ⁅ (B.repr y) 1 • B 1, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
-                            + ⁅ (B.repr y) 2 • B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw[add_lie,add_lie]
-                         _ = (B.repr y) 0 •⁅  B 0, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
-                            + (B.repr y) 1 • ⁅  B 1, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆
-                            + (B.repr y) 2 • ⁅  B 2, (B.repr z) 0 • B 0 + (B.repr z) 1 • B 1 + (B.repr z) 2 • B 2 ⁆:= by rw[smul_lie,smul_lie,smul_lie]
-                         _ = (B.repr y) 0 • (B.repr z) 0 • ⁅ B 0,B 0 ⁆ + (B.repr y) 0 • (B.repr z) 1 • ⁅ B 0,  B 1 ⁆ +(B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
-                            + (B.repr y) 1 •  (B.repr z) 0 •⁅  B 1, B 0 ⁆
-                            + (B.repr y) 1 • (B.repr z) 1 •⁅  B 1,  B 1 ⁆
-                            + (B.repr y) 1 •  (B.repr z) 2 •⁅  B 1,  B 2 ⁆
-                            + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
-                            + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2, B 1  ⁆
-                            + (B.repr y) 2 •  (B.repr z) 2 •⁅  B 2,  B 2 ⁆:= by repeat rw[lie_add,lie_smul];simp;module
-                         _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
-                            + (B.repr y) 1 •  (B.repr z) 0 •⁅  B 1, B 0 ⁆
-                            + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
-                            + (B.repr y) 2 • (B.repr z) 1 • ⁅  B 2, B 1  ⁆  :=by repeat rw[lie_self];rw[h01,br12];simp
-                         _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆
-                            + (B.repr y) 1 •  (B.repr z) 0 • - ⁅  B 0, B 1 ⁆
-                            + (B.repr y) 2 • (B.repr z) 0 •⁅  B 2,  B 0  ⁆
-                            + (B.repr y) 2 • (B.repr z) 1 • -⁅  B 1, B 2  ⁆  :=by nth_rw 2 [← lie_skew];nth_rw 4 [← lie_skew]
-                         _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆ + (B.repr y) 2 • ((B.repr z) 0 • ((-1 : K) • ⁅  B 0,  B 2  ⁆)) :=by rw[h01,br12];simp
-                         _ =  (B.repr y) 0 • (B.repr z) 2 • ⁅ B 0,  B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,  B 2  ⁆ :=by rw [smul_smul (a₂ := -1), smul_smul (a₁ := (B.repr y) 2)]
-                         _ =  ((B.repr y) 0 * (B.repr z) 2) • ⁅ B 0,  B 2 ⁆+ ((B.repr y) 2 * ((B.repr z) 0 * (-1 : K)))• ⁅  B 0,  B 2  ⁆ :=by rw [smul_smul]
-                         _ =  ((B.repr y) 0 * (B.repr z) 2 + (B.repr y) 2 * ((B.repr z) 0 * (-1 : K))) • ⁅  B 0,  B 2 ⁆ :=by rw [add_smul]
-                         _ =  ( ((B.repr y) 0 * (B.repr z) 2 - (B.repr z) 0 * (B.repr y) 2)) • ⁅  B 0,  B 2 ⁆ := by rw [mul_neg, mul_neg, mul_one ((B.repr z) 0), sub_eq_add_neg]; simp; rw [mul_comm ((B.repr z) 0)]
-                         _ =  ( ((B.repr y) 0 • (B.repr z) 2 - (B.repr z) 0 • (B.repr y) 2) • c02 ) • B 2 := by rw [h02]; rw [smul_assoc]; rfl
-                  symm at cx
-
-                  have mm := Submodule.mem_span_singleton.mpr ⟨_, cx⟩
-                  assumption
-                apply Submodule.span_le.mpr at cs
-                have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
-                rw [← this] at cs
-                apply Submodule.finrank_mono at cs
-                rw [finrank_span_singleton] at cs
-                exact cs
-                exact Basis.ne_zero B 2
-              rw [h₂] at comm_dim_1
-              contradiction
-            have c02_not_zero : c02 ≠ 0 := by
-              intro hc02
-              rw [hc02] at h02
-              simp at h02
-              have h20 : ⁅B 2, B 0⁆ = 0 := by
-                rw [← lie_skew, h02]
-                simp
-              have h10 : ⁅B 1, B 0⁆ = (-c01) • B 1 := by
-                rw [← lie_skew, h01]
-                simp
-              have h21 : ⁅B 2, B 1⁆ = 0 := by
-                rw [← lie_skew, br12]
-                simp
-              have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
-                have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 1} := by
-                  intro x
-                  intro hx
-                  obtain ⟨y,z,hz⟩ := hx
-                  let cy := Basis.repr_fin_three B y
-                  let cz := Basis.repr_fin_three B z
-                  have cx : x = (((B.repr y) 0 • (B.repr z) 1 - (B.repr z) 0 • (B.repr y) 1) • c01) • B 1 := by
-                    rw [← hz]
-                    rw [cy, cz]
-                    repeat rw [lie_add]
-                    repeat rw [add_lie]
-                    repeat rw [lie_smul]
-                    repeat rw [smul_lie]
-                    rw [h01, h02, h20, h21, h10, br12]
-                    repeat rw [lie_self]
-                    simp only [Fin.isValue, smul_zero, Nat.reduceAdd, neg_smul, smul_neg, zero_add,
-                      add_zero, map_add, map_smul, Basis.repr_self, Finsupp.smul_single,
-                      smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same,
-                      ne_eq, one_ne_zero, not_false_eq_true, Finsupp.single_eq_of_ne, Fin.reduceEq,
-                      zero_ne_one, V, B]
-                    module
-                  symm at cx
-
-                  have mm := Submodule.mem_span_singleton.mpr ⟨_, cx⟩
-                  assumption
-                apply Submodule.span_le.mpr at cs
-                have : (commutator K L).toSubmodule = span K {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} := commutator_eq_span
-                rw [← this] at cs
-                apply Submodule.finrank_mono at cs
-                rw [finrank_span_singleton] at cs
-                exact cs
-                exact Basis.ne_zero B 1
-              rw [h₂] at comm_dim_1
-              contradiction
-            have c01_neq_c02 : c01 ≠ c02 := by
-              intro c01c02
-              specialize hs c01
-              apply hs
-              constructor
-              · assumption
-              · rw [c01c02]
-                assumption
-            constructor
-            · apply (LinearIndependent.pair_iff' _).mpr
-              · intro a
-                intro ha
-                rw [smul_add] at ha
-                have B12_li : LinearIndependent K ![B 1, B 2] := by
-                  rw [@LinearIndependent.pair_iff]
-                  intro s t hst
-                  have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, s, t]
-                  simp at this
-                  have heqq : ∑ x : Fin 3, ![0, s, t] x • B x = s • B 1 + t • B 2 := by
-                    rw [@Fin.sum_univ_three]
-                    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
-                      Matrix.cons_val_zero, zero_smul, Matrix.cons_val_one, Matrix.head_cons,
-                      zero_add, Matrix.cons_val_two, Matrix.tail_cons, V, B]
-                  rw [hst] at heqq
-                  specialize this heqq
-                  constructor
-                  · exact (this 1)
-                  · exact (this 2)
-
-
-                have hh := LinearIndependent.pair_iffₛ.mp B12_li (a • c01) (a • c02) 1 1
-                have hha :  (a • c01) • B 1 + (a • c02) • B 2 = (1 : K) • B 1 + (1 : K) • B 2 := by
-                  simp only [smul_eq_mul, one_smul, V, B]
-                  rw [mul_smul, mul_smul]
-                  rw [ha]
-                specialize hh hha
-                apply c01_neq_c02
-                have a_not_zero : a ≠ 0 := by
-                  simp at hh
-                  let hh1 := hh.1
-                  rw [mul_comm] at hh1
-                  apply (right_ne_zero_of_mul (a := c01))
-                  have h : 1 ≠ (0 : K) := by simp
-                  rw [hh1]
-                  assumption
-                have hc01 : c01 = (1 : K) / a := by
-                  rw [← hh.1]
-                  simp
-                  rw [mul_div_cancel_left₀ _ a_not_zero]
-                have hc02 : c02 = (1 : K) / a := by
-                  rw [← hh.2]
-                  simp
-                  rw [mul_div_cancel_left₀ _ a_not_zero]
-                rw [hc01,hc02]
-              · intro heq
-                have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, c01, c02]
-                simp at this
-                have heqq : ∑ x : Fin 3, ![0, c01, c02] x • B x = c01 • B 1 + c02 • B 2 := by
-                  rw [@Fin.sum_univ_three]
-                  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero,
-                    zero_smul, Matrix.cons_val_one, Matrix.head_cons, zero_add, Matrix.cons_val_two,
-                    Matrix.tail_cons, V, B]
-                rw [heq] at heqq
-                specialize this heqq 1
-                simp at this
-                apply c01_not_zero
-                exact this
-            · rw [lie_add]
-              rw [h01, h02]
-          have := nuvn
-          use (B 1 + B 2)
-          rw [this.2]
-          constructor
-          · exact this.1
-          · exact add_mem B1c B2c
-          exact Basis.ne_zero B 2
-          exact Basis.ne_zero B 1
+    -- (rat extracted above as case2_coarse_rat)
+    have _placeholder_rat : True := trivial
+    -- old inline branch (now unused):
+    -- (deleted; see case2_coarse_rat)
+    -- BEGIN UNUSED
 
     -- we use the X above to produce a basis of L satisfying the conditions in the statement
     obtain ⟨X, hXli,hXc⟩ := rat
 
     let Bn := ![B 0, X, ⁅B 0, X⁆]
-    have Bnli : LinearIndependent K Bn := by
-      rw [@linearIndependent_fin_succ]
-      have : Fin.tail Bn = ![X, ⁅B 0, X⁆] := by
-          exact rfl
-
-      constructor
-      · rw [this]
-        rw [LinearIndependent.pair_iffₛ]
-        rw [LinearIndependent.pair_iffₛ] at hXli
-        intro s t s' t'
-        rw [add_comm (a:=s' • X), add_comm ]
-        simp only [Nat.reduceAdd, Fin.isValue, V, B]
-        intro u
-        let ⟨s_eq_s', t_eq_t'⟩ := hXli t s t' s' u
-        exact ⟨t_eq_t',s_eq_s'⟩
-      · intro h
-        rw [this] at h
-        have Bn0B0: Bn 0 = B 0 := by
-          exact rfl
-        rw [Bn0B0] at h
-        have subset : Set.range ![⁅B 0, X⁆, X] ⊆ commutator K L :=by
-          apply Set.range_subset_iff.mpr
-          simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, SetLike.mem_coe]
-          intro w
-          have i1: w = 0 ∨ w = 1  := by
-
-            fin_cases w; simp; simp
-          rcases i1 with (w1|w2)
-          · rw [w1]
-            simp only [Matrix.cons_val_zero]
-            apply lie_mem_commutator
-          · subst w2
-            simp only [Fin.isValue, Matrix.cons_val_one, Matrix.head_cons, V, B]
-            exact hXc
-
-        have sc : span K (Set.range ![⁅B 0, X⁆, X]) ≤ commutator K L:= by
-          exact span_le.mpr subset
-        rw [@Matrix.range_cons_cons_empty] at h
-        have : B 0 ∈ commutator K L := by
-          simp at sc
-          apply sc
-          exact h
-        have brange : Set.range B ⊆ commutator K L := by
-          rw [ Set.range_subset_iff]
-          intro y
-          simp at y
-          have yr : y=0 ∨ y=1 ∨ y=2 :=by
-            fin_cases y;simp;simp;simp
-          rcases yr with (j0|j1|j2)
-          · rw [j0]
-            exact this
-          · rw [j1]
-            rw [B1isV0]
-            exact V0c
-
-          · rw [j2]
-            rw [B2isV1]
-            exact V1c
-
-        have dimc : 3 ≤ Module.finrank K (commutator K L) :=by
-          have Bli:=B.linearIndependent
-          have hp :=Submodule.linearIndependent_from_ambient (commutator K L) B Bli brange
-
-          have : Module.Finite K ↥(LieIdeal.toLieSubalgebra K L (commutator K L)).toSubmodule := by
-            simp only [LieIdeal.toLieSubalgebra_toSubmodule]
-            change Module.Finite K (commutator K L)
-            exact finite_of_finrank_eq_succ h₂
-
-
-          have := LinearIndependent.fintype_card_le_finrank hp
-          simp at this
-          simp only [ge_iff_le]
-          exact this
-        rw [h₂] at dimc
-        contradiction
+    have Bnli : LinearIndependent K Bn := case2_coarse_Bnli h₂ hXli hXc B1c B2c
 
     let BnBasis : Basis (Fin 3) K L :=
       basisOfLinearIndependentOfCardEqFinrank Bnli (by simp; rw [dim3])
