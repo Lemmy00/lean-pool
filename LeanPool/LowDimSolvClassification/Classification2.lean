@@ -116,16 +116,28 @@ theorem classification (h : finrank K L = 2) :
         intro x y
         simp only [trivial_lie_zero, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
           LinearEquiv.coe_coe, Basis.equivFun_apply, map_zero, Finsupp.coe_zero]
+        rfl
     })
   · right
     constructor
     exact {
       toFun := fun l => ![B.repr l 0, B.repr l 1]
-      map_add' := by intro x y; simp [Affine]
-      map_smul' := by intro r x; simp [Affine]
+      map_add' := by
+        intro x y
+        change ![(B.repr (x + y)) 0, (B.repr (x + y)) 1] =
+          ![(B.repr x) 0, (B.repr x) 1] + ![(B.repr y) 0, (B.repr y) 1]
+        rw [map_add, show (B.repr x + B.repr y) 0 = B.repr x 0 + B.repr y 0 from rfl,
+          show (B.repr x + B.repr y) 1 = B.repr x 1 + B.repr y 1 from rfl,
+          Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
+      map_smul' := by
+        intro r x
+        change ![(B.repr (r • x)) 0, (B.repr (r • x)) 1] =
+          (RingHom.id K) r • ![(B.repr x) 0, (B.repr x) 1]
+        rw [map_smul, show (r • B.repr x) 0 = r * B.repr x 0 from rfl,
+          show (r • B.repr x) 1 = r * B.repr x 1 from rfl, RingHom.id_apply,
+          Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul, smul_eq_mul]
       map_lie' := by
         intro x y
-        simp [Affine]
         have lie_repr : ⁅ x , y ⁆ = (B.repr x 0 * B.repr y 1 - B.repr y 0 * B.repr x 1) • B 1 := by
           rw [Basis.repr_fin_two  B x, Basis.repr_fin_two B y]
           simp only [lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero,
@@ -134,10 +146,8 @@ theorem classification (h : finrank K L = 2) :
             one_ne_zero, not_false_eq_true, Finsupp.single_eq_of_ne, zero_ne_one]
           rw [pfB, ← lie_skew, pfB]
           module
-        rw [lie_repr]
-        ext _
-        rw [Affine.bracket]
-        congr <;> simp
+        rw [lie_repr, @Affine.bracket K _]
+        funext i; fin_cases i <;> simp
       invFun := fun α => α 0 • B 0 + α 1 • B 1
       left_inv := by
         intro x
@@ -163,8 +173,7 @@ theorem not_iso : IsEmpty (Affine K ≃ₗ⁅K⁆ Abelian K) := by
   have : iso.symm 0 = 0 := iso.symm.map_zero
   apply_fun (fun x => (iso.symm x) 1) at Hf
   simp [LieEquiv.symm_apply_apply, this, Prod.snd_zero, one_ne_zero] at Hf
-  rw [Pi.zero_apply] at Hf
-  exact one_ne_zero Hf
+  exact one_ne_zero (Hf.trans (Pi.zero_apply _))
 
 end Dim2
 end classification_dim_2

@@ -23,6 +23,7 @@ namespace LieAlgebra
 section mkAbelian
 
 /-- The abelian Lie algebra constructed from a vector space by setting the bracket to zero. -/
+@[nolint unusedArguments]
 def mkAbelian (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] := V
 
 variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V]
@@ -51,6 +52,7 @@ end mkAbelian
 
 section abelianDerivation
 
+/-- TODO. -/
 def Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : End K L) :
     LieDerivation K L L := {
   toLinearMap := f,
@@ -108,6 +110,7 @@ variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V]
 
 example : LieAlgebra K (Module.End K V) := inferInstance
 
+/-- TODO. -/
 def ofAffineEquivAux := (Abelian.DerivationOfLinearMap K (mkAbelian K V)).toLieHom
 
 /-- The Lie algebra of the general affine group on a vector space `V`,
@@ -125,9 +128,11 @@ section liealghyperbolic
 
 variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] (L : Type*) [LieRing L] [LieAlgebra K L] [IsLieAbelian L]
 
+/-- TODO. -/
 def RealHyperbolicAux' : K →ₗ⁅K⁆ LieDerivation K L L :=
   LieHom.comp (Abelian.DerivationOfLinearMap K L) (LieHom.smulRight (LinearMap.id : End K L))
 
+/-- TODO. -/
 def RealHyperbolicAux : K →ₗ⁅K⁆ LieDerivation K (mkAbelian K V) (mkAbelian K V) := RealHyperbolicAux' K (mkAbelian K V)
 
 /-- The almost abelian Lie algebra associated to real hyperbolic space, generalized to arbitrary `K`. -/

@@ -23,8 +23,10 @@ section dimension_two
 
 variable (K : Type*) [CommRing K]
 
+/-- TODO. -/
 abbrev Abelian := mkAbelian K (Fin 2 → K)
 
+/-- TODO. -/
 def Affine := Fin 2 → K
 
 instance : LieRing (Affine K) := {
@@ -128,6 +130,7 @@ def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K where
         rw [this, smul_eq_mul, mul_comm]
       rw [hf y, hg x]
 
+/-- TODO. -/
 def equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
   toFun := fun v ↦ ⟨v 0, ![v 1]⟩
   map_add' := by
@@ -297,6 +300,7 @@ theorem Hyperbolic.bracket (l r : Hyperbolic K) :
   rfl
 
 /-- The two-parameter family of solvable Lie algebras appearing in the classification of 3-dimensional Lie algebras. -/
+@[nolint unusedArguments]
 def Family (_ _ : K) := Fin 3 → K
 
 instance (α : K) (β : K): LieRing (Family K α β) := {
@@ -338,6 +342,7 @@ section dim3_lemmas
 
 variable {K : Type*} [CommRing K]
 
+/-- TODO. -/
 def Heisenberg.semidirectAux' : End K (Dim2.Abelian K) := {
   toFun := fun v ↦ ![v 1, 0]
   map_add' := by
@@ -352,6 +357,7 @@ def Heisenberg.semidirectAux' : End K (Dim2.Abelian K) := {
       RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty, smul_zero]
 }
 
+/-- TODO. -/
 def Heisenberg.semidirectAux : K →ₗ⁅K⁆ LieDerivation K (Dim2.Abelian K) (Dim2.Abelian K) :=
   LieHom.comp (Abelian.DerivationOfLinearMap K (Dim2.Abelian K)) (LieHom.smulRight Heisenberg.semidirectAux')
 
@@ -454,6 +460,7 @@ def AffinePlusAbelian.equivToDirectSum : AffinePlusAbelian K ≃ₗ⁅K⁆ K × 
     exact List.ofFn_inj.mp rfl
 }
 
+/-- TODO. -/
 def AffinePlusAbelian.semidirectAux' : End K (Dim2.Abelian K) := {
   toFun := fun v ↦ ![0, - v 1]
   map_add' := by
@@ -469,6 +476,7 @@ def AffinePlusAbelian.semidirectAux' : End K (Dim2.Abelian K) := {
       smul_neg, smul_zero]
 }
 
+/-- TODO. -/
 def AffinePlusAbelian.semidirectAux: K →ₗ⁅K⁆ LieDerivation K (Dim2.Abelian K) (Dim2.Abelian K) :=
   LieHom.comp (Abelian.DerivationOfLinearMap K (Dim2.Abelian K)) (LieHom.smulRight AffinePlusAbelian.semidirectAux')
 
@@ -536,6 +544,7 @@ variable {K : Type*} [CommRing K]
 
 /- In this section we study properties of the Lie algebra Hyperbolic. -/
 
+/-- TODO. -/
 def equivToRealHyperbolic : Hyperbolic K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 3 K:={
   toFun := fun v ↦ ⟨v 0, ![v 1, v 2]⟩
   map_add' := by
@@ -581,12 +590,15 @@ def equivToRealHyperbolic : Hyperbolic K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 3 K:={
       exact List.ofFn_inj.mp rfl
 }
 
+/-- TODO. -/
 def e₁ : Hyperbolic K := ![1, 0, 0]
 theorem e₁_def : (e₁ : Hyperbolic K) = ![1, 0, 0] := by
   rfl
+/-- TODO. -/
 def e₂ : Hyperbolic K := ![0, 1, 0]
 theorem e₂_def : (e₂ : Hyperbolic K) = ![0, 1, 0] := by
   rfl
+/-- TODO. -/
 def e₃ : Hyperbolic K := ![0, 0, 1]
 theorem e₃_def : (e₃ : Hyperbolic K) = ![0, 0, 1] := by
   rfl
@@ -632,6 +644,7 @@ theorem commutator_is_span_e₂e₃ : (commutator K (Hyperbolic K)).toSubmodule 
 theorem commutator_repr {x : Hyperbolic K} : x ∈ commutator K (Hyperbolic K) ↔ ∃ a b : K, a • e₂ + b • e₃ = x := by
   rw [← LieSubmodule.mem_toSubmodule, Hyperbolic.commutator_is_span_e₂e₃, mem_span_pair]
 
+/-- TODO. -/
 noncomputable def stdBasis : Basis (Fin 3) K (Hyperbolic K) := Basis.ofEquivFun (LinearEquiv.refl K (Fin 3 → K))
 
 theorem stdBasis₁ : (stdBasis 0 : Hyperbolic K) = e₁ := by
@@ -658,6 +671,7 @@ theorem stdBasis₃ : (stdBasis 2 : Hyperbolic K) = e₃ := by
   ext i
   fin_cases i <;> simp
 
+/-- TODO. -/
 noncomputable def commutatorBasis : Basis (Fin 2) K (commutator K (Hyperbolic K)) := by
   have li : LinearIndependent K ![(e₂ : Hyperbolic K), e₃] := by
     refine LinearIndependent.pair_iff.mpr ?_
@@ -678,8 +692,10 @@ noncomputable def commutatorBasis : Basis (Fin 2) K (commutator K (Hyperbolic K)
 theorem dim_commutator {K : Type*} [Field K] : finrank K (commutator K (Hyperbolic K)) = 2 := by
   rw [finrank_eq_card_basis commutatorBasis, Fintype.card_fin]
 
+/-- TODO. -/
 def adjoint (x : Hyperbolic K) := ad K (Hyperbolic K) x
 
+/-- TODO. -/
 def ade₁ := adjoint (e₁ : Hyperbolic K)
 
 theorem ad_preserves_commutator (x : Hyperbolic K) : ∀ y ∈ (commutator K (Hyperbolic K)), (adjoint x) y ∈ (commutator K (Hyperbolic K)) := by
@@ -692,6 +708,7 @@ theorem ad_preserves_commutator (x : Hyperbolic K) : ∀ y ∈ (commutator K (Hy
   simp only [LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.mem_toSubmodule] at this
   assumption
 
+/-- TODO. -/
 def ad_restr (x : Hyperbolic K) : (commutator K (Hyperbolic K)) →ₗ[K] (commutator K (Hyperbolic K)) :=
   LinearMap.restrict (adjoint x) (ad_preserves_commutator x)
 
@@ -768,6 +785,7 @@ variable {K : Type*} [CommRing K] (α β : K)
 
 /- In this section we study properties of the Lie algebra Family α β, with α ≠ 0. -/
 
+/-- TODO. -/
 def semidirectAux' : End K (Dim2.Abelian K) := {
   toFun := fun v ↦ ![α • v 1, v 0 + β • v 1]
   map_add' := by
@@ -790,9 +808,11 @@ def semidirectAux' : End K (Dim2.Abelian K) := {
       simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, smul_eq_mul] <;> ring
 }
 
+/-- TODO. -/
 def semidirectAux : K →ₗ⁅K⁆ LieDerivation K (Dim2.Abelian K) (Dim2.Abelian K) :=
   LieHom.comp (Abelian.DerivationOfLinearMap K (Dim2.Abelian K)) (LieHom.smulRight (semidirectAux' α β))
 
+/-- TODO. -/
 def equivToSemidirect : Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] Dim2.Abelian K := {
   toFun := fun v ↦ ⟨v 0, ![v 1, v 2]⟩
   map_add' := by
@@ -849,6 +869,7 @@ def equivToSemidirect : Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] 
       exact List.ofFn_inj.mp rfl
 }
 
+/-- TODO. -/
 def M : Matrix (Fin 2) (Fin 2) K := ![
   ![0, α],
   ![1, β]
@@ -868,12 +889,15 @@ theorem M_trace {α β : K} : Matrix.trace (M α β) = β := by
   simp only [Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one,
       Matrix.cons_val_one, Matrix.head_cons, Matrix.head_fin_const, zero_add]
 
+/-- TODO. -/
 def e₁ : Family K α β := ![1, 0, 0]
 theorem e₁_def : (e₁ : Family K α β) = ![1, 0, 0] := by
   rfl
+/-- TODO. -/
 def e₂ : Family K α β := ![0, 1, 0]
 theorem e₂_def : (e₂ : Family K α β) = ![0, 1, 0] := by
   rfl
+/-- TODO. -/
 def e₃ : Family K α β := ![0, 0, 1]
 theorem e₃_def : (e₃ : Family K α β) = ![0, 0, 1] := by
   rfl
@@ -934,6 +958,7 @@ theorem commutator_is_span_e₂e₃ (hα : α ≠ 0) : (commutator K (Family K �
       | inr h => subst h; exact ⟨_, _, e₃_bracket⟩
     · apply subset_span (R:=K) (M:=Family K α β) (s := {x | ∃ y z, ⁅y, z⁆ = x})
 
+/-- TODO. -/
 def B (α β : K) : Fin 2 → Family K α β := ![e₂, e₃]
 
 theorem B_is_li_ambient : LinearIndependent K (M := Family K α β) (B α β) := by
@@ -955,7 +980,9 @@ theorem B_is_li_ambient : LinearIndependent K (M := Family K α β) (B α β) :=
           Matrix.tail_cons, Matrix.head_cons, zero_add, Pi.zero_apply] at hst
         exact hst
 
+/-- TODO. -/
 def e₁α : Family K α β := ![α⁻¹, 0, 0]
+/-- TODO. -/
 def e₂β : Family K α β := ![0, -β, 1]
 
 theorem e₂_bracket {hα : α ≠ 0} : ⁅(e₁α : Family K α β), (e₂β : Family K α β)⁆ = e₂ := by
@@ -987,6 +1014,7 @@ lemma e₃_in_comm : e₃ ∈ commutator K (Family K α β) := by
     have := subset_span (R := K) (M := Family K α β) (s := {x | ∃ (y z : Family K α β), ⁅y, z⁆ = x})
     exact (this ⟨_, _, e₃_bracket⟩)
 
+/-- TODO. -/
 noncomputable def commutatorBasis (α β : K) (hα : α ≠ 0) : Basis (Fin 2) K (commutator K (Family K α β)) := by
   -- Basis are ![0,1,0] and ![0,0,1]
   let e₁α : Family K α β := ![α⁻¹, 0, 0]
@@ -1137,7 +1165,8 @@ theorem B_basis_repr {hα : α ≠ 0} {x : commutator K (Family K α β)} : (com
   let ⟨a, b, h⟩ := mem_span_pair.mp this
   have w := h
   unfold e₂ e₃ at h
-  rw [@Matrix.smul_vec3, @Matrix.smul_vec3, Matrix.vec3_add] at h
+  change (a • ![(0:K), 1, 0] + b • ![(0:K), 0, 1] : Fin 3 → K) = x at h
+  rw [Matrix.smul_vec3, Matrix.smul_vec3, Matrix.vec3_add] at h
   simp at h
   symm at h
   have x00 : x 0 = 0 := by
@@ -1183,8 +1212,10 @@ theorem B_basis_repr {hα : α ≠ 0} {x : commutator K (Family K α β)} : (com
   · simp only [Fin.mk_one, Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_one,
     Matrix.cons_val_fin_one]
 
+/-- TODO. -/
 def ade₁ := ad K (Family K α β) e₁
 
+/-- TODO. -/
 def adjoint (x : Family K α β) := ad K (Family K α β) x
 
 theorem ade₁_pc : ∀ x ∈ (commutator K (Family K α β)), ade₁ x ∈ (commutator K (Family K α β)) := by
@@ -1199,9 +1230,11 @@ theorem ad_pc (x : Family K α β) : ∀ y ∈ (commutator K (Family K α β)), 
   simp only [ad_apply]
   exact lie_mem_commutator x y
 
+/-- TODO. -/
 def ad_restr (x : Family K α β) : (commutator K (Family K α β)) →ₗ[K] (commutator K (Family K α β)) :=
   LinearMap.restrict (adjoint x) (ad_pc x)
 
+/-- TODO. -/
 def ade₁_restr (α β : K) := ad_restr e₁ (α:=α) (β:=β)
 
 theorem ad_restr_apply (x : Family K α β)  (y : Family K α β) (hy : y ∈ (commutator K (Family K α β))) :
@@ -1260,18 +1293,14 @@ theorem det_ade₁ (hα : α ≠ 0) : LinearMap.det (ade₁_restr α β) = -α :
 theorem e₁_not_in_comm (hα : α ≠ 0) : e₁ ∉ commutator K (Family K α β) := by
     intro hb0
     rw [e₁_def] at hb0
-    have hb0S: ![1, 0, 0] ∈ (commutator K (Family K α β)).toSubmodule := by
-      simp_all only [ne_eq, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, Nat.reduceAdd,
-        LieSubmodule.mem_toSubmodule]
+    have hb0S : ![1, 0, 0] ∈ (commutator K (Family K α β)).toSubmodule := hb0
     rw [commutator_is_span_e₂e₃ (α:=α) (β:=β) (hα:=hα)] at hb0S
-    rw [@mem_span_pair] at hb0S
-    let ⟨a, b, h⟩ := hb0S
+    have hb0S' : (![1, 0, 0] : Family K α β) ∈ span K {(e₂ : Family K α β), e₃} := hb0S
+    obtain ⟨a, b, h⟩ := (mem_span_pair (R := K) (M := Family K α β)).mp hb0S'
     unfold e₂ e₃ at h
-    rw [@Matrix.smul_vec3, @Matrix.smul_vec3, Matrix.vec3_add] at h
+    change (a • ![(0:K), 1, 0] + b • ![(0:K), 0, 1] : Fin 3 → K) = ![1, 0, 0] at h
+    rw [Matrix.smul_vec3, Matrix.smul_vec3, Matrix.vec3_add] at h
     simp at h
-    have : ![0, a, b] 0 = ![1, 0, 0] 0 := by
-      rw [h]
-    simp at this
 
 end Family
 end dim3_family_lemmas
