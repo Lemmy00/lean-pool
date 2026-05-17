@@ -15,11 +15,7 @@ import LeanPool.LeanBooleanfun.Arrow
 Source: url:https://github.com/roos-j/lean-booleanfun
 Authors: Joris Roos
 Status: verified
-Main declarations: `LeanPool.LeanBooleanfun.BooleanFun.fourierTransform`,
-`LeanPool.LeanBooleanfun.BooleanFun.inner_eq_sum_fourier`,
-`LeanPool.LeanBooleanfun.BooleanFun.variance_le_totalInfluence`,
-`LeanPool.LeanBooleanfun.BooleanFun.BV.almost_character`,
-`LeanPool.LeanBooleanfun.BooleanFun.BV.dictator_of_condorcet_and_unanimous`
+Main declarations: `LeanPool.LeanBooleanfun.BooleanFun.BV.dictator_of_condorcet_and_unanimous`
 Tags: boolean-functions, fourier-analysis, social-choice
 MSC: 06E30, 42C10, 91B14
 -/
