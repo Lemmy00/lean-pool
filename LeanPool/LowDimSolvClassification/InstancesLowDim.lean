@@ -110,7 +110,7 @@ def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K where
     ext i
     fin_cases i
     · simp only [Matrix.cons_val_zero]
-      show f (g 1) - g (f 1) = 0
+      change f (g 1) - g (f 1) = 0
       have hf : ∀ x : K, f x = f 1 * x := fun x => by
         have : f x = x • f 1 := by rw [← map_smul]; simp
         rw [this, smul_eq_mul, mul_comm]
@@ -135,16 +135,16 @@ def equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
     simp only [Affine, RealHyperbolic, Pi.add_apply]
     ext
     · rfl
-    · simp only [mkAbelian]
-      simp only [Fin.isValue, LieSemidirectProduct.add_right, Nat.add_one_sub_one, Matrix.add_cons,
-        Matrix.head_cons, Matrix.tail_cons, Matrix.empty_add_empty]
+    · change ![(x + y) 1] = ![x 1] + ![y 1]
+      rw [show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+        Matrix.cons_add_cons, Matrix.empty_add_empty]
   map_smul' := by
     intro a x
     ext
     · rfl
-    · simp only [mkAbelian,Nat.add_one_sub_one, Fin.isValue, RingHom.id_apply,
-      LieSemidirectProduct.smul_right,Fin.isValue, Matrix.smul_cons, smul_eq_mul, Matrix.smul_empty]
-      rfl
+    · change ![(a • x) 1] = a • ![x 1]
+      rw [show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+        Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
     simp only [Bracket.bracket, Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
@@ -158,8 +158,11 @@ def equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
       simp only [mkAbelian,Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons, LieHom.smulRight_apply,
        LinearMap.smul_apply,LinearMap.coe_mk, AddHom.coe_mk, Matrix.smul_cons, smul_eq_mul,
        mul_zero, Matrix.smul_empty, Pi.sub_apply, sub_self, Pi.neg_apply, neg_zero, neg_mul]
-      simp only [Fin.isValue, Matrix.sub_cons, Matrix.head_cons, Matrix.tail_cons, sub_self,
-        Matrix.zero_empty]
+      ext i
+      fin_cases i
+      change x 0 * y 1 - y 0 * x 1 = (x 0 • ![y 1] - y 0 • ![x 1] + 0) 0
+      simp [Matrix.smul_cons, Matrix.smul_empty, Matrix.sub_cons, Matrix.empty_sub_empty,
+        Matrix.add_cons, Matrix.empty_add_empty, smul_eq_mul]
   invFun := fun ⟨k, v⟩ ↦ ![k, v 0]
   left_inv := by
     intro x
@@ -339,12 +342,14 @@ def Heisenberg.semidirectAux' : End K (Dim2.Abelian K) := {
   toFun := fun v ↦ ![v 1, 0]
   map_add' := by
     intro x y
-    simp only [mkAbelian, Pi.add_apply, Matrix.add_cons, Matrix.head_cons,
-      Matrix.tail_cons, add_zero, Matrix.empty_add_empty, mul_add]
+    change ![(x + y) 1, 0] = ![x 1, 0] + ![y 1, 0]
+    rw [show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+      Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty, add_zero]
   map_smul' := by
     intro a x
-    simp only [mkAbelian, Pi.smul_apply, smul_eq_mul, RingHom.id_apply,
-      Matrix.smul_cons, mul_zero, Matrix.smul_empty]
+    change ![(a • x) 1, 0] = (RingHom.id K) a • ![x 1, 0]
+    rw [show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+      RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty, smul_zero]
 }
 
 def Heisenberg.semidirectAux : K →ₗ⁅K⁆ LieDerivation K (Dim2.Abelian K) (Dim2.Abelian K) :=
@@ -356,24 +361,20 @@ def Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅K⁆ K ⋉[Heisenberg.s
   toFun := fun v ↦ ⟨v 1, ![v 0, v 2]⟩
   map_add' := by
     intro x y
-    rw [Prod.add_def]
-    simp only [Heisenberg, Pi.add_apply]
     ext
     · rfl
-    · simp only [mkAbelian]
-      ext i
-      fin_cases i
-      · simp only [Fin.zero_eta,
-        Matrix.cons_val_zero, Pi.add_apply]
-      · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one,
-        Matrix.cons_val_one, Matrix.cons_val_fin_one, Pi.add_apply]
+    · change ![(x + y) 0, (x + y) 2] = ![x 0, x 2] + ![y 0, y 2]
+      rw [show (x + y) 0 = x 0 + y 0 from Pi.add_apply _ _ _,
+          show (x + y) 2 = x 2 + y 2 from Pi.add_apply _ _ _,
+          Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
   map_smul' := by
     intro a x
-    rw [Prod.smul_def]
-    simp only [Heisenberg, Pi.smul_apply, smul_eq_mul, RingHom.id_apply]
     ext
     · rfl
-    · simp only [mkAbelian, Matrix.smul_cons, smul_eq_mul, Matrix.smul_empty]
+    · change ![(a • x) 0, (a • x) 2] = (RingHom.id K) a • ![x 0, x 2]
+      rw [show (a • x) 0 = a • x 0 from Pi.smul_apply _ _ _,
+          show (a • x) 2 = a • x 2 from Pi.smul_apply _ _ _,
+          RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
     simp only [semidirectAux, semidirectAux', Bracket.bracket, Matrix.cons_val_one,
@@ -386,14 +387,10 @@ def Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅K⁆ K ⋉[Heisenberg.s
     · simp only [mkAbelian]
       ext i
       fin_cases i
-      · simp only [Fin.zero_eta,
-        Matrix.cons_val_zero, LieHom.smulRight_apply, LinearMap.smul_apply, LinearMap.coe_mk,
-        AddHom.coe_mk, Matrix.cons_val_one, Matrix.head_cons, Matrix.smul_cons, smul_eq_mul,
-        mul_zero, Matrix.smul_empty, Pi.sub_apply]
-      · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one,
-        Matrix.cons_val_one, Matrix.cons_val_fin_one, LieHom.coe_smulRight, LinearMap.smul_apply,
-        LinearMap.coe_mk, AddHom.coe_mk, Matrix.smul_cons, smul_eq_mul, mul_zero, Matrix.smul_empty,
-        Pi.sub_apply, sub_self]
+      · change x 1 * y 2 - y 1 * x 2 = (x 1 • ![y 2, 0] - y 1 • ![x 2, 0] + 0) 0
+        simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
+      · change 0 = (x 1 • ![y 2, 0] - y 1 • ![x 2, 0] + 0) 1
+        simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
   invFun := fun ⟨k, v⟩ ↦ ![v 0, k, v 1]
   left_inv := by
     intro x
