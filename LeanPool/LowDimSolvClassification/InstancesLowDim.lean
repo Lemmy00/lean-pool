@@ -32,19 +32,20 @@ instance : LieRing (Affine K) := {
   bracket := fun l r ↦ ![0, l 0 * r 1 - r 0 * l 1]
   add_lie := by
     intro x y z
-    simp [Affine]
-    ext _; ring_nf
+    unfold Affine at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_add := by
     intro x y z
-    simp [Affine]
-    ext _; ring_nf
+    unfold Affine at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_self := by
     intro x
-    simp [Affine]
+    unfold Affine at *
+    ext i; fin_cases i <;> simp <;> ring
   leibniz_lie := by
     intro x y z
-    simp [Affine]
-    ext _; ring_nf
+    unfold Affine at *
+    ext i; fin_cases i <;> simp <;> ring
 }
 
 theorem Affine.bracket {l r : Affine K} : ⁅l , r⁆ = ![0, l 0 * r 1 - r 0 * l 1] := by
@@ -54,8 +55,8 @@ instance : LieAlgebra K (Affine K) := {
   (inferInstance : Module K (Fin 2 → K)) with
   lie_smul := by
     intro t x y
-    simp [Affine, Bracket.bracket]
-    ext _; ring_nf
+    unfold Affine at *
+    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
 }
 
 end dimension_two
@@ -69,23 +70,24 @@ variable {K : Type*} [Field K]
 /--In this section we prove that Dim2.Affine is isomorphic to the semidirect product gl(K) ⋉ K,
    where K is the 1-dimensional vector space over K -/
 
-def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K := {
-  toFun := fun ⟨f, x⟩ ↦ ![f 1, x]
+def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K where
+  toFun := fun ⟨f, x⟩ ↦ ![f ((1 : K) : mkAbelian K K), x]
   invFun := fun v ↦ ⟨v 0 • LinearMap.id, v 1⟩
   left_inv := by
     intro ⟨f, x⟩
     ext
-    · simp only [Matrix.cons_val_zero, LinearMap.smul_apply, LinearMap.id_coe, id_eq,
+    · unfold mkAbelian at *
+      simp only [Matrix.cons_val_zero, LinearMap.smul_apply, LinearMap.id_coe, id_eq,
       smul_eq_mul, mul_one]
     · simp only [Matrix.cons_val_one, Matrix.cons_val_fin_one]
   right_inv := by
     intro v
-    unfold Affine
+    unfold Affine mkAbelian at *
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq, smul_eq_mul, mul_one]
     exact List.ofFn_inj.mp rfl
   map_add' := by
     intro ⟨f, x⟩ ⟨g, y⟩
-    unfold Affine
+    unfold Affine mkAbelian at *
     ext i
     simp only [LinearMap.add_apply, Pi.add_apply]
     fin_cases i
@@ -93,7 +95,7 @@ def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K := {
     · simp only [Fin.mk_one, Matrix.cons_val_one, Matrix.cons_val_fin_one]
   map_smul' := by
     intro a ⟨f, x⟩
-    unfold Affine
+    unfold Affine mkAbelian at *
     ext i
     simp only [LinearMap.smul_apply, smul_eq_mul, RingHom.id_apply, Pi.smul_apply]
     fin_cases i
@@ -113,7 +115,6 @@ def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K := {
         smul_eq_mul, smul_eq_mul, mul_comm, sub_self]
     · simp only [Fin.mk_one, Matrix.cons_val_one,
       Matrix.head_cons, Abelian.DerivationCoeFun]
-}
 
 def equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
   toFun := fun v ↦ ⟨v 0, ![v 1]⟩
@@ -182,18 +183,20 @@ instance : LieRing (Heisenberg K) := {
   bracket := fun l r ↦ ![l 1 * r 2 - r 1 * l 2, (0 : K), (0 : K)]
   add_lie := by
     intro x y z
-    simp [Heisenberg]
-    ext _; ring_nf
+    unfold Heisenberg at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_add := by
     intro x y z
-    simp [Heisenberg]
-    ext _; ring_nf
+    unfold Heisenberg at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_self := by
     intro x
-    simp [Heisenberg]
+    unfold Heisenberg at *
+    ext i; fin_cases i <;> simp <;> ring
   leibniz_lie := by
     intro x y z
-    simp [Heisenberg]
+    unfold Heisenberg at *
+    ext i; fin_cases i <;> simp <;> ring
 }
 
 theorem Heisenberg.bracket {l r : Heisenberg K} : ⁅l, r⁆ = ![l 1 * r 2 - r 1 * l 2, (0 : K), (0 : K)] := by
@@ -203,8 +206,8 @@ instance : LieAlgebra K (Heisenberg K) := {
   (inferInstance : Module K (Fin 3 → K)) with
   lie_smul := by
     intro t x y
-    simp [Heisenberg, Bracket.bracket]
-    ext _; ring_nf
+    unfold Heisenberg at *
+    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
 }
 
 /-- The three-dimensional Lie algebra which has one-dimensional commutator and is not nilpotent. -/
@@ -215,19 +218,20 @@ instance : LieRing (AffinePlusAbelian K) := {
   bracket := fun l r ↦  ![0, l 1 * r 2 - r 1 * l 2, 0]
   add_lie := by
     intro x y z
-    simp [AffinePlusAbelian]
-    ext _; ring_nf
+    unfold AffinePlusAbelian at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_add := by
     intro x y z
-    simp [AffinePlusAbelian]
-    ext _; ring_nf
+    unfold AffinePlusAbelian at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_self := by
     intro x
-    simp [AffinePlusAbelian]
+    unfold AffinePlusAbelian at *
+    ext i; fin_cases i <;> simp <;> ring
   leibniz_lie := by
     intro x y z
-    simp [AffinePlusAbelian]
-    ext _; ring_nf
+    unfold AffinePlusAbelian at *
+    ext i; fin_cases i <;> simp <;> ring
 }
 
 theorem AffinePlusAbelian.bracket {l r : AffinePlusAbelian K} : ⁅l , r⁆ = ![(0 : K), l 1 * r 2 - r 1 * l 2, (0 : K)] := by
@@ -237,8 +241,8 @@ instance : LieAlgebra K (AffinePlusAbelian K):= {
   (inferInstance : Module K (Fin 3 → K)) with
   lie_smul := by
     intro t x y
-    simp [AffinePlusAbelian,Bracket.bracket]
-    ext _; ring_nf
+    unfold AffinePlusAbelian at *
+    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
 }
 
 /-- The three-dimensional solvable Lie algebra associated to real hyperbolic space. -/
@@ -249,27 +253,28 @@ instance : LieRing (Hyperbolic K) := {
   bracket := fun l r ↦ ![0, (l 0 * r 1 - r 0 *l 1), (l 0 * r 2 - r 0 * l 2)]
   add_lie := by
     intro x y z
-    simp [Hyperbolic]
-    ext _; ring_nf
+    unfold Hyperbolic at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_add := by
     intro x y z
-    simp [Hyperbolic]
-    ext _; ring_nf
+    unfold Hyperbolic at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_self := by
     intro x
-    simp [Hyperbolic]
+    unfold Hyperbolic at *
+    ext i; fin_cases i <;> simp <;> ring
   leibniz_lie := by
     intro x y z
-    simp [Hyperbolic]
-    ext _; ring_nf
+    unfold Hyperbolic at *
+    ext i; fin_cases i <;> simp <;> ring
 }
 
 instance : LieAlgebra K (Hyperbolic K) := {
   (inferInstance : Module K (Fin 3 → K)) with
   lie_smul := by
     intro t x y
-    simp [Hyperbolic, Bracket.bracket]
-    ext _; ring_nf
+    unfold Hyperbolic at *
+    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
 }
 
 theorem Hyperbolic.bracket (l r : Hyperbolic K) :
@@ -284,29 +289,28 @@ instance (α : K) (β : K): LieRing (Family K α β) := {
   bracket := fun l r ↦ ![0, (l 0 * r 2 - l 2 * r 0) * α, (l 0 * r 2 - l 2 * r 0) * β + l 0 * r 1 - l 1 * r 0]
   add_lie := by
     intro x y z
-    simp [Family]
-    ext _; ring_nf
+    unfold Family at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_add := by
     intro x y z
-    simp [Family]
-    ext _; ring_nf
+    unfold Family at *
+    ext i; fin_cases i <;> simp <;> ring
   lie_self := by
     intro x
-    simp only [Family]
-    ring_nf
-    exact List.ofFn_inj.mp rfl
+    unfold Family at *
+    ext i; fin_cases i <;> simp <;> ring
   leibniz_lie := by
     intro x y z
-    simp [Family]
-    ext _; ring_nf
+    unfold Family at *
+    ext i; fin_cases i <;> simp <;> ring
 }
 
 instance (α : K) (β : K): LieAlgebra K (Family K α β) := {
   (inferInstance : Module K (Fin 3 → K)) with
   lie_smul := by
     intro t x y
-    simp [Family, Bracket.bracket]
-    ext _; ring_nf
+    unfold Family at *
+    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
 }
 
 theorem Family.bracket (α β : K) (l r : Family _ α β) :
