@@ -444,3 +444,27 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: fineqs
+    title: FinEqs - reducing equations defining a subset of n-space over a finite field
+    summary: Formalizes a bound on the cardinality of the projectivization minus a point.
+    branch: number theory
+    entry_module: LeanPool.Fineqs
+    authors:
+      - Stefan Barańczuk
+      - Aristotle
+    source:
+      arxiv: "1906.11174"
+      github_repo: nasqret/fineqs
+    status: verified
+    main_declarations:
+      - LeanPool.Fineqs.card_projectivization_minus_point
+    main_results:
+      - declaration: LeanPool.Fineqs.card_projectivization_minus_point
+        informal: Cardinality of projective space over a finite field minus a point.
+    tags:
+      - number-theory
+      - finite-fields
+      - algebraic-geometry
+    msc:
+      - "14G15"
+      - "11T06"
