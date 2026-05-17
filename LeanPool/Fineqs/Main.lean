@@ -51,21 +51,27 @@ Cardinality of projective space minus a point: `|P^n(F) \ {α}| = (q^{n+1} - q) 
 lemma card_projectivization_minus_point (n : ℕ) (α : Projectivization F (Fin (n + 1) → F)) :
     Nat.card {x : Projectivization F (Fin (n + 1) → F) // x ≠ α} =
     (Fintype.card F ^ (n + 1) - Fintype.card F) / (Fintype.card F - 1) := by
+  classical
   haveI : Fintype (Projectivization F (Fin (n + 1) → F)) := Fintype.ofFinite _
   haveI : Nonempty (Projectivization F (Fin (n + 1) → F)) := ⟨α⟩
-  rw [Nat.card_eq_fintype_card, Set.card_ne_eq, ← Nat.card_eq_fintype_card]
+  haveI : Fintype {x : Projectivization F (Fin (n + 1) → F) // x ≠ α} := Subtype.fintype _
+  haveI : Fintype {x : Projectivization F (Fin (n + 1) → F) // x = α} := Subtype.fintype _
+  rw [Nat.card_eq_fintype_card,
+    Fintype.card_subtype_compl (p := (· = α)),
+    Fintype.card_subtype_eq α]
   have hcardV := Projectivization.card' F (Fin (n + 1) → F)
   simp only [Nat.card_eq_fintype_card, Fintype.card_fun, Fintype.card_fin] at hcardV
   have hq : 2 ≤ Fintype.card F := Fintype.one_lt_card
-  have hP : 1 ≤ Nat.card (Projectivization F (Fin (n + 1) → F)) := Nat.card_pos
+  have hP : 1 ≤ Fintype.card (Projectivization F (Fin (n + 1) → F)) :=
+    Fintype.card_pos
   set q := Fintype.card F
-  set P := Nat.card (Projectivization F (Fin (n + 1) → F))
+  set P := Fintype.card (Projectivization F (Fin (n + 1) → F))
   have hqsub : 0 < q - 1 := by omega
-  -- Show: q^(n+1) - q = (P - 1) * (q - 1).
+  -- Show: q^(n+1) - q = (q - 1) * (P - 1).
   have hPq : P * (q - 1) = q ^ (n + 1) - 1 := by omega
   have h_eq : q ^ (n + 1) - q = (P - 1) * (q - 1) := by
     rw [Nat.sub_mul, one_mul]; omega
-  have hdvd : (q - 1) ∣ (q ^ (n + 1) - q) := ⟨P - 1, h_eq⟩
+  have hdvd : (q - 1) ∣ (q ^ (n + 1) - q) := ⟨P - 1, by rw [mul_comm]; exact h_eq⟩
   rw [eq_comm, Nat.div_eq_iff_eq_mul_left hqsub hdvd]
   exact h_eq
 
