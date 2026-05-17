@@ -69,8 +69,8 @@ section DegreeOne
 times a degree one character.
 Most involved step towards `eq_character_of_fourier_weight_one_eq_one`. -/
 lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
-    (hf : ∀ x, f x = ∑ i, 𝓕 f {i} * (-1)^(x i).val) :
-    ∃ S ∈ {S | S.card = 1}, ∃ c : ℝ, f = c•χ S := by
+    (hf : ∀ x, f x = ∑ i, 𝓕 f {i} * (-1) ^ (x i).val) :
+    ∃ S ∈ {S | S.card = 1}, ∃ c : ℝ, f = c • χ S := by
   wlog hf1 : f 0 = 1 with h1
   · have hf' : ∀ x, (-f) x = ∑ i, 𝓕 (-f) {i} * (-1)^(x i).val := by
       intro x; simp; exact hf x
@@ -150,7 +150,7 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
                 rw [hf0eq, hf0feq]; ring
           _ = 𝓕 f {i₀} := by rw [← sum_erase_add (a := i₀) (h := mem_univ i₀)]; ring
       let g : BooleanFunc (n + 1) := fun x ↦ f (Fin.insertNth i₀ 0 x)
-      have hgeq : g = ∑ i, 𝓕 f {i₀.succAbove i}•χ {i} := by
+      have hgeq : g = ∑ i, 𝓕 f {i₀.succAbove i} • χ {i} := by
         ext x
         simp [g]
         nth_rewrite 1 [hf]
@@ -173,7 +173,7 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
         intro i
         calc
           _ = ⟪χ {i}, g⟫       := by rfl
-          _ = ⟪χ {i}, ∑ i, 𝓕 f {i₀.succAbove i}•χ {i}⟫ := by rw [hgeq]
+          _ = ⟪χ {i}, ∑ i, 𝓕 f {i₀.succAbove i} • χ {i}⟫ := by rw [hgeq]
           _ = ∑ i', 𝓕 f {i₀.succAbove i'} * ⟪χ {i}, χ {i'}⟫ := by
             rw [inner_sum]; conv => enter[1, 2, i']; rw [inner_smul_right]
           _ = 𝓕 f {i₀.succAbove i}                     := by
@@ -213,13 +213,13 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
         calc
           _ = f (Fin.insertNth i₀ 0 (Fin.removeNth i₀ x))  := by rw [hfxi, Fin.insertNth_removeNth]
           _ = g (Fin.removeNth i₀ x)                      := by rfl
-          _ = (c•χ {i₁}) (Fin.removeNth i₀ x)             := by rw [hc, hi₁]
+          _ = (c • χ {i₁}) (Fin.removeNth i₀ x)             := by rw [hc, hi₁]
           _ = _                                           := by simp; left; rfl
 
 /-- A Boolean valued function with degree one Fourier weight equal to one
 must be `±1` times a degree one character. -/
 lemma eq_character_of_fourier_weight_one_eq_one' (hn : n > 0) (hf : fourierWeight 1 f = 1) :
-    ∃ S ∈ {S | S.card = 1}, ∃ c : ℝ, f = c•χ S := by
+    ∃ S ∈ {S | S.card = 1}, ∃ c : ℝ, f = c • χ S := by
   have hf' : ∀ x, f x = ∑ i, 𝓕 f {i} * (-1)^(x i).val := by
     apply eq_sum_degree_one_of_fourier_weight_one
     rw [hf, norm_sq_eq_one]
@@ -229,7 +229,7 @@ lemma eq_character_of_fourier_weight_one_eq_one' (hn : n > 0) (hf : fourierWeigh
 must be `±1` times a degree one character.
 This is [odonnell2014], Exercise 1.19(a). -/
 lemma eq_character_of_fourier_weight_one_eq_one (hn : n > 0) (hf : fourierWeight 1 f = 1) :
-    ∃ i, ∃ c : ℝ, f = c•χ {i} := by
+    ∃ i, ∃ c : ℝ, f = c • χ {i} := by
   obtain ⟨S, hS, hS'⟩ := eq_character_of_fourier_weight_one_eq_one' hn hf
   obtain ⟨i, hi⟩ := card_eq_one.mp hS
   use i

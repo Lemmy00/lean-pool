@@ -32,7 +32,7 @@ noncomputable section
 
 namespace LeanPool.LeanBooleanfun.BooleanFun.BV
 
-open Classical Finset Pi RealInnerProductSpace
+open Finset Pi RealInnerProductSpace
 
 variable {α : Type*}
 variable {n : ℕ}
@@ -73,13 +73,13 @@ def VoteConsistent (x y z : Votes n) : Prop :=
 lemma VoteConsistent.comm_right {x y z : Votes n} :
     VoteConsistent x y z = VoteConsistent x z y := by
   apply propext
-  constructor <;> { intro h i; specialize h i; push_neg; intro h'; rw [h'] at h; tauto }
+  constructor <;> { intro h i; specialize h i; push Not; intro h'; rw [h'] at h; tauto }
 
 /-- Commute arguments of `VoteConsistent` predicate -/
 lemma VoteConsistent.comm_rcyc {x y z : Votes n} :
     VoteConsistent x y z = VoteConsistent y z x := by
   apply propext
-  constructor <;> { intro h i; specialize h i; push_neg; intro h'; rw [h'] at h; tauto }
+  constructor <;> { intro h i; specialize h i; push Not; intro h'; rw [h'] at h; tauto }
 
 /-- A voting rule is Condorcet, if in every 3-candidate election conducted
   using it there is a Condercet winner. -/
@@ -96,7 +96,7 @@ def IsUnanimous (f : BooleanFunc n) : Prop := f 0 = 1 ∧ f 1 = -1
 /-- The (unique) voting rule for zero voters is not unanimous. -/
 lemma zero_not_unanimous (f : BooleanFunc n) (hn : n = 0) : ¬IsUnanimous f := by
   rw [IsUnanimous]
-  push_neg
+  push Not
   intro h
   have : (1 : Fin n → Fin 2) = 0 := by
     rw [hn]; trivial
@@ -159,8 +159,7 @@ private abbrev _Tnae3 : BooleanFunc n →ₗ[ℝ] BooleanFunc n where
   map_smul' := by
     intro c f
     funext x
-    simp only [smul_apply, smul_eq_mul, RingHom.id_apply, add_apply, id_eq, eq_mpr_eq_cast,
-      AddHom.toFun_eq_coe, AddHom.coe_mk]
+    simp only [smul_apply, smul_eq_mul, RingHom.id_apply]
     conv => enter [1, 2, 2, y]; rw [mul_assoc]
     rw [← mul_sum, ← mul_assoc, mul_comm _ c, mul_assoc]
 
@@ -237,7 +236,7 @@ theorem probabilityCondorcetWinner_eq :
       = 6^n * noise_stability (-1/3) f := by
     calc
       _ = 3^n * (1/3)^n * ∑ x, f x * ∑ y, f y * ∑ z, oneOn (VoteConsistent x y z) := by
-            simp only [mul_ite, mul_one, mul_zero, one_div, inv_pow, isUnit_iff_ne_zero, ne_eq,
+            simp only [one_div, inv_pow, isUnit_iff_ne_zero, ne_eq,
               pow_eq_zero_iff', OfNat.ofNat_ne_zero, false_and, not_false_eq_true,
               IsUnit.mul_inv_cancel, one_mul]
       _ = 3^n * ∑ x, f x * T f x := by

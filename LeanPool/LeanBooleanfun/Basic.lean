@@ -326,7 +326,7 @@ abbrev walsh_orthonormal_basis : OrthonormalBasis (ι := Finset (Fin n)) ℝ (Bo
 
 /-- Walsh-Fourier expansion : Every Boolean function is equal to a linear combination of Walsh
 characters. -/
-theorem walsh_fourier (f : BooleanFunc n) : f = ∑ S : Finset (Fin n), (𝓕 f S)•χ S := by
+theorem walsh_fourier (f : BooleanFunc n) : f = ∑ S : Finset (Fin n), (𝓕 f S) • χ S := by
   convert (OrthonormalBasis.sum_repr' walsh_orthonormal_basis f).symm <;> simp; rfl
 
 lemma fourier_walsh : 𝓕 (χ S) S' = oneOn (S' = S) := walsh_inner_eq
@@ -393,7 +393,7 @@ theorem dderiv_walsh (i : Fin n) (S : Finset (Fin n)) :
   split_ifs <;> simp
 
 theorem dderiv_eq_sum_fourier (i : Fin n) (f : BooleanFunc n) :
-    dderiv i f = ∑ S ∈ {S | i ∈ S}, 𝓕 f S•χ (S \ {i}) := by
+    dderiv i f = ∑ S ∈ {S | i ∈ S}, 𝓕 f S • χ (S \ {i}) := by
   nth_rewrite 1 [walsh_fourier f]
   rw [map_sum, sum_filter]
   simp_rw [map_smul, dderiv_walsh]
@@ -439,7 +439,7 @@ theorem laplace_walsh (i : Fin n) (S : Finset (Fin n)) :
   · simp only [Pi.zero_apply, mul_zero]
 
 theorem laplace_eq_sum_fourier (i : Fin n) (f : BooleanFunc n) :
-    laplace i f = ∑ S ∈ {S | i ∈ S}, 𝓕 f S•χ (S) := by
+    laplace i f = ∑ S ∈ {S | i ∈ S}, 𝓕 f S • χ (S) := by
   nth_rewrite 1 [walsh_fourier f]
   rw [map_sum, sum_filter, sum_congr (by rfl)]
   intros
@@ -551,8 +551,9 @@ lemma fourier_eq_zero_iff_fourier_weight_eq {k : ℕ} {f : BooleanFunc n} :
     rw [sq_abs, pow_eq_zero_iff (by trivial)] at this
     assumption
 
-lemma eq_sum_fourier_of_fourier_weight {k : ℕ} {f : BooleanFunc n} (h : fourierWeight k f = ‖f‖ ^ 2) :
-    f = ∑ S ∈ {S|S.card = k}, 𝓕 f S • χ S := by
+lemma eq_sum_fourier_of_fourier_weight {k : ℕ} {f : BooleanFunc n}
+    (h : fourierWeight k f = ‖f‖ ^ 2) :
+    f = ∑ S ∈ {S | S.card = k}, 𝓕 f S • χ S := by
   have hf : ∑ S ∈ {S | S.card ≠ k}, 𝓕 f S • χ S = 0 := by
     rw [sum_eq_zero]
     intro S hS
@@ -561,10 +562,10 @@ lemma eq_sum_fourier_of_fourier_weight {k : ℕ} {f : BooleanFunc n} (h : fourie
     simp at hS
     exact fourier_eq_zero_iff_fourier_weight_eq.mpr h S hS
   calc
-    f = ∑ S, 𝓕 f S•χ S                     := walsh_fourier f
-    _ = ∑ S ∈ {S | S.card = k}, 𝓕 f S•χ S +
-      ∑ S ∈ {S | S.card ≠ k}, 𝓕 f S•χ S     := by rw [sum_filter_add_sum_filter_not]
-    _ = ∑ S ∈ {S | S.card = k}, 𝓕 f S•χ S    := by rw [hf, add_zero]
+    f = ∑ S, 𝓕 f S • χ S                     := walsh_fourier f
+    _ = ∑ S ∈ {S | S.card = k}, 𝓕 f S • χ S +
+      ∑ S ∈ {S | S.card ≠ k}, 𝓕 f S • χ S     := by rw [sum_filter_add_sum_filter_not]
+    _ = ∑ S ∈ {S | S.card = k}, 𝓕 f S • χ S    := by rw [hf, add_zero]
 
 lemma eq_sum_degree_one_of_fourier_weight_one {f : BooleanFunc n}
     (h : fourierWeight 1 f = ‖f‖ ^ 2) :
@@ -601,7 +602,7 @@ def multiplier (m : ℕ → ℝ) : BooleanFunc n →ₗ[ℝ] BooleanFunc n where
 
 /-- Walsh characters are eigenfunctions of multipliers. -/
 lemma multiplier_walsh {m : ℕ → ℝ} {S : Finset (Fin n)} :
-    multiplier m (χ S) = (m S.card)•χ S := by
+    multiplier m (χ S) = (m S.card) • χ S := by
   unfold multiplier
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   conv => enter [1, 2, S']; rw [fourier_walsh]
