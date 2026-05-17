@@ -826,11 +826,14 @@ def equivToSemidirect : Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] 
     · simp only [mkAbelian]
       ext i
       fin_cases i
-      · simp only [Fin.zero_eta, Matrix.cons_val_zero, Pi.sub_apply]
+      · change (x 0 * y 2 - x 2 * y 0) * α =
+          (x 0 • ![α * y 2, y 1 + β * y 2] - y 0 • ![α * x 2, x 1 + β * x 2] + 0) 0
+        simp [smul_eq_mul]
         ring
-      · simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one,
-        Matrix.cons_val_one, Matrix.cons_val_fin_one, Pi.sub_apply]
-        ring_nf
+      · change (x 0 * y 2 - x 2 * y 0) * β + x 0 * y 1 - x 1 * y 0 =
+          (x 0 • ![α * y 2, y 1 + β * y 2] - y 0 • ![α * x 2, x 1 + β * x 2] + 0) 1
+        simp [smul_eq_mul]
+        ring
   invFun := fun ⟨k, v⟩ ↦ ![k, v 0, v 1]
   left_inv := by
     intro x
@@ -907,8 +910,17 @@ theorem commutator_is_span_e₂e₃ (hα : α ≠ 0) : (commutator K (Family K �
       ((y 0 * z 2 - y 2 * z 0) * α) • e₂ + ((y 0 * z 2 - y 2 * z 0) * β + y 0 * z 1 - y 1 * z 0) • e₃ := by
       unfold e₂ e₃
       simp only [e₂_def, e₃_def]
-      rw [Matrix.smul_vec3,Matrix.smul_vec3,Matrix.vec3_add]
-      ext j; fin_cases j <;> simp
+      funext i; fin_cases i
+      · change (0:K) = ((y 0 * z 2 - y 2 * z 0) * α) * 0 +
+          ((y 0 * z 2 - y 2 * z 0) * β + y 0 * z 1 - y 1 * z 0) * 0
+        ring
+      · change (y 0 * z 2 - y 2 * z 0) * α = ((y 0 * z 2 - y 2 * z 0) * α) * 1 +
+          ((y 0 * z 2 - y 2 * z 0) * β + y 0 * z 1 - y 1 * z 0) * 0
+        ring
+      · change (y 0 * z 2 - y 2 * z 0) * β + y 0 * z 1 - y 1 * z 0 =
+          ((y 0 * z 2 - y 2 * z 0) * α) * 0 +
+          ((y 0 * z 2 - y 2 * z 0) * β + y 0 * z 1 - y 1 * z 0) * 1
+        ring
     symm at cl
     simp only [SetLike.mem_coe]
     rw [mem_span_pair]
@@ -1040,26 +1052,25 @@ noncomputable def commutatorBasis (α β : K) (hα : α ≠ 0) : Basis (Fin 2) K
     constructor
     · intro j_in
       simp at j_in
-      let ⟨y, hy⟩ := j_in
-      have := Set.map_into_subtype_apply (↑(commutator K (Family K α β))) (B α β) (B_setrange (hα:=hα) ) (y)
-      rw [hy] at this
-      fin_cases y
-      · simp at this
+      rcases j_in with hy | hy
+      · have := Set.map_into_subtype_apply (↑(commutator K (Family K α β))) (B α β)
+          (B_setrange (hα:=hα)) 0
+        rw [hy] at this
         unfold B at this
-        subst hy
-        simp only [Fin.zero_eta, Set.mem_insert_iff, Set.mem_singleton_iff]
+        simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
         left
-        simp at *
         apply Subtype.ext
-        assumption
-      · simp at this
+        simp only [Matrix.cons_val_zero] at this
+        exact this
+      · have := Set.map_into_subtype_apply (↑(commutator K (Family K α β))) (B α β)
+          (B_setrange (hα:=hα)) 1
+        rw [hy] at this
         unfold B at this
-        subst hy
-        simp only [Fin.zero_eta, Set.mem_insert_iff, Set.mem_singleton_iff]
+        simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
         right
-        simp at *
         apply Subtype.ext
-        assumption
+        simp only [Matrix.cons_val_one, Matrix.cons_val_fin_one] at this
+        exact this
     · intro e
       simp_all only [Set.mem_insert_iff, Set.mem_singleton_iff, e₁, e₂β, e₁α]
       rcases e with (e0 | e1)
