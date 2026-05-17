@@ -109,12 +109,24 @@ def equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K where
     unfold mkAbelian at *
     ext i
     fin_cases i
-    · simp only [Fin.zero_eta, Fin.isValue,
-      Matrix.cons_val_zero]
-      rw [← mul_one (g 1), ← mul_one (f 1), ← smul_eq_mul, ← smul_eq_mul, map_smul, map_smul,
-        smul_eq_mul, smul_eq_mul, mul_comm, sub_self]
+    · simp only [Matrix.cons_val_zero]
+      show f (g 1) - g (f 1) = 0
+      have hf : ∀ x : K, f x = f 1 * x := fun x => by
+        have : f x = x • f 1 := by rw [← map_smul]; simp
+        rw [this, smul_eq_mul, mul_comm]
+      have hg : ∀ x : K, g x = g 1 * x := fun x => by
+        have : g x = x • g 1 := by rw [← map_smul]; simp
+        rw [this, smul_eq_mul, mul_comm]
+      rw [hf (g 1), hg (f 1)]; ring
     · simp only [Fin.mk_one, Matrix.cons_val_one,
       Matrix.head_cons, Abelian.DerivationCoeFun]
+      have hf : ∀ x : K, f x = f 1 * x := fun x => by
+        have : f x = x • f 1 := by rw [← map_smul]; simp
+        rw [this, smul_eq_mul, mul_comm]
+      have hg : ∀ x : K, g x = g 1 * x := fun x => by
+        have : g x = x • g 1 := by rw [← map_smul]; simp
+        rw [this, smul_eq_mul, mul_comm]
+      rw [hf y, hg x]
 
 def equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
   toFun := fun v ↦ ⟨v 0, ![v 1]⟩
@@ -141,7 +153,7 @@ def equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
     ext
     · simp only [Fin.isValue, mul_comm, sub_self]
     · simp only [Fin.isValue, LieHom.coe_comp, LieHom.coe_smulRight, Function.comp_apply,
-      LieHom.map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.id_coe,
+      map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.id_coe,
       Pi.smul_apply, id_eq]
       simp only [mkAbelian,Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons, LieHom.smulRight_apply,
        LinearMap.smul_apply,LinearMap.coe_mk, AddHom.coe_mk, Matrix.smul_cons, smul_eq_mul,
@@ -366,7 +378,7 @@ def Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅K⁆ K ⋉[Heisenberg.s
     intro x y
     simp only [semidirectAux, semidirectAux', Bracket.bracket, Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two, Matrix.tail_cons,
-      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, LieHom.map_smul, LieDerivation.coe_smul,
+      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, map_smul, LieDerivation.coe_smul,
       Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul,
       Matrix.smul_empty, add_zero]
     ext
@@ -482,7 +494,7 @@ def AffinePlusAbelian.equivToSemidirect : AffinePlusAbelian K ≃ₗ⁅K⁆ K �
     intro x y
     simp only [semidirectAux, semidirectAux', Bracket.bracket, Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two, Matrix.tail_cons,
-      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, LieHom.map_smul, LieDerivation.coe_smul,
+      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, map_smul, LieDerivation.coe_smul,
       Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul,
       Matrix.smul_empty, add_zero]
     ext
@@ -549,7 +561,7 @@ def equivToRealHyperbolic : Hyperbolic K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 3 K:={
     intro x y
     simp only [Hyperbolic, RealHyperbolic, RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket, Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two, Matrix.tail_cons,
-      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, LieHom.map_smul, LieDerivation.coe_smul,
+      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, map_smul, LieDerivation.coe_smul,
       Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul,
       Matrix.smul_empty, add_zero]
     ext
@@ -585,7 +597,7 @@ theorem e₃_def : (e₃ : Hyperbolic K) = ![0, 0, 1] := by
 
 theorem commutator_is_span_e₂e₃ : (commutator K (Hyperbolic K)).toSubmodule = span K {e₂,e₃} := by
   rw [commutator_eq_span]
-  apply eq_of_le_of_le
+  apply le_antisymm
   · rw [span_le]
     intro x ⟨y, z, h⟩
     rw [← h]
@@ -688,14 +700,14 @@ theorem ad_restr_add (x y : Hyperbolic K) : ad_restr (x + y) = ad_restr x + ad_r
   simp only [LinearMap.add_apply, LieSubmodule.coe_add]
   rw [ad_restr_apply, ad_restr_apply, ad_restr_apply]
   unfold adjoint
-  simp only [LieHom.map_add, LinearMap.add_apply, ad_apply]
+  simp only [map_add, LinearMap.add_apply, ad_apply]
 
 theorem ad_restr_smul (a : K) (x : Hyperbolic K) : ad_restr (a • x) = a • ad_restr x := by
   ext z
   simp only [LinearMap.smul_apply, LieSubmodule.coe_smul]
   rw [ad_restr_apply, ad_restr_apply]
   unfold adjoint
-  simp only [LieHom.map_smul, LinearMap.smul_apply, ad_apply]
+  simp only [map_smul, LinearMap.smul_apply, ad_apply]
 
 theorem lie_e₁e₂ : ⁅(e₁ : Hyperbolic K), (e₂ : Hyperbolic K)⁆ = e₂ := by
   rw [Hyperbolic.bracket, e₁_def, e₂_def]
@@ -798,7 +810,7 @@ def equivToSemidirect : Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] 
     simp only [smul_eq_mul, Matrix.cons_val_zero,
       Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons, Bracket.bracket,
       LieHom.toLinearMap_comp, LinearMap.coe_comp, LieHom.coe_toLinearMap, LieHom.coe_smulRight,
-      Function.comp_apply, LieHom.map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun',
+      Function.comp_apply, map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun',
       LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, Matrix.smul_empty, add_zero]
     ext
     · simp only
@@ -878,7 +890,7 @@ theorem commutator_is_span_e₂e₃ (hα : α ≠ 0) : (commutator K (Family K �
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_zero, sub_self, zero_mul,
       Matrix.cons_val_one, mul_one, zero_add, sub_zero, e₂_def, e₃_def]
   rw [commutator_eq_span]
-  apply eq_of_le_of_le
+  apply le_antisymm
   · rw [span_le]
     intro x ⟨y, z, h⟩
     simp only [Family.bracket] at h
