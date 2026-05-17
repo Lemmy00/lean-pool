@@ -511,8 +511,6 @@ theorem variance_le_totalInfluence (f : BooleanFunc n) : variance f ≤ totalInf
     · simp only [Nat.cast_nonneg]
     · exact sq_nonneg (𝓕 f S)
 
-section FourierWeight
-
 /-- The `k`th Fourier weight is the sum of squares of degree `k` Fourier coefficients -/
 abbrev fourierWeight (k : ℕ) (f : BooleanFunc n) : ℝ := ∑ S ∈ {S | S.card = k}, |𝓕 f S| ^ 2
 
@@ -585,10 +583,6 @@ lemma eq_sum_degree_one_of_fourier_eq_zero {f : BooleanFunc n}
     ∀ x, f x = ∑ i, 𝓕 f {i} * (-1)^(x i).val :=
   eq_sum_degree_one_of_fourier_weight_one (fourier_eq_zero_iff_fourier_weight_eq.mp h)
 
-end FourierWeight
-
-section Multiplier
-
 /-- Walsh-Fourier multiplier as an ℝ-linear operator on Boolean functions -/
 def multiplier (m : ℕ → ℝ) : BooleanFunc n →ₗ[ℝ] BooleanFunc n where
   toFun := fun f ↦ ∑ S : Finset (Fin n), (m S.card) • 𝓕 f S • χ S
@@ -628,10 +622,6 @@ lemma noise_stability_eq_sum_fourier {ρ : ℝ} :
           enter [2, 2, S']; rw [inner_smul_right, inner_smul_right, walsh_inner_eq]
   congr! 1; simp; ring
 
-end Multiplier
-
-section Convolution
-
 /-- Discrete convolution of Boolean functions -/
 abbrev convolution (f g : BooleanFunc n) : BooleanFunc n :=
   fun x ↦ 𝐄 (fun y ↦ (f y) * (g (x + y)))
@@ -655,8 +645,6 @@ lemma fourier_convolution : 𝓕 (f ⋆ g) = (𝓕 f) * (𝓕 g) := by
   intro x _
   rw [show y + x + x = y by rw [add_assoc, add_self_eq_zero, add_zero]]
   ring
-
-end Convolution
 
 end
 

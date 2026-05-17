@@ -69,17 +69,21 @@ See [odonnell2014], Sec. 2.5. -/
 def VoteConsistent (x y z : Votes n) : Prop :=
     ∀ i, NAE3 (x i) (y i) (z i)
 
+namespace VoteConsistent
+
 /-- Commute arguments of `VoteConsistent` predicate -/
-lemma VoteConsistent.comm_right {x y z : Votes n} :
+lemma comm_right {x y z : Votes n} :
     VoteConsistent x y z = VoteConsistent x z y := by
   apply propext
   constructor <;> { intro h i; specialize h i; push Not; intro h'; rw [h'] at h; tauto }
 
 /-- Commute arguments of `VoteConsistent` predicate -/
-lemma VoteConsistent.comm_rcyc {x y z : Votes n} :
+lemma comm_rcyc {x y z : Votes n} :
     VoteConsistent x y z = VoteConsistent y z x := by
   apply propext
   constructor <;> { intro h i; specialize h i; push Not; intro h'; rw [h'] at h; tauto }
+
+end VoteConsistent
 
 /-- A voting rule is Condorcet, if in every 3-candidate election conducted
   using it there is a Condercet winner. -/

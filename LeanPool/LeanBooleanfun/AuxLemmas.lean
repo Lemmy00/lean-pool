@@ -19,8 +19,6 @@ variable {α : Type*}
 
 variable {ι : Type*} [Fintype ι]
 
-section Singleton
-
 -- not to be confused with `Finset.sum_singleton`
 lemma sum_singletons [AddCommMonoid α] {F : Finset ι → α} {G : ι → α} (h : ∀ i, F {i} = G i) :
     ∑ S ∈ {S | S.card = 1}, F S = ∑ i, G i := by
@@ -45,11 +43,7 @@ lemma sum_singletons [AddCommMonoid α] {F : Finset ι → α} {G : ι → α} (
 lemma sum_singletons' [AddCommMonoid α] {F : Finset ι → α} :
     ∑ S ∈ {S | S.card = 1}, F S = ∑ i, F {i} := by apply sum_singletons; intro i; rfl
 
-end Singleton
-
-section Ite
-
-variable {α : Sort*} {P : Prop} [Decidable P] {a b c : α}
+variable {P : Prop} [Decidable P] {a b c : α}
 
 lemma ite_ite_same (a b c : α) :
     ite P (ite P a b) c = ite P a c := by split_ifs <;> rfl
@@ -75,15 +69,11 @@ lemma ite_ite_not (P : Prop) [Decidable P] (a b c : α) :
 lemma ite_ite_not' (P : Prop) [Decidable P] (a b c : α) :
     ite (¬P) (ite P a b) c = ite (¬P) b c := by split_ifs <;> rfl
 
-end Ite
-
-noncomputable section OneOn
-
 variable {p q : Prop}
 
 /-- Real-valued `0-1` indicator testing a proposition. We prefer this over using `Set.indicator`
 and we don't call it indicator to avoid overloading the Mathlib definition. -/
-abbrev oneOn (p : Prop) : ℝ := ite (h := Classical.propDecidable p) p 1 0
+noncomputable abbrev oneOn (p : Prop) : ℝ := ite (h := Classical.propDecidable p) p 1 0
 
 lemma oneOn_true (h : p) : oneOn p = 1 := by simpa
 
@@ -105,10 +95,6 @@ lemma oneOn_prod {p : ι → Prop} : ∏ i, oneOn (p i) = oneOn (∀ i, p i) := 
     rw [← Finset.prod_erase_mul (a := i) (s := Finset.univ) (h := Finset.mem_univ i)]
     simp [hi]
 
-end OneOn
-
-section PowStuff
-
 /-- Solutions of the equation `ρᵏ = ρ` in real numbers. -/
 lemma pow_eq_self_imp {ρ : ℝ} {k : ℕ} :
     ρ ^ k = ρ → (k = 1 ∨ ρ = 0 ∨ ρ = 1 ∨ ρ = -1) := by
@@ -125,7 +111,5 @@ lemma pow_eq_self_imp {ρ : ℝ} {k : ℕ} :
       · left; omega
       · right; right; left; assumption
       · right; right; right; assumption
-
-end PowStuff
 
 end LeanPool.LeanBooleanfun.BooleanFun

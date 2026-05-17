@@ -63,8 +63,6 @@ instance neg_boolean_valued [hbv : BooleanValued f] : BooleanValued (-f) where
 instance (S : Finset (Fin n)) : BooleanValued (χ S) where
     one_or_neg_one := by simp_rw [walsh_eq_neg_one_pow_sum, neg_one_pow_eq_or _, implies_true]
 
-section DegreeOne
-
 /-- A Boolean valued function that is a linear combination of degree one characters must be constant
 times a degree one character.
 Most involved step towards `eq_character_of_fourier_weight_one_eq_one`. -/
@@ -241,10 +239,6 @@ lemma eq_character_of_fourier_weight_one_eq_one (hn : n > 0) (hf : fourierWeight
   use i
   rwa [hi] at hS'
 
-end DegreeOne
-
-section Distance
-
 /-- The Hamming distance of two Boolean-valued functions is equal to
 the proportion of inputs where they are not equal. The definition does not
 require `f g` be Boolean-valued, but it will only be used in this context. -/
@@ -273,9 +267,6 @@ lemma inner_eq_distance : ⟪f, g⟫ = 1 - 2 * distance f g := by
   rw [mul_comm, ← inv_pow, ← one_div]
   rfl
 
-end Distance
-
-section BLR
 /-!
   We introduce the BLR "linearity" test [Blum, Luby, Rubinfeld][blr1990]
   following O'Donnell [odonnell2014], Sec. 1.6.
@@ -341,8 +332,6 @@ theorem almost_character {ε : ℝ} (h : acceptanceProbabilityBLR f ≥ 1 - ε) 
       _ = _                        := inner_eq_distance
   use S₀
   linarith
-
-end BLR
 
 end BV
 
