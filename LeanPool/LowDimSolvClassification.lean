@@ -18,6 +18,17 @@ import LeanPool.LowDimSolvClassification.Tactics
 /-!
 # Classification of low-dimensional solvable Lie algebras
 
+Source: url:https://github.com/Lie-Lean/LieLean
+Authors: Viviana del Barco, Gustavo Infanti, Exequiel Rivas, Paul Schwahn
+Status: verified
+Main declarations: `LieAlgebra.Dim3.classification`
+Tags: lie-algebras, solvable, classification
+MSC: 17B30
+-/
+
+/-!
+## Mathematical overview
+
 Formalization in Lean 4 of the classification of solvable Lie algebras of
 dimension zero to three, over arbitrary fields where possible, building on
 Mathlib's Lie algebra library.

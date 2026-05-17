@@ -59,7 +59,7 @@ def Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*} [LieRing
     simp only [trivial_lie_zero, map_zero, sub_self]
 }
 
-/-- If `L` is an abelian Lie algebra, any linear endomorphism of L is also a derivation of L.-/
+/-- If `L` is an abelian Lie algebra, any linear endomorphism of L is also a derivation of L. -/
 def Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [LieRing L] [LieAlgebra K L] [IsLieAbelian L] :
     End K L ≃ₗ⁅K⁆ LieDerivation K L L := {
   toFun := Abelian.DerivationOfLinearMap',
@@ -113,7 +113,7 @@ def ofAffineEquivAux := (Abelian.DerivationOfLinearMap K (mkAbelian K V)).toLieH
 /-- The Lie algebra of the general affine group on a vector space `V`,
     constructed as semidirect product of `V →ₗ[K] V` with the abelian Lie algebra `V`. -/
 abbrev OfAffineEquiv :=
-  Module.End K V ⋉[ofAffineEquivAux K V] mkAbelian K V
+  Module.End K (mkAbelian K V) ⋉[ofAffineEquivAux K V] mkAbelian K V
 -- one could also define it as V →ᵃ[K] V, but the Lie bracket is not defined using function composition (not left-distributive).
 
 @[inherit_doc]

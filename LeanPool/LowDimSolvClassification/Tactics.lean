@@ -12,19 +12,30 @@ import Mathlib.Algebra.Lie.Basic
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List
 
+/-- Pair-or-single carrier used by the Lie-algebra atom store: each atom is either a single
+expression or a pair of expressions tracked together. -/
 def V (M : Type*) := Sum M (M × M)
 
 namespace AtomD
 
+/-- State of the Lie-algebra atom monad: the running list of atoms collected so far. -/
 structure State where
+  /-- TODO. -/
   atoms : Array (V Expr) := #[]
 
+end AtomD
+
+/-- The Lie-algebra atom monad: `MetaM` with state tracking the atoms encountered. -/
 abbrev AtomD := StateRefT AtomD.State MetaM
 
+namespace AtomD
+
+/-- Run an `AtomD` computation starting from the empty atom state. -/
 def run {α : Type} (m : AtomD α) :
     MetaM α :=
   m.run' {}
 
+/-- TODO. -/
 def addAtomSimple (e : Expr) : AtomD (Nat × Bool × Expr) := do
   let c ← get
   match e with
@@ -36,6 +47,7 @@ def addAtomSimple (e : Expr) : AtomD (Nat × Bool × Expr) := do
           return (i, true, j)
       | _ => continue
     modifyGet fun c ↦ ((c.atoms.size, true, e₁), { c with atoms := c.atoms.push (Sum.inl e₁) })
+/-- TODO. -/
 def addAtomDouble (e₁ e₂ : Expr) : AtomD (Nat × Bool × (Expr × Expr)) := do
   let c ← get
   let e : Expr × Expr := ⟨ e₁, e₂ ⟩
@@ -55,11 +67,13 @@ def addAtomDouble (e₁ e₂ : Expr) : AtomD (Nat × Bool × (Expr × Expr)) := 
 
 open Qq in
 
+/-- TODO. -/
 def addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
     AtomD (Nat × {e' : Q($α) // $e =Q $e'}) := do
   let (n, _, e') ← AtomD.addAtomSimple e
   return (n, ⟨e', ⟨⟩⟩)
 
+/-- TODO. -/
 def addAtomDoubleQ {u : Level} {α : Q(Type u)} (e₁ e₂ : Q($α)) :
     AtomD (Nat × Sum {e' : Q($α) × Q($α) // $e₁ =Q $(e'.2) ∧ $e₂ =Q $(e'.1)} {e' : Q($α) × Q($α) // $e₁ =Q $(e'.1) ∧ $e₂ =Q $(e'.2)}) := do
   let (n, b, e₁', e₂') ← AtomD.addAtomDouble e₁ e₂
@@ -72,19 +86,24 @@ end AtomD
 
 namespace Mathlib.Tactic.LieSolver
 
+/-- TODO. -/
 def v {M : Type*} [LieRing M] (x : V M) :=
   Sum.elim (fun m ↦ m) (fun ⟨ m₁ , m₂ ⟩ ↦ ⁅ m₁ , m₂ ⁆) x
 
+/-- TODO. -/
 def NF (R : Type*) (M : Type*) := List (R × V M)
 
 namespace NF
 variable {S : Type*} {R : Type*} {M : Type*}
 
+/-- TODO. -/
 @[match_pattern]
 def cons (p : R × V M) (l : NF R M) : NF R M := p :: l
 
+/-- TODO. -/
 infixl:100 " ::ᵣ " => cons
 
+/-- TODO. -/
 def eval [Add M] [Zero M] [SMul R M] [LieRing M] (l : NF R M) : M :=
   (l.map (fun (⟨r, x⟩ : R × V M) ↦ r • v x)).sum
 
@@ -246,6 +265,7 @@ theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [LieRing M] [Semiring R] [Module 
 
 variable (R)
 
+/-- TODO. -/
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
   l.map (fun ⟨s, x⟩ ↦ (_root_.algebraMap S R s, x))
 
@@ -261,21 +281,25 @@ end NF
 
 variable {u v : Level}
 
+/-- TODO. -/
 abbrev qNF (R : Q(Type u)) (M : Q(Type v)) := List ((Q($R) × Q(V $M)) × ℕ)
 
 namespace qNF
 
 variable {M : Q(Type v)} {R : Q(Type u)}
 
+/-- TODO. -/
 def toNF (l : qNF R M) : Q(NF $R $M) :=
   let l' : List Q($R × V $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
   let qt : List Q($R × V $M) → Q(List ($R × V $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
   qt l'
 
+/-- TODO. -/
 def onScalar {u₁ u₂ : Level} {R₁ : Q(Type u₁)} {R₂ : Q(Type u₂)} (l : qNF R₁ M) (f : Q($R₁ → $R₂)) :
     qNF R₂ M :=
   l.map fun ((a, x), k) ↦ ((q($f $a), x), k)
 
+/-- TODO. -/
 def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
@@ -287,6 +311,7 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
     else
       ((a₂, x₂), k₂) :: add iR (((a₁, x₁), k₁) :: t₁) t₂
 
+/-- TODO. -/
 def mkAddProof {iR : Q(Semiring $R)} {iMM : Q(LieRing $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
@@ -304,6 +329,7 @@ def mkAddProof {iR : Q(Semiring $R)} {iMM : Q(LieRing $M)} (iRM : Q(Module $R $M
       let pf := mkAddProof iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.add_eq_eval₃ ($a₂, $x₂) $pf):)
 
+/-- TODO. -/
 def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l.onScalar q(Neg.neg)
   | l, [] => l
@@ -315,6 +341,7 @@ def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
     else
       ((q(-$a₂), x₂), k₂) :: sub iR (((a₁, x₁), k₁) :: t₁) t₂
 
+/-- TODO. -/
 def mkSubProof (iR : Q(Ring $R)) (iMM : Q(LieRing $M)) (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.sub iR l₁ l₂).toNF)) :=
@@ -336,6 +363,7 @@ variable {iMM : Q(LieRing $M)}
   {u₁ : Level} {R₁ : Q(Type u₁)} {iR₁ : Q(Semiring $R₁)} (iRM₁ : Q(@Module $R₁ $M $iR₁ _))
   {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(Semiring $R₂)) (iRM₂ : Q(@Module $R₂ $M $iR₂ _))
 
+/-- TODO. -/
 def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)) :
     MetaM <| Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR _),
       (Σ l₁' : qNF R M, Q(NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)))
@@ -368,10 +396,12 @@ end qNF
 
 variable {M : Q(Type v)}
 
+/-- TODO. -/
 def parseFuel : Nat := 4096
 
+/-- TODO. -/
 def parseAux (fuel : Nat) (iMM : Q(LieRing $M)) (x : Q($M)) :
-    AtomD.AtomD (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR _),
+    AtomD (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR _),
       Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) := do
   match fuel with
   | 0 => throwError "match_scalars_lie: ran out of fuel while parsing {x}"
@@ -434,11 +464,13 @@ def parseAux (fuel : Nat) (iMM : Q(LieRing $M)) (x : Q($M)) :
       pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), q(Sum.inl $x')), k)],
         q(NF.atom_eq_eval $x')⟩
 
+/-- TODO. -/
 def parse (iMM : Q(LieRing $M)) (x : Q($M)) :
-    AtomD.AtomD (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR _),
+    AtomD (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR _),
       Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) :=
   parseAux parseFuel iMM x
 
+/-- TODO. -/
 def reduceCoefficientwiseAux (fuel : Nat) {R : Q(Type u)} {_ : Q(LieRing $M)} {_ : Q(Semiring $R)}
     (iRM : Q(Module $R $M)) (l₁ l₂ : qNF R M) :
     MetaM (List MVarId × Q(v (Sum.inl (NF.eval $(l₁.toNF))) =
@@ -472,13 +504,15 @@ def reduceCoefficientwiseAux (fuel : Nat) {R : Q(Type u)} {_ : Q(LieRing $M)} {_
         let (mvars, pf) ← reduceCoefficientwiseAux fuel iRM (((a₁, x₁), k₁) :: L₁) L₂
         pure (mvar.mvarId! :: mvars, (q(NF.eq_const_cons $x₂ $mvar $pf):))
 
+/-- TODO. -/
 def reduceCoefficientwise {R : Q(Type u)} {_ : Q(LieRing $M)} {_ : Q(Semiring $R)}
     (iRM : Q(Module $R $M)) (l₁ l₂ : qNF R M) :
     MetaM (List MVarId × Q(v (Sum.inl (NF.eval $(l₁.toNF))) =
       v (Sum.inl (NF.eval $(l₂.toNF))))) :=
   reduceCoefficientwiseAux parseFuel iRM l₁ l₂
 
-def matchScalarsAux (g : MVarId) : AtomD.AtomD (List MVarId) := do
+/-- TODO. -/
+def matchScalarsAux (g : MVarId) : AtomD (List MVarId) := do
   let eqData ← do
     match (← g.getType').eq? with
     | some e => pure e
@@ -507,8 +541,10 @@ def matchScalarsAux (g : MVarId) : AtomD.AtomD (List MVarId) := do
   g.assign q(NF.eq_of_eval_eq_eval $pf₁ $pf₂ $pf₁' $pf₂' $pf)
   return mvars
 
+/-- TODO. -/
 def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 
+/-- TODO. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
   for thm in algebraMapThms do
@@ -519,18 +555,25 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
     throwError "internal error in match_scalars_lie tactic: postprocessing should not close goals"
   return r
 
+/-- TODO. -/
 def matchScalars (g : MVarId) : MetaM (List MVarId) := do
   let mvars ← AtomD.run (matchScalarsAux g)
   mvars.mapM postprocess
 
+/-- `match_scalars_lie`: turn a Lie-algebra goal into a collection of scalar-coefficient goals
+that can be discharged by `ring`-like tactics. -/
 elab "match_scalars_lie" : tactic => Tactic.liftMetaTactic matchScalars
 
+/-- `module_lie`: finishing tactic that reduces a Lie-algebra equality to scalar equalities
+and discharges each with `ring`. -/
 elab "module_lie" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
   discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
 
 end Mathlib.Tactic.LieSolver
 
+/-- `simplify_lie`: unfold Lie-bracket bilinearity and reduce the goal to scalar equalities
+using `match_scalars_lie`, then attempt to close each by `ring`. -/
 macro "simplify_lie" : tactic => `(tactic| {
   try simp only [lie_add, add_lie, lie_smul, smul_lie, lie_neg, neg_lie, sub_lie, lie_sub]
   match_scalars_lie <;> try ring})

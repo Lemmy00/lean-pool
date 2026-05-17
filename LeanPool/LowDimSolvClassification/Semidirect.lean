@@ -12,8 +12,9 @@ section lie_semidirect
 variable {K : Type*} (L J: Type*) [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L] [LieAlgebra K J]
   (φ : L →ₗ⁅K⁆ LieDerivation K J J)
 
-/-- The semidirect product of two Lie algebras `L` and `J`, defined by specifying a homomorphism from
-  `L` to the Lie algebra of derivations of `J`. -/
+/-- The semidirect product of two Lie algebras `L` and `J`, defined by specifying a homomorphism
+from `L` to the Lie algebra of derivations of `J`. The homomorphism `φ` indexes the type. -/
+@[nolint unusedArguments]
 def LieSemidirectProduct (_ : L →ₗ⁅K⁆ LieDerivation K J J) := L × J
 
 variable {K : Type*} {L J: Type*} [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L] [LieAlgebra K J]
@@ -104,6 +105,7 @@ instance : LieAlgebra K (L ⋉[φ] J) := {
     · simp [Prod.smul_def, smul_sub]
 }
 
+/-- TODO. -/
 def inl : L →ₗ⁅K⁆ L ⋉[φ] J := {
   toFun := fun x ↦ ⟨x, 0⟩,
   map_add' := by
@@ -123,6 +125,7 @@ def inl : L →ₗ⁅K⁆ L ⋉[φ] J := {
     · simp only [bracket_def, map_zero, sub_self, lie_self, add_zero]
 }
 
+/-- TODO. -/
 def inr : J →ₗ⁅K⁆ L ⋉[φ] J := {
   toFun := fun x ↦ ⟨0, x⟩,
   map_add' := by
@@ -144,6 +147,7 @@ def inr : J →ₗ⁅K⁆ L ⋉[φ] J := {
       sub_self, zero_add]
 }
 
+/-- TODO. -/
 def fst : L ⋉[φ] J →ₗ⁅K⁆ L := {
   toFun := fun x ↦ x.1,
   map_add' := by
@@ -183,10 +187,13 @@ theorem inl_left_add_inr_right (x : L ⋉[φ] J) : inl x.1 + inr x.2 = x := by
 
 variable (φ : L →ₗ⁅K⁆ LieDerivation K J J)
 
+/-- TODO. -/
 def leftSubalgebra : LieSubalgebra K (L ⋉[φ] J) := LieHom.range inl
 
+/-- TODO. -/
 def rightIdeal : LieIdeal K (L ⋉[φ] J) := LieHom.ker fst
 
+/-- TODO. -/
 def rightIdeal_equiv_right : rightIdeal φ ≃ₗ⁅K⁆ J := {
   toFun := fun x ↦ x.val.2
   map_add' := fun ⟨_, _⟩ ⟨_, _⟩ ↦ by simp only [AddMemClass.mk_add_mk, add_right]
@@ -272,6 +279,7 @@ instance : LieAlgebra K (L × J) := {
 
 variable (K L J : Type*) [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L] [LieAlgebra K J]
 
+/-- TODO. -/
 def LieHom.inl : L →ₗ⁅K⁆ L × J := {
   toFun := fun x ↦ ⟨x, 0⟩,
   map_add' := by
@@ -285,6 +293,7 @@ def LieHom.inl : L →ₗ⁅K⁆ L × J := {
     ext <;> simp only [Prod.bracket_def, lie_self]
 }
 
+/-- TODO. -/
 def LieHom.inr : J →ₗ⁅K⁆ L × J := {
   toFun := fun x ↦ ⟨0, x⟩,
   map_add' := by
@@ -298,6 +307,7 @@ def LieHom.inr : J →ₗ⁅K⁆ L × J := {
     ext <;> simp only [Prod.bracket_def, lie_self]
 }
 
+/-- TODO. -/
 def LieHom.fst : L × J →ₗ⁅K⁆ L := {
   toFun := fun x ↦ x.1,
   map_add' := by
@@ -309,6 +319,7 @@ def LieHom.fst : L × J →ₗ⁅K⁆ L := {
   map_lie' := rfl
 }
 
+/-- TODO. -/
 def LieHom.snd : L × J →ₗ⁅K⁆ J := {
   toFun := fun x ↦ x.2,
   map_add' := by
@@ -320,8 +331,10 @@ def LieHom.snd : L × J →ₗ⁅K⁆ J := {
   map_lie' := rfl
 }
 
+/-- TODO. -/
 def leftIdeal : LieIdeal K (L × J) := LieHom.ker (LieHom.snd K L J)
 
+/-- TODO. -/
 def leftIdeal_equiv_left : leftIdeal K L J ≃ₗ⁅K⁆ L := {
   toFun := fun x ↦ x.val.1
   map_add' := fun ⟨_, _⟩ ⟨_, _⟩ ↦ by simp only [AddMemClass.mk_add_mk, Prod.fst_add]
@@ -341,8 +354,10 @@ def leftIdeal_equiv_left : leftIdeal K L J ≃ₗ⁅K⁆ L := {
   right_inv := fun _ ↦ rfl
 }
 
+/-- TODO. -/
 def rightIdeal : LieIdeal K (L × J) := LieHom.ker (LieHom.fst K L J)
 
+/-- TODO. -/
 def rightIdeal_equiv_right : rightIdeal K L J ≃ₗ⁅K⁆ J := {
   toFun := fun x ↦ x.val.2
   map_add' := fun ⟨_, _⟩ ⟨_, _⟩ ↦ by simp only [AddMemClass.mk_add_mk, Prod.snd_add]
@@ -362,6 +377,7 @@ def rightIdeal_equiv_right : rightIdeal K L J ≃ₗ⁅K⁆ J := {
   right_inv := fun _ ↦ rfl
 }
 
+/-- TODO. -/
 def Prod.toLieSemidirectProduct : (L × J) ≃ₗ⁅K⁆ L ⋉[(0 : L →ₗ⁅K⁆ LieDerivation K J J)] J := {
   LinearEquiv.refl K (L × J) with
   map_lie' := by

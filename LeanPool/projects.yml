@@ -444,3 +444,29 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+
+  - slug: lowdimsolvclassification
+    title: Classification of low-dimensional solvable Lie algebras
+    summary: Formalises the classification of solvable Lie algebras up to dimension three.
+    branch: lie theory
+    entry_module: LeanPool.LowDimSolvClassification
+    authors:
+      - Viviana del Barco
+      - Gustavo Infanti
+      - Exequiel Rivas
+      - Paul Schwahn
+    source:
+      url: https://github.com/Lie-Lean/LieLean
+      github_repo: Lie-Lean/LieLean
+    status: verified
+    main_declarations:
+      - LieAlgebra.Dim3.classification
+    main_results:
+      - declaration: LieAlgebra.Dim3.classification
+        informal: Classifies three-dimensional solvable Lie algebras over arbitrary fields.
+    tags:
+      - lie-algebras
+      - solvable
+      - classification
+    msc:
+      - "17B30"

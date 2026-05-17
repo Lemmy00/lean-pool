@@ -23,6 +23,7 @@ namespace LieAlgebra
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
+/-- TODO. -/
 def Quotient.mk' (I : LieIdeal R L) : L →ₗ⁅R⁆ L ⧸ I := {
   toFun := LieSubmodule.Quotient.mk (N := I)
   map_add' := by simp only [Submodule.Quotient.mk_add, implies_true]

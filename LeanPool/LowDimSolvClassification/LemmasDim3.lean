@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import LeanPool.LowDimSolvClassification.GeneralResults
 import LeanPool.LowDimSolvClassification.Classification2
 
@@ -32,7 +33,7 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have ecomm : e ∈ commutator K L := (B₁ 0).property
   have enezero : e ≠ 0 := by simp [e,LinearIndependent.ne_zero 0 (Basis.linearIndependent B₁)]
   let ι : Set L := by
-    apply LinearIndepOn.extend (s := {e}) (t := Set.univ) (K := K)
+    apply LinearIndepOn.extend (v := id) (s := {e}) (t := Set.univ) (K := K)
     · exact LinearIndepOn.id_singleton _ enezero
     · apply Set.subset_univ
   --ι is a (set) basis of L that also contains e as an element
@@ -227,7 +228,7 @@ lemma case1a' : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 1
   · intro ⟨B, hB₁₂, hB₀₁, hB₀₂⟩
     have hcomm : (commutator K L).toSubmodule = span K {B 0} := by
       rw [commutator_eq_span]
-      apply eq_of_le_of_le
+      apply le_antisymm
       · rw [span_le]
         intro x ⟨y, z, h⟩
         rw [SetLike.mem_coe, mem_span_singleton]
@@ -415,7 +416,7 @@ lemma case1b' : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 1
   · intro ⟨B, hB₀₁, hB₀₂, hB₁₂⟩
     have hcomm : (commutator K L).toSubmodule = span K {B 1} := by
       rw [commutator_eq_span]
-      apply eq_of_le_of_le
+      apply le_antisymm
       · rw [span_le]
         intro x ⟨y, z, h⟩
         rw [SetLike.mem_coe, mem_span_singleton]
@@ -502,7 +503,10 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
              + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by
               rw [Bn21]
               rfl
-        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by rw [hB]; simp
+        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 + ⁅ Bn 1, ⁅ Bn 0, Bn 2 ⁆ ⁆  := by
+          rw [show ((⁅B 0, B 1⁆ : commutator K L) : L) = ((B 1 : commutator K L) : L) from
+            congr_arg _ hB]
+          simp
         _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 + ⁅ Bn 1, (B.repr ⟨v, vcomm⟩) 0 • B 0 + (B.repr ⟨v, vcomm⟩) 1 • B 1 ⁆  := by
           rw [← vcomp]
           rfl
@@ -513,7 +517,10 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  (B.repr ⟨v, vcomm⟩) 0 •  ⁅ Bn 1, B 0⁆ + (B.repr ⟨v, vcomm⟩) 1 • ⁅ Bn 1,  B 1 ⁆  := by rw[lie_smul,lie_smul];rfl
         _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +  (B.repr ⟨v, vcomm⟩) 0 •  ⁅ B 0, B 0⁆ + (B.repr ⟨v, vcomm⟩) 1 • ⁅ B 0,  B 1 ⁆  := by rw[Bn10];rfl
         _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +   (B.repr ⟨v, vcomm⟩) 1 • ⁅ B 0,  B 1 ⁆  := by simp
-        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +   (B.repr ⟨v, vcomm⟩) 1 • B 1:= by simp [hB]
+        _ =  (B.repr ⟨u, ucomm⟩) 0 • B 1 +   (B.repr ⟨v, vcomm⟩) 1 • B 1:= by
+          congr 1
+          rw [show ((⁅B 0, B 1⁆ : commutator K L) : L) = ((B 1 : commutator K L) : L) from
+            congr_arg _ hB]
         _ =  (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1)) • B 1:= by rw [← add_smul]
     have vcomp' : v = (B.repr ⟨v, vcomm⟩) 0 • B 0 + (B.repr ⟨v, vcomm⟩) 1 • B 1 := by
       have := Subtype.eq_iff.mp vcomp
@@ -682,7 +689,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
 
   --- the second case is when ad_{B0}≠ α Id, ∀ α
   · right
-    rw [@Mathlib.Tactic.PushNeg.not_exists_eq] at hs
+    rw [@Mathlib.Tactic.Push.not_exists] at hs
     --we rewrite the hypothesis ad_{B0}≠ α Id, ∀ α
     have hsn : ∀ (α : K), ⁅B 0, B 1⁆ ≠  α • B 1 ∨  ⁅B 0, B 2⁆ ≠  α • B 2 := by
       intro α
@@ -857,11 +864,11 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
                 have hc01 : c01 = (1 : K) / a := by
                   rw [← hh.1]
                   simp
-                  rw [← CancelDenoms.cancel_factors_eq_div rfl a_not_zero]
+                  rw [mul_div_cancel_left₀ _ a_not_zero]
                 have hc02 : c02 = (1 : K) / a := by
                   rw [← hh.2]
                   simp
-                  rw [← CancelDenoms.cancel_factors_eq_div rfl a_not_zero]
+                  rw [mul_div_cancel_left₀ _ a_not_zero]
                 rw [hc01,hc02]
               · intro heq
                 have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, c01, c02]
@@ -955,7 +962,8 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
           have hp :=Submodule.linearIndependent_from_ambient (commutator K L) B Bli brange
 
           have : Module.Finite K ↥(LieIdeal.toLieSubalgebra K L (commutator K L)).toSubmodule := by
-            simp only [LieIdeal.toLieSubalgebra_toSubmodule, V, B]
+            simp only [LieIdeal.toLieSubalgebra_toSubmodule]
+            change Module.Finite K (commutator K L)
             exact finite_of_finrank_eq_succ h₂
 
 
@@ -1061,7 +1069,7 @@ lemma finrank_com_eq2_from_basis_bracket
   obtain ⟨B,⟨pfB01,pfB12,⟨α,β, ⟨anz,pfB02⟩⟩⟩⟩ := hb
   have hcomm :  (LieAlgebra.commutator K L).toSubmodule = Submodule.span K {B 1, B 2} := by
     rw [LieAlgebra.commutator_eq_span]
-    apply eq_of_le_of_le
+    apply le_antisymm
     · rw [Submodule.span_le]
       intro x ⟨y,z,h⟩
       rw [← h,Basis.repr_fin_three B y, Basis.repr_fin_three B z]
@@ -1108,7 +1116,7 @@ lemma finrank_com_eq2_from_basis_bracket
     rw [range_b]
     rw [finrank_span_eq_card, Fintype.card_fin]
     convert_to LinearIndependent K (⇑B ∘ ![1, 2])
-    · ext j ; fin_cases j <;> rfl
+    · ext j; fin_cases j <;> rfl
     · apply LinearIndependent.comp B.linearIndependent
       intro x y hxy
       fin_cases x, y <;> simp_all
@@ -1174,7 +1182,7 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
       · rw [finrank_eq_card_basis B, Fintype.card_fin]
       · have hcomm : (commutator K L).toSubmodule = span K {B 1, B 2} := by
           rw [commutator_eq_span]
-          apply eq_of_le_of_le
+          apply le_antisymm
           · rw [span_le]
             intro x ⟨y,z,h⟩
             rw [← h,Basis.repr_fin_three B y, Basis.repr_fin_three B z]
@@ -1206,7 +1214,7 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
           · symm
             rw [← linearIndependent_iff_card_eq_finrank_span (b:=![B 1, B 2])]
             convert_to LinearIndependent K (⇑B ∘ ![1, 2])
-            · ext j ; fin_cases j <;> rfl
+            · ext j; fin_cases j <;> rfl
             · apply LinearIndependent.comp B.linearIndependent
               intro x y hxy
               fin_cases x, y <;> simp_all
