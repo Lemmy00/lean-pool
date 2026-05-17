@@ -233,6 +233,17 @@ import LeanPool.Sensitivity.Main
 import LeanPool.Sensitivity.Multilinear
 import LeanPool.Sensitivity.Parity
 import LeanPool.Sensitivity.Subcube
+import LeanPool.Shannon1948Formalization
+import LeanPool.Shannon1948Formalization.Entropy
+import LeanPool.Shannon1948Formalization.Entropy.Approx
+import LeanPool.Shannon1948Formalization.Entropy.Converse
+import LeanPool.Shannon1948Formalization.Entropy.Core
+import LeanPool.Shannon1948Formalization.Entropy.Final
+import LeanPool.Shannon1948Formalization.Entropy.Gibbs
+import LeanPool.Shannon1948Formalization.Entropy.Joint
+import LeanPool.Shannon1948Formalization.Entropy.Properties
+import LeanPool.Shannon1948Formalization.Entropy.Rational
+import LeanPool.Shannon1948Formalization.Entropy.Uniform
 import LeanPool.SumsThreeSquares
 import LeanPool.SumsThreeSquares.MinkowskiConvex
 import LeanPool.SumsThreeSquares.SumThreeSquares
