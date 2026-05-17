@@ -412,13 +412,20 @@ def AffinePlusAbelian.equivToDirectSum : AffinePlusAbelian K ≃ₗ⁅K⁆ K × 
   toFun := fun v ↦ ⟨v 0, ![-v 2, v 1]⟩
   map_add' := by
     intro x y
-    simp only [Dim2.Affine, AffinePlusAbelian, Pi.add_apply, neg_add,
-      Prod.mk_add_mk, Matrix.add_cons, Matrix.head_cons, Matrix.tail_cons, Matrix.empty_add_empty,
-      Prod.mk.injEq, true_and]
+    ext
+    · rfl
+    · change ![-(x + y) 2, (x + y) 1] = ![-x 2, x 1] + ![-y 2, y 1]
+      rw [show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+          show (x + y) 2 = x 2 + y 2 from Pi.add_apply _ _ _,
+          neg_add, Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
   map_smul' := by
     intro a x
-    simp only [Dim2.Affine, AffinePlusAbelian, Pi.smul_apply, smul_eq_mul,
-      RingHom.id_apply, Prod.smul_mk, Matrix.smul_cons, mul_neg, Matrix.smul_empty]
+    ext
+    · rfl
+    · change ![-(a • x) 2, (a • x) 1] = (RingHom.id K) a • ![-x 2, x 1]
+      rw [show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+          show (a • x) 2 = a • x 2 from Pi.smul_apply _ _ _,
+          RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty, smul_neg]
   map_lie' := by
     intro x y
     simp only [Bracket.bracket, Matrix.cons_val_zero, Matrix.cons_val_two,
@@ -451,12 +458,15 @@ def AffinePlusAbelian.semidirectAux' : End K (Dim2.Abelian K) := {
   toFun := fun v ↦ ![0, - v 1]
   map_add' := by
     intro x y
-    simp only [mkAbelian, Pi.add_apply, Matrix.add_cons, Matrix.head_cons,
-      Matrix.tail_cons, add_zero, Matrix.empty_add_empty, mul_add, neg_add]
+    change ![0, -(x + y) 1] = ![0, -x 1] + ![0, -y 1]
+    rw [show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+      neg_add, Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty, add_zero]
   map_smul' := by
     intro a x
-    simp only [mkAbelian, Pi.smul_apply, smul_eq_mul, RingHom.id_apply,
-      Matrix.smul_cons, mul_zero, Matrix.smul_empty, mul_neg]
+    change ![0, -(a • x) 1] = (RingHom.id K) a • ![0, -x 1]
+    rw [show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+      RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty,
+      smul_neg, smul_zero]
 }
 
 def AffinePlusAbelian.semidirectAux: K →ₗ⁅K⁆ LieDerivation K (Dim2.Abelian K) (Dim2.Abelian K) :=
@@ -468,25 +478,20 @@ def AffinePlusAbelian.equivToSemidirect : AffinePlusAbelian K ≃ₗ⁅K⁆ K �
   toFun:=fun v ↦ ⟨v 2, ![v 0, - v 1]⟩
   map_add':=by
     intro x y
-    rw [Prod.add_def]
-    simp only [AffinePlusAbelian, Pi.add_apply]
     ext
     · rfl
-    · simp only [mkAbelian]
-      ext i
-      fin_cases i
-      · simp only [Fin.zero_eta,
-        Matrix.cons_val_zero, Pi.add_apply]
-      · simp only [Fin.isValue, neg_add_rev, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one,
-        Matrix.cons_val_one, Matrix.cons_val_fin_one, Pi.add_apply, add_comm]
+    · change ![(x + y) 0, -(x + y) 1] = ![x 0, -x 1] + ![y 0, -y 1]
+      rw [show (x + y) 0 = x 0 + y 0 from Pi.add_apply _ _ _,
+          show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
+          neg_add, Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
   map_smul':=by
     intro a x
-    simp only [AffinePlusAbelian]
-    rw [Prod.smul_def]
-    simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply]
     ext
     · rfl
-    · simp only [mkAbelian, Matrix.smul_cons, smul_eq_mul, mul_neg, Matrix.smul_empty]
+    · change ![(a • x) 0, -(a • x) 1] = (RingHom.id K) a • ![x 0, -x 1]
+      rw [show (a • x) 0 = a • x 0 from Pi.smul_apply _ _ _,
+          show (a • x) 1 = a • x 1 from Pi.smul_apply _ _ _,
+          RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty, smul_neg]
   map_lie':=by
     intro x y
     simp only [semidirectAux, semidirectAux', Bracket.bracket, Matrix.cons_val_one,
@@ -499,15 +504,11 @@ def AffinePlusAbelian.equivToSemidirect : AffinePlusAbelian K ≃ₗ⁅K⁆ K �
     · simp only [mkAbelian]
       ext i
       fin_cases i
-      · simp only [neg_sub, Fin.zero_eta,
-        Matrix.cons_val_zero, LieHom.smulRight_apply, LinearMap.smul_apply, LinearMap.coe_mk,
-        AddHom.coe_mk, Matrix.cons_val_one, Matrix.head_cons, neg_neg, Matrix.smul_cons,
-        smul_eq_mul, mul_zero, Matrix.smul_empty, Pi.sub_apply, sub_self]
-      · simp only [neg_sub, Fin.mk_one,
-        Matrix.cons_val_one, Matrix.head_cons, LieHom.smulRight_apply, LinearMap.smul_apply,
-        LinearMap.coe_mk, AddHom.coe_mk, neg_neg, Matrix.smul_cons, smul_eq_mul, mul_comm, zero_mul,
-        Matrix.smul_empty, Pi.sub_apply]
-        simp only [Fin.isValue, Matrix.cons_val_fin_one, neg_neg]
+      · change (0:K) = (x 2 • ![0, -(-y 1)] - y 2 • ![0, -(-x 1)] + 0) 0
+        simp [Matrix.smul_cons, Matrix.smul_empty]
+      · change -(x 1 * y 2 - y 1 * x 2) = (x 2 • ![0, -(-y 1)] - y 2 • ![0, -(-x 1)] + 0) 1
+        simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
+        ring
   invFun:=fun ⟨k, v⟩ ↦ ![v 0, -v 1, k]
   left_inv:=by
     intro x
