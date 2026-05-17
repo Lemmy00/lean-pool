@@ -12,7 +12,7 @@ import LeanPool.Shannon1948Formalization.Entropy.Gibbs
 The converse direction: `entropyNat` satisfies `ShannonEntropyAxioms`.
 
 Combined with the characterization theorems in `Final.lean`, this gives a true
-"if and only if": a functional `H` satisfies the Shannon axioms iff it is a
+"if and only if": a functional `H` satisfies the Shannon conditions iff it is a
 positive multiple of `entropyNat`.
 
 ## Main results
@@ -95,11 +95,11 @@ theorem entropyNat_grouping
 
 /-! ## Main theorem -/
 
-/-- `entropyNat` satisfies the Shannon entropy axioms.
+/-- `entropyNat` satisfies the Shannon entropy conditions.
 
 This is the converse of the characterization: the characterization shows any `H`
-satisfying the axioms must be a positive multiple of `entropyNat`; this theorem
-shows `entropyNat` itself satisfies the axioms, proving the axiom system is
+satisfying the conditions must be a positive multiple of `entropyNat`; this theorem
+shows `entropyNat` itself satisfies the conditions, proving the specification is
 consistent and completing the "if and only if". -/
 theorem entropyNat_shannonAxioms : ShannonEntropyAxioms (fun {α} [Fintype α] => entropyNat) where
   continuous := continuous_entropyNat

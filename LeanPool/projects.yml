@@ -459,11 +459,11 @@ projects:
       - LeanPool.Shannon1948Formalization.entropyNat_unique
     main_results:
       - declaration: LeanPool.Shannon1948Formalization.entropyNat_unique
-        informal: Proves that any finite-alphabet uncertainty functional satisfying Shannon's axioms equals natural-log entropy up to a positive scale.
+        informal: Proves that any finite-alphabet uncertainty functional satisfying Shannon's conditions equals natural-log entropy up to a positive scale.
       - declaration: LeanPool.Shannon1948Formalization.entropyBase_unique
         informal: Restates the characterization for any logarithm base greater than one.
       - declaration: LeanPool.Shannon1948Formalization.entropyNat_shannonAxioms
-        informal: Proves the converse, showing that Shannon entropy satisfies the formal axiom bundle.
+        informal: Proves the converse, showing that Shannon entropy satisfies the formal condition bundle.
       - declaration: LeanPool.Shannon1948Formalization.chain_rule
         informal: Proves the finite joint-entropy chain rule.
       - declaration: LeanPool.Shannon1948Formalization.entropyNat_joint_le_add

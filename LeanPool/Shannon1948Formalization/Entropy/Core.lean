@@ -18,7 +18,7 @@ import Mathlib.Tactic
 Foundational definitions for the Shannon characterization development:
 
 - finite probability distributions (`ProbDist`);
-- Shannon-style axiom bundle (`ShannonEntropyAxioms`);
+- Shannon-style condition bundle (`ShannonEntropyAxioms`);
 - basic constructions used in all later phases
   (`uniformPNat`, `composeProb`, `relabelProb`).
 
@@ -131,7 +131,7 @@ def relabelProb
   · simpa using (e.symm.sum_comp (fun a => p a)).trans (prob_sum_eq_one p)
 
 /--
-Shannon's three axioms for a finite-choice uncertainty functional `H`.
+Shannon's three conditions for a finite-choice uncertainty functional `H`.
 The final theorem will show any such `H` has entropy form up to a positive scale.
 -/
 structure ShannonEntropyAxioms

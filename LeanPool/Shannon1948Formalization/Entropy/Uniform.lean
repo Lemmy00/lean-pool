@@ -14,7 +14,7 @@ Phase 1 of the characterization: equiprobable distributions.
 Main outputs:
 - multiplicative/additive behavior on uniform choices (`Apos_mul`, `Apos_pow`);
 - logarithmic characterization `Apos H n = K H * log n`;
-- positivity of the scale constant `K`.
+- positivity of the scale factor `K`.
 -/
 namespace LeanPool.Shannon1948Formalization
 
@@ -135,7 +135,7 @@ lemma abs_sub_le_of_mem_interval
     linarith
   exact abs_le.mpr ⟨hleft, hright⟩
 
-/-- The canonical positive scaling constant from the two-outcome uniform case. -/
+/-- The canonical positive scale factor from the two-outcome uniform case. -/
 def K
     (H : {α : Type} → [Fintype α] → ProbDist α → ℝ) : ℝ :=
   Apos H 2 / Real.log 2

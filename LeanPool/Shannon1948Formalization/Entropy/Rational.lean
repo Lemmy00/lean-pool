@@ -12,7 +12,7 @@ import LeanPool.Shannon1948Formalization.Entropy.Uniform
 Phase 2 of the characterization: rational probabilities.
 
 This module derives the entropy formula for distributions of the form
-`p_i = n_i / N` via grouped equiprobable refinement and the grouping axiom.
+`p_i = n_i / N` via grouped equiprobable refinement and the grouping condition.
 It also includes a worked decomposition corresponding to Shannon's
 `(1/2, 1/3, 1/6)` narrative.
 -/

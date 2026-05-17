@@ -31,8 +31,8 @@ open scoped Topology
 
 /--
 Uniqueness in natural-log units:
-every `H` satisfying the axiom bundle agrees with Shannon entropy up to the
-positive multiplicative constant `K H`.
+every `H` satisfying the condition bundle agrees with Shannon entropy up to the
+positive multiplicative scale factor `K H`.
 -/
 theorem entropyNat_unique
     (H : {α : Type} → [Fintype α] → ProbDist α → ℝ)
@@ -63,7 +63,7 @@ theorem entropyNat_unique
 
 /--
 Base-parametric uniqueness:
-for each base `b > 1`, there is a positive constant `Kb` with
+for each base `b > 1`, there is a positive scale factor `Kb` with
 `H p = -Kb * ∑ p_i log_b p_i`.
 -/
 theorem entropyBase_unique
