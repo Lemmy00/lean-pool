@@ -185,7 +185,8 @@ lemma _eq_noise_operator : T = @noise_operator n (-1/3) := by
       simp_rw [this]
     intro i
     by_cases h : x i = y i
-    · simp [h]
+    · simp only [h, not_and, forall_const, Classical.ite_not, Fin.sum_univ_two, Fin.isValue, ne_eq,
+        not_true_eq_false, if_false, add_zero]
       induction y i using Fin.cases with
       | zero => simp
       | succ k => simp [Fin.fin_one_eq_zero]
@@ -198,14 +199,18 @@ lemma _eq_noise_operator : T = @noise_operator n (-1/3) := by
   have haux (w : Fin 2) (g : Fin 2 → ℝ) : ∑ v : Fin 2, g v = g w + g (1-w) := by
     induction w using Fin.cases with
     | zero => simp
-    | succ k => simp [Fin.fin_one_eq_zero k]; exact add_comm _ _
+    | succ k => simp only [Fin.sum_univ_two, Fin.isValue, Fin.fin_one_eq_zero k]
+                exact add_comm _ _
   conv => enter [1, 2, 2, i]; rw [haux (x i), oneOn_false (by simp)]
           rw [oneOn_true (by omega), add_zero, mul_one]
   rw [← prod_filter_mul_prod_filter_not (p := fun i ↦ i ∈ S), prod_filter, prod_filter]
   have haux2 (v : Fin 2) : ((-1) : ℝ)^v.val + (-1)^(1-v).val * (1 + 1) = (-1) * (-1)^v.val := by
     induction v using Fin.cases with
     | zero => simp
-    | succ k => simp [Fin.fin_one_eq_zero k]
+    | succ k =>
+      simp only [Fin.fin_one_eq_zero k, Fin.isValue, Fin.succ_zero_eq_one, Fin.coe_ofNat_eq_mod,
+        Nat.mod_succ, pow_one, sub_self, Nat.zero_mod, pow_zero, one_mul, neg_add_cancel_left,
+        mul_neg, mul_one, neg_neg]
   conv => enter [1, 2, 1, 2, i]; rw [ite_mul, ite_add_ite, ite_ite_same, haux2]
   rw [← prod_filter, filter_univ_mem, prod_mul_distrib, prod_const, ← walsh_def]
   conv => enter [1, 2, 2, 2, i]; rw [ite_mul, ite_add_ite, ite_ite_not']; arg 2; norm_num
@@ -293,8 +298,10 @@ theorem dictator_of_condorcet_and_unanimous (h : IsUnanimous f) :
           rw [hk]
           calc
             0 ≤ (-ρ) * (1 - (ρ^2)^k)    := by
-              apply mul_nonneg; norm_num; apply sub_nonneg.mpr;
-              exact pow_le_one₀ (pow_two_nonneg ρ) (by norm_num)
+              apply mul_nonneg
+              · norm_num
+              · apply sub_nonneg.mpr
+                exact pow_le_one₀ (pow_two_nonneg ρ) (by norm_num)
             _ = (-ρ) * (1 - ρ^(2 * k))    := by rw [pow_mul]
             _ = ρ^(2 * k + 1) - ρ         := by ring
       · exact sq_nonneg _
@@ -319,7 +326,8 @@ theorem dictator_of_condorcet_and_unanimous (h : IsUnanimous f) :
   use i
   have := funext_iff.mp hfeq 0
   rw [h.1] at this
-  simp at this
+  simp only [smul_apply, prod_singleton, zero_apply, Fin.isValue, Fin.coe_ofNat_eq_mod,
+    Nat.zero_mod, pow_zero, smul_eq_mul, mul_one] at this
   rw [hfeq, ← this]
   simp
 

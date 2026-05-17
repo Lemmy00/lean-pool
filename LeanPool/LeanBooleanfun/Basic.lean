@@ -388,7 +388,7 @@ lemma walsh_setAt_eq_ite {v : Fin 2} :
 theorem dderiv_walsh (i : Fin n) (S : Finset (Fin n)) :
     dderiv i (χ S) = ite (i ∈ S) (χ (S \ {i})) 0 := by
   funext
-  simp [dderiv]
+  simp only [dderiv, Fin.isValue, LinearMap.coe_mk, AddHom.coe_mk]
   repeat rw [walsh_setAt_eq_ite]
   split_ifs <;> simp
 
@@ -423,7 +423,8 @@ lemma laplace_eq_dderiv (i : Fin n) (f : BooleanFunc n) (x : Fin n → Fin 2) :
     laplace i f x = (-1) ^ (x i).val * (dderiv i f x) := by
   change (f x - _) / 2 = (-1)^_ * ((_ - _) / 2)
   by_cases hx : x i = 0
-  · simp [hx]
+  · simp only [hx, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, one_mul, ne_eq,
+      OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']
     rw [setAt_eq_id hx, setAt_eq_flipAt (by rw [hx]; trivial)]
   · have hx1 := Fin.eq_one_of_ne_zero (x i) hx
     rw [setAt_eq_id hx1, setAt_eq_flipAt hx]
@@ -507,8 +508,8 @@ theorem variance_le_totalInfluence (f : BooleanFunc n) : variance f ≤ totalInf
     simp only [Nat.one_le_cast, one_le_card, h]
   · rw [← zero_mul 0]
     gcongr
-    simp only [Nat.cast_nonneg]
-    exact sq_nonneg (𝓕 f S)
+    · simp only [Nat.cast_nonneg]
+    · exact sq_nonneg (𝓕 f S)
 
 section FourierWeight
 
@@ -526,7 +527,10 @@ lemma fourier_eq_zero_iff_fourier_weight_eq {k : ℕ} {f : BooleanFunc n} :
     (∀ S, S.card ≠ k → 𝓕 f S = 0) ↔ fourierWeight k f = ‖f‖ ^ 2 := by
   constructor
   · intro h
-    have h : ∀ S, S.card ≠ k → |𝓕 f S|^2 = 0 := by intro S hS; simp; exact h S hS
+    have h : ∀ S, S.card ≠ k → |𝓕 f S|^2 = 0 := by
+      intro S hS
+      simp only [sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff]
+      exact h S hS
     symm
     rw [walsh_plancherel]
     calc
@@ -559,7 +563,7 @@ lemma eq_sum_fourier_of_fourier_weight {k : ℕ} {f : BooleanFunc n}
     intro S hS
     rw [smul_eq_zero]
     left
-    simp at hS
+    simp only [ne_eq, mem_filter, mem_univ, true_and] at hS
     exact fourier_eq_zero_iff_fourier_weight_eq.mpr h S hS
   calc
     f = ∑ S, 𝓕 f S • χ S                     := walsh_fourier f

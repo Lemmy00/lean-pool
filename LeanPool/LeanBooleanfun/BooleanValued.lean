@@ -73,7 +73,7 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
     ∃ S ∈ {S | S.card = 1}, ∃ c : ℝ, f = c • χ S := by
   wlog hf1 : f 0 = 1 with h1
   · have hf' : ∀ x, (-f) x = ∑ i, 𝓕 (-f) {i} * (-1)^(x i).val := by
-      intro x; simp; exact hf x
+      intro x; simp only [Pi.neg_apply, map_neg, neg_mul, sum_neg_distrib, neg_inj]; exact hf x
     have : (-f) 0 = 1 := by
       rw [Pi.neg_apply, neg_eq_iff_eq_neg]; exact eq_neg_one_of_ne_one hf1
     specialize h1 hn hf' this
@@ -90,12 +90,13 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
     induction n with
     | zero =>
       use {0}
-      simp
+      simp only [Nat.reduceAdd, isValue, Set.mem_setOf_eq, card_singleton, true_and]
       use 1
-      simp
+      simp only [isValue, one_smul]
       ext x
       rw [hf] at hf1
-      simp at hf1
+      simp only [Nat.reduceAdd, univ_unique, default_eq_zero, isValue, Pi.zero_apply,
+        coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, mul_one, sum_singleton] at hf1
       rw [hf]
       simpa
     | succ n hi =>
@@ -107,7 +108,7 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
       have hf0feq : ∀ i₀, f (flipAt i₀ 0) = ∑ i ∈ univ.erase i₀, 𝓕 f {i} + -𝓕 f {i₀} := by
         intro i₀
         rw [hf]
-        rw [← sum_erase_add (a := i₀)]
+        rw [← sum_erase_add (a := i₀) (h := mem_univ i₀)]
         congr 1
         · apply sum_congr (by rfl)
           intro i hi
@@ -115,7 +116,6 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
           rw [Pi.zero_apply, Fin.val_zero, pow_zero, mul_one]
         · rw [flipAt_flipped]
           rw [Pi.zero_apply, sub_zero, Fin.val_one, pow_one, mul_neg, mul_one]
-        · exact mem_univ i₀
       have : ∃ i₀, f (flipAt i₀ 0) = 1 := by
         by_contra hc
         have hfm1 : ∀ i, f (flipAt i 0) = -1 := by
@@ -127,7 +127,9 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
             _ = (f 0 - f (flipAt i 0))/2 := by rw [hf1, hfm1]
             _ = (∑ i', 𝓕 f {i'} - ∑ i' ∈ univ.erase i, 𝓕 f {i'} + 𝓕 f {i})/2 := by
                   rw [hf0eq, hf0feq]; ring
-            _ = _                         := by rw [← sum_erase_add (a := i)]; ring; exact mem_univ i
+            _ = _                         := by
+                  rw [← sum_erase_add (a := i) (h := mem_univ i)]
+                  ring
         have : f 0 = n + 2 := by
           rw [hf0eq]
           conv => enter [1, 2, i]; rw [this]
@@ -152,9 +154,9 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
       let g : BooleanFunc (n + 1) := fun x ↦ f (Fin.insertNth i₀ 0 x)
       have hgeq : g = ∑ i, 𝓕 f {i₀.succAbove i} • χ {i} := by
         ext x
-        simp [g]
+        simp only [isValue, sum_apply, Pi.smul_apply, prod_singleton, smul_eq_mul, g]
         nth_rewrite 1 [hf]
-        rw [← sum_erase_add (a := i₀), hFi0zero, zero_mul, add_zero]
+        rw [← sum_erase_add (a := i₀) (h := mem_univ i₀), hFi0zero, zero_mul, add_zero]
         symm
         apply sum_of_injOn (e := fun i ↦ i₀.succAbove i)
         · intro i _ j _
@@ -168,7 +170,6 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
           contradiction
         · intro i _
           simp
-        · exact mem_univ i₀
       have : ∀ i, 𝓕 g {i} = 𝓕 f {i₀.succAbove i} := by
         intro i
         calc
@@ -181,20 +182,23 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
       have hgeq' : ∀ x, g x = ∑ i, 𝓕 g {i} * (-1)^(x i).val := by
         intro x; nth_rewrite 1 [hgeq]; rw [sum_apply]; apply sum_congr (by rfl); intro i _;
         simp [this]
-      have : g 0 = 1 := by unfold g; simp; exact hf1
+      have : g 0 = 1 := by
+        unfold g
+        simp only [isValue, insertNth_zero_right, Pi.single_zero]
+        exact hf1
       have : BooleanValued g := BooleanValued.mk
         (by intro x; exact hbv.one_or_neg_one (Fin.insertNth i₀ 0 x))
       have := hi (f := g) (Nat.succ_pos n) (by assumption) (by assumption)
       obtain ⟨S, hS1, hS2⟩ := this
       obtain ⟨c, hc⟩ := hS2
-      simp at hS1
+      simp only [Set.mem_setOf_eq] at hS1
       obtain ⟨i₁, hi₁⟩ := card_eq_one.mp hS1
       use {Fin.succAbove i₀ i₁}
       constructor
       · simp
       · use c
         funext x
-        simp
+        simp only [Pi.smul_apply, prod_singleton, smul_eq_mul]
         have hfxi : f x = f (update x i₀ 0) := by
           calc
             f x = ∑ i, 𝓕 f {i} * (-1)^(x i).val := by rw [hf]
@@ -214,7 +218,9 @@ lemma eq_character_of_eq_sum_degree_one (hn : n > 0)
           _ = f (Fin.insertNth i₀ 0 (Fin.removeNth i₀ x))  := by rw [hfxi, Fin.insertNth_removeNth]
           _ = g (Fin.removeNth i₀ x)                      := by rfl
           _ = (c • χ {i₁}) (Fin.removeNth i₀ x)             := by rw [hc, hi₁]
-          _ = _                                           := by simp; left; rfl
+          _ = _                                           := by
+            simp only [Pi.smul_apply, prod_singleton, smul_eq_mul, mul_eq_mul_left_iff]
+            left; rfl
 
 /-- A Boolean valued function with degree one Fourier weight equal to one
 must be `±1` times a degree one character. -/
@@ -261,7 +267,9 @@ lemma inner_eq_distance : ⟪f, g⟫ = 1 - 2 * distance f g := by
   dsimp
   rw [← mul_sum, sum_sub_distrib]
   ring_nf
-  simp
+  simp only [Finset.sum_const, card_univ, Fintype.card_pi, Fintype.card_fin, Finset.prod_const,
+    nsmul_eq_mul, Nat.cast_pow, Nat.cast_ofNat, mul_one, one_div, inv_pow, ne_eq, pow_eq_zero_iff',
+    OfNat.ofNat_ne_zero, false_and, not_false_eq_true, mul_inv_cancel₀, sub_self, zero_add]
   rw [mul_comm, ← inv_pow, ← one_div]
   rfl
 
@@ -300,7 +308,9 @@ private lemma _aux_lemma : (𝐄 <| fun x ↦ 𝐄 <| fun y ↦ (1/2) * (1 + (f 
           rw [← mul_assoc, ← mul_assoc, mul_comm _ (f x), ← mul_assoc, mul_comm (f x) _]
           rw [mul_assoc, mul_assoc]
   rw [sum_add_distrib, Finset.sum_const]
-  simp
+  simp only [one_div, inv_pow, card_univ, Fintype.card_pi, Fintype.card_fin, Finset.prod_const,
+    nsmul_eq_mul, Nat.cast_pow, Nat.cast_ofNat, ne_eq, pow_eq_zero_iff', OfNat.ofNat_ne_zero,
+    false_and, not_false_eq_true, mul_inv_cancel_left₀]
   rw [← mul_sum, ← mul_add, ← mul_assoc, mul_comm _ 2⁻¹, mul_assoc]
   rw [mul_add, inv_mul_cancel₀ (by simp)]
 
