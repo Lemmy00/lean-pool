@@ -18,7 +18,7 @@ import LeanPool.Zeta3Irrational.D
 Source: doi:10.1112/blms/11.3.268
 Authors: Junqi Liu, Jujian Zhang
 Status: verified
-Main declarations: `LeanPool.Zeta3Irrational.linear_int`, `LeanPool.Zeta3Irrational.JJ_pos`, `LeanPool.Zeta3Irrational.JJ_upper`
+Main declarations: `LeanPool.Zeta3Irrational.linear_int`, `LeanPool.Zeta3Irrational.JJ_upper`
 Tags: number-theory, analysis, zeta-functions
 MSC: 11M06, 11J72
 -/
