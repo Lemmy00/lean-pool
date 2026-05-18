@@ -9,7 +9,10 @@ import LeanPool.PointwiseBirkhoff.Main
 /-!
 # Pointwise Birkhoff Ergodic Theorem
 
-Source: url:https://github.com/lua-vr/pointwise-birkhoff
+Source: Karl Petersen, "Ergodic Theory", Cambridge Studies in Advanced
+  Mathematics 2, Cambridge University Press, 1983, Section 2.2, for the
+  pointwise Birkhoff ergodic theorem; formalization source:
+  url:https://github.com/lua-vr/pointwise-birkhoff
 Authors: Lua Viana Reis, Oliver Butterley, Pietro Monticone
 Status: verified
 Main declarations: `LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem'`
