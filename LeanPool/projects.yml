@@ -1,26 +1,30 @@
 projects:
   - slug: zeta_3_irrational
-    title: Apéry-style estimates for ζ(3)
-    summary: Formalizes Legendre-polynomial integral identities, denominator estimates, and linear forms used in an Apéry-style proof around ζ(3).
+    title: Beukers integral estimates for ζ(3)
+    summary: Formalizes the Beukers integral identities, denominator estimates, positivity, and upper bounds used in Apéry's theorem for ζ(3).
     branch: analytic number theory
     entry_module: LeanPool.Zeta3Irrational
     authors:
       - Junqi Liu
       - Jujian Zhang
     source:
-      url: https://github.com/ahhwuhu/zeta_3_irrational
+      title: A note on the irrationality of ζ(2) and ζ(3)
+      authors:
+        - Frits Beukers
+      doi: "10.1112/blms/11.3.268"
       github_repo: ahhwuhu/zeta_3_irrational
     status: verified
     main_declarations:
       - LeanPool.Zeta3Irrational.linear_int
+      - LeanPool.Zeta3Irrational.JJ_pos
       - LeanPool.Zeta3Irrational.JJ_upper
     main_results:
       - declaration: LeanPool.Zeta3Irrational.linear_int
         informal: Clears denominators in the Apéry integral to produce a linear form in 1 and ζ(3).
       - declaration: LeanPool.Zeta3Irrational.JJ_pos
-        informal: Proves positivity of the transformed Apéry integral.
+        informal: Proves positivity of the transformed Beukers-Apéry integral.
       - declaration: LeanPool.Zeta3Irrational.JJ_upper
-        informal: Bounds the Apéry integral by a geometric factor times the ζ(3) series.
+        informal: Bounds the Beukers-Apéry integral by a geometric factor times the ζ(3) series.
       - declaration: LeanPool.Zeta3Irrational.zeta3_le_zeta2
         informal: Compares the ζ(3) series with the convergent ζ(2) series.
     tags:
