@@ -28,7 +28,10 @@ import LeanPool.VirasoroProject.WittAlgebraCohomology
 /-!
 # Virasoro Project
 
-Source: url:https://github.com/kkytola/VirasoroProject
+Source: Victor Kac, "Infinite-Dimensional Lie Algebras", 3rd ed.,
+  Cambridge University Press, 1990, for the Witt and Virasoro algebras,
+  Verma modules, and central extensions; formalization source:
+  url:https://github.com/kkytola/VirasoroProject
 Authors: Kalle Kytölä
 Status: verified
 Main declarations: `VirasoroProject.VirasoroAlgebra`, `VirasoroProject.sugawaraRepresentation`
