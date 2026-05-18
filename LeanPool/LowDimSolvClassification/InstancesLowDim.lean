@@ -106,7 +106,7 @@ def _root_.LieAlgebra.Dim2.Affine.equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K 
     · simp only [Fin.mk_one, Matrix.cons_val_one, Matrix.cons_val_fin_one]
   map_lie' := by
     intro ⟨f, x⟩ ⟨g, y⟩
-    simp [Affine.bracket]
+    simp only [trivial_lie_zero, add_zero, bracket, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
     unfold Affine ofAffineEquivAux
     rw [LieEquiv.coe_toLieHom]
     unfold mkAbelian at *
@@ -1126,7 +1126,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
     ext j
     constructor
     · intro j_in
-      simp at j_in
+      simp only [Fin.exists_fin_two, Fin.isValue, Set.mem_setOf_eq] at j_in
       rcases j_in with hy | hy
       · have := Set.map_into_subtype_apply (↑(commutator K (Family K α β))) (B α β)
           (B_setrange (hα:=hα)) 0
@@ -1218,7 +1218,7 @@ theorem _root_.LieAlgebra.Dim3.Family.B_basis_repr {hα : α ≠ 0} {x : commuta
   unfold e₂ e₃ at h
   change (a • ![(0:K), 1, 0] + b • ![(0:K), 0, 1] : Fin 3 → K) = x at h
   rw [Matrix.smul_vec3, Matrix.smul_vec3, Matrix.vec3_add] at h
-  simp at h
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, smul_eq_mul, mul_zero, add_zero, mul_one, zero_add] at h
   symm at h
   have x00 : x 0 = 0 := by
     apply_fun (fun x => x 0) at h

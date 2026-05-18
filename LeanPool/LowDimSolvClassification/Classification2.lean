@@ -65,7 +65,7 @@ lemma abelian_or_basis (h : finrank K L = 2) :
               _ = y := by
                 rw [one_div_mul_cancel β_ne_zero]; simp
         · rw [hα] at pf
-          simp at pf
+          simp only [zero_smul, zero_add] at pf
           rw [pf] at hxy
           exact right_ne_zero_of_smul hxy
       · exists -(1 / α) • y, x + (β / α) • y
@@ -154,7 +154,7 @@ theorem classification (h : finrank K L = 2) :
         simp [Basis.ext_elem_iff B, Fin.forall_fin_two]
       right_inv := by
         intro α
-        simp [Affine]
+        simp only [Affine, Fin.isValue, map_add, map_smul, Basis.repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same, ne_eq, zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero, one_ne_zero, zero_add]
         exact List.ofFn_inj.mp rfl
     }
 

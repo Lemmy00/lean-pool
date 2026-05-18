@@ -280,7 +280,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     simp only at meq
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 0)
     rw [← hs] at meq
-    simp at meq
+    simp only [Fin.isValue, SetLike.mk_smul_mk] at meq
     exact meq
   -- e is not in the center
   have enz : e ∉ center K L := by
@@ -292,7 +292,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     simp only [LieModule.mem_maxTrivSubmodule]
     intro x₁
     have := Subtype.ext_iff.mp u
-    simp at this
+    simp only [Fin.isValue, SetLike.mk_smul_mk] at this
     rw [this]
     rw [lie_smul]
     rw [hz, smul_zero]
@@ -325,13 +325,13 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have B1f : B 1 = e := by
     have := Basis.extend_fin_succ_tail_eq fe_li dim3
     apply_fun (fun x ↦ x 0) at this
-    simp at this
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero] at this
     rw [← this]
     exact rfl
   have B2e : B 2 = f' := by
     have := Basis.extend_fin_succ_tail_eq fe_li dim3
     apply_fun (fun x ↦ x 1) at this
-    simp at this
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one] at this
     rw [← this]
     exact rfl
   -- we compute the brackets of g'=B 0 with e and f'
@@ -340,8 +340,8 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   let ⟨b, hb⟩ := lie_comm g' f'
   -- now we redifine the basis B with the new g
   let g := g' - b • e + a • f'
-  have ge : ⁅ g, e ⁆ = 0 := by simp [g]; rw [ha, ← lie_skew, f'comm]; module
-  have gf' : ⁅ g, f' ⁆ = 0 := by simp [g]; rw [hb, f'comm]; module
+  have ge : ⁅ g, e ⁆ = 0 := by simp only [add_lie, sub_lie, smul_lie, lie_self, smul_zero, sub_zero, g]; rw [ha, ← lie_skew, f'comm]; module
+  have gf' : ⁅ g, f' ⁆ = 0 := by simp only [add_lie, sub_lie, smul_lie, lie_self, smul_zero, add_zero, g]; rw [hb, f'comm]; module
   have := B.linearIndependent
   simp at this
   -- we show that the set is l.i. after redifining
@@ -355,7 +355,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [Finsupp.sum_fintype] at hl
     · simp only at hl
       rw [Fin.sum_univ_three] at hl
-      simp at hl
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero, smul_add, Matrix.cons_val_one, Matrix.cons_val] at hl
       apply linearIndependent_iff.mp at this
       let llf : Fin 3 →₀ K := Finsupp.cons (l 0) (Finsupp.cons (-l 0 * b + l 1) (Finsupp.cons
           (l 0 * a + l 2) 0))
@@ -373,7 +373,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
             (l 0 * a + l 2) (0 : Fin 0 →₀ K)))) 2 = l 0 * a + l 2 := by
           rfl
         rw [snd,thd] at this
-        simp at this
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul, Finsupp.cons_zero] at this
         have Hq : l 0 • B 0 + (-(l 0 * b) + l 1) • B 1 + (l 0 * a + l 2) • B 2 = l 0 •
             (B 0 - b • B 1) + l 0 • a • B 2 + l 1 • B 1 + l 2 • B 2 := by
           module
@@ -477,14 +477,14 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
     have Bn10 : Bn 1 = B 0 := by
       have := Basis.extend_fin_succ_tail_eq B_is_li_L dim3
       apply_fun (fun x ↦ x 0) at this
-      simp at this
+      simp only [Nat.reduceAdd, Fin.isValue, Function.comp_apply] at this
       rw [← this]
       unfold Bn
       exact rfl
     have Bn21 : Bn 2 = B 1 := by
       have := Basis.extend_fin_succ_tail_eq B_is_li_L dim3
       apply_fun (fun x ↦ x 1) at this
-      simp at this
+      simp only [Nat.reduceAdd, Fin.isValue, Function.comp_apply] at this
       rw [← this]
       unfold Bn
       exact rfl
@@ -598,8 +598,8 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         contradiction
     rw [z] at br02
     rw [z] at ucomp
-    simp at ucomp
-    simp at br02
+    simp only [Fin.isValue, zero_smul, zero_add] at ucomp
+    simp only [Nat.reduceAdd, Fin.isValue, zero_add] at br02
     rw [← Bn21] at br02
     have : ⁅Bn 0, Bn 1⁆ = (B.repr ⟨u, ucomm⟩) 1 • Bn 2 := by
       rw [Bn21]
@@ -617,17 +617,17 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         fin_cases j; simp; simp; simp
       rcases i1 with (rfl|rfl|rfl)
       · rcases i2 with (rfl|rfl|rfl)
-        · simp; use 0; simp
+        · simp only [Nat.reduceAdd, Fin.isValue, lie_self]; use 0; simp
         · rw [this]; use (B.repr ⟨u, ucomm⟩) 1
         · rw [br02]; use (B.repr ⟨v, vcomm⟩) 1
       · rcases i2 with (rfl|rfl|rfl)
         · rw [← lie_skew,this]; use (- (B.repr ⟨u, ucomm⟩) 1); simp
-        · simp; use 0; simp
+        · simp only [Nat.reduceAdd, Fin.isValue, lie_self]; use 0; simp
         · rw [nl]; use 1; simp
       · rcases i2 with (rfl|rfl|rfl)
         · rw [← lie_skew,br02]; use (- (B.repr ⟨v, vcomm⟩) 1); simp
         · rw [← lie_skew,nl]; use (-1); simp
-        · simp; use 0; simp
+        · simp only [Nat.reduceAdd, Fin.isValue, lie_self]; use 0; simp
     have dimcomm := finrank_commutator_le_one_of_lie_basis Bn (Bn 2)
         (binary_predicate_3_choose_2 ⟨_, this⟩ ⟨_, br02⟩ ⟨1, by rw [one_smul]; exact nl⟩)
     rw [LieIdeal.finrank_toSubmodule] at dimcomm
@@ -659,7 +659,7 @@ private lemma case2_coarse_rat
         have c01_not_zero : c01 ≠ 0 := by
           intro hc01
           rw [hc01] at h01
-          simp at h01
+          simp only [Fin.isValue, zero_smul] at h01
           have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
             have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 2} := by
               intro x
@@ -735,7 +735,7 @@ private lemma case2_coarse_rat
         have c02_not_zero : c02 ≠ 0 := by
           intro hc02
           rw [hc02] at h02
-          simp at h02
+          simp only [Fin.isValue, zero_smul] at h02
           have h20 : ⁅B 2, B 0⁆ = 0 := by
             rw [← lie_skew, h02]
             simp
@@ -798,7 +798,7 @@ private lemma case2_coarse_rat
               rw [@LinearIndependent.pair_iff]
               intro s t hst
               have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, s, t]
-              simp at this
+              simp only at this
               have heqq : ∑ x : Fin 3, ![0, s, t] x • B x = s • B 1 + t • B 2 := by
                 rw [@Fin.sum_univ_three]
                 simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
@@ -817,7 +817,7 @@ private lemma case2_coarse_rat
             specialize hh hha
             apply c01_neq_c02
             have a_not_zero : a ≠ 0 := by
-              simp at hh
+              simp only [smul_eq_mul] at hh
               let hh1 := hh.1
               rw [mul_comm] at hh1
               apply (right_ne_zero_of_mul (a := c01))
@@ -826,16 +826,16 @@ private lemma case2_coarse_rat
               assumption
             have hc01 : c01 = (1 : K) / a := by
               rw [← hh.1]
-              simp
+              simp only [smul_eq_mul]
               rw [mul_div_cancel_left₀ _ a_not_zero]
             have hc02 : c02 = (1 : K) / a := by
               rw [← hh.2]
-              simp
+              simp only [smul_eq_mul]
               rw [mul_div_cancel_left₀ _ a_not_zero]
             rw [hc01,hc02]
           · intro heq
             have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, c01, c02]
-            simp at this
+            simp only at this
             have heqq : ∑ x : Fin 3, ![0, c01, c02] x • B x = c01 • B 1 + c02 • B 2 := by
               rw [@Fin.sum_univ_three]
               simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero,
@@ -899,7 +899,7 @@ private lemma case2_coarse_Bnli
     have sc : span K (Set.range ![⁅B 0, X⁆, X]) ≤ commutator K L := span_le.mpr subset
     rw [@Matrix.range_cons_cons_empty] at h
     have B0c : B 0 ∈ commutator K L := by
-      simp at sc
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.range_cons, Matrix.range_empty, Set.union_empty, Set.union_singleton, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, LieIdeal.toLieSubalgebra_toSubmodule] at sc
       apply sc
       exact h
     have brange : Set.range B ⊆ commutator K L := by
@@ -918,7 +918,7 @@ private lemma case2_coarse_Bnli
         change Module.Finite K (commutator K L)
         exact finite_of_finrank_eq_succ h₂
       have := LinearIndependent.fintype_card_le_finrank hp
-      simp at this
+      simp only [Fintype.card_fin, LieIdeal.toLieSubalgebra_toSubmodule, SetLike.coe_sort_coe] at this
       simp only [ge_iff_le]
       exact this
     rw [h₂] at dimc
@@ -947,13 +947,13 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
   have B1isV0 : B 1 = V 0 := by
     have := Basis.extend_fin_succ_tail_eq VL dim3
     apply_fun (fun x ↦ x 0) at this
-    simp at this
+    simp only [Nat.reduceAdd, Fin.isValue, Function.comp_apply] at this
     rw [← this]
     exact rfl
   have B2isV1 : B 2 = V 1 := by
     have := Basis.extend_fin_succ_tail_eq VL dim3
     apply_fun (fun x ↦ x 1) at this
-    simp at this
+    simp only [Nat.reduceAdd, Fin.isValue, Function.comp_apply] at this
     rw [← this]
     exact rfl
   have B1c : (B 1) ∈ commutator K L := by
@@ -987,7 +987,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
     have anz : α ≠ 0 :=by
       intro fa
       rw [fa] at hα
-      simp at hα
+      simp only [Nat.reduceAdd, Fin.isValue, zero_smul] at hα
 
       have isab : IsLieAbelian L := by
         rw [abelian_iff_lie_basis_eq_zero B]
@@ -1036,7 +1036,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
     have Bnli : LinearIndependent K Bn := case2_coarse_Bnli h₂ hXli hXc B1c B2c
 
     let BnBasis : Basis (Fin 3) K L :=
-      basisOfLinearIndependentOfCardEqFinrank Bnli (by simp; rw [dim3])
+      basisOfLinearIndependentOfCardEqFinrank Bnli (by simp only [Fintype.card_fin]; rw [dim3])
     use BnBasis
     have BnB01 : ⁅BnBasis 0, BnBasis 1⁆ = BnBasis 2 := by
       rw [coe_basisOfLinearIndependentOfCardEqFinrank]
@@ -1047,7 +1047,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
       simp only [V, B]
       apply cab
       · exact hXc
-      · simp
+      · simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, Fin.isValue]
         exact LieSubmodule.lie_mem_lie trivial trivial
 
     constructor
@@ -1070,7 +1070,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, LieIdeal.toLieSubalgebra_toSubmodule,
           SetLike.coe_sort_coe, Fin.isValue, V, B] at XcX
         let XcXBasis : Basis (Fin 2) K (commutator K L) :=
-          basisOfLinearIndependentOfCardEqFinrank XcX (by simp; rw [h₂])
+          basisOfLinearIndependentOfCardEqFinrank XcX (by simp only [Fintype.card_fin]; rw [h₂])
         have XcXBasis0 : XcXBasis 0 = ⁅B 0, X⁆ := by
           rw [coe_basisOfLinearIndependentOfCardEqFinrank]
           dsimp [Set.map_into_subtype]
@@ -1198,7 +1198,7 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
       by_cases hb : (β =0)
       · left
         rw [hb] at pfB02
-        simp at pfB02
+        simp only [Fin.isValue, zero_smul, add_zero] at pfB02
         use B'
         exact ⟨pfB01, pfB12, ⟨α,anz,pfB02⟩⟩
       · right
@@ -1287,12 +1287,12 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
       · rw [finrank_eq_card_basis B, Fintype.card_fin]
       · apply finrank_com_eq2_from_basis_bracket
         use B
-        refine ⟨hB01,hB02, ⟨α,0,anz,(by simp;exact hB12)⟩⟩
+        refine ⟨hB01,hB02, ⟨α,0,anz,(by simp only [Fin.isValue, zero_smul, add_zero];exact hB12)⟩⟩
     · constructor
       · rw [finrank_eq_card_basis B, Fintype.card_fin]
       · apply finrank_com_eq2_from_basis_bracket
         use B
-        refine ⟨hB01,hB02, ⟨α,1,anz,(by simp;exact hB12)⟩⟩
+        refine ⟨hB01,hB02, ⟨α,1,anz,(by simp only [Fin.isValue, one_smul];exact hB12)⟩⟩
 
 end Dim3
 

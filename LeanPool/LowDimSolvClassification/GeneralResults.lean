@@ -55,7 +55,7 @@ lemma not_linearIndependent_pair_iff (x y : L) (hy : y ≠ 0) : ¬LinearIndepend
     obtain ⟨t,s',t',a,b⟩ := hs
     apply_fun (fun m ↦ - s' • x + m - t • y) at a
     rw [← add_assoc,← add_assoc] at a
-    simp at a
+    simp only [neg_smul, add_sub_cancel_right, neg_add_cancel, zero_add] at a
     rw [add_comm] at a
     rw [← SubNegMonoid.sub_eq_add_neg] at a
     repeat rw [← sub_smul] at a
@@ -63,7 +63,7 @@ lemma not_linearIndependent_pair_iff (x y : L) (hy : y ≠ 0) : ¬LinearIndepend
       intro ns
       rw [← sub_eq_zero] at ns
       rw [ns] at a
-      simp at a
+      simp only [zero_smul] at a
       symm at a
       rw [smul_eq_zero] at a
       rcases a with u1 | u2
@@ -118,7 +118,7 @@ theorem Submodule.linearIndependent_from_ambient
   intro l hl sum i hi
   apply hs l hl
   · unfold Set.map_into_subtype Subtype.coind at sum
-    simp at sum
+    simp only [SetLike.coe_sort_coe, SetLike.mk_smul_mk] at sum
     apply_fun (fun (x :  ↥N) ↦ x.val) at sum
     simp at sum
     exact sum
