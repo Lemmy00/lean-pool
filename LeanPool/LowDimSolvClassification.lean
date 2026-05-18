@@ -18,7 +18,10 @@ import LeanPool.LowDimSolvClassification.Tactics
 /-!
 # Classification of low-dimensional solvable Lie algebras
 
-Source: url:https://github.com/Lie-Lean/LieLean
+Source: Pavel Winternitz and Libor Šnobl, "Classification and Identification
+  of Lie Algebras", CRM Monograph Series 33, AMS, 2014, for the standard
+  low-dimensional solvable Lie algebra classification; formalization source:
+  url:https://github.com/Lie-Lean/LieLean
 Authors: Viviana del Barco, Gustavo Infanti, Exequiel Rivas, Paul Schwahn
 Status: verified
 Main declarations: `LieAlgebra.Dim3.classification`
