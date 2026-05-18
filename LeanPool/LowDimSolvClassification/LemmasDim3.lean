@@ -34,7 +34,7 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have enezero : e ≠ 0 := by simp [e,LinearIndependent.ne_zero 0 (Basis.linearIndependent B₁)]
   let ι : Set L := by
     apply LinearIndepOn.extend (v := id) (s := {e}) (t := Set.univ) (K := K)
-    · exact LinearIndepOn.id_singleton _ enezero
+    · exact LinearIndepOn.singleton _ enezero
     · apply Set.subset_univ
   --ι is a (set) basis of L that also contains e as an element
   have B₂li : LinearIndependent K (Subtype.val : ι → L) := LinearIndepOn.linearIndepOn_extend _ _
@@ -314,7 +314,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     intro h
     apply this
     rw [← hs]
-    apply Subtype.eq
+    apply Subtype.ext
     simp only [ZeroMemClass.coe_zero]
     assumption
   -- the set e,f is linearly independent
@@ -872,7 +872,7 @@ private lemma case2_coarse_Bnli
     (B1c : B 1 ∈ commutator K L)
     (B2c : B 2 ∈ commutator K L) :
     LinearIndependent K (![B 0, X, ⁅B 0, X⁆] : Fin 3 → L) := by
-  rw [@linearIndependent_fin_succ]
+  rw [@linearIndependent_finSucc]
   have : Fin.tail (![B 0, X, ⁅B 0, X⁆] : Fin 3 → L) = ![X, ⁅B 0, X⁆] := rfl
   constructor
   · rw [this]
