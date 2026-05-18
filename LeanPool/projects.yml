@@ -444,3 +444,32 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: factorizationsystems
+    title: Factorization Systems
+    summary: Formalizes factorization systems, orthogonality, orthogonal complements, and a characterization theorem.
+    branch: category theory
+    entry_module: LeanPool.FactorizationSystems
+    authors:
+      - Ivan Kobe
+    source:
+      url: https://github.com/ivankobe/FactorizationSystems
+      github_repo: ivankobe/FactorizationSystems
+    status: verified
+    main_declarations:
+      - CategoryTheory.FactorizationSystem_characterization
+    main_results:
+      - declaration: CategoryTheory.FactorizationSystem
+        informal: Defines factorization systems on a category with specified left and right classes.
+      - declaration: CategoryTheory.FactorizationSystem_characterization
+        informal: Characterizes factorization systems via repleteness, weak factorizations, and orthogonality.
+      - declaration: CategoryTheory.orthogonal
+        informal: Defines orthogonality of two morphisms by existence and uniqueness of diagonal fillers.
+      - declaration: CategoryTheory.right_orthogonal_complement
+        informal: Defines the right orthogonal complement of a morphism property.
+    tags:
+      - category-theory
+      - factorization-systems
+      - orthogonality
+    msc:
+      - "18A32"
+      - "18A40"
