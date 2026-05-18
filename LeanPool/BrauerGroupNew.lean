@@ -19,11 +19,7 @@ import LeanPool.BrauerGroupNew.Subfield
 /-!
 # Brauer Group Core
 
-Source: Philippe Gille and Tamás Szamuely, "Central Simple Algebras and
-  Galois Cohomology", 2nd ed., Cambridge Studies in Advanced Mathematics 165,
-  Cambridge University Press, 2017, for central simple algebras and Brauer
-  group structure; formalization source:
-  url:https://github.com/Whysoserioushah/BrauerGroup_new
+Source: url:https://doi.org/10.1017/9781107359419
 Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 Status: verified
 Main declarations: `Wedderburn_Artin`, `IsCentralSimple.TensorProduct.simple`, `CSA_implies_CSA`
