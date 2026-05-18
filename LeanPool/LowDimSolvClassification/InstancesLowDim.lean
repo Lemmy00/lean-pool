@@ -1152,22 +1152,22 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         use 0
         apply Subtype.ext
         rw [Set.map_into_subtype_apply (↑(commutator K (Family K α β))) (B α β) (B_setrange) (0)]
-        unfold B
-        simp only [Matrix.cons_val_zero, e₂_def]
-        unfold e₂
-        simp only [e₂_def]
-        exact hα
+        · unfold B
+          simp only [Matrix.cons_val_zero, e₂_def]
+          unfold e₂
+          simp only [e₂_def]
+        · exact hα
       · subst e1
         simp only [Set.mem_setOf_eq]
         use 1
         apply Subtype.ext
         rw [Set.map_into_subtype_apply (↑(commutator K (Family K α β))) (B α β) (B_setrange) (1)]
-        unfold B
-        simp only [Matrix.cons_val_one, e₃_def]
-        unfold e₃
-        simp only [e₃_def]
-        simp []
-        exact hα
+        · unfold B
+          simp only [Matrix.cons_val_one, e₃_def]
+          unfold e₃
+          simp only [e₃_def]
+          simp []
+        · exact hα
   let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) :=
     Basis.mk B_is_li_comm (by
       intro ⟨x, hx⟩
