@@ -630,9 +630,9 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
     have hb : ∀ i j , ∃ (c: K), ⁅Bn i, Bn j⁆ = c • Bn 2 := by
       intro i j
       have i1: i = 0 ∨ i = 1 ∨ i = 2 := by
-        fin_cases i; simp; simp; simp
+        fin_cases i <;> simp
       have i2: j = 0 ∨ j = 1 ∨ j = 2 := by
-        fin_cases j; simp; simp; simp
+        fin_cases j <;> simp
       rcases i1 with (rfl|rfl|rfl)
       · rcases i2 with (rfl|rfl|rfl)
         · simp only [Nat.reduceAdd, Fin.isValue, lie_self]; use 0; simp
@@ -923,7 +923,7 @@ private lemma case2_coarse_Bnli
     have brange : Set.range B ⊆ commutator K L := by
       rw [Set.range_subset_iff]
       intro y
-      have yr : y=0 ∨ y=1 ∨ y=2 := by fin_cases y;simp;simp;simp
+      have yr : y=0 ∨ y=1 ∨ y=2 := by fin_cases y <;> simp
       rcases yr with (j0|j1|j2)
       · rw [j0]; exact B0c
       · rw [j1]; exact B1c
