@@ -13,9 +13,7 @@ import LeanPool.FactorizationSystems.Characterization
 /-!
 # Factorization Systems
 
-Source: Emily Riehl, "Category Theory in Context", Dover, 2016,
-  Section 14.4, for orthogonal factorization systems and weak factorization
-  systems; formalization source: url:https://github.com/ivankobe/FactorizationSystems
+Source: url:https://emilyriehl.github.io/files/context.pdf
 Authors: Ivan Kobe
 Status: verified
 Main declarations: `CategoryTheory.FactorizationSystem_characterization`
