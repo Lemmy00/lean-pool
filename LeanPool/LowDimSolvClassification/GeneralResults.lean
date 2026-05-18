@@ -120,7 +120,7 @@ theorem Submodule.linearIndependent_from_ambient
   · unfold Set.map_into_subtype Subtype.coind at sum
     simp only [SetLike.coe_sort_coe, SetLike.mk_smul_mk] at sum
     apply_fun (fun (x :  ↥N) ↦ x.val) at sum
-    simp at sum
+    simp only [AddSubmonoidClass.coe_finset_sum, ZeroMemClass.coe_zero] at sum
     exact sum
   · exact hi
 

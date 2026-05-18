@@ -846,7 +846,7 @@ private lemma case2_coarse_rat
                 Matrix.tail_cons]
             rw [heq] at heqq
             specialize this heqq 1
-            simp at this
+            simp only [Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero] at this
             apply c01_not_zero
             exact this
         · rw [lie_add]
