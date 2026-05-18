@@ -142,7 +142,7 @@ lemma exists_add_bdry_eq_smul_virasoroCocycle :
         · -- k = 1 case follows due to the choice of the normalizing coboundary
           convert add_bdry_normalizingCochain_apply_lgen_one γ
           ring
-        · -- k = 2 case is what determines the choice of the multiplicative constant r
+        · -- k = 2 case is what determines the multiplicative factor r
           rw [hr]
           norm_num
           ring

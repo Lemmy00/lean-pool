@@ -21,7 +21,7 @@ in various Sugawara constructions. The calculations make use of "discrete integr
 * `zPrimitive`: A "discrete integral function" to a given function `f : ℤ → R`. The defining
   properties of `F = zPrimitive f` are `F(0) = 0` and `F(n+1) - F(n) = f(n)`.
 * `zMonomialF`: The `d`th discrete monomial function is defined by `d`-fold discrete integration
-  of the constant function `1`. (The continuum analogue is the monomial `1/d! • x^d`.)
+  starting from the function `1`. (The continuum analogue is the monomial `1/d! • x^d`.)
 
 ## Main statements
 
