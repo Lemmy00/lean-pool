@@ -173,6 +173,8 @@ import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
 import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
+import LeanPool.PointwiseBirkhoff
+import LeanPool.PointwiseBirkhoff.Main
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
 import LeanPool.RiemannMappingTheorem
