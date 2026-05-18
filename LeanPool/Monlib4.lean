@@ -5,7 +5,6 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.LinearAlgebra
-import LeanPool.Monlib4.Other
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.RepTheory
 
@@ -39,7 +38,7 @@ equivalence between `Mₙₓₘ(R)` and `Rⁿˣᵐ`, the entrywise conjugate
 `Matrix.conj` with the `ᴴᵀ` notation, the projection `directSumFromTo` between
 summands of a dependent direct sum, basic spectrum commutativity
 (`isUnit_comm`, `spectrum.comm`), and helper lemmas for finite sums,
-ites/dites, `RCLike`-valued order relations, and base-`b+1` divisibility tests.
+ites/dites, and `RCLike`-valued order relations.
 
 ## Provenance
 

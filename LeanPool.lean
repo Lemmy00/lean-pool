@@ -182,8 +182,6 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.MySpec
-import LeanPool.Monlib4.Other
-import LeanPool.Monlib4.Other.Sonia
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.Preq.Dite
 import LeanPool.Monlib4.Preq.Finset
