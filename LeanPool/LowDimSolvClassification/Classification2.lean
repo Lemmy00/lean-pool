@@ -31,7 +31,7 @@ lemma abelian_or_basis (h : finrank K L = 2) :
   · left
     assumption
   · right
-    simp [IsLieAbelian] at s
+    simp only [IsLieAbelian] at s
     have t : (∃ X Y : L, ⁅X,Y⁆ ≠ 0) := by
       have u : ¬ (∀ X Y : L, ⁅X,Y⁆ = 0) := fun H ↦ s ⟨ H ⟩
       push Not at u

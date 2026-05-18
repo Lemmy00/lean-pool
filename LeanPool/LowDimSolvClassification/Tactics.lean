@@ -117,13 +117,13 @@ theorem atom_eq_eval [AddMonoid M] [LieRing M] (x : M) : x = NF.eval [(1,
   Sum.inl x)] := by simp [eval, v]
 theorem atom_eq_evalD [AddMonoid M] [LieRing M] (x y : M) : ⁅x,y⁆ = NF.eval ((1,
   Sum.inr ⟨x,y⟩) ::ᵣ []) := by
-  simp [eval, v]
+  simp only [eval, v]
   dsimp!
   simp only [one_nsmul]
   simp only [left_eq_add]
 theorem atom_eq_evalD_skew [LieRing M] (x y : M) : ⁅x,y⁆ = NF.eval ((-1,
   Sum.inr ⟨y,x⟩) ::ᵣ []) := by
-  simp [eval, v]
+  simp only [eval, v]
   dsimp!
   simp only [Int.reduceNeg, neg_smul, one_smul, add_zero]
   rw [lie_skew]

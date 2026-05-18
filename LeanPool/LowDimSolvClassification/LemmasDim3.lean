@@ -186,7 +186,7 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [linearIndependent_iff] at *
     intro l hl
     rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype] at hl
-    · simp [b] at hl
+    · simp only [b] at hl
       specialize B₂'li (Finsupp.ofSupportFinite (fun (i : Fin 3) => l i * coef i) ?_)
       · apply Set.toFinite
       rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype] at B₂'li
@@ -277,7 +277,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     intro x y
     have eq := Basis.repr_fin_one V ⟨⁅x, y⁆, lie_mem_commutator x y ⟩
     have meq := Subtype.ext_iff.mp eq
-    simp at meq
+    simp only at meq
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 0)
     rw [← hs] at meq
     simp at meq
@@ -353,7 +353,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [Finsupp.linearCombination_apply (R:=K) (v:=![B 0 - b • B 1 + a • B 2, B 1,
       B 2]) (l:=l)] at hl
     rw [Finsupp.sum_fintype] at hl
-    · simp at hl
+    · simp only at hl
       rw [Fin.sum_univ_three] at hl
       simp at hl
       apply linearIndependent_iff.mp at this
@@ -363,7 +363,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
       specialize this llf
       rw [Finsupp.linearCombination_apply (R:=K) (v:=B) (l:=llf)] at this
       rw [Finsupp.sum_fintype] at this
-      · simp at this
+      · simp only at this
         rw [Fin.sum_univ_three] at this
         unfold llf at this
         have snd : (Finsupp.cons (l 0) (Finsupp.cons (-l 0 * b + l 1) (Finsupp.cons
@@ -473,7 +473,7 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
       (commutator K L).toSubmodule).mp B.linearIndependent
     have : FiniteDimensional K L := Module.finite_of_finrank_eq_succ dim3
     let Bn := Basis.extend_fin_succ B_is_li_L dim3
-    simp at Bn
+    simp only at Bn
     have Bn10 : Bn 1 = B 0 := by
       have := Basis.extend_fin_succ_tail_eq B_is_li_L dim3
       apply_fun (fun x ↦ x 0) at this
@@ -622,12 +622,12 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         · rw [br02]; use (B.repr ⟨v, vcomm⟩) 1
       · rcases i2 with (rfl|rfl|rfl)
         · rw [← lie_skew,this]; use (- (B.repr ⟨u, ucomm⟩) 1); simp
-        · simp; use 0; simp
+        · simp only; use 0; simp
         · rw [nl]; use 1; simp
       · rcases i2 with (rfl|rfl|rfl)
         · rw [← lie_skew,br02]; use (- (B.repr ⟨v, vcomm⟩) 1); simp
         · rw [← lie_skew,nl]; use (-1); simp
-        · simp; use 0; simp
+        · simp only; use 0; simp
     have dimcomm := finrank_commutator_le_one_of_lie_basis Bn (Bn 2)
         (binary_predicate_3_choose_2 ⟨_, this⟩ ⟨_, br02⟩ ⟨1, by rw [one_smul]; exact nl⟩)
     rw [LieIdeal.finrank_toSubmodule] at dimcomm

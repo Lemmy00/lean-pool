@@ -159,7 +159,7 @@ theorem LinearIndependent.extend_fin {n k : ℕ} {l : Fin n → L}
       constructor
       · assumption
       · intro i
-        simp at *
+        simp only at *
         rw [← bH]
         specialize b'H (i.addNat k)
         assumption

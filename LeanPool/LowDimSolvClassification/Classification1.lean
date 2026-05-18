@@ -25,7 +25,7 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
 section classification_dim_1
 
 theorem abelian (h : Module.finrank K L = 1) : IsLieAbelian L :=by
-  simp [IsLieAbelian]
+  simp only [IsLieAbelian]
   constructor
   intro x y
   have := Module.finite_of_finrank_eq_succ h
