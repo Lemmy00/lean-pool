@@ -210,7 +210,7 @@ theorem _root_.LieAlgebra.Dim2.solvable (dim2 : finrank K L = 2) :
             ?h.mp.intro.intro.a
         simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, mem_toAddSubmonoid]
         apply  mem_span_singleton_self
-      · simp
+      · simp only [Fin.isValue, carrier_eq_coe, SetLike.mem_coe, Set.mem_setOf_eq]
         intro hy
         apply mem_span_singleton.mp at hy
         obtain ⟨α, hα⟩ := hy

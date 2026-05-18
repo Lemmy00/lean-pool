@@ -1307,7 +1307,7 @@ theorem _root_.LieAlgebra.Dim3.Family.M_is_ade₁_restr {hα : α ≠ 0} : Linea
     ext i j
     simp only [LinearMap.toMatrix_apply]
     fin_cases j
-    · simp
+    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one]
       rw [ad_restr_apply]
       unfold adjoint
       simp only [ad_apply]
@@ -1321,7 +1321,7 @@ theorem _root_.LieAlgebra.Dim3.Family.M_is_ade₁_restr {hα : α ≠ 0} : Linea
       · simp only [Fin.zero_eta, Matrix.cons_val_zero]
       · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue,
         Matrix.cons_val_one, Matrix.cons_val_fin_one]
-    · simp
+    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val', Matrix.cons_val_one, Matrix.cons_val_fin_one]
       rw [ad_restr_apply]
       unfold adjoint
       simp only [ad_apply]
