@@ -12,7 +12,7 @@ import LeanPool.Monlib4.RepTheory
 /-!
 # Inner Automorphisms of Matrix Algebras
 
-Source: url:https://github.com/themathqueen/monlib4
+Source: doi:10.4169/amer.math.monthly.124.10.966
 Authors: Monica Omar
 Status: verified
 Main declarations: `Matrix.aut_mat_inner`, `Matrix.aut_mat_inner_trace_preserving`
