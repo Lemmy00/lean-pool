@@ -622,12 +622,12 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         · rw [br02]; use (B.repr ⟨v, vcomm⟩) 1
       · rcases i2 with (rfl|rfl|rfl)
         · rw [← lie_skew,this]; use (- (B.repr ⟨u, ucomm⟩) 1); simp
-        · simp only; use 0; simp
+        · simp; use 0; simp
         · rw [nl]; use 1; simp
       · rcases i2 with (rfl|rfl|rfl)
         · rw [← lie_skew,br02]; use (- (B.repr ⟨v, vcomm⟩) 1); simp
         · rw [← lie_skew,nl]; use (-1); simp
-        · simp only; use 0; simp
+        · simp; use 0; simp
     have dimcomm := finrank_commutator_le_one_of_lie_basis Bn (Bn 2)
         (binary_predicate_3_choose_2 ⟨_, this⟩ ⟨_, br02⟩ ⟨1, by rw [one_smul]; exact nl⟩)
     rw [LieIdeal.finrank_toSubmodule] at dimcomm
