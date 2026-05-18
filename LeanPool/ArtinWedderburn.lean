@@ -20,7 +20,10 @@ import LeanPool.ArtinWedderburn.ArtinWedderburnTheorem
 /-!
 # Artin-Wedderburn Theorem
 
-Source: url:https://github.com/JobPetrovcic/ArtinWedderburn
+Source: T. Y. Lam, "A First Course in Noncommutative Rings", 2nd ed.,
+  Graduate Texts in Mathematics 131, Springer, 2001, Chapter 3, for the
+  Artin-Wedderburn structure theorem; formalization source:
+  url:https://github.com/JobPetrovcic/ArtinWedderburn
 Authors: Matevz Miščič, Maša Žaucer, Job Petrovčič
 Status: verified
 Main declarations: `LeanPool.ArtinWedderburn.ArtinWedderburnForPrime`
@@ -44,9 +47,9 @@ prime.
 The proof factors `R` through a system of pairwise orthogonal idempotents whose
 corner subrings are division rings (`OrtIdemDiv`), upgrades these idempotents to
 matrix units, and concludes that `R` is isomorphic to a matrix ring over the
-corner subring of the first matrix unit. The argument follows the paper
-*A Self-Contained, Brief and Complete Formulation of Voiculescu's S-Transform*
-style lecture notes (<https://arxiv.org/pdf/2405.04588>) for the proof skeleton.
+corner subring of the first matrix unit. The argument follows the standard
+matrix-unit proof of the Artin-Wedderburn theorem for Artinian prime and simple
+rings.
 
 The exported modules mirror the proof structure: products of ideals
 (`LeanPool.ArtinWedderburn.IdealProd`, `LeanPool.ArtinWedderburn.SetProd`),
