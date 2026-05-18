@@ -672,3 +672,7 @@ theorem iso_0 {α α' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) : (Family K α 0 
   use γ
 
 end Family
+
+end Dim3
+
+end LieAlgebra

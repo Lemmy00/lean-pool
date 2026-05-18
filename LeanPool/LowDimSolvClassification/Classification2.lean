@@ -246,3 +246,5 @@ theorem _root_.LieAlgebra.solvable_of_dim_comm_le_two [fin : FiniteDimensional K
     assumption
 
 end corollaries_dim_2
+
+end LieAlgebra

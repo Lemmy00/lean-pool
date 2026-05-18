@@ -62,3 +62,7 @@ theorem _root_.LieAlgebra.Dim1.solvable (dim1 : Module.finrank K L = 1) :
   apply LieAlgebra.ofAbelianIsSolvable
 
 end corollaries_dim_1
+
+end Dim1
+
+end LieAlgebra

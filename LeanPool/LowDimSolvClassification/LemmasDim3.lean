@@ -1293,3 +1293,7 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
       · apply finrank_com_eq2_from_basis_bracket
         use B
         refine ⟨hB01,hB02, ⟨α,1,anz,(by simp;exact hB12)⟩⟩
+
+end Dim3
+
+end LieAlgebra
