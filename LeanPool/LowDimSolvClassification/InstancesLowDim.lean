@@ -401,8 +401,7 @@ def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅
     simp only [Heisenberg.semidirectAux, Heisenberg.semidirectAux', Bracket.bracket,
       Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two,
       Matrix.tail_cons, mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply,
-      map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk,
-      Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul]
+      map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.coe_mk]
     ext
     · simp only
     · simp only [mkAbelian]
