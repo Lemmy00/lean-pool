@@ -20,10 +20,7 @@ import LeanPool.ArtinWedderburn.ArtinWedderburnTheorem
 /-!
 # Artin-Wedderburn Theorem
 
-Source: T. Y. Lam, "A First Course in Noncommutative Rings", 2nd ed.,
-  Graduate Texts in Mathematics 131, Springer, 2001, Chapter 3, for the
-  Artin-Wedderburn structure theorem; formalization source:
-  url:https://github.com/JobPetrovcic/ArtinWedderburn
+Source: url:https://doi.org/10.1007/978-1-4419-8616-0
 Authors: Matevz Miščič, Maša Žaucer, Job Petrovčič
 Status: verified
 Main declarations: `LeanPool.ArtinWedderburn.ArtinWedderburnForPrime`
