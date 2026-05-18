@@ -668,8 +668,8 @@ private lemma case2_coarse_rat
   · use (B 1)
   · by_cases hb : LinearIndependent K (![⁅B 0, B 2⁆, B 2])
     · use (B 2)
-    · rw [not_linearIndependent_pair_iff ⁅B 0, B 1⁆ (B 1)] at ha
-      rw [not_linearIndependent_pair_iff ⁅B 0, B 2⁆ (B 2)] at hb
+    · rw [not_linearIndependent_pair_iff ⁅B 0, B 1⁆ (B 1) (Basis.ne_zero B 1)] at ha
+      rw [not_linearIndependent_pair_iff ⁅B 0, B 2⁆ (B 2) (Basis.ne_zero B 2)] at hb
       obtain ⟨ c01, h01⟩ :=ha
       obtain ⟨ c02, h02⟩ :=hb
       have nuvn :  LinearIndependent K ![ c01 • B 1 + c02 • B 2, B 1+ B 2]
@@ -869,8 +869,6 @@ private lemma case2_coarse_rat
       constructor
       · exact this.1
       · exact add_mem B1c B2c
-      · exact Basis.ne_zero B 2
-      exact Basis.ne_zero B 1
 
 /-- Helper for `case2_coarse`: linear independence of the candidate basis
 `![B 0, X, ⁅B 0, X⁆]`. Extracted to keep the proof of `case2_coarse` within
