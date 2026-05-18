@@ -543,17 +543,20 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
             (![γ * y' 0, y' 1, γ * y' 2] : Fin 3 → K)
         rw [Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.cons_add_cons,
           Matrix.empty_add_empty]
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Pi.add_apply, Matrix.vecCons_inj, and_true, true_and]; refine ⟨?_, ?_⟩ <;> ring
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Pi.add_apply,
+          Matrix.vecCons_inj, and_true, true_and]; refine ⟨?_, ?_⟩ <;> ring
       map_smul' := by
         intro m x
         let x' : Fin 3 → K := x
         change (![γ * (m • x') 0, (m • x') 1, γ * (m • x') 2] : Fin 3 → K) =
           m • (![γ * x' 0, x' 1, γ * x' 2] : Fin 3 → K)
         rw [Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Pi.smul_apply, smul_eq_mul, Matrix.vecCons_inj, and_true, true_and]; refine ⟨?_, ?_⟩ <;> ring
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Pi.smul_apply, smul_eq_mul,
+          Matrix.vecCons_inj, and_true, true_and]; refine ⟨?_, ?_⟩ <;> ring
       map_lie' := by
         intro x y
-        simp only [Fin.isValue, bracket, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, mul_zero, Matrix.cons_val_one, Matrix.cons_val]
+        simp only [Fin.isValue, bracket, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero,
+          mul_zero, Matrix.cons_val_one, Matrix.cons_val]
         rw [hα, hβ]
         ring_nf
       invFun := fun l => ![γ⁻¹ * l 0, l 1, γ⁻¹ * l 2]

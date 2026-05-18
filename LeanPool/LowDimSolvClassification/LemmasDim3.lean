@@ -331,7 +331,8 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have B2e : B 2 = f' := by
     have := Basis.extend_fin_succ_tail_eq fe_li dim3
     apply_fun (fun x ↦ x 1) at this
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one] at this
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_one,
+      Matrix.cons_val_fin_one] at this
     rw [← this]
     exact rfl
   -- we compute the brackets of g'=B 0 with e and f'
@@ -355,7 +356,8 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [Finsupp.sum_fintype] at hl
     · simp only at hl
       rw [Fin.sum_univ_three] at hl
-      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero, smul_add, Matrix.cons_val_one, Matrix.cons_val] at hl
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero, smul_add,
+        Matrix.cons_val_one, Matrix.cons_val] at hl
       apply linearIndependent_iff.mp at this
       let llf : Fin 3 →₀ K := Finsupp.cons (l 0) (Finsupp.cons (-l 0 * b + l 1) (Finsupp.cons
           (l 0 * a + l 2) 0))
@@ -373,7 +375,8 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
             (l 0 * a + l 2) (0 : Fin 0 →₀ K)))) 2 = l 0 * a + l 2 := by
           rfl
         rw [snd,thd] at this
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul, Finsupp.cons_zero] at this
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul,
+          Finsupp.cons_zero] at this
         have Hq : l 0 • B 0 + (-(l 0 * b) + l 1) • B 1 + (l 0 * a + l 2) • B 2 = l 0 •
             (B 0 - b • B 1) + l 0 • a • B 2 + l 1 • B 1 + l 2 • B 2 := by
           module
@@ -918,7 +921,8 @@ private lemma case2_coarse_Bnli
         change Module.Finite K (commutator K L)
         exact finite_of_finrank_eq_succ h₂
       have := LinearIndependent.fintype_card_le_finrank hp
-      simp only [Fintype.card_fin, LieIdeal.toLieSubalgebra_toSubmodule, SetLike.coe_sort_coe] at this
+      simp only [Fintype.card_fin, LieIdeal.toLieSubalgebra_toSubmodule,
+        SetLike.coe_sort_coe] at this
       simp only [ge_iff_le]
       exact this
     rw [h₂] at dimc
