@@ -9,10 +9,10 @@ import LeanPool.SemicircleLaw.SemicircleDistribution
 /-!
 # Wigner Semicircle Distribution
 
-Source: url:https://github.com/FredRaj3/SemicircleLaw
+Source: url:https://www.math.ucsd.edu/~tkemp/247A.Notes.pdf
 Authors: FredRaj3
 Status: verified
-Main declarations: `LeanPool.SemicircleLaw.semicircleReal`
+Main declarations: `LeanPool.SemicircleLaw.integral_semicirclePDFReal_eq_one`
 Tags: probability, random-matrix-theory, distributions
 MSC: 60B20, 60E05
 -/
