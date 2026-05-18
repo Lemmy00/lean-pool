@@ -317,8 +317,8 @@ lemma right_determinacy (L R : MorphismProperty C) (H₁L : is_replete L)
     exact H₁L (H₂.left_map l) l (Iso.refl _) p (by have f := H₂.factorization l; aesop_cat)
       (H₂.left_map_in_left_class l)
 
-/- A characterization theorem for factorization systems. (L,R) is a factorization system iff both
-L and R are replete, L is orthogonal to R and (L,R) is a weak factorization system. -/
+/- Constructs a factorization system from replete left and right classes, a weak
+factorization system, and orthogonality. -/
 /-- Imported FactorizationSystems declaration. -/
 noncomputable
 def FactorizationSystem_characterization (L R : MorphismProperty C) (H₁L : is_replete L)
