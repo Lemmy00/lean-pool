@@ -14,9 +14,7 @@ import LeanPool.FoZfc.Replacement
 /-!
 # First Order Language of ZF Set Theory
 
-Source: Thomas Jech, "Set Theory", 3rd millennium ed., Springer, 2003,
-  Chapters 1-2, for the first-order ZF axioms and ordinal/natural-number
-  development; formalization source: url:https://github.com/ishiut/fo_zfc
+Source: url:https://doi.org/10.1007/3-540-44761-X
 Authors: Tetsuya Ishiu
 Status: verified
 Main declarations: `FirstOrder.ZFC.ModelZF`, `FirstOrder.ZFC.ext_induction`
