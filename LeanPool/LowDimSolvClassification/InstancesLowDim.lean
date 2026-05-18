@@ -160,10 +160,7 @@ def _root_.LieAlgebra.Dim2.Affine.equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆
     · simp only [Fin.isValue, LieHom.coe_comp, LieHom.coe_smulRight, Function.comp_apply,
       map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.id_coe,
       Pi.smul_apply, id_eq]
-      simp only [mkAbelian,
-        
-       
-       ]
+      simp only [mkAbelian]
       ext i
       fin_cases i
       change x 0 * y 1 - y 0 * x 1 = (x 0 • ![y 1] - y 0 • ![x 1] + 0) 0
