@@ -445,9 +445,9 @@ projects:
       - "11E25"
       - "11H06"
   - slug: monlib4
-    title: Monlib4 utility lemmas
-    summary: Vendors a foundational subset of monlib4 — matrix reshape and conjugate, direct-sum projection, and base-(b+1) divisibility tests.
-    branch: linear algebra
+    title: Inner Automorphisms of Matrix Algebras
+    summary: Formalizes the monlib4 theorem that every automorphism of a finite matrix algebra over a field is inner, with trace preservation as a corollary.
+    branch: linear algebra and representation theory
     entry_module: LeanPool.Monlib4
     authors:
       - Monica Omar
@@ -456,24 +456,23 @@ projects:
       github_repo: themathqueen/monlib4
     status: verified
     main_declarations:
-      - Matrix.reshape
-      - Matrix.conj
-      - directSumFromTo
+      - Matrix.aut_mat_inner
+      - Matrix.aut_mat_inner'
+      - Matrix.aut_mat_inner_trace_preserving
     main_results:
-      - declaration: Matrix.reshape
-        informal: Linear equivalence between matrices `Mₙₓₘ(R)` and functions `n × m → R`.
-      - declaration: Matrix.conj
-        informal: Entrywise conjugate of a matrix (denoted `xᴴᵀ`).
-      - declaration: directSumFromTo
-        informal: Linear map projecting between summands of a dependent direct sum.
-      - declaration: spectrum.comm
-        informal: The spectrum of `x ∘ₗ y` equals the spectrum of `y ∘ₗ x` for finite-dim endomorphisms.
-      - declaration: nat_dvd_repr_iff_nat_dvd_sum_repr
-        informal: A base-`(a+1)` digit representation is divisible by `a` iff the sum of its digits is.
+      - declaration: Matrix.automorphism_matrix_inner
+        informal: Shows that any automorphism of a finite nontrivial matrix algebra is implemented by an invertible intertwining matrix.
+      - declaration: Matrix.aut_mat_inner
+        informal: Packages matrix-algebra automorphisms as inner automorphisms induced by a linear equivalence of the underlying coordinate space.
+      - declaration: Matrix.aut_mat_inner'
+        informal: Packages matrix-algebra automorphisms as conjugation by an element of `GL n 𝕜`.
+      - declaration: Matrix.aut_mat_inner_trace_preserving
+        informal: Proves that automorphisms of finite matrix algebras preserve trace.
     tags:
       - linear-algebra
       - matrices
       - operator-algebras
+      - representation-theory
     msc:
-      - "15A99"
-      - "16-XX"
+      - "15A69"
+      - "16W20"

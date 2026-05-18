@@ -177,6 +177,7 @@ import LeanPool.Monlib4.LinearAlgebra.DirectSumFromTo
 import LeanPool.Monlib4.LinearAlgebra.End
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.Matrix
+import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
@@ -189,6 +190,8 @@ import LeanPool.Monlib4.Preq.Finset
 import LeanPool.Monlib4.Preq.Ites
 import LeanPool.Monlib4.Preq.RCLikeLe
 import LeanPool.Monlib4.Preq.Set
+import LeanPool.Monlib4.RepTheory
+import LeanPool.Monlib4.RepTheory.AutMat
 import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
 import LeanPool.RamanujanTauMissesPrimes
