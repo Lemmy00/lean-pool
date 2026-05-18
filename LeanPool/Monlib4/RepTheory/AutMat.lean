@@ -172,8 +172,10 @@ theorem automorphism_matrix_inner'' [DecidableEq n] [Nonempty n]
       simp_rw [LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
         LinearMap.toMatrix'_id, Matrix.mul_one]
 
+namespace Algebra
+
 /-- Inner automorphism by conjugation with an invertible algebra element. -/
-def Algebra.autInner {R E : Type _} [CommSemiring R] [Semiring E]
+def autInner {R E : Type _} [CommSemiring R] [Semiring E]
     [Algebra R E] (x : E) [Invertible x] : E ≃ₐ[R] E where
   toFun y := x * y * ⅟ x
   invFun y := ⅟ x * y * x
@@ -189,10 +191,12 @@ def Algebra.autInner {R E : Type _} [CommSemiring R] [Semiring E]
   map_mul' _ _ := by
     simp_rw [mul_assoc, invOf_mul_cancel_left]
 
-theorem Algebra.autInner_apply {R E : Type _} [CommSemiring R] [Semiring E]
+theorem autInner_apply {R E : Type _} [CommSemiring R] [Semiring E]
     [Algebra R E] (x : E) [Invertible x] (y : E) :
-    (Algebra.autInner x : E ≃ₐ[R] E) y = x * y * ⅟ x :=
+    (autInner x : E ≃ₐ[R] E) y = x * y * ⅟ x :=
   rfl
+
+end Algebra
 
 private theorem automorphism_matrix_inner''' [DecidableEq n] [Nonempty n]
     (f : (M n) ≃ₐ[𝕜] M n) :

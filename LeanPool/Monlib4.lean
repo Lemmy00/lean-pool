@@ -10,13 +10,12 @@ import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.RepTheory
 
 /-!
-# Monlib4 matrix algebra automorphisms
+# Inner Automorphisms of Matrix Algebras
 
 Source: url:https://github.com/themathqueen/monlib4
 Authors: Monica Omar
 Status: verified
-Main declarations: `Matrix.aut_mat_inner`, `Matrix.aut_mat_inner_trace_preserving`,
-  `Matrix.automorphism_matrix_inner`
+Main declarations: `Matrix.aut_mat_inner`, `Matrix.aut_mat_inner_trace_preserving`
 Tags: linear-algebra, matrices, operator-algebras, representation-theory
 MSC: 15A69, 16W20
 -/
