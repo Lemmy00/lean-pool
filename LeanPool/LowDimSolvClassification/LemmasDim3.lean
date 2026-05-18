@@ -202,13 +202,13 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
         specialize this i
         fin_cases i;
         all_goals simp only
-        · simp only [Matrix.cons_val_zero, mul_eq_zero, coef] at this
+        · simp only [mul_eq_zero, coef] at this
           rcases this
           · assumption
           · contradiction
-        · simp only [Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons, mul_one, coef] at this
+        · simp only [Fin.mk_one, Matrix.cons_val_one, coef] at this
           simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, mul_one,
-            e, b, coef] at this
+            e] at this
           assumption
         · simp only [Fin.reduceFinMk, Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons,
           mul_one, coef] at this
@@ -313,7 +313,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     apply this
     rw [← hs]
     apply Subtype.eq
-    simp only [ZeroMemClass.coe_zero, f']
+    simp only [ZeroMemClass.coe_zero]
     assumption
   -- the set e,f is linearly independent
   have fe_li: LinearIndependent K ![e,f'] := linearIndependent_of_bracket_ne_zero e f' (by rw [f'comm]; apply ene0)
@@ -377,7 +377,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
           apply_fun (fun x ↦ x.toFun 0) at this
           exact this
         rw [l0z]
-        simp only [zero_mul, neg_zero, zero_add, g', g]
+        simp only [zero_mul, neg_zero, zero_add]
         ext i
         fin_cases i
         · assumption
@@ -536,7 +536,7 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
     have d :=
       calc -(B.repr ⟨u, ucomm⟩) 0 • B 1 = - (B.repr ⟨u, ucomm⟩) 0 • Bn 2 := by rw [Bn21]
         _ = -(B.repr ⟨u, ucomm⟩) 0 • ⁅Bn 1 , Bn 2⁆ := by rw [nl]
-        _ = (-1 : K)• ((B.repr ⟨u, ucomm⟩) 0) • ⁅Bn 1 , Bn 2⁆ := by simp [neg_one_smul]
+        _ = (-1 : K)• ((B.repr ⟨u, ucomm⟩) 0) • ⁅Bn 1 , Bn 2⁆ := by simp []
         _ = ( (-1 : K) * ((B.repr ⟨u, ucomm⟩) 0) )•   ⁅Bn 1 , Bn 2⁆ := by rw [mul_smul]
         _ = ( ((B.repr ⟨u, ucomm⟩) 0)  * (-1 : K))•   ⁅Bn 1 , Bn 2⁆ := by rw [mul_comm]
         _ = ((B.repr ⟨u, ucomm⟩) 0)  •  (-1 : K)•   ⁅Bn 1 , Bn 2⁆ := by rw [mul_smul]
@@ -741,7 +741,7 @@ private lemma case2_coarse_rat
                 repeat rw [smul_lie]
                 rw [h01, h02, h20, h21, h10, br12]
                 repeat rw [lie_self]
-                simp only [Fin.isValue, smul_zero, Nat.reduceAdd, neg_smul, smul_neg, zero_add,
+                simp only [Fin.isValue, smul_zero, neg_smul, smul_neg, zero_add,
                   add_zero, map_add, map_smul, Basis.repr_self, Finsupp.smul_single,
                   smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same,
                   ne_eq, one_ne_zero, not_false_eq_true, Finsupp.single_eq_of_ne, Fin.reduceEq,
@@ -873,7 +873,7 @@ private lemma case2_coarse_Bnli
         simp only [Matrix.cons_val_zero]
         apply lie_mem_commutator
       · subst w2
-        simp only [Fin.isValue, Matrix.cons_val_one, Matrix.head_cons]
+        simp only [Fin.isValue, Matrix.cons_val_one]
         exact hXc
     have sc : span K (Set.range ![⁅B 0, X⁆, X]) ≤ commutator K L := span_le.mpr subset
     rw [@Matrix.range_cons_cons_empty] at h
@@ -1022,7 +1022,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
     have BnB12 : ⁅BnBasis 1, BnBasis 2⁆ = 0 := by
       rw [coe_basisOfLinearIndependentOfCardEqFinrank]
       dsimp [Bn]
-      simp only [Matrix.tail_cons, Matrix.head_cons, V, Bn, B]
+      simp only [V, B]
       apply cab
       · exact hXc
       · simp
@@ -1035,19 +1035,19 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
       · exact BnB12
       · rw [coe_basisOfLinearIndependentOfCardEqFinrank]
         dsimp [Bn]
-        simp only [Matrix.tail_cons, Matrix.head_cons, exists_and_left, V, Bn, B]
+        simp only [exists_and_left, V, B]
         have XcX := Submodule.linearIndependent_from_ambient (commutator K L) (![⁅B 0, X⁆, X]) hXli
           (by simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.range_cons,
             Matrix.range_empty, Set.union_empty, Set.union_singleton,
             derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
-            LieIdeal.toLieSubalgebra_toSubmodule, V, B, Bn]
+            LieIdeal.toLieSubalgebra_toSubmodule, V, B]
               apply Set.pair_subset_iff.mpr
               constructor
               · exact hXc
               · exact LieSubmodule.lie_mem_lie trivial trivial
           )
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, LieIdeal.toLieSubalgebra_toSubmodule,
-          SetLike.coe_sort_coe, Fin.isValue, V, B, Bn] at XcX
+          SetLike.coe_sort_coe, Fin.isValue, V, B] at XcX
         let XcXBasis : Basis (Fin 2) K (commutator K L) :=
           basisOfLinearIndependentOfCardEqFinrank XcX (by simp; rw [h₂])
         have XcXBasis0 : XcXBasis 0 = ⁅B 0, X⁆ := by
@@ -1059,7 +1059,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
 
         let x : commutator K L := ⟨⁅B 0, ⁅B 0, X⁆⁆, by
           simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
-            Nat.reduceAdd, Fin.isValue, V, B, Bn]
+            Nat.reduceAdd, Fin.isValue, V, B]
           exact LieSubmodule.lie_mem_lie trivial trivial
          ⟩
         let co := Basis.repr_fin_two (B:=XcXBasis) (x:=x)
@@ -1075,23 +1075,23 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
           rw [XcXBasis0,XcXBasis1] at meq
           rw [coe_basisOfLinearIndependentOfCardEqFinrank]
           dsimp [Bn]
-          simp only [Fin.isValue, Matrix.tail_cons, Matrix.head_cons, Bn, B, V]
+          simp only [Fin.isValue, B, V]
           rw [meq]
           module
         constructor
         · use (XcXBasis.repr x) 0
           rw [coe_basisOfLinearIndependentOfCardEqFinrank] at BnB02
           dsimp [Bn] at BnB02
-          simp only [Fin.isValue, Matrix.tail_cons, Matrix.head_cons, V, B, Bn] at BnB02
+          simp only [Fin.isValue, V, B] at BnB02
           exact BnB02
         · intro hr
           rw [hr] at co
-          simp only [Fin.isValue, zero_smul, add_zero, V, B, Bn] at co
+          simp only [Fin.isValue, zero_smul, add_zero] at co
           dsimp [x] at co
-          simp only [Fin.isValue, V, B, x, Bn] at co
+          simp only [Fin.isValue, V, B] at co
           have BnB02' : ⁅BnBasis 0, BnBasis 2⁆ = (XcXBasis.repr x) 0 • BnBasis 2 := by
             rw [hr] at BnB02
-            simp only [Fin.isValue, zero_smul, zero_add, V, B, x, Bn] at BnB02
+            simp only [Fin.isValue, zero_smul, zero_add, V, B, x] at BnB02
             exact BnB02
           have dc : finrank K (commutator K L) ≤ 1 := by
             apply finrank_commutator_le_one_of_lie_basis BnBasis (BnBasis 2)
@@ -1203,7 +1203,7 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
             β2unit]
           match_scalars
           simp_all only [Fin.isValue, mul_one, isUnit_iff_ne_zero, ne_eq, not_false_eq_true,
-            IsUnit.mul_inv_cancel_right, βinvunit, βunit, β2unit]
+            IsUnit.mul_inv_cancel_right]
 
 
         · dsimp [βunit, βinvunit, β2unit]
@@ -1219,14 +1219,14 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
                 β2unit]
             · simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, lie_smul, smul_lie,
               smul_add,
-              not_false_eq_true, inv_smul_smul₀, smul_inv_smul₀, mul_inv_rev, add_left_inj,
+              not_false_eq_true, inv_smul_smul₀, smul_inv_smul₀, add_left_inj,
                 βinvunit, βunit, β2unit]
               match_scalars
-              simp only [mul_one, βinvunit, βunit, β2unit]
+              simp only [mul_one]
               ring_nf
               simp_all only [Fin.isValue, inv_pow, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
                 not_false_eq_true,
-                pow_eq_zero_iff, IsUnit.mul_inv_cancel_right, βinvunit, βunit, β2unit]
+                pow_eq_zero_iff, IsUnit.mul_inv_cancel_right]
   · rintro (⟨B,hB01,hB02,hB12⟩|⟨B,hB01,hB02,⟨α, anz, hB12⟩⟩| ⟨B,hB01,hB02,⟨α, anz, hB12⟩⟩)
     · constructor
       · rw [finrank_eq_card_basis B, Fintype.card_fin]
