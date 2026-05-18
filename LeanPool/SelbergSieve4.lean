@@ -9,7 +9,10 @@ import LeanPool.SelbergSieve4.MainResults
 /-!
 # Selberg Sieve
 
-Source: url:https://github.com/FLDutchmann/selberg-sieve4
+Source: Heini Halberstam and Hans-Egon Richert, "Sieve Methods", Academic
+  Press, 1974, Chapter 4, for the Selberg upper-bound sieve and standard
+  prime-counting applications; formalization source:
+  url:https://github.com/FLDutchmann/selberg-sieve4
 Authors: Arend Mellendijk
 Status: verified
 Main declarations: `fundamental_theorem_simple`, `primeCounting_isBigO_atTop`, `primesBetween_le`
