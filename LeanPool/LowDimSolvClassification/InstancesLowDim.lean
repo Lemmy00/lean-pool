@@ -35,19 +35,19 @@ instance : LieRing (Affine K) := {
   add_lie := by
     intro x y z
     unfold Affine at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
   lie_add := by
     intro x y z
     unfold Affine at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
   lie_self := by
     intro x
     unfold Affine at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp
   leibniz_lie := by
     intro x y z
     unfold Affine at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
 }
 
 theorem _root_.LieAlgebra.Dim2.Affine.bracket {l r : Affine K} : ⁅l , r⁆ = ![0,
@@ -59,7 +59,7 @@ instance : LieAlgebra K (Affine K) := {
   lie_smul := by
     intro t x y
     unfold Affine at *
-    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
+    ext i; fin_cases i <;> simp [Bracket.bracket]; ring
 }
 
 end dimension_two
@@ -206,19 +206,19 @@ instance : LieRing (Heisenberg K) := {
   add_lie := by
     intro x y z
     unfold Heisenberg at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
   lie_add := by
     intro x y z
     unfold Heisenberg at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
   lie_self := by
     intro x
     unfold Heisenberg at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp
   leibniz_lie := by
     intro x y z
     unfold Heisenberg at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp
 }
 
 theorem _root_.LieAlgebra.Dim3.Heisenberg.bracket {l r : Heisenberg K} : ⁅l,
@@ -230,7 +230,7 @@ instance : LieAlgebra K (Heisenberg K) := {
   lie_smul := by
     intro t x y
     unfold Heisenberg at *
-    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
+    ext i; fin_cases i <;> simp [Bracket.bracket]; ring
 }
 
 /-- The three-dimensional Lie algebra which has one-dimensional commutator and is not nilpotent. -/
@@ -242,19 +242,19 @@ instance : LieRing (AffinePlusAbelian K) := {
   add_lie := by
     intro x y z
     unfold AffinePlusAbelian at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
   lie_add := by
     intro x y z
     unfold AffinePlusAbelian at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
   lie_self := by
     intro x
     unfold AffinePlusAbelian at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp
   leibniz_lie := by
     intro x y z
     unfold AffinePlusAbelian at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp; ring
 }
 
 theorem _root_.LieAlgebra.Dim3.AffinePlusAbelian.bracket {l r : AffinePlusAbelian K} : ⁅l ,
@@ -266,7 +266,7 @@ instance : LieAlgebra K (AffinePlusAbelian K):= {
   lie_smul := by
     intro t x y
     unfold AffinePlusAbelian at *
-    ext i; fin_cases i <;> simp [Bracket.bracket] <;> ring
+    ext i; fin_cases i <;> simp [Bracket.bracket]; ring
 }
 
 /-- The three-dimensional solvable Lie algebra associated to real hyperbolic space. -/
@@ -286,7 +286,7 @@ instance : LieRing (Hyperbolic K) := {
   lie_self := by
     intro x
     unfold Hyperbolic at *
-    ext i; fin_cases i <;> simp <;> ring
+    ext i; fin_cases i <;> simp
   leibniz_lie := by
     intro x y z
     unfold Hyperbolic at *
