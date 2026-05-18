@@ -14,7 +14,10 @@ import LeanPool.PartialCombinatoryAlgebras.GraphModel
 /-!
 # Partial Combinatory Algebras
 
-Source: url:https://github.com/andrejbauer/partial-combinatory-algebras
+Source: Jaap van Oosten, "Realizability: An Introduction to its Categorical
+  Side", Studies in Logic and the Foundations of Mathematics 152, Elsevier,
+  2008, especially the basic PCA and graph-model material; formalization
+  source: url:https://github.com/andrejbauer/partial-combinatory-algebras
 Authors: Andrej Bauer
 Status: verified
 Main declarations: `LeanPool.PartialCombinatoryAlgebras.PCA`
