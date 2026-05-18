@@ -444,3 +444,28 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: polylean
+    title: Polylean Unit Conjecture Infrastructure
+    summary: Vendors the verified Polylean infrastructure for Gardam's Unit Conjecture counterexample, including the Promislow group, group rings, and torsion-freeness of the group.
+    branch: algebra
+    entry_module: LeanPool.Polylean
+    authors:
+      - Siddhartha Gadgil
+      - Anand Rao
+    source:
+      url: https://github.com/siddhartha-gadgil/Polylean
+      github_repo: siddhartha-gadgil/Polylean
+    status: verified
+    main_declarations:
+      - LeanPool.Polylean.P.torsionFree
+    main_results:
+      - declaration: LeanPool.Polylean.P.torsionFree
+        informal: Proves that the Promislow group used in Gardam's construction is torsion-free.
+    tags:
+      - algebra
+      - group-theory
+      - ring-theory
+      - unit-conjecture
+    msc:
+      - "16S34"
+      - "20F65"
