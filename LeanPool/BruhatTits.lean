@@ -10,21 +10,18 @@ import LeanPool.BruhatTits.Harmonic
 import LeanPool.BruhatTits.Lattice
 import LeanPool.BruhatTits.Utils
 
-open Module
-
 /-!
 # Formalisation of the Bruhat-Tits Tree
 
-Source: Jean-Pierre Serre, "Trees", Springer Monographs in Mathematics,
-  Springer, 2003, Chapter II, Section 1, for the tree attached to
-  `SL₂`/`GL₂` over a discretely valued field; formalization source:
-  url:https://github.com/chrisflav/bruhat-tits
+Source: url:https://doi.org/10.1007/978-3-642-61856-7
 Authors: Judith Ludwig, Christian Merten
 Status: verified
 Main declarations: `BruhatTits.BTtree`, `BruhatTits.BTlaplace_surjective`
 Tags: algebraic-geometry, graph-theory, discrete-valuation-rings
 MSC: 20E42, 05C25, 13H05
 -/
+
+open Module
 
 /-!
 ## Mathematical overview
