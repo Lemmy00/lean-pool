@@ -402,7 +402,7 @@ def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅
       Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two,
       Matrix.tail_cons, mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply,
       map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk,
-      Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul, Matrix.smul_empty, add_zero]
+      Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul]
     ext
     · simp only
     · simp only [mkAbelian]
@@ -415,7 +415,7 @@ def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅
   invFun := fun ⟨k, v⟩ ↦ ![v 0, k, v 1]
   left_inv := by
     intro x
-    simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Heisenberg]
+    simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Heisenberg]
     exact List.ofFn_inj.mp rfl
   right_inv := by
     intro ⟨k, v⟩
@@ -455,8 +455,7 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToDirectSum : AffinePlusAbelia
   map_lie' := by
     intro x y
     simp only [Bracket.bracket, Matrix.cons_val_zero, Matrix.cons_val_two,
-      Matrix.tail_cons, Matrix.head_cons, Matrix.cons_val_one,
-      neg_sub, mul_neg, sub_neg_eq_add, Prod.mk.injEq]
+      Matrix.tail_cons, Matrix.head_cons, Matrix.cons_val_one, Prod.mk.injEq]
     constructor
     · rw [mul_comm, sub_self]
     · unfold Dim2.Affine
@@ -464,12 +463,12 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToDirectSum : AffinePlusAbelia
       simp only [neg_zero, neg_mul, sub_neg_eq_add]
       fin_cases i
       · rfl
-      · simp only [ Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons]
+      · simp only [ Fin.mk_one, Matrix.cons_val_one]
         ring_nf
   invFun := fun ⟨k, v⟩ ↦ ![k, v 1, -v 0]
   left_inv := by
     intro x
-    simp only [AffinePlusAbelian, Matrix.cons_val_one, Matrix.head_cons,
+    simp only [AffinePlusAbelian, Matrix.cons_val_one,
       Matrix.cons_val_zero, neg_neg]
     exact List.ofFn_inj.mp rfl
   right_inv := by
@@ -527,10 +526,8 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect : AffinePlusAbeli
     intro x y
     simp only [AffinePlusAbelian.semidirectAux, AffinePlusAbelian.semidirectAux',
       Bracket.bracket, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_zero,
-      Matrix.cons_val_two, Matrix.tail_cons, mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk,
-      Function.comp_apply, map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun',
-      LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, smul_eq_mul, zero_mul,
-      Matrix.smul_empty, add_zero]
+      Matrix.cons_val_two, Matrix.tail_cons, mul_comm, sub_self, LieHom.coe_comp,
+      Function.comp_apply, Abelian.DerivationCoeFun']
     ext
     · simp only
     · simp only [mkAbelian]
@@ -544,14 +541,13 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect : AffinePlusAbeli
   invFun:=fun ⟨k, v⟩ ↦ ![v 0, -v 1, k]
   left_inv:=by
     intro x
-    simp only [AffinePlusAbelian, Matrix.cons_val_one, Matrix.head_cons,
+    simp only [AffinePlusAbelian, Matrix.cons_val_one,
       Matrix.cons_val_zero, neg_neg]
     exact List.ofFn_inj.mp rfl
   right_inv:=by
     intro ⟨k, v⟩
     simp only [Matrix.cons_val_zero, Matrix.cons_val_two, Nat.succ_eq_add_one,
-      Matrix.tail_cons, neg_neg, Matrix.cons_val_one,
-      Prod.mk.injEq, true_and]
+      Matrix.tail_cons, neg_neg, Matrix.cons_val_one]
     ext
     · rfl
     · simp only [mkAbelian]
@@ -589,11 +585,11 @@ def _root_.LieAlgebra.Dim3.Hyperbolic.equivToRealHyperbolic : Hyperbolic K ≃�
           RingHom.id_apply, Matrix.smul_cons, Matrix.smul_cons, Matrix.smul_empty]
   map_lie' := by
     intro x y
-    simp only [Hyperbolic, RealHyperbolic, RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket,
+    simp only [RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket,
       Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two, Matrix.tail_cons,
       mul_comm, sub_self, LieHom.coe_comp, Function.comp_apply,
-      Abelian.DerivationCoeFun', Matrix.smul_cons]
+      Abelian.DerivationCoeFun']
     ext
     · simp only
     · change ![x 0 * y 1 - y 0 * x 1, x 0 * y 2 - y 0 * x 2] =
