@@ -72,7 +72,6 @@ variable {K : Type*} [Field K]
 
 /-- In this section we prove that Dim2.Affine is isomorphic to the semidirect product gl(K) ⋉ K,
    where K is the 1-dimensional vector space over K -/
-
 def _root_.LieAlgebra.Dim2.Affine.equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K where
   toFun := fun ⟨f, x⟩ ↦ ![f ((1 : K) : mkAbelian K K), x]
   invFun := fun v ↦ ⟨v 0 • LinearMap.id, v 1⟩

@@ -109,7 +109,8 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [Fintype.card_fin, card3, Set.ncard_eq_toFinset_card', Set.toFinset_card]
   let reind' : Fin 3 ≃ ι := Equiv.ofRightInverseOfCardLE this reind rinv hrinv
   let B₂' := Basis.reindex B₂ reind'.symm
-  --since the Lie bracket is nontrivial we must have e' = ⁅f, g⁆ ≠ 0. So this must span the commutator.
+  --since the Lie bracket is nontrivial we must have e' = ⁅f, g⁆ ≠ 0.
+  --So this must span the commutator.
   have nontriv : e' ≠ 0 := by
     intro liefg
     rw [e'defn] at liefg
@@ -124,7 +125,11 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
         rw [← hx, ← hy]
         repeat rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype]
         · repeat rw [Fin.sum_univ_three]
-          simp [B₂', Basis.reindex_apply, reind', reind, B₂]
+          simp only [Basis.repr_reindex, Basis.mk_repr, Fin.isValue,
+            Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.ofRightInverseOfCardLE_apply,
+            Matrix.cons_val_zero, Basis.reindex_apply, Basis.coe_mk, Matrix.cons_val_one,
+            Matrix.cons_val, lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero, zero_add,
+            smul_add, add_zero, B₂', B₂, reind', reind]
           rw [liefe, liege, lieef, liegf, lieeg, liefg]
           simp only [smul_zero, add_zero]
         repeat simp only [zero_smul, implies_true]
@@ -219,7 +224,11 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have cardeq : Fintype.card (Fin 3) = Module.finrank K L := by
     rw [Fintype.card_fin, dim3]
   use basisOfLinearIndependentOfCardEqFinrank lindep cardeq
-  simp [b, coef, B₂', Basis.reindex_apply, reind', reind, B₂, lieef, lieeg]
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Basis.reindex_apply, Equiv.symm_symm,
+    Equiv.ofRightInverseOfCardLE_apply, Basis.coe_mk, Fin.isValue,
+    coe_basisOfLinearIndependentOfCardEqFinrank, Matrix.cons_val_one, Matrix.cons_val_zero,
+    one_smul, Matrix.cons_val, smul_lie, lieef, smul_zero, lieeg, and_self, and_true, b, coef,
+    B₂', B₂, reind', reind]
   rw [← e'defn, he']
 
 --This is the iff version of the case1a
@@ -306,7 +315,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     simp_all only [ne_eq, neg_eq_zero, smul_eq_zero, not_or, not_false_eq_true]
   let f' := a⁻¹ • f
   have f'comm : ⁅e, f'⁆ = e := by
-    simp [f']
+    simp only [lie_smul, f']
     rw [ha]
     exact inv_smul_smul₀ ane0 e
   have ene0 : e ≠ 0 := by
@@ -350,7 +359,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [hb, f'comm]
     module
   have := B.linearIndependent
-  simp at this
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd] at this
   -- we show that the set is l.i. after redifining
   have : LinearIndependent K ![g, e, f'] := by
     dsimp [g, g']
