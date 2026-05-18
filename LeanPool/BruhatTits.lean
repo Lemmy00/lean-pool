@@ -15,7 +15,10 @@ open Module
 /-!
 # Formalisation of the Bruhat-Tits Tree
 
-Source: url:https://github.com/chrisflav/bruhat-tits
+Source: Jean-Pierre Serre, "Trees", Springer Monographs in Mathematics,
+  Springer, 2003, Chapter II, Section 1, for the tree attached to
+  `SL₂`/`GL₂` over a discretely valued field; formalization source:
+  url:https://github.com/chrisflav/bruhat-tits
 Authors: Judith Ludwig, Christian Merten
 Status: verified
 Main declarations: `BruhatTits.BTtree`, `BruhatTits.BTlaplace_surjective`
