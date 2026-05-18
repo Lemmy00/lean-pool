@@ -443,7 +443,7 @@ theorem derivedSeries_succ_is_span {k : ℕ} : (LieAlgebra.derivedSeries K L (k 
     | lie x y _ hy =>
       refine span_induction ?mem ?zero ?add ?smul hy
       · intro z ⟨a, b, hz⟩
-        simp only [LieIdeal.coe_bracket_of_module, LieSubmodule.coe_bracket, Subtype.exists,
+        simp only [LieIdeal.coe_bracket_of_module, LieSubmodule.coe_bracket,
           exists_prop] at hz
         rw [← hz, leibniz_lie]
         apply add_mem
