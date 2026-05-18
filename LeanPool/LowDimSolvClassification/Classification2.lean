@@ -34,7 +34,7 @@ lemma abelian_or_basis (h : finrank K L = 2) :
     simp [IsLieAbelian] at s
     have t : (∃ X Y : L, ⁅X,Y⁆ ≠ 0) := by
       have u : ¬ (∀ X Y : L, ⁅X,Y⁆ = 0) := fun H ↦ s ⟨ H ⟩
-      push_neg at u
+      push Not at u
       assumption
     rcases t with ⟨x, y, hxy⟩
     have ⟨S_b, S_b0, S_b1⟩ := basis_of_bracket_ne_zero h _ _ hxy

@@ -375,11 +375,9 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
         (Family K α' β')) := LieEquiv.commutator_map f
     have finvcc : LieIdeal.map f.symm.toLieHom (commutator K (Family K α' β')) = commutator K
         (Family K α β) := LieEquiv.commutator_map f.symm
-
     -- the inverse of f preserves the commutator as well
     have fsymmv : f.symm.toLieHom v = ![1, 0, 0] := by
       simp only [LieEquiv.symm_apply_apply, v, LieEquiv.coe_toLieHom]
-
     have b0notinc : ![1,0,0] ∉ commutator K (Family K α β) := by
       intro hb0
       have hb0S : ![1, 0, 0] ∈ (commutator K (Family K α β)).toSubmodule := by
@@ -398,13 +396,11 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       have : ![0, a, b] 0 = ![1, 0, 0] 0 := by
         rw [h]
       simp at this
-
     have vnotinc : v ∉ commutator K (Family K α' β') := by
       intro ha
       have := LieIdeal.mem_map (f := f.symm.toLieHom) (I := commutator K (Family K α' β')) ha
       rw [fsymmv, finvcc] at this
       exact (b0notinc this)
-
     have v0n0 : v 0 ≠ 0 := by
       intro hv0
       have : v ∈ span K {Family.e₂, Family.e₃} := by
@@ -417,14 +413,11 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
         fin_cases j <;> simp [Matrix.smul_cons, Matrix.smul_empty, hv0]
       rw [← Family.commutator_is_span_e₂e₃ hα'] at this
       exact (vnotinc this)
-
     let adb0' : End K (Family K α' β') := Family.ade₁
     let adb0 : End K (Family K α β) := Family.ade₁
     let adv : End K (Family K α' β') := ad K (Family K α' β') v
-
     let adv_restr : (commutator K (Family K α' β')) →ₗ[K] (commutator K (Family K α' β'))
         := Family.ad_restr v
-
     have v0b0v (u : commutator K (Family K α' β')) : ((v 0) •
         ((Family.ade₁_restr α' β') u)) = adv_restr u := by
       have : u.val 0 = 0 := by
@@ -463,14 +456,11 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
         simp [this]
       ring
       ring
-
     let B_basis' : Basis (Fin 2) K (commutator K (Family K α' β')) := commutatorBasis α' β' hα'
-
     let M_adb0'_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis') (B_basis')
         (Family.ade₁_restr α' β')
     set M_adv_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis')
         (B_basis') adv_restr with hM_adv_restr
-
     have eq_Matrix : (v 0) • M_adb0'_restr = M_adv_restr := by
       ext (i : Fin 2) (j : Fin 2)
       simp only [Matrix.smul_apply]
@@ -482,7 +472,6 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       rw [@LinearEquiv.map_smul]
       rw [← Pi.smul_apply]
       simp only [Fin.isValue, Pi.smul_apply, smul_eq_mul, Finsupp.coe_smul]
-
     have det_adv_restr_eq : LinearMap.det adv_restr = -((v 0)^2 * α') := by
       rw [← LinearMap.det_toMatrix (ι := Fin 2) (f := (adv_restr)) B_basis']
       rw [← hM_adv_restr]
@@ -494,7 +483,6 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       rw [Family.M_is_ade₁_restr]
       rw [Family.M_det]
       ring_nf
-
     have tr_adv_restr_eq : LinearMap.trace K _ adv_restr = (v 0) * β' := by
       rw [LinearMap.trace_eq_matrix_trace K B_basis' adv_restr]
       rw [← hM_adv_restr]
@@ -505,9 +493,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       rw [Family.M_is_ade₁_restr]
       rw [Family.M_trace]
       simp only [smul_eq_mul]
-
     let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) := commutatorBasis α β hα
-
     let f_restr := LieEquiv.commutator_equiv f
     have conjad : f_restr ∘ₗ Family.ade₁_restr α β ∘ₗ f_restr.symm = adv_restr := by
       ext x
@@ -527,12 +513,10 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       congr
       rw [LieEquiv.commutator_equiv_apply]
       rw [LieEquiv.apply_symm_apply]
-
     have det_adv_restr_eq_det_adb0 : LinearMap.det adv_restr = LinearMap.det
         (Family.ade₁_restr α β) := by
       rw [← conjad]
       apply LinearMap.det_conj
-
     have tr_adv_restr_eq_tr_adb0 : LinearMap.trace K _ adv_restr = LinearMap.trace _ _
         (Family.ade₁_restr α β) := by
       rw [← conjad]

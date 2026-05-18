@@ -44,14 +44,14 @@ theorem Basis.repr_fin_three (B : Basis (Fin 3) K L) (x : L) :
 
 --a pair is linear dependent iff one can be written as a multiple of the nonzero other
 --the reverse direction does not need y ≠ 0.
-lemma not_linearIndependent_pair_iff (x y : L) (hy: y ≠ 0) : ¬LinearIndependent K ![x,y] ↔
+lemma not_linearIndependent_pair_iff (x y : L) (hy : y ≠ 0) : ¬LinearIndependent K ![x,y] ↔
     ∃ (c : K), x = c • y := by
   rw [LinearIndependent.pair_iffₛ]
   constructor
   · rw [@Mathlib.Tactic.Push.not_forall_eq]
     intro hli
     obtain ⟨s,hs⟩ := hli
-    push_neg at hs
+    push Not at hs
     obtain ⟨t,s',t',a,b⟩ := hs
     apply_fun (fun m ↦ - s' • x + m - t • y) at a
     rw [← add_assoc,← add_assoc] at a
@@ -73,14 +73,12 @@ lemma not_linearIndependent_pair_iff (x y : L) (hy: y ≠ 0) : ¬LinearIndepende
       · contradiction
     rw [← sub_eq_zero] at this
     rw [← Ne.eq_def] at this
-
     have : x = ( (s-s')⁻¹ •  (t' - t) )• y := by
         calc _ = (s-s')⁻¹ • ( (s-s') • x ):=by rw[← mul_smul,mul_comm,Field.mul_inv_cancel (s - s') this];module
              _ = ((s-s')⁻¹ •  (t' - t) )• y :=by rw [a,smul_assoc];
     use (s-s')⁻¹ •  (t' - t)
-
   · intro ⟨c,hc⟩
-    push_neg
+    push Not
     use 1, 0, 0, c
     simp only [one_smul, zero_smul, add_zero, zero_add, one_ne_zero, ne_eq, IsEmpty.forall_iff,
       and_true]
@@ -104,7 +102,7 @@ def Submodule.map_into_subtype {S : Type*} (N : Submodule K L) (f : S → L) (hr
 def Set.map_into_subtype {α β : Type*} (s : Set β) (f : α → β) (hr : Set.range f ⊆ s) :
     α → s := Subtype.coind f fun x => hr ⟨x, rfl⟩
 
-theorem Set.map_into_subtype_apply  {α β : Type*} (s : Set β) (f : α →
+theorem Set.map_into_subtype_apply {α β : Type*} (s : Set β) (f : α →
     β) (hr : Set.range f ⊆ s) (a : α) :
     Set.map_into_subtype s f hr a = f a := by
   rfl
@@ -597,7 +595,7 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
 dimension at most `n`.
 -/
 theorem codim_commutator_ge_one_of_solvable {n : ℕ} (dimn : Module.finrank K L = n + 1)
-    (issolvable: LieAlgebra.IsSolvable L) :
+    (issolvable : LieAlgebra.IsSolvable L) :
     Module.finrank K (LieAlgebra.commutator K L) ≤ n := by
   have : Nontrivial L := Module.nontrivial_of_finrank_eq_succ dimn
   have s : LieAlgebra.commutator K L < ⊤ := by
@@ -710,7 +708,7 @@ end liealg
 
 section LieDerivations
 
-variable {K L : Type*} [CommRing K] [LieRing L]  [LieAlgebra K L]
+variable {K L : Type*} [CommRing K] [LieRing L] [LieAlgebra K L]
 
 /-- A derivation of a Lie algebra maps the commutator into the commutator. -/
 theorem LieDerivation.map_commutator (D : LieDerivation K L L) :

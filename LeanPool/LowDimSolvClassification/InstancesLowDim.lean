@@ -310,7 +310,7 @@ theorem _root_.LieAlgebra.Dim3.Hyperbolic.bracket (l r : Hyperbolic K) :
 @[nolint unusedArguments]
 def _root_.LieAlgebra.Dim3.Family (_ _ : K) := Fin 3 → K
 
-instance (α : K) (β : K): LieRing (Family K α β) := {
+instance (α : K) (β : K) : LieRing (Family K α β) := {
   (inferInstance : AddCommGroup (Fin 3 → K)) with
   bracket := fun l r ↦ ![0, (l 0 * r 2 - l 2 * r 0) * α,
     (l 0 * r 2 - l 2 * r 0) * β + l 0 * r 1 - l 1 * r 0]
@@ -332,7 +332,7 @@ instance (α : K) (β : K): LieRing (Family K α β) := {
     ext i; fin_cases i <;> simp <;> ring
 }
 
-instance (α : K) (β : K): LieAlgebra K (Family K α β) := {
+instance (α : K) (β : K) : LieAlgebra K (Family K α β) := {
   (inferInstance : Module K (Fin 3 → K)) with
   lie_smul := by
     intro t x y
@@ -497,7 +497,7 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.semidirectAux' : End K (Dim2.Abelia
 }
 
 /-- TODO. -/
-def _root_.LieAlgebra.Dim3.AffinePlusAbelian.semidirectAux: K →ₗ⁅K⁆ LieDerivation K
+def _root_.LieAlgebra.Dim3.AffinePlusAbelian.semidirectAux : K →ₗ⁅K⁆ LieDerivation K
     (Dim2.Abelian K) (Dim2.Abelian K) :=
   LieHom.comp (Abelian.DerivationOfLinearMap K (Dim2.Abelian K))
       (LieHom.smulRight AffinePlusAbelian.semidirectAux')
@@ -743,7 +743,7 @@ def _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr (x : Hyperbolic K) : (commutator 
     (Hyperbolic K)) →ₗ[K] (commutator K (Hyperbolic K)) :=
   LinearMap.restrict (adjoint x) (ad_preserves_commutator x)
 
-theorem _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr_apply (x : Hyperbolic K)  (y : Hyperbolic K)
+theorem _root_.LieAlgebra.Dim3.Hyperbolic.ad_restr_apply (x : Hyperbolic K) (y : Hyperbolic K)
     (hy : y ∈ (commutator K (Hyperbolic K))) :
     ad_restr x (⟨y, hy⟩ : (commutator K (Hyperbolic K))) = ⟨adjoint x y,
       ad_preserves_commutator x y hy⟩ :=
@@ -836,7 +836,7 @@ def _root_.LieAlgebra.Dim3.Family.semidirectAux' : End K (Dim2.Abelian K) := {
       show (x + y) 1 = x 1 + y 1 from Pi.add_apply _ _ _,
       smul_add, smul_add, Matrix.cons_add_cons, Matrix.cons_add_cons, Matrix.empty_add_empty]
     ext i; fin_cases i <;>
-      simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] <;> ring
+      simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]; ring
   map_smul' := by
     intro a x
     change ![α • (a • x) 1, (a • x) 0 + β • (a • x) 1] =
@@ -1299,7 +1299,7 @@ def _root_.LieAlgebra.Dim3.Family.ad_restr (x : Family K α β) : (commutator K
 /-- TODO. -/
 def _root_.LieAlgebra.Dim3.Family.ade₁_restr (α β : K) := ad_restr e₁ (α:=α) (β:=β)
 
-theorem _root_.LieAlgebra.Dim3.Family.ad_restr_apply (x : Family K α β)  (y : Family K α β)
+theorem _root_.LieAlgebra.Dim3.Family.ad_restr_apply (x : Family K α β) (y : Family K α β)
     (hy : y ∈ (commutator K (Family K α β))) :
     ad_restr x (⟨y, hy⟩ : (commutator K (Family K α β))) = ⟨adjoint x y, ad_pc x y hy⟩ :=
   rfl

@@ -66,7 +66,6 @@ def addAtomDouble (e₁ e₂ : Expr) : AtomD (Nat × Bool × (Expr × Expr)) := 
     modifyGet fun c ↦ ((c.atoms.size, true, ⟨e₁,e₂⟩), { c with atoms := c.atoms.push (Sum.inr e) })
 
 open Qq in
-
 /-- TODO. -/
 def addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
     AtomD (Nat × {e' : Q($α) // $e =Q $e'}) := do
@@ -163,7 +162,7 @@ theorem add_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [LieRing M] [Semiring 
     x₁ + x₂ = l.eval := by
   rw [hx₁, hx₂, ← h₁, ← h₂, h]
 
-theorem sub_eq_eval₁ [SMul R M] [LieRing M]  (a₁ : R × V M) {a₂ : R × V M} {l₁ l₂ l : NF R M}
+theorem sub_eq_eval₁ [SMul R M] [LieRing M] (a₁ : R × V M) {a₂ : R × V M} {l₁ l₂ l : NF R M}
     (h : l₁.eval - (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval - (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, sub_eq_add_neg, add_assoc]
@@ -237,7 +236,7 @@ theorem eval_smul [LieRing M] [Semiring R] [Module R M] {l : NF R M} {x : M} (h 
   simp [mul_smul]
 
 theorem smul_eq_eval {R₀ : Type*} [LieRing M] [Semiring R] [Module R M] [Semiring R₀]
-    [Module R₀ M] [Semiring S] [Module S M]  {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
+    [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
     {x : M} (hx : x = l₀.eval) (hl : l.eval = l₀.eval) (hs : r • x = s • x) :
     s • x = (r • l).eval := by
   rw [← hs, hx, ← hl, eval_smul]
@@ -262,7 +261,7 @@ theorem eq_const_cons [LieRing M] [Semiring R] [Module R M] {r : R} (m : V M) {n
   simp [← h1, h2]
 
 theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [LieRing M] [Semiring R] [Module R M] [Semiring R₁]
-    [Module R₁ M] [Semiring R₂] [Module R₂ M]  {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
+    [Module R₁ M] [Semiring R₂] [Module R₂ M] {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
     {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
     (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval = l₂.eval) :
     x₁ = x₂ := by

@@ -276,7 +276,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have lie_comm : ∀ (x y : L), ∃ (c : K), ⁅ x , y ⁆ = c • e := by
     intro x y
     have eq := Basis.repr_fin_one V ⟨⁅x, y⁆, lie_mem_commutator x y ⟩
-    have meq := Subtype.eq_iff.mp eq
+    have meq := Subtype.ext_iff.mp eq
     simp at meq
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 0)
     rw [← hs] at meq
@@ -291,7 +291,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [← hs] at u
     simp only [LieModule.mem_maxTrivSubmodule]
     intro x₁
-    have := Subtype.eq_iff.mp u
+    have := Subtype.ext_iff.mp u
     simp at this
     rw [this]
     rw [lie_smul]
@@ -540,7 +540,7 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
             congr_arg _ hB]
         _ =  (((B.repr ⟨u, ucomm⟩) 0 +  (B.repr ⟨v, vcomm⟩) 1)) • B 1:= by rw [← add_smul]
     have vcomp' : v = (B.repr ⟨v, vcomm⟩) 0 • B 0 + (B.repr ⟨v, vcomm⟩) 1 • B 1 := by
-      have := Subtype.eq_iff.mp vcomp
+      have := Subtype.ext_iff.mp vcomp
       exact this
     have d :=
       calc -(B.repr ⟨u, ucomm⟩) 0 • B 1 = - (B.repr ⟨u, ucomm⟩) 0 • Bn 2 := by rw [Bn21]
@@ -603,7 +603,7 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
     rw [← Bn21] at br02
     have : ⁅Bn 0, Bn 1⁆ = (B.repr ⟨u, ucomm⟩) 1 • Bn 2 := by
       rw [Bn21]
-      have := Subtype.eq_iff.mp ucomp
+      have := Subtype.ext_iff.mp ucomp
       exact this
     have h1 : Submodule.span K (Submodule.span K {Bn 2}).carrier = Submodule.span K {Bn 2} := by
       apply le_antisymm
@@ -628,7 +628,6 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
         · rw [← lie_skew,br02]; use (- (B.repr ⟨v, vcomm⟩) 1); simp
         · rw [← lie_skew,nl]; use (-1); simp
         · simp; use 0; simp
-
     have dimcomm := finrank_commutator_le_one_of_lie_basis Bn (Bn 2)
         (binary_predicate_3_choose_2 ⟨_, this⟩ ⟨_, br02⟩ ⟨1, by rw [one_smul]; exact nl⟩)
     rw [LieIdeal.finrank_toSubmodule] at dimcomm
@@ -975,7 +974,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
   have lie_comm : ∀ (x y : L), ∃ (c d : K), ⁅ x , y ⁆ = c • V 0 + d • V 1 := by
     intro x y
     have eq := Basis.repr_fin_two (B:=V) (x:=⟨⁅x, y⁆, lie_mem_commutator x y ⟩)
-    have meq := Subtype.eq_iff.mp eq
+    have meq := Subtype.ext_iff.mp eq
     simp at meq
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 0)
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 1)
@@ -1091,7 +1090,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
 
         have BnB02 : ⁅BnBasis 0, BnBasis 2⁆ = (XcXBasis.repr x) 1 • BnBasis 1 +
             (XcXBasis.repr x) 0 • BnBasis 2 := by
-          have meq := Subtype.eq_iff.mp co
+          have meq := Subtype.ext_iff.mp co
           unfold x at meq
           simp only [Nat.reduceAdd, Fin.isValue, LieSubmodule.coe_add, SetLike.val_smul, V, B,
             Bn] at meq
@@ -1126,7 +1125,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
           contradiction
 
 lemma finrank_com_eq2_from_basis_bracket
-    (hb: (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α β : K, α ≠ 0 ∧ ⁅B 0,
+    (hb : (∃ B : Basis (Fin 3) K L, ⁅B 0, B 1⁆ = B 2 ∧ ⁅B 1, B 2⁆ = 0 ∧ (∃ α β : K, α ≠ 0 ∧ ⁅B 0,
       B 2⁆ = α • B 1 + β • B 2))) :
       Module.finrank K (LieAlgebra.commutator K L) = 2 := by
   obtain ⟨B,⟨pfB01,pfB12,⟨α,β, ⟨anz,pfB02⟩⟩⟩⟩ := hb
@@ -1141,7 +1140,6 @@ lemma finrank_com_eq2_from_basis_bracket
       rw [← lie_skew (B 1) (B 0), ← lie_skew (B 2) (B 0), ← lie_skew (B 2) (B 1)]
       repeat rw [pfB01, pfB02, pfB12]
       simp only [smul_neg, neg_zero, smul_zero, add_zero]
-
       rw [Submodule.mem_span_pair]
       use (-(B.repr z) 0 • (B.repr y) 2 • α + (B.repr z) 2 • (B.repr y) 0 • α)
       use (  -(B.repr z) 0 • (B.repr y) 1  + -((B.repr z) 0 • (B.repr y) 2 • β ) + (B.repr z) 1 •
@@ -1149,7 +1147,6 @@ lemma finrank_com_eq2_from_basis_bracket
       match_scalars
       · simp only [smul_eq_mul,Fin.isValue, neg_mul, mul_one,smul_eq_mul]
       · simp only [Fin.isValue, smul_eq_mul, neg_mul, mul_one]
-
     · have h1 :  B 1 ∈  {x | ∃ (y z:L), ⁅y, z⁆ = x} :=by
         rw [Set.mem_setOf_eq]
         use α⁻¹ • B 0
@@ -1162,7 +1159,6 @@ lemma finrank_com_eq2_from_basis_bracket
         rw [Set.mem_setOf_eq]
         use B 0
         use B 1
-
       apply  Submodule.span_monotone
       intro x hx
       simp_all only [Fin.isValue, ne_eq, Set.mem_setOf_eq, Set.mem_insert_iff,
@@ -1174,7 +1170,6 @@ lemma finrank_com_eq2_from_basis_bracket
         | inr eq =>
           subst eq
           exact h2
-
   apply_fun (Module.finrank K) at hcomm
   have : Module.finrank K ↥(Submodule.span K {B 1, B 2}) = 2 := by
     have range_b : { B 1, B 2 } = Set.range ![B 1, B 2] := by aesop
@@ -1227,12 +1222,10 @@ lemma case2 : Module.finrank K L = 3 ∧ Module.finrank K (commutator K L) = 2 �
           match_scalars
           simp_all only [Fin.isValue, mul_one, isUnit_iff_ne_zero, ne_eq, not_false_eq_true,
             IsUnit.mul_inv_cancel_right]
-
         · dsimp [βunit, βinvunit, β2unit]
           constructor
           · rw [lie_smul,smul_lie,pfB12]
             simp only [smul_zero]
-
           · use α*(β^2)⁻¹
             constructor
             · simp_all only [Fin.isValue, ne_eq, Units.smul_mk0, Units.mk0_mul, mul_eq_zero,
