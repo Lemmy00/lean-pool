@@ -901,7 +901,7 @@ private lemma case2_coarse_Bnli
       apply Set.range_subset_iff.mpr
       simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, SetLike.mem_coe]
       intro w
-      have i1 : w = 0 ∨ w = 1 := by fin_cases w; simp; simp
+      have i1 : w = 0 ∨ w = 1 := by fin_cases w <;> simp
       rcases i1 with (w1|w2)
       · rw [w1]
         simp only [Matrix.cons_val_zero]

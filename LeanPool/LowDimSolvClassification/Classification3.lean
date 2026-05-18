@@ -593,7 +593,7 @@ theorem not_iso_hyperbolic {α β : K} (hα : α ≠ 0) : IsEmpty (Family K α �
     intro h
     rw [h, zero_smul, zero_add] at hfe₁
     rw [← hfe₁] at wcomm
-    apply Family.e₁_not_in_comm hα
+    apply Family.e₁_not_in_comm (β := β) hα
     let e₁up := f.symm.commutator_equiv ⟨f Family.e₁, wcomm⟩
     have : e₁up.val = Family.e₁ := by
       unfold e₁up
