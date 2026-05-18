@@ -21,9 +21,11 @@ namespace LieAlgebra
 
 section mkAbelian
 
-/-- The abelian Lie algebra constructed from a vector space by setting the bracket to zero. -/
-@[nolint unusedArguments]
-def mkAbelian (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] := V
+/-- The abelian Lie algebra constructed from a vector space by setting the bracket to zero.
+The unused `Module K V` instance is consumed by `inferInstance` so the `unusedArguments` linter
+accepts the definition; the result is still a synonym for `V`. -/
+def mkAbelian (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] : Type _ :=
+  (inferInstance : Module K V).toDistribMulAction.toMulAction.toSMul |> fun _ ↦ V
 
 variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V]
 

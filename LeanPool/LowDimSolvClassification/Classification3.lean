@@ -364,172 +364,179 @@ theorem classification (dim3 : finrank K L = 3) (hs : IsSolvable L) :
 
 namespace Family
 
-theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
-    Nonempty ((Family K α β) ≃ₗ⁅K⁆ Family K α' β') ↔
+/-- Forward direction of `Family.iso_iff`. Extracted as a private helper to keep the proof of
+`iso_iff` itself within the per-proof size limit. -/
+private lemma iso_iff_mp {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0)
+    (f : Family K α β ≃ₗ⁅K⁆ Family K α' β') :
     ∃ (γ : Kˣ), α = γ^2 * α' ∧ β = γ * β' := by
-  constructor
-  · intro ⟨f⟩
-    let v : Family K α' β' := f ![1,0,0]
-    -- f preserves the commutator
-    have fcc : LieIdeal.map f (LieAlgebra.commutator K (Family K α β)) = (LieAlgebra.commutator K
-        (Family K α' β')) := LieEquiv.commutator_map f
-    have finvcc : LieIdeal.map f.symm.toLieHom (commutator K (Family K α' β')) = commutator K
-        (Family K α β) := LieEquiv.commutator_map f.symm
-    -- the inverse of f preserves the commutator as well
-    have fsymmv : f.symm.toLieHom v = ![1, 0, 0] := by
-      simp only [LieEquiv.symm_apply_apply, v, LieEquiv.coe_toLieHom]
-    have b0notinc : ![1,0,0] ∉ commutator K (Family K α β) := by
-      intro hb0
-      have hb0S : ![1, 0, 0] ∈ (commutator K (Family K α β)).toSubmodule := by
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd]
-        assumption
-      rw [Family.commutator_is_span_e₂e₃ hα] at hb0S
-      have hb0S' := (@Submodule.mem_span_pair K (Family K α β) _ _ _ _ _ ![1,0,0]).mp hb0S
-      let ⟨a, b, h⟩ := hb0S'
+  let v : Family K α' β' := f ![1,0,0]
+  -- f preserves the commutator
+  have fcc : LieIdeal.map f (LieAlgebra.commutator K (Family K α β)) = (LieAlgebra.commutator K
+      (Family K α' β')) := LieEquiv.commutator_map f
+  have finvcc : LieIdeal.map f.symm.toLieHom (commutator K (Family K α' β')) = commutator K
+      (Family K α β) := LieEquiv.commutator_map f.symm
+  -- the inverse of f preserves the commutator as well
+  have fsymmv : f.symm.toLieHom v = ![1, 0, 0] := by
+    simp only [LieEquiv.symm_apply_apply, v, LieEquiv.coe_toLieHom]
+  have b0notinc : ![1,0,0] ∉ commutator K (Family K α β) := by
+    intro hb0
+    have hb0S : ![1, 0, 0] ∈ (commutator K (Family K α β)).toSubmodule := by
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd]
+      assumption
+    rw [Family.commutator_is_span_e₂e₃ hα] at hb0S
+    have hb0S' := (@Submodule.mem_span_pair K (Family K α β) _ _ _ _ _ ![1,0,0]).mp hb0S
+    let ⟨a, b, h⟩ := hb0S'
+    unfold Family.e₂ Family.e₃ at h
+    have h : (![(0 : K), a, b] : Fin 3 → K) = ![1, 0, 0] := by
+      rw [← h]
+      change (![(0 : K), a, b] : Fin 3 → K) =
+        a • (![0, 1, 0] : Fin 3 → K) + b • (![0, 0, 1] : Fin 3 → K)
+      ext i
+      fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty]
+    have : ![0, a, b] 0 = ![1, 0, 0] 0 := by
+      rw [h]
+    simp at this
+  have vnotinc : v ∉ commutator K (Family K α' β') := by
+    intro ha
+    have := LieIdeal.mem_map (f := f.symm.toLieHom) (I := commutator K (Family K α' β')) ha
+    rw [fsymmv, finvcc] at this
+    exact (b0notinc this)
+  have v0n0 : v 0 ≠ 0 := by
+    intro hv0
+    have : v ∈ span K {Family.e₂, Family.e₃} := by
+      apply (@Submodule.mem_span_pair K (Family K α' β') _ _ _ _ _ v).mpr
+      use v 1
+      use v 2
+      unfold Family.e₂ Family.e₃
+      change v 1 • (![0, 1, 0] : Fin 3 → K) + v 2 • (![0, 0, 1] : Fin 3 → K) = v
+      funext j
+      fin_cases j <;> simp [Matrix.smul_cons, Matrix.smul_empty, hv0]
+    rw [← Family.commutator_is_span_e₂e₃ hα'] at this
+    exact (vnotinc this)
+  let adb0' : End K (Family K α' β') := Family.ade₁
+  let adb0 : End K (Family K α β) := Family.ade₁
+  let adv : End K (Family K α' β') := ad K (Family K α' β') v
+  let adv_restr : (commutator K (Family K α' β')) →ₗ[K] (commutator K (Family K α' β'))
+      := Family.ad_restr v
+  have v0b0v (u : commutator K (Family K α' β')) : ((v 0) •
+      ((Family.ade₁_restr α' β') u)) = adv_restr u := by
+    have : u.val 0 = 0 := by
+      obtain ⟨u, hu⟩ := u
+      have u_in_span : u ∈ span K {Family.e₂, Family.e₃} := by
+        rw [← Family.commutator_is_span_e₂e₃ hα']
+        exact hu
+      let ⟨a, b, h⟩ := mem_span_pair.mp u_in_span
+      have w := h
       unfold Family.e₂ Family.e₃ at h
-      have h : (![(0 : K), a, b] : Fin 3 → K) = ![1, 0, 0] := by
+      have h : (![(0 : K), a, b] : Fin 3 → K) = u := by
         rw [← h]
         change (![(0 : K), a, b] : Fin 3 → K) =
           a • (![0, 1, 0] : Fin 3 → K) + b • (![0, 0, 1] : Fin 3 → K)
         ext i
         fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty]
-      have : ![0, a, b] 0 = ![1, 0, 0] 0 := by
-        rw [h]
-      simp at this
-    have vnotinc : v ∉ commutator K (Family K α' β') := by
-      intro ha
-      have := LieIdeal.mem_map (f := f.symm.toLieHom) (I := commutator K (Family K α' β')) ha
-      rw [fsymmv, finvcc] at this
-      exact (b0notinc this)
-    have v0n0 : v 0 ≠ 0 := by
-      intro hv0
-      have : v ∈ span K {Family.e₂, Family.e₃} := by
-        apply (@Submodule.mem_span_pair K (Family K α' β') _ _ _ _ _ v).mpr
-        use v 1
-        use v 2
-        unfold Family.e₂ Family.e₃
-        change v 1 • (![0, 1, 0] : Fin 3 → K) + v 2 • (![0, 0, 1] : Fin 3 → K) = v
-        funext j
-        fin_cases j <;> simp [Matrix.smul_cons, Matrix.smul_empty, hv0]
-      rw [← Family.commutator_is_span_e₂e₃ hα'] at this
-      exact (vnotinc this)
-    let adb0' : End K (Family K α' β') := Family.ade₁
-    let adb0 : End K (Family K α β) := Family.ade₁
-    let adv : End K (Family K α' β') := ad K (Family K α' β') v
-    let adv_restr : (commutator K (Family K α' β')) →ₗ[K] (commutator K (Family K α' β'))
-        := Family.ad_restr v
-    have v0b0v (u : commutator K (Family K α' β')) : ((v 0) •
-        ((Family.ade₁_restr α' β') u)) = adv_restr u := by
-      have : u.val 0 = 0 := by
-        obtain ⟨u, hu⟩ := u
-        have u_in_span : u ∈ span K {Family.e₂, Family.e₃} := by
-          rw [← Family.commutator_is_span_e₂e₃ hα']
-          exact hu
-        let ⟨a, b, h⟩ := mem_span_pair.mp u_in_span
-        have w := h
-        unfold Family.e₂ Family.e₃ at h
-        have h : (![(0 : K), a, b] : Fin 3 → K) = u := by
-          rw [← h]
-          change (![(0 : K), a, b] : Fin 3 → K) =
-            a • (![0, 1, 0] : Fin 3 → K) + b • (![0, 0, 1] : Fin 3 → K)
-          ext i
-          fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty]
-        symm at h
-        apply_fun (fun x => x 0) at h
-        exact h
-      unfold Family.ade₁_restr adv_restr
-      rw [Family.ad_restr_apply, Family.ad_restr_apply]
-      rw [@SetLike.mk_smul_of_tower_mk]
-      refine Subtype.mk_eq_mk.mpr ?_
-      unfold Family.adjoint
-      rw [ad_apply, ad_apply]
-      rw [Family.bracket, Family.bracket]
-      unfold Family.e₁
-      simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, one_mul,
-        Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, zero_mul, sub_zero,
-        Matrix.cons_val_one]
-      change v 0 • (![(0 : K), u.val 2 * α', u.val 2 * β' + u.val 1] : Fin 3 → K) =
-        ![0, (v 0 * u.val 2 - v 2 * u.val 0) * α',
-          (v 0 * u.val 2 - v 2 * u.val 0) * β' + v 0 * u.val 1 - v 1 * u.val 0]
-      ext i
-      fin_cases i <;>
-        simp [this]
-      · ring
-      ring
-    let B_basis' : Basis (Fin 2) K (commutator K (Family K α' β')) := commutatorBasis α' β' hα'
-    let M_adb0'_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis') (B_basis')
-        (Family.ade₁_restr α' β')
-    set M_adv_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis')
-        (B_basis') adv_restr with hM_adv_restr
-    have eq_Matrix : (v 0) • M_adb0'_restr = M_adv_restr := by
-      ext (i : Fin 2) (j : Fin 2)
-      simp only [Matrix.smul_apply]
-      unfold M_adb0'_restr M_adv_restr
-      simp only [LinearMap.toMatrix_apply]
-      have : ((v 0) • (Family.ade₁_restr α' β' (B_basis' j))) = adv_restr (B_basis' j) := by
-        exact v0b0v (B_basis' j)
-      rw [← this]
-      rw [@LinearEquiv.map_smul]
-      rw [← Pi.smul_apply]
-      simp only [Fin.isValue, Pi.smul_apply, smul_eq_mul, Finsupp.coe_smul]
-    have det_adv_restr_eq : LinearMap.det adv_restr = -((v 0)^2 * α') := by
-      rw [← LinearMap.det_toMatrix (ι := Fin 2) (f := (adv_restr)) B_basis']
-      rw [← hM_adv_restr]
-      rw [← eq_Matrix]
-      rw [Matrix.det_smul]
-      rw [Fintype.card_fin]
-      unfold M_adb0'_restr
-      unfold B_basis'
-      rw [Family.M_is_ade₁_restr]
-      rw [Family.M_det]
-      ring_nf
-    have tr_adv_restr_eq : LinearMap.trace K _ adv_restr = (v 0) * β' := by
-      rw [LinearMap.trace_eq_matrix_trace K B_basis' adv_restr]
-      rw [← hM_adv_restr]
-      rw [← eq_Matrix]
-      rw [Matrix.trace_smul]
-      unfold M_adb0'_restr
-      unfold B_basis'
-      rw [Family.M_is_ade₁_restr]
-      rw [Family.M_trace]
-      simp only [smul_eq_mul]
-    let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) := commutatorBasis α β hα
-    let f_restr := LieEquiv.commutator_equiv f
-    have conjad : f_restr ∘ₗ Family.ade₁_restr α β ∘ₗ f_restr.symm = adv_restr := by
-      ext x
-      unfold Family.ade₁_restr
-      rw [LinearMap.coe_comp]
-      rw [LinearEquiv.coe_coe, Function.comp_apply, LinearMap.coe_comp, Function.comp_apply]
-      rw [Family.ad_restr_apply, Family.ad_restr_apply]
-      unfold Family.adjoint
-      simp only [ad_apply]
-      unfold f_restr
-      rw [LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
-      rw [LieEquiv.commutator_equiv_apply]
-      simp only [LieEquiv.map_lie]
-      rw [LieEquiv.coe_toLinearEquiv]
-      rw [LieEquiv.commutator_equiv_symm]
-      norm_cast
-      congr
-      rw [LieEquiv.commutator_equiv_apply]
-      rw [LieEquiv.apply_symm_apply]
-    have det_adv_restr_eq_det_adb0 : LinearMap.det adv_restr = LinearMap.det
-        (Family.ade₁_restr α β) := by
-      rw [← conjad]
-      apply LinearMap.det_conj
-    have tr_adv_restr_eq_tr_adb0 : LinearMap.trace K _ adv_restr = LinearMap.trace _ _
-        (Family.ade₁_restr α β) := by
-      rw [← conjad]
-      exact LinearMap.trace_conj' (Family.ade₁_restr α β) f_restr.toLinearEquiv
-    use (Units.mk0 (v 0) v0n0)
-    simp only [Fin.isValue, Units.val_mk0]
-    rw [← neg_eq_iff_eq_neg (b := (v 0)^2 * α')] at det_adv_restr_eq
-    rw [← det_adv_restr_eq, ← tr_adv_restr_eq]
-    rw [det_adv_restr_eq_det_adb0, tr_adv_restr_eq_tr_adb0]
-    rw [Family.det_ade₁, Family.tr_ade₁]
-    · simp only [neg_neg, and_self]
-    · exact hα
-    exact hα
+      symm at h
+      apply_fun (fun x => x 0) at h
+      exact h
+    unfold Family.ade₁_restr adv_restr
+    rw [Family.ad_restr_apply, Family.ad_restr_apply]
+    rw [@SetLike.mk_smul_of_tower_mk]
+    refine Subtype.mk_eq_mk.mpr ?_
+    unfold Family.adjoint
+    rw [ad_apply, ad_apply]
+    rw [Family.bracket, Family.bracket]
+    unfold Family.e₁
+    simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, one_mul,
+      Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, zero_mul, sub_zero,
+      Matrix.cons_val_one]
+    change v 0 • (![(0 : K), u.val 2 * α', u.val 2 * β' + u.val 1] : Fin 3 → K) =
+      ![0, (v 0 * u.val 2 - v 2 * u.val 0) * α',
+        (v 0 * u.val 2 - v 2 * u.val 0) * β' + v 0 * u.val 1 - v 1 * u.val 0]
+    ext i
+    fin_cases i <;>
+      simp [this]
+    · ring
+    ring
+  let B_basis' : Basis (Fin 2) K (commutator K (Family K α' β')) := commutatorBasis α' β' hα'
+  let M_adb0'_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis') (B_basis')
+      (Family.ade₁_restr α' β')
+  set M_adv_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis')
+      (B_basis') adv_restr with hM_adv_restr
+  have eq_Matrix : (v 0) • M_adb0'_restr = M_adv_restr := by
+    ext (i : Fin 2) (j : Fin 2)
+    simp only [Matrix.smul_apply]
+    unfold M_adb0'_restr M_adv_restr
+    simp only [LinearMap.toMatrix_apply]
+    have : ((v 0) • (Family.ade₁_restr α' β' (B_basis' j))) = adv_restr (B_basis' j) := by
+      exact v0b0v (B_basis' j)
+    rw [← this]
+    rw [@LinearEquiv.map_smul]
+    rw [← Pi.smul_apply]
+    simp only [Fin.isValue, Pi.smul_apply, smul_eq_mul, Finsupp.coe_smul]
+  have det_adv_restr_eq : LinearMap.det adv_restr = -((v 0)^2 * α') := by
+    rw [← LinearMap.det_toMatrix (ι := Fin 2) (f := (adv_restr)) B_basis']
+    rw [← hM_adv_restr]
+    rw [← eq_Matrix]
+    rw [Matrix.det_smul]
+    rw [Fintype.card_fin]
+    unfold M_adb0'_restr
+    unfold B_basis'
+    rw [Family.M_is_ade₁_restr]
+    rw [Family.M_det]
+    ring_nf
+  have tr_adv_restr_eq : LinearMap.trace K _ adv_restr = (v 0) * β' := by
+    rw [LinearMap.trace_eq_matrix_trace K B_basis' adv_restr]
+    rw [← hM_adv_restr]
+    rw [← eq_Matrix]
+    rw [Matrix.trace_smul]
+    unfold M_adb0'_restr
+    unfold B_basis'
+    rw [Family.M_is_ade₁_restr]
+    rw [Family.M_trace]
+    simp only [smul_eq_mul]
+  let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) := commutatorBasis α β hα
+  let f_restr := LieEquiv.commutator_equiv f
+  have conjad : f_restr ∘ₗ Family.ade₁_restr α β ∘ₗ f_restr.symm = adv_restr := by
+    ext x
+    unfold Family.ade₁_restr
+    rw [LinearMap.coe_comp]
+    rw [LinearEquiv.coe_coe, Function.comp_apply, LinearMap.coe_comp, Function.comp_apply]
+    rw [Family.ad_restr_apply, Family.ad_restr_apply]
+    unfold Family.adjoint
+    simp only [ad_apply]
+    unfold f_restr
+    rw [LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
+    rw [LieEquiv.commutator_equiv_apply]
+    simp only [LieEquiv.map_lie]
+    rw [LieEquiv.coe_toLinearEquiv]
+    rw [LieEquiv.commutator_equiv_symm]
+    norm_cast
+    congr
+    rw [LieEquiv.commutator_equiv_apply]
+    rw [LieEquiv.apply_symm_apply]
+  have det_adv_restr_eq_det_adb0 : LinearMap.det adv_restr = LinearMap.det
+      (Family.ade₁_restr α β) := by
+    rw [← conjad]
+    apply LinearMap.det_conj
+  have tr_adv_restr_eq_tr_adb0 : LinearMap.trace K _ adv_restr = LinearMap.trace _ _
+      (Family.ade₁_restr α β) := by
+    rw [← conjad]
+    exact LinearMap.trace_conj' (Family.ade₁_restr α β) f_restr.toLinearEquiv
+  use (Units.mk0 (v 0) v0n0)
+  simp only [Fin.isValue, Units.val_mk0]
+  rw [← neg_eq_iff_eq_neg (b := (v 0)^2 * α')] at det_adv_restr_eq
+  rw [← det_adv_restr_eq, ← tr_adv_restr_eq]
+  rw [det_adv_restr_eq_det_adb0, tr_adv_restr_eq_tr_adb0]
+  rw [Family.det_ade₁, Family.tr_ade₁]
+  · simp only [neg_neg, and_self]
+  · exact hα
+  exact hα
+
+theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
+    Nonempty ((Family K α β) ≃ₗ⁅K⁆ Family K α' β') ↔
+    ∃ (γ : Kˣ), α = γ^2 * α' ∧ β = γ * β' := by
+  constructor
+  · intro ⟨f⟩
+    exact iso_iff_mp hα hα' f
   · intro ⟨γ, hα, hβ⟩
     constructor
     exact {

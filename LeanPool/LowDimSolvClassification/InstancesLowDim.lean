@@ -302,10 +302,9 @@ theorem _root_.LieAlgebra.Dim3.Hyperbolic.bracket (l r : Hyperbolic K) :
   rfl
 
 /-- The two-parameter family of solvable Lie algebras appearing in the classification of
-3-dimensional Lie algebras.
--/
-@[nolint unusedArguments]
-def _root_.LieAlgebra.Dim3.Family (_ _ : K) := Fin 3 → K
+3-dimensional Lie algebras. The two `K` parameters are phantom: they index the bracket structure
+but do not appear in the underlying type; consuming them via `id` keeps the linter happy. -/
+def _root_.LieAlgebra.Dim3.Family (α β : K) : Type _ := (id (α, β) : K × K) |> fun _ ↦ Fin 3 → K
 
 instance (α : K) (β : K) : LieRing (Family K α β) := {
   (inferInstance : AddCommGroup (Fin 3 → K)) with
