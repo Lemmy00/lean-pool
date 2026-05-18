@@ -11,9 +11,7 @@ import LeanPool.ABCExceptions.Section4
 /-!
 # Exceptional Set in the abc Conjecture
 
-Source: Tim Browning, Jared Duker Lichtman, and Joni Teräväinen,
-  "Bounds on the exceptional set in the abc conjecture", arXiv:2410.12234;
-  formalization source: url:https://github.com/b-mehta/ABC-Exceptions
+Source: url:https://arxiv.org/abs/2410.12234
 Authors: Bhavik Mehta, Arend Mellendijk
 Status: verified
 Main declarations: `abcConjecture_iff_countTriples`, `thm_4_point_3`
