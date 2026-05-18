@@ -444,3 +444,43 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: formalization-of-bounded-arithmetic
+    title: Formalization of bounded arithmetic
+    summary: Formalizes first-order and two-sorted fragments of bounded arithmetic, including induction and string-addition laws.
+    branch: mathematical logic
+    entry_module: LeanPool.FormalizationOfBoundedArithmetic
+    authors:
+      - ruplet
+    source:
+      url: https://github.com/ruplet/formalization-of-bounded-arithmetic
+      github_repo: ruplet/formalization-of-bounded-arithmetic
+    status: verified
+    main_declarations:
+      - IOPENModel.add_assoc
+      - V0Model.ind_of_comp
+      - str_add_assoc
+    main_results:
+      - declaration: IOPENModel.add_assoc
+        informal: Proves associativity of addition in IOPEN models.
+      - declaration: IOPENModel.add_comm
+        informal: Proves commutativity of addition in IOPEN models.
+      - declaration: IDelta0Model.pred_exists
+        informal: Shows that nonzero elements in IDelta0 models have predecessors.
+      - declaration: IDelta0Model.mul_cancel_right
+        informal: Proves right cancellation for multiplication by a nonzero element in IDelta0 models.
+      - declaration: V0Model.xind
+        informal: Derives string induction for V0 models from the comprehension axioms.
+      - declaration: V0Model.ind_of_comp
+        informal: Derives propositional induction from comprehension in V0 models.
+      - declaration: str_add_comm
+        informal: Proves commutativity of string addition in V0 extension models.
+      - declaration: str_add_assoc
+        informal: Proves associativity of string addition in V0 extension models.
+    tags:
+      - logic
+      - bounded-arithmetic
+      - model-theory
+      - computational-complexity
+    msc:
+      - "03F30"
+      - "03D15"
