@@ -954,7 +954,6 @@ theorem _root_.LieAlgebra.Dim3.Family.commutator_is_span_e₂e₃ (hα : α ≠ 
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
     simp_all only [ne_eq, isUnit_iff_ne_zero,not_false_eq_true, IsUnit.inv_mul_cancel,e₂_def,
       ]
-
   have e₃_bracket : ⁅e₁, e₂⁆ = e₃ := by
     rw [Family.bracket]
     unfold e₁ e₂ e₃
@@ -1074,14 +1073,12 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
     simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def,
       ]
-
   have e₃_bracket : ⁅e₁, e₂⁆ = e₃ := by
     rw [Family.bracket]
     unfold e₁ e₂ e₃
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_zero, sub_self, zero_mul,
       Matrix.cons_val_one, mul_one, zero_add, sub_zero, e₂_def, e₃_def]
-
   have B_setrange {hα : α ≠ 0}  : Set.range (B α β) ⊆ commutator K (Family K α β) := by
     simp_all only [ne_eq, Matrix.range_cons,
       Matrix.range_empty, Set.union_empty, Set.union_singleton, B]
@@ -1091,7 +1088,6 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
     | inl h => subst h; simp_all only [SetLike.mem_coe, e₁α, e₂β, e₂, e₁, e₃, e₃_in_comm]
     | inr h => subst h; simp_all only [SetLike.mem_coe, e₁α, e₂β, e₂, e₁, e₃,
       e₂_in_comm (hα := hα)]
-
   have B_setrange_eq : Set.range (B α β) = {e₂, e₃} := by
     simp_all only [ne_eq, Matrix.range_cons,
       Matrix.range_empty, Set.union_empty, Set.union_singleton, B]
@@ -1115,10 +1111,8 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
       | inr h_1 =>
         subst h_1
         simp_all only [true_or]
-
   let B_is_li_comm := linearIndependent_from_ambient (K := K) (commutator K (Family K α β)) ![e₂,
     e₃] B_is_li_ambient (B_setrange (hα := hα))
-
   have : Set.range (Set.map_into_subtype (↑(↑(commutator K (Family K α β)))) (B α β) (B_setrange
       (hα:=hα) )) =
     ({⟨e₂, e₂_in_comm (hα := hα)⟩, ⟨e₃, e₃_in_comm⟩} : Set (↥(commutator K (Family K α β)))) := by
@@ -1171,7 +1165,6 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         simp only [e₃_def]
         · simp []
         exact hα
-
   let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) :=
     Basis.mk B_is_li_comm (by
       intro ⟨x, hx⟩
@@ -1190,7 +1183,6 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
       apply Subtype.ext
       simp only [SetLike.mk_smul_mk, AddMemClass.mk_add_mk]
       exact h)
-
   exact B_basis
 
 theorem _root_.LieAlgebra.Dim3.Family.dim_commutator {hα : α ≠ 0} : finrank K (commutator K
@@ -1331,7 +1323,6 @@ theorem _root_.LieAlgebra.Dim3.Family.M_is_ade₁_restr {hα : α ≠ 0} : Linea
       simp only [B_basis_1, e₃_def]
       simp only [Family.bracket]
       rw [B_basis_repr]
-
       simp only [Matrix.cons_val_zero,
         Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
           Matrix.cons_val_one, add_zero]

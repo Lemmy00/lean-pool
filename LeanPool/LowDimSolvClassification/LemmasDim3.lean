@@ -944,10 +944,8 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
   have Vli := V.linearIndependent
   have VL := (LinearIndependent.iff_in_submodule
       (commutator K L).toSubmodule).mp V.linearIndependent
-
   -- extend the basis of the commutator to a basis of L
   set B := Basis.extend_fin_succ VL dim3 with Beq
-
   have B1isV0 : B 1 = V 0 := by
     have := Basis.extend_fin_succ_tail_eq VL dim3
     apply_fun (fun x ↦ x 0) at this
@@ -966,14 +964,12 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
   have B2c : (B 2) ∈ commutator K L := by
     rw [B2isV1]
     exact V1c
-
   --the commutator is abelian
   have cab:= commutator_abelian_of_dim_two dim3 h₂
   rw [@LieSubmodule.lie_abelian_iff_lie_self_eq_bot] at cab
   rw [@LieSubmodule.lie_eq_bot_iff] at cab
   have br12 : ⁅B 1, B 2⁆ = 0 :=by
     exact cab (B 1) B1c (B 2) B2c
-
   --every Lie bracket is a linear combination of V
   have lie_comm : ∀ (x y : L), ∃ (c d : K), ⁅ x , y ⁆ = c • V 0 + d • V 1 := by
     intro x y
@@ -982,7 +978,6 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
     simp at meq
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 0)
     use (V.repr ⟨⁅x, y⁆, lie_mem_commutator x y⟩ 1)
-
   -- we split the proof in two cases
   --- the fist case is when ad_{B0}=α Id
   by_cases  hs : ∃ (α : K), ⁅B 0, B 1⁆ = α • B 1 ∧ ⁅B 0, B 2⁆ = α • B 2
@@ -992,7 +987,6 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
       intro fa
       rw [fa] at hα
       simp only [Nat.reduceAdd, Fin.isValue, zero_smul] at hα
-
       have isab : IsLieAbelian L := by
         rw [abelian_iff_lie_basis_eq_zero B]
         apply binary_predicate_3_choose_2
@@ -1011,7 +1005,6 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
     rw [B'0, B'1, B'2]
     simp_all only [Units.smul_mk0, one_smul, smul_lie, ne_eq, not_false_eq_true, inv_smul_smul₀,
       and_self, V, B, αunit]
-
   --- the second case is when ad_{B0}≠ α Id, ∀ α
   · right
     rw [@Mathlib.Tactic.Push.not_exists] at hs
@@ -1021,12 +1014,10 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
       repeat rw [@Ne.eq_def]
       rw [← not_and_or]
       exact hs α
-
     -- we claim that there exists X ∈ L such that [B 0, X] is linearly independent with X
     have rat : ∃ (X : L), LinearIndependent K (![⁅B 0, X⁆, X ]) ∧ (X ∈ commutator K L) :=
       case2_coarse_rat h₂ B1c B2c br12 (fun α => (hsn α).elim
         (fun h ⟨h₁, _⟩ => h h₁) (fun h ⟨_, h₂⟩ => h h₂))
-
     -- (rat extracted above as case2_coarse_rat)
     have _placeholder_rat : True := trivial
     -- old inline branch (now unused):
@@ -1035,10 +1026,8 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
 
     -- we use the X above to produce a basis of L satisfying the conditions in the statement
     obtain ⟨X, hXli,hXc⟩ := rat
-
     let Bn := ![B 0, X, ⁅B 0, X⁆]
     have Bnli : LinearIndependent K Bn := case2_coarse_Bnli h₂ hXli hXc B1c B2c
-
     let BnBasis : Basis (Fin 3) K L :=
       basisOfLinearIndependentOfCardEqFinrank Bnli (by simp only [Fintype.card_fin]; rw [dim3])
     use BnBasis
@@ -1053,7 +1042,6 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
       · exact hXc
       · simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, Fin.isValue]
         exact LieSubmodule.lie_mem_lie trivial trivial
-
     constructor
     · exact BnB01
     · constructor
@@ -1081,17 +1069,14 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
         have XcXBasis1 : XcXBasis 1 = X := by
           rw [coe_basisOfLinearIndependentOfCardEqFinrank]
           dsimp [Set.map_into_subtype]
-
         let x : commutator K L := ⟨⁅B 0, ⁅B 0, X⁆⁆, by
           simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
             Nat.reduceAdd, Fin.isValue, V, B]
           exact LieSubmodule.lie_mem_lie trivial trivial
          ⟩
         let co := Basis.repr_fin_two (B:=XcXBasis) (x:=x)
-
         use (XcXBasis.repr x) 1
         symm
-
         have BnB02 : ⁅BnBasis 0, BnBasis 2⁆ = (XcXBasis.repr x) 1 • BnBasis 1 +
             (XcXBasis.repr x) 0 • BnBasis 2 := by
           have meq := Subtype.ext_iff.mp co
