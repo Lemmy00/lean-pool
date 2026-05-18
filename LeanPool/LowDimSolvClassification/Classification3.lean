@@ -63,7 +63,7 @@ theorem heisenberg_iff : Nonempty (L ≃ₗ⁅K⁆ (Heisenberg K)) ↔
         rw [← LieEquiv.map_lie f.symm]
         simp only [Heisenberg.bracket, Nat.succ_eq_add_one, Nat.reduceAdd, ne_eq,
           one_ne_zero, not_false_eq_true, Pi.single_eq_of_ne, Fin.reduceEq, mul_zero,
-          Pi.single_eq_same, sub_self]
+          Pi.single_eq_same]
         rw [← LieEquiv.coe_toLinearEquiv, LinearEquiv.map_eq_zero_iff]
         change (![(0 * 1 - 0 : K), 0, 0] : Fin 3 → K) = 0
         ext i
@@ -78,13 +78,12 @@ theorem heisenberg_iff : Nonempty (L ≃ₗ⁅K⁆ (Heisenberg K)) ↔
         change bxy = ⁅bx, by_⁆
         rw [Heisenberg.bracket]
         change bxy = ![bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K), (0 : K)]
-        simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+        simp only [AddHom.toFun_eq_coe,
           Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, bxy, bx, by_]
         rw [Basis.repr_fin_three B x, Basis.repr_fin_three B y]
         simp only [lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero,
           zero_add, smul_add, add_zero, map_add, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
-          Basis.repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Pi.add_apply, ne_eq,
-          zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, Finsupp.single_eq_same,
+          Basis.repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Pi.add_apply, ne_eq, not_false_eq_true, Finsupp.single_eq_of_ne, Finsupp.single_eq_same,
           Fin.reduceEq]
         rw [← lie_skew (B 1) (B 0), ← lie_skew (B 2) (B 0), ← lie_skew (B 2) (B 1)]
         rw [hB01, hB02, hB12]
@@ -112,7 +111,7 @@ theorem affinePlusAbelian_iff : Nonempty (L ≃ₗ⁅K⁆ (AffinePlusAbelian K))
     · change ⁅f.symm (Pi.single 0 1), f.symm (Pi.single 1 1)⁆ = 0
       rw [← LieEquiv.map_lie f.symm]
       simp only [AffinePlusAbelian.bracket, Nat.succ_eq_add_one, Nat.reduceAdd,
-          ne_eq, one_ne_zero, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, mul_one,
+          ne_eq, one_ne_zero, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same,
           Fin.reduceEq, mul_zero, sub_self]
       rw [← LieEquiv.coe_toLinearEquiv, LinearEquiv.map_eq_zero_iff]
       change (![(0 : K), 0, 0] : Fin 3 → K) = 0
@@ -144,22 +143,20 @@ theorem affinePlusAbelian_iff : Nonempty (L ≃ₗ⁅K⁆ (AffinePlusAbelian K))
         change bxy = ⁅bx, by_⁆
         rw [AffinePlusAbelian.bracket]
         change bxy = ![(0 : K), bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K)]
-        simp only [Fin.isValue, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          LinearEquiv.coe_coe, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
+        simp only [Fin.isValue, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
           bxy, bx, by_]
         rw [Basis.repr_fin_three B x, Basis.repr_fin_three B y]
         simp only [Fin.isValue, lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero,
           zero_add, smul_add, add_zero, map_add, map_smul, Finsupp.coe_add,
           Finsupp.coe_smul, Basis.repr_self,
-          Finsupp.smul_single, smul_eq_mul, mul_one, Pi.add_apply, ne_eq, zero_ne_one,
+          Finsupp.smul_single, smul_eq_mul, mul_one, Pi.add_apply, ne_eq,
           not_false_eq_true, Finsupp.single_eq_of_ne, Finsupp.single_eq_same, Fin.reduceEq]
         rw [← lie_skew (B 1) (B 0), ← lie_skew (B 2) (B 0), ← lie_skew (B 2) (B 1)]
         rw [hB01, hB02, hB12]
         funext i
         simp only [Fin.isValue, neg_zero, map_zero, Finsupp.coe_zero, smul_zero, add_zero,
           map_neg, Basis.repr_self, Finsupp.coe_neg, smul_neg, zero_add, Pi.add_apply,
-          Pi.neg_apply, Pi.smul_apply, smul_eq_mul, ne_eq, zero_ne_one, not_false_eq_true,
-          Finsupp.single_eq_of_ne, mul_zero, Finsupp.single_eq_same, mul_one, Fin.reduceEq]
+          Pi.neg_apply, Pi.smul_apply, smul_eq_mul]
         fin_cases i
         · simp [Finsupp.single, Matrix.cons_val_zero]
         · simp [Finsupp.single, Matrix.cons_val_one, Matrix.cons_val_zero]; ring
@@ -190,7 +187,7 @@ theorem hyperbolic_iff : Nonempty (L ≃ₗ⁅K⁆ (Hyperbolic K)) ↔
       · change ⁅f.symm (Pi.single 1 1), f.symm (Pi.single 2 1)⁆ = 0
         rw [← LieEquiv.map_lie f.symm]
         simp only [Hyperbolic.bracket, Nat.succ_eq_add_one, Nat.reduceAdd,
-          ne_eq, one_ne_zero, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, mul_one,
+          ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, mul_one,
           Fin.reduceEq, mul_zero, sub_self]
         rw [← LieEquiv.coe_toLinearEquiv, LinearEquiv.map_eq_zero_iff]
         change (![(0 : K), 0, 0] : Fin 3 → K) = 0
@@ -206,8 +203,7 @@ theorem hyperbolic_iff : Nonempty (L ≃ₗ⁅K⁆ (Hyperbolic K)) ↔
         change bxy = ⁅bx, by_⁆
         rw [Hyperbolic.bracket]
         change bxy = ![(0 : K), bx 0 * by_ 1 - by_ 0 * bx 1, bx 0 * by_ 2 - by_ 0 * bx 2]
-        simp only [Fin.isValue, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          LinearEquiv.coe_coe, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
+        simp only [Fin.isValue, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
           bxy, bx, by_]
         rw [Basis.repr_fin_three B x, Basis.repr_fin_three B y]
         simp only [Fin.isValue, lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero,
@@ -220,9 +216,7 @@ theorem hyperbolic_iff : Nonempty (L ≃ₗ⁅K⁆ (Hyperbolic K)) ↔
         funext i
         simp only [Fin.isValue, map_neg, Basis.repr_self, Finsupp.coe_neg, smul_neg, neg_zero,
           map_zero, Finsupp.coe_zero, smul_zero, add_zero, Pi.add_apply, Pi.neg_apply,
-          Pi.smul_apply, smul_eq_mul, Finsupp.single_eq_same, mul_one, ne_eq, one_ne_zero,
-          not_false_eq_true, Finsupp.single_eq_of_ne, mul_zero, Fin.reduceEq, zero_ne_one,
-          zero_add]
+          Pi.smul_apply, smul_eq_mul]
         fin_cases i
         · simp [Finsupp.single, Matrix.cons_val_zero]
         · simp [Finsupp.single, Matrix.cons_val_one, Matrix.cons_val_zero]; ring
@@ -248,7 +242,7 @@ theorem family_iff (α β : K) : Nonempty (L ≃ₗ⁅K⁆ (Family K α β)) ↔
       · change ⁅f.symm (Pi.single 1 1), f.symm (Pi.single 2 1)⁆ = 0
         rw [← LieEquiv.map_lie f.symm]
         simp only [Family.bracket, Nat.succ_eq_add_one, Nat.reduceAdd,
-          ne_eq, one_ne_zero, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, mul_one,
+          ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, mul_one,
           Fin.reduceEq, mul_zero, sub_self]
         rw [← LieEquiv.coe_toLinearEquiv, LinearEquiv.map_eq_zero_iff]
         change (![0, 0 * α, 0 * β + 0 - 0] : Fin 3 → K) = 0
@@ -284,24 +278,19 @@ theorem family_iff (α β : K) : Nonempty (L ≃ₗ⁅K⁆ (Family K α β)) ↔
         rw [Family.bracket]
         change bxy = ![(0 : K), (bx 0 * by_ 2 - bx 2 * by_ 0) * α,
           (bx 0 * by_ 2 - bx 2 * by_ 0) * β + bx 0 * by_ 1 - bx 1 * by_ 0]
-        simp only [Fin.isValue, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          LinearEquiv.coe_coe, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
+        simp only [Fin.isValue, Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd,
           bxy, bx, by_]
         rw [Basis.repr_fin_three B x, Basis.repr_fin_three B y]
         simp only [Fin.isValue, lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero,
           zero_add, smul_add, add_zero, map_add, map_smul, Finsupp.coe_add,
           Finsupp.coe_smul, Basis.repr_self,
           Finsupp.smul_single, smul_eq_mul, mul_one, Pi.add_apply, Finsupp.single_eq_same,
-          ne_eq, one_ne_zero, not_false_eq_true, Finsupp.single_eq_of_ne, Fin.reduceEq,
-          mul_zero, zero_ne_one]
+          ne_eq, one_ne_zero, not_false_eq_true, Finsupp.single_eq_of_ne, Fin.reduceEq, zero_ne_one]
         rw [← lie_skew (B 1) (B 0), ← lie_skew (B 2) (B 0), ← lie_skew (B 2) (B 1)]
         rw [hB01, hB02, hB12]
         funext i
-        simp only [Fin.isValue, map_neg, Basis.repr_self, Finsupp.coe_neg, smul_neg, map_smul,
-          Finsupp.smul_single, smul_eq_mul, mul_one, neg_zero, map_zero, Finsupp.coe_zero,
-          smul_zero, add_zero, Pi.add_apply, Pi.neg_apply, Pi.smul_apply,
-          Finsupp.single_eq_same, ne_eq, one_ne_zero, not_false_eq_true,
-          Finsupp.single_eq_of_ne, mul_zero, Fin.reduceEq, zero_add, zero_ne_one]
+        simp only [Fin.isValue, map_neg, Basis.repr_self, Finsupp.coe_neg, smul_neg, smul_eq_mul, neg_zero, map_zero, Finsupp.coe_zero,
+          smul_zero, add_zero, Pi.add_apply, Pi.neg_apply, Pi.smul_apply]
         fin_cases i
         · simp [Finsupp.single, Matrix.cons_val_zero]
         · simp [Finsupp.single, Matrix.cons_val_one, Matrix.cons_val_zero]; ring
@@ -329,7 +318,7 @@ theorem classification (dim3 : finrank K L = 3) (hs : IsSolvable L) :
       map_lie' := by
         intro x y
         simp only [trivial_lie_zero, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          LinearEquiv.coe_coe, Basis.equivFun_apply, map_zero, Finsupp.coe_zero]
+          LinearEquiv.coe_coe, Basis.equivFun_apply, map_zero]
         rfl
     })
   · right -- dim commutator is 1
@@ -390,7 +379,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
     have b0notinc : ![1,0,0] ∉ commutator K (Family K α β) := by
       intro hb0
       have hb0S : ![1, 0, 0] ∈ (commutator K (Family K α β)).toSubmodule := by
-        simp only [ne_eq, Nat.succ_eq_add_one, Nat.reduceAdd, LieSubmodule.mem_toSubmodule]
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd]
         assumption
       rw [Family.commutator_is_span_e₂e₃ hα] at hb0S
       have hb0S' := (@Submodule.mem_span_pair K (Family K α β) _ _ _ _ _ ![1,0,0]).mp hb0S
@@ -465,7 +454,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
           (v 0 * u.val 2 - v 2 * u.val 0) * β' + v 0 * u.val 1 - v 1 * u.val 0]
       ext i
       fin_cases i <;>
-        simp [Matrix.smul_cons, Matrix.smul_empty, this]
+        simp [this]
       ring
       ring
 
@@ -578,12 +567,12 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
         intro x
         change (![γ⁻¹ * (γ * x 0), x 1, γ⁻¹ * (γ * x 2)] : Fin 3 → K) = x
         funext j
-        fin_cases j <;> simp [← mul_assoc, inv_mul_cancel₀ γ.ne_zero]
+        fin_cases j <;> simp []
       right_inv := by
         intro x
         change (![γ * (γ⁻¹ * x 0), x 1, γ * (γ⁻¹ * x 2)] : Fin 3 → K) = x
         funext j
-        fin_cases j <;> simp [← mul_assoc, mul_inv_cancel₀ γ.ne_zero]
+        fin_cases j <;> simp []
     }
 
 theorem not_iso_hyperbolic {α β : K} (hα : α ≠ 0) : IsEmpty (Family K α β ≃ₗ⁅K⁆ Hyperbolic K) := by
