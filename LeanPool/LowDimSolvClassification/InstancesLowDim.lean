@@ -1158,7 +1158,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         unfold B
         simp only [Matrix.cons_val_zero, e₂_def]
         unfold e₂
-        simp only [e₂_def]
+        · simp only [e₂_def]
         exact hα
       · subst e1
         simp only [Set.mem_setOf_eq]
@@ -1169,7 +1169,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         simp only [Matrix.cons_val_one, e₃_def]
         unfold e₃
         simp only [e₃_def]
-        simp []
+        · simp []
         exact hα
 
   let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) :=

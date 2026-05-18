@@ -454,7 +454,7 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
       ext i
       fin_cases i <;>
         simp [this]
-      ring
+      · ring
       ring
     let B_basis' : Basis (Fin 2) K (commutator K (Family K α' β')) := commutatorBasis α' β' hα'
     let M_adb0'_restr : Matrix (Fin 2) (Fin 2) K := LinearMap.toMatrix (B_basis') (B_basis')
@@ -527,8 +527,8 @@ theorem iso_iff {α α' β β' : K} (hα : α ≠ 0) (hα' : α' ≠ 0) :
     rw [← det_adv_restr_eq, ← tr_adv_restr_eq]
     rw [det_adv_restr_eq_det_adb0, tr_adv_restr_eq_tr_adb0]
     rw [Family.det_ade₁, Family.tr_ade₁]
-    simp only [neg_neg, and_self]
-    exact hα
+    · simp only [neg_neg, and_self]
+    · exact hα
     exact hα
   · intro ⟨γ, hα, hβ⟩
     constructor

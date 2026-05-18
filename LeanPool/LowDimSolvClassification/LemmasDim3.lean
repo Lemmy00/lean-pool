@@ -728,7 +728,7 @@ private lemma case2_coarse_rat
             rw [← this] at cs
             apply Submodule.finrank_mono at cs
             rw [finrank_span_singleton] at cs
-            exact cs
+            · exact cs
             exact Basis.ne_zero B 2
           rw [h₂] at comm_dim_1
           contradiction
@@ -777,7 +777,7 @@ private lemma case2_coarse_rat
             rw [← this] at cs
             apply Submodule.finrank_mono at cs
             rw [finrank_span_singleton] at cs
-            exact cs
+            · exact cs
             exact Basis.ne_zero B 1
           rw [h₂] at comm_dim_1
           contradiction
@@ -854,7 +854,7 @@ private lemma case2_coarse_rat
       constructor
       · exact this.1
       · exact add_mem B1c B2c
-      exact Basis.ne_zero B 2
+      · exact Basis.ne_zero B 2
       exact Basis.ne_zero B 1
 
 /-- Helper for `case2_coarse`: linear independence of the candidate basis
