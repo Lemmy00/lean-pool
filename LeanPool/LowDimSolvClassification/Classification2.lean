@@ -115,7 +115,7 @@ theorem classification (h : finrank K L = 2) :
       map_lie' := by
         intro x y
         simp only [trivial_lie_zero, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          LinearEquiv.coe_coe, Basis.equivFun_apply, map_zero, Finsupp.coe_zero]
+          LinearEquiv.coe_coe, Basis.equivFun_apply, map_zero]
         rfl
     })
   · right
@@ -169,10 +169,10 @@ theorem not_iso : IsEmpty (Affine K ≃ₗ⁅K⁆ Abelian K) := by
             simp [Affine.bracket, e₂]
             rfl
           _ = 0 := by
-            simp [iso.map_lie, LieRing.of_associative_ring_bracket, mul_comm]
+            simp [iso.map_lie]
   have : iso.symm 0 = 0 := iso.symm.map_zero
   apply_fun (fun x => (iso.symm x) 1) at Hf
-  simp [LieEquiv.symm_apply_apply, this, Prod.snd_zero, one_ne_zero] at Hf
+  simp [LieEquiv.symm_apply_apply, this] at Hf
   exact one_ne_zero (Hf.trans (Pi.zero_apply _))
 
 end Dim2

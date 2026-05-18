@@ -221,7 +221,7 @@ lemma exists_unitsSMul (B : Basis (Fin 3) K L) (α β γ : Kˣ) :
     dsimp [B'Basis]
     repeat rw [Basis.unitsSMul_apply (v := B) (w := ![α, β, γ])]
     simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_two, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons, and_self, B'Basis]
+      Matrix.cons_val_two, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons, and_self]
 
 end Basis
 
@@ -695,7 +695,7 @@ theorem LieDerivation.map_commutator (D : LieDerivation K L L) :
     Submodule.map D.toLinearMap (LieAlgebra.commutator K L).toSubmodule ≤
       (LieAlgebra.commutator K L).toSubmodule := by
   intro Dz
-  simp only [LieIdeal.toLieSubalgebra_toSubmodule, Submodule.mem_map, LieSubmodule.mem_toSubmodule,
+  simp only [Submodule.mem_map, LieSubmodule.mem_toSubmodule,
     forall_exists_index, and_imp]
   intro z hz hDz
   rw [← hDz]
@@ -742,7 +742,7 @@ theorem LieAlgebra.ad_into_commutator (x : L) :
   refine ⟨z, trivial, ?_⟩
   change (LieDerivation.ad K L x) z = y
   rw [show ((LieDerivation.ad K L) x : L → L) z = (LieAlgebra.ad K L) x z by
-        simp [LieDerivation.coe_ad_apply_eq_ad_apply]]
+        simp []]
   exact hzy
 
 end LieDerivations

@@ -87,7 +87,7 @@ instance : LieRing (L ⋉[φ] J) := {
     congr
   leibniz_lie := by
     intro x y z
-    simp only [bracket_def, add_left, add_right]
+    simp only [bracket_def]
     congr 1
     · simp only [lie_lie, sub_add_cancel]
     · simp only [map_add, map_sub, LieDerivation.apply_lie_eq_sub, LieHom.map_lie,
@@ -101,8 +101,8 @@ instance : LieAlgebra K (L ⋉[φ] J) := {
     simp only [bracket_def, smul_left, lie_smul, smul_right, map_smul,
       LieDerivation.coe_smul, Pi.smul_apply]
     ext
-    · simp [Prod.smul_def]
-    · simp [Prod.smul_def, smul_sub]
+    · simp []
+    · simp [smul_sub]
 }
 
 /-- TODO. -/
@@ -152,7 +152,7 @@ def fst : L ⋉[φ] J →ₗ⁅K⁆ L := {
   toFun := fun x ↦ x.1,
   map_add' := by
     intro x y
-    simp only [add_left, add_right]
+    simp only [add_left]
   map_smul' := by
     intro k x
     simp only [smul_left, RingHom.id_apply]
