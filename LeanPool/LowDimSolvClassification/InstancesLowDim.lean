@@ -70,7 +70,7 @@ namespace Affine
 
 variable {K : Type*} [Field K]
 
-/--In this section we prove that Dim2.Affine is isomorphic to the semidirect product gl(K) ⋉ K,
+/-- In this section we prove that Dim2.Affine is isomorphic to the semidirect product gl(K) ⋉ K,
    where K is the 1-dimensional vector space over K -/
 
 def _root_.LieAlgebra.Dim2.Affine.equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K ≃ₗ⁅K⁆ Affine K where
@@ -379,7 +379,8 @@ def _root_.LieAlgebra.Dim3.Heisenberg.semidirectAux : K →ₗ⁅K⁆ LieDerivat
 /-- The three-dimensional Heisenberg Lie algebra over `K` is isomorphic to a semidirect product of
 `K`
     with the two-dimensional abelian Lie algebra. -/
-def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect : Heisenberg K ≃ₗ⁅K⁆ K ⋉[Heisenberg.semidirectAux] Dim2.Abelian K := {
+def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect :
+    Heisenberg K ≃ₗ⁅K⁆ K ⋉[Heisenberg.semidirectAux] Dim2.Abelian K := {
   toFun := fun v ↦ ⟨v 1, ![v 0, v 2]⟩
   map_add' := by
     intro x y
@@ -434,7 +435,8 @@ private theorem _root_.LieAlgebra.Dim3.AffinePlusAbelian._marker_after_heisenber
 /-- The three-dimensional Lie algebra `AffinePlusAbelian K` is indeed isomorphic to the direct
 sum/product of `K`
     with `LieAlgebra.Dim2.Affine K`. -/
-def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToDirectSum : AffinePlusAbelian K ≃ₗ⁅K⁆ K × Dim2.Affine K := {
+def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToDirectSum :
+    AffinePlusAbelian K ≃ₗ⁅K⁆ K × Dim2.Affine K := {
   toFun := fun v ↦ ⟨v 0, ![-v 2, v 1]⟩
   map_add' := by
     intro x y
@@ -504,7 +506,8 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.semidirectAux : K →ₗ⁅K⁆ Lie
 /-- The three-dimensional Lie algebra `AffinePlusAbelian K` is isomorphic to a semidirect product
 of `K`
     with the two-dimensional abelian Lie algebra. -/
-def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect : AffinePlusAbelian K ≃ₗ⁅K⁆ K ⋉[AffinePlusAbelian.semidirectAux] Dim2.Abelian K :={
+def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect :
+    AffinePlusAbelian K ≃ₗ⁅K⁆ K ⋉[AffinePlusAbelian.semidirectAux] Dim2.Abelian K := {
   toFun:=fun v ↦ ⟨v 2, ![v 0, - v 1]⟩
   map_add':=by
     intro x y
@@ -849,7 +852,8 @@ def _root_.LieAlgebra.Dim3.Family.semidirectAux : K →ₗ⁅K⁆ LieDerivation 
       (semidirectAux' α β))
 
 /-- TODO. -/
-def _root_.LieAlgebra.Dim3.Family.equivToSemidirect : Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] Dim2.Abelian K := {
+def _root_.LieAlgebra.Dim3.Family.equivToSemidirect :
+    Family K α β ≃ₗ⁅K⁆ K ⋉[semidirectAux α β] Dim2.Abelian K := {
   toFun := fun v ↦ ⟨v 0, ![v 1, v 2]⟩
   map_add' := by
     intro x y
@@ -1152,7 +1156,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         unfold B
         simp only [Matrix.cons_val_zero, e₂_def]
         unfold e₂
-        · simp only [e₂_def]
+        simp only [e₂_def]
         exact hα
       · subst e1
         simp only [Set.mem_setOf_eq]
@@ -1163,7 +1167,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
         simp only [Matrix.cons_val_one, e₃_def]
         unfold e₃
         simp only [e₃_def]
-        · simp []
+        simp []
         exact hα
   let B_basis : Basis (Fin 2) K (commutator K (Family K α β)) :=
     Basis.mk B_is_li_comm (by

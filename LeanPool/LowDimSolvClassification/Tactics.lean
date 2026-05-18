@@ -395,7 +395,8 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
     pure ⟨u₁, R₁, iR₁, iRM₁, ⟨l₁, q(rfl)⟩, ⟨l₂', (q(NF.eval_algebraMap $R₁ $(l₂.toNF)):)⟩,
       r', (q(IsScalarTower.algebraMap_smul $R₁ $r $x):)⟩
   catch _ =>
-    throwError "match_scalars_lie failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
+    throwError ("match_scalars_lie failed: {R₁} is not an {R₂}-algebra and {R₂} is not " ++
+      "an {R₁}-algebra")
 
 end qNF
 

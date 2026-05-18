@@ -34,7 +34,7 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   have enezero : e ≠ 0 := by simp [e,LinearIndependent.ne_zero 0 (Basis.linearIndependent B₁)]
   let ι : Set L := by
     apply LinearIndepOn.extend (v := id) (s := {e}) (t := Set.univ) (K := K)
-    · exact LinearIndepOn.singleton _ enezero
+    · exact LinearIndepOn.singleton enezero
     · apply Set.subset_univ
   --ι is a (set) basis of L that also contains e as an element
   have B₂li : LinearIndependent K (Subtype.val : ι → L) := LinearIndepOn.linearIndepOn_extend _ _
@@ -341,8 +341,14 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
   let ⟨b, hb⟩ := lie_comm g' f'
   -- now we redifine the basis B with the new g
   let g := g' - b • e + a • f'
-  have ge : ⁅ g, e ⁆ = 0 := by simp only [add_lie, sub_lie, smul_lie, lie_self, smul_zero, sub_zero, g]; rw [ha, ← lie_skew, f'comm]; module
-  have gf' : ⁅ g, f' ⁆ = 0 := by simp only [add_lie, sub_lie, smul_lie, lie_self, smul_zero, add_zero, g]; rw [hb, f'comm]; module
+  have ge : ⁅ g, e ⁆ = 0 := by
+    simp only [add_lie, sub_lie, smul_lie, lie_self, smul_zero, sub_zero, g]
+    rw [ha, ← lie_skew, f'comm]
+    module
+  have gf' : ⁅ g, f' ⁆ = 0 := by
+    simp only [add_lie, sub_lie, smul_lie, lie_self, smul_zero, add_zero, g]
+    rw [hb, f'comm]
+    module
   have := B.linearIndependent
   simp at this
   -- we show that the set is l.i. after redifining
@@ -665,8 +671,7 @@ private lemma case2_coarse_rat
           simp only [Fin.isValue, zero_smul] at h01
           have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
             have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 2} := by
-              intro x
-              intro hx
+              intro x hx
               obtain ⟨y,z,hz⟩ := hx
               let cy := Basis.repr_fin_three B y
               let cz := Basis.repr_fin_three B z
@@ -750,8 +755,7 @@ private lemma case2_coarse_rat
             simp
           have comm_dim_1: Module.finrank K (commutator K L) ≤  1 := by
             have cs : {x : L | ∃ (y : L) (z : L), ⁅y, z⁆ = x} ≤  span K {B 1} := by
-              intro x
-              intro hx
+              intro x hx
               obtain ⟨y,z,hz⟩ := hx
               let cy := Basis.repr_fin_three B y
               let cz := Basis.repr_fin_three B z
@@ -794,8 +798,7 @@ private lemma case2_coarse_rat
             assumption
         constructor
         · apply (LinearIndependent.pair_iff' _).mpr
-          · intro a
-            intro ha
+          · intro a ha
             rw [smul_add] at ha
             have B12_li : LinearIndependent K ![B 1, B 2] := by
               rw [@LinearIndependent.pair_iff]
@@ -902,7 +905,10 @@ private lemma case2_coarse_Bnli
     have sc : span K (Set.range ![⁅B 0, X⁆, X]) ≤ commutator K L := span_le.mpr subset
     rw [@Matrix.range_cons_cons_empty] at h
     have B0c : B 0 ∈ commutator K L := by
-      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.range_cons, Matrix.range_empty, Set.union_empty, Set.union_singleton, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, LieIdeal.toLieSubalgebra_toSubmodule] at sc
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
+        Matrix.range_cons, Matrix.range_empty, Set.union_empty,
+        Set.union_singleton, derivedSeriesOfIdeal_succ,
+        derivedSeriesOfIdeal_zero, LieIdeal.toLieSubalgebra_toSubmodule] at sc
       apply sc
       exact h
     have brange : Set.range B ⊆ commutator K L := by

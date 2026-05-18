@@ -121,7 +121,8 @@ def _root_.LieAlgebra.ofAffineEquivAux := (Abelian.DerivationOfLinearMap K (mkAb
     constructed as semidirect product of `V →ₗ[K] V` with the abelian Lie algebra `V`. -/
 abbrev _root_.LieAlgebra.OfAffineEquiv :=
   Module.End K (mkAbelian K V) ⋉[ofAffineEquivAux K V] mkAbelian K V
--- one could also define it as V →ᵃ[K] V, but the Lie bracket is not defined using function composition (not left-distributive).
+-- one could also define it as V →ᵃ[K] V, but the Lie bracket is not defined using
+-- function composition (not left-distributive).
 
 @[inherit_doc]
 notation "𝔞𝔣𝔣" => OfAffineEquiv
