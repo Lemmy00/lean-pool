@@ -12,10 +12,7 @@ import LeanPool.DemazureOperatorsLean.DemazureAuxRelations
 /-!
 # Demazure Operators and Lean
 
-Source: I. N. Bernstein, I. M. Gelfand, and S. I. Gelfand,
-  "Schubert cells, and the cohomology of the spaces G/P", Russian
-  Mathematical Surveys 28:3 (1973), for divided-difference/Demazure operator
-  relations; formalization source: url:https://github.com/bolito2/DemazureOperatorsLean
+Source: doi:10.1070/RM1973v028n03ABEH001549
 Authors: Óscar Álvarez Sánchez
 Status: verified
 Main declarations: `Demazure.Dem`, `Demazure.demazure_commutes_adjacent`
