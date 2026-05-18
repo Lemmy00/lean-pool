@@ -14,7 +14,6 @@ import Mathlib.LinearAlgebra.Trace
 import LeanPool.LowDimSolvClassification.Semidirect
 import LeanPool.LowDimSolvClassification.GeneralResults
 
-
 open Module
 open Submodule
 
@@ -53,7 +52,8 @@ end mkAbelian
 section abelianDerivation
 
 /-- TODO. -/
-def _root_.LieAlgebra.Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : End K L) :
+def _root_.LieAlgebra.Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L : Type*}
+    [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : End K L) :
     LieDerivation K L L := {
   toLinearMap := f,
   leibniz' := by
@@ -62,7 +62,8 @@ def _root_.LieAlgebra.Abelian.DerivationOfLinearMap' {K : Type*} [CommRing K] {L
 }
 
 /-- If `L` is an abelian Lie algebra, any linear endomorphism of L is also a derivation of L. -/
-def _root_.LieAlgebra.Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [LieRing L] [LieAlgebra K L] [IsLieAbelian L] :
+def _root_.LieAlgebra.Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [LieRing L]
+    [LieAlgebra K L] [IsLieAbelian L] :
     End K L ≃ₗ⁅K⁆ LieDerivation K L L := {
   toFun := Abelian.DerivationOfLinearMap',
   map_add' := by
@@ -91,15 +92,18 @@ def _root_.LieAlgebra.Abelian.DerivationOfLinearMap (K L : Type*) [CommRing K] [
 }
 
 @[simp]
-theorem _root_.LieAlgebra.Abelian.DerivationCoeLinearMap {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
+theorem _root_.LieAlgebra.Abelian.DerivationCoeLinearMap {K : Type*} [CommRing K] {L : Type*}
+    [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
     (Abelian.DerivationOfLinearMap K L f).toLinearMap = f := rfl
 
 @[simp]
-theorem _root_.LieAlgebra.Abelian.DerivationCoeFun {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
+theorem _root_.LieAlgebra.Abelian.DerivationCoeFun {K : Type*} [CommRing K] {L : Type*}
+    [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
     ⇑(Abelian.DerivationOfLinearMap K L f) = ⇑f := rfl
 
 @[simp]
-theorem _root_.LieAlgebra.Abelian.DerivationCoeFun' {K : Type*} [CommRing K] {L : Type*} [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
+theorem _root_.LieAlgebra.Abelian.DerivationCoeFun' {K : Type*} [CommRing K] {L : Type*}
+    [LieRing L] [LieAlgebra K L] [IsLieAbelian L] (f : L →ₗ[K] L) :
     ⇑((Abelian.DerivationOfLinearMap K L).toLieHom f) = ⇑f := rfl
 
 end abelianDerivation
@@ -126,14 +130,16 @@ end liealgofaffineequiv
 
 section liealghyperbolic
 
-variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] (L : Type*) [LieRing L] [LieAlgebra K L] [IsLieAbelian L]
+variable (K : Type*) [CommRing K] (V : Type*) [AddCommGroup V] [Module K V] (L : Type*)
+    [LieRing L] [LieAlgebra K L] [IsLieAbelian L]
 
 /-- TODO. -/
 def _root_.LieAlgebra.RealHyperbolicAux' : K →ₗ⁅K⁆ LieDerivation K L L :=
   LieHom.comp (Abelian.DerivationOfLinearMap K L) (LieHom.smulRight (LinearMap.id : End K L))
 
 /-- TODO. -/
-def _root_.LieAlgebra.RealHyperbolicAux : K →ₗ⁅K⁆ LieDerivation K (mkAbelian K V) (mkAbelian K V) := RealHyperbolicAux' K (mkAbelian K V)
+def _root_.LieAlgebra.RealHyperbolicAux : K →ₗ⁅K⁆ LieDerivation K (mkAbelian K V) (mkAbelian K V)
+    := RealHyperbolicAux' K (mkAbelian K V)
 
 /-- The almost abelian Lie algebra associated to real hyperbolic space,
   generalized to arbitrary `K`. -/
@@ -141,7 +147,8 @@ abbrev _root_.LieAlgebra.RealHyperbolic := K ⋉[RealHyperbolicAux K V] (mkAbeli
 
 /-- The almost abelian Lie algebra associated to real hyperbolic `n`-space,
   generalized to arbitrary `K`. -/
-abbrev _root_.LieAlgebra.RealHyperbolic' (n : ℕ) (K : Type*) [CommRing K] := K ⋉[RealHyperbolicAux K (Fin (n - 1) → K)] (mkAbelian K (Fin (n - 1) → K))
+abbrev _root_.LieAlgebra.RealHyperbolic' (n : ℕ) (K : Type*) [CommRing K]
+    := K ⋉[RealHyperbolicAux K (Fin (n - 1) → K)] (mkAbelian K (Fin (n - 1) → K))
 --requires n > 0
 
 @[inherit_doc]

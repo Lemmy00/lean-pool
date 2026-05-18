@@ -9,7 +9,8 @@ import LeanPool.LowDimSolvClassification.Tactics
 
 section lie_semidirect
 
-variable {K : Type*} (L J: Type*) [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L] [LieAlgebra K J]
+variable {K : Type*} (L J: Type*) [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L]
+    [LieAlgebra K J]
   (φ : L →ₗ⁅K⁆ LieDerivation K J J)
 
 /-- The semidirect product of two Lie algebras `L` and `J`, defined by specifying a homomorphism
@@ -17,7 +18,8 @@ from `L` to the Lie algebra of derivations of `J`. The homomorphism `φ` indexes
 @[nolint unusedArguments]
 def LieSemidirectProduct (_ : L →ₗ⁅K⁆ LieDerivation K J J) := L × J
 
-variable {K : Type*} {L J: Type*} [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L] [LieAlgebra K J]
+variable {K : Type*} {L J: Type*} [CommRing K] [LieRing L] [LieRing J] [LieAlgebra K L]
+    [LieAlgebra K J]
   {φ : L →ₗ⁅K⁆ LieDerivation K J J}
 
 @[inherit_doc]

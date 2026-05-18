@@ -7,7 +7,6 @@ import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Nilpotent
 
-
 namespace LieIdeal
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -31,9 +30,11 @@ def _root_.LieAlgebra.Quotient.mk' (I : LieIdeal R L) : L →ₗ⁅R⁆ L ⧸ I 
   map_lie' := by simp only [LieSubmodule.Quotient.mk_bracket, implies_true]
 }
 
-theorem surjective_mk' (I : LieIdeal R L) : Function.Surjective (Quotient.mk' I) := Quot.mk_surjective
+theorem surjective_mk' (I : LieIdeal R L) : Function.Surjective (Quotient.mk' I)
+    := Quot.mk_surjective
 
-theorem solvable_of_ideal_and_quot_solvable {I : LieIdeal R L} (quotsol : LieAlgebra.IsSolvable (L ⧸ I))
+theorem solvable_of_ideal_and_quot_solvable {I : LieIdeal R L} (quotsol : LieAlgebra.IsSolvable
+    (L ⧸ I))
      (Isol : LieAlgebra.IsSolvable I) :
     LieAlgebra.IsSolvable L := by
   rw [LieAlgebra.isSolvable_iff R] at *

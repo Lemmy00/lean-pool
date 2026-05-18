@@ -231,7 +231,8 @@ theorem _root_.LieAlgebra.Dim2.solvable (dim2 : finrank K L = 2) :
      apply solvable_of_commutator_solvable (K := K)
      exact comsol
 
-theorem _root_.LieAlgebra.solvable_of_dim_comm_le_two [fin : FiniteDimensional K L] (dimcomm : finrank K (commutator K L) ≤ 2) :
+theorem _root_.LieAlgebra.solvable_of_dim_comm_le_two [fin : FiniteDimensional K L]
+    (dimcomm : finrank K (commutator K L) ≤ 2) :
     IsSolvable L := by
   have hl : finrank K (commutator K L) ≥ 0 := by apply zero_le
   interval_cases s : (finrank K (commutator K L)) using hl, dimcomm

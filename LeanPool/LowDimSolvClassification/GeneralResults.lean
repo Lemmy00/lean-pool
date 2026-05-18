@@ -44,7 +44,8 @@ theorem Basis.repr_fin_three (B : Basis (Fin 3) K L) (x : L) :
 
 --a pair is linear dependent iff one can be written as a multiple of the nonzero other
 --the reverse direction does not need y ≠ 0.
-lemma not_linearIndependent_pair_iff (x y : L) (hy: y ≠ 0) : ¬LinearIndependent K ![x,y] ↔ ∃ (c : K), x = c • y := by
+lemma not_linearIndependent_pair_iff (x y : L) (hy: y ≠ 0) : ¬LinearIndependent K ![x,y] ↔
+    ∃ (c : K), x = c • y := by
   rw [LinearIndependent.pair_iffₛ]
   constructor
   · rw [@Mathlib.Tactic.Push.not_forall_eq]
@@ -93,21 +94,27 @@ theorem LinearIndependent.iff_in_submodule {S : Type*} (N : Submodule K L) {f : 
   symm
   exact LinearMap.linearIndependent_iff (Submodule.subtype N) (Submodule.ker_subtype N)
 
-/-- A function into a submodule `N` defined by specifying a function into the ambient space with range in `N`. -/
+/-- A function into a submodule `N` defined by specifying a function into the ambient space with range in `N`.
+-/
 def Submodule.map_into_subtype {S : Type*} (N : Submodule K L) (f : S → L) (hr : Set.range f ⊆ N) :
     S → N := fun x ↦ ⟨f x, hr (Set.mem_range_self x)⟩
 
-/-- A function with range in a given subset gives rise to a function to the corresponding subtype. -/
+/-- A function with range in a given subset gives rise to a function to the corresponding subtype.
+-/
 def Set.map_into_subtype {α β : Type*} (s : Set β) (f : α → β) (hr : Set.range f ⊆ s) :
     α → s := Subtype.coind f fun x => hr ⟨x, rfl⟩
 
-theorem Set.map_into_subtype_apply  {α β : Type*} (s : Set β) (f : α → β) (hr : Set.range f ⊆ s) (a : α) :
+theorem Set.map_into_subtype_apply  {α β : Type*} (s : Set β) (f : α →
+    β) (hr : Set.range f ⊆ s) (a : α) :
     Set.map_into_subtype s f hr a = f a := by
   rfl
 
-/-- A linear independent set which is a subset of a submodule `N` gives a linear independent set in the module `N`. -/
+/-- A linear independent set which is a subset of a submodule `N` gives a linear independent set in
+the module `N`.
+-/
 theorem Submodule.linearIndependent_from_ambient
-    {S : Type*} (N : Submodule K L) (f : S → L) (hs : LinearIndependent K f) (hr : Set.range f ⊆ N) :
+    {S : Type*} (N : Submodule K L) (f : S → L) (hs : LinearIndependent K f)
+        (hr : Set.range f ⊆ N) :
     LinearIndependent K (Set.map_into_subtype N f hr) := by
   rw [linearIndependent_iff'] at *
   intro l hl sum i hi
@@ -269,7 +276,8 @@ def LinearMap.ofProd {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
   f ∘ₗLinearMap.fst K M₁ M₂ + g ∘ₗLinearMap.snd K M₁ M₂
 
 @[simp]
-theorem LinearMap.ofProd_apply {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [Module K M₁] [Module K M₂]
+theorem LinearMap.ofProd_apply {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [Module K M₁]
+    [Module K M₂]
       (f : M₁ →ₗ[K] L) (g : M₂ →ₗ[K] L) (x : M₁ × M₂) :
     LinearMap.ofProd f g x = f x.1 + g x.2 := rfl
 
@@ -309,7 +317,8 @@ theorem Submodule.prod_surjective_of_codisjoint (h : Codisjoint p q) :
 noncomputable def LinearEquiv.ofComplSubmodules (h : IsCompl p q) :
     (p × q) ≃ₗ[K] L :=
   LinearEquiv.ofBijective (LinearMap.ofProd p.subtype q.subtype)
-    ⟨Submodule.prod_injective_of_disjoint h.disjoint, Submodule.prod_surjective_of_codisjoint h.codisjoint⟩
+    ⟨Submodule.prod_injective_of_disjoint h.disjoint,
+      Submodule.prod_surjective_of_codisjoint h.codisjoint⟩
 
 @[simp]
 theorem LinearEquiv.ofComplSubmodules_apply (h : IsCompl p q) (x : p × q) :
@@ -389,7 +398,8 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
 
 namespace LieAlgebra
 
-lemma coeff_zero_of_lin_dep {X Y : L} {α β : K} (hXY : ⁅X, Y⁆ ≠ 0) (Hzero : α • X + β • Y = 0) : α = 0 := by
+lemma coeff_zero_of_lin_dep {X Y : L} {α β : K} (hXY : ⁅X, Y⁆ ≠ 0)
+    (Hzero : α • X + β • Y = 0) : α = 0 := by
   have : α • ⁅X, Y⁆ = 0 :=
     calc α • ⁅X, Y⁆ = ⁅α • X + β • Y, Y⁆ := by
           simp
@@ -418,9 +428,11 @@ lemma basis_of_bracket_ne_zero (h : finrank K L = 2) (X Y : L) (hXY : ⁅X, Y⁆
 
 variable {K L : Type*} [CommRing K] [LieRing L] [LieAlgebra K L]
 
-/-- The k+1-th term of the derived series is spanned as submodule by Lie brackets of elements in the k-th term. -/
+/-- The k+1-th term of the derived series is spanned as submodule by Lie brackets of elements in the k-th term.
+-/
 theorem derivedSeries_succ_is_span {k : ℕ} : (LieAlgebra.derivedSeries K L (k + 1)).toSubmodule =
-    span K {x : L | ∃ (y : ↥(LieAlgebra.derivedSeries K L k)) (z : ↥(LieAlgebra.derivedSeries K L k)), ⁅y, z⁆ = x} := by
+    span K {x : L | ∃ (y : ↥(LieAlgebra.derivedSeries K L k))
+        (z : ↥(LieAlgebra.derivedSeries K L k)), ⁅y, z⁆ = x} := by
   simp only [LieAlgebra.derivedSeriesOfIdeal_succ]
   rw [LieSubmodule.lieIdeal_oper_eq_span]
   apply le_antisymm
@@ -478,14 +490,16 @@ theorem solvable_of_commutator_solvable
   obtain ⟨ m, pm ⟩ := comm
   rw [LieAlgebra.isSolvable_iff (R := K)]
   use m + 1
-  rw [LieAlgebra.derivedSeries_def,LieAlgebra.derivedSeriesOfIdeal_add,← LieAlgebra.derivedSeries_def]
+  rw [LieAlgebra.derivedSeries_def,LieAlgebra.derivedSeriesOfIdeal_add,
+    ← LieAlgebra.derivedSeries_def]
   exact (LieIdeal.derivedSeries_eq_bot_iff (LieAlgebra.commutator K L) m).mp pm
 
 end LieAlgebra
 
 variable {K L : Type*} [CommRing K] [LieRing L] [LieAlgebra K L]
 
-theorem LieSubalgebra.mem_lieSpan_singleton {y x : L} : (x ∈ LieSubalgebra.lieSpan K L {y}) ↔ ∃ a : K, a • y = x := by
+theorem LieSubalgebra.mem_lieSpan_singleton {y x : L} : (x ∈ LieSubalgebra.lieSpan K L {y}) ↔
+    ∃ a : K, a • y = x := by
   constructor
   · intro h
     induction h using LieSubalgebra.lieSpan_induction with
@@ -509,7 +523,8 @@ theorem LieSubalgebra.mem_lieSpan_singleton {y x : L} : (x ∈ LieSubalgebra.lie
     exact LieSubalgebra.submodule_span_le_lieSpan H
 
 /-- The Lie subalgebra generated by a single element equals the linear subspace spanned by it. -/
-theorem LieSubalgebra.lieSpan_singleton {x : L} : (LieSubalgebra.lieSpan K L {x}).toSubmodule = Submodule.span K {x} := by
+theorem LieSubalgebra.lieSpan_singleton {x : L} : (LieSubalgebra.lieSpan K L
+    {x}).toSubmodule = Submodule.span K {x} := by
   ext _
   rw [LieSubalgebra.mem_toSubmodule, LieSubalgebra.mem_lieSpan_singleton,
     Submodule.mem_span_singleton]
@@ -539,7 +554,8 @@ theorem LieSubmodule.mem_lieSpan_singleton {y x : L} (H : ∀ (z : L), ∃ (a : 
       exact ⟨a, rfl⟩
     exact LieSubmodule.submodule_span_le_lieSpan H
 
-/-- The Lie submodule generated by a single element `x` equals the linear subspace spanned by it if `⁅z, x⁆` is a multiple of `x` for all `z`. -/
+/-- The Lie submodule generated by a single element `x` equals the linear subspace spanned by it if `⁅z, x⁆` is a multiple of `x` for all `z`.
+-/
 theorem LieSubmodule.lieSpan_singleton {x : L} (H : ∀ (z : L), ∃ (a : K), ⁅z,
   x⁆ = a • x) : (LieSubmodule.lieSpan K L {x}).toSubmodule = Submodule.span K {x} := by
   ext _
@@ -550,7 +566,8 @@ theorem LieIdeal.finrank_toSubmodule {I : LieIdeal K L} :
   Module.finrank K I = Module.finrank K I.toSubmodule := by
   rfl
 
-lemma binary_predicate_3_choose_2 {P : Fin 3 → Fin 3 → Prop} (h₀₁ : P 0 1) (h₀₂ : P 0 2) (h₁₂ : P 1 2) :
+lemma binary_predicate_3_choose_2 {P : Fin 3 → Fin 3 → Prop} (h₀₁ : P 0 1) (h₀₂ : P 0 2)
+    (h₁₂ : P 1 2) :
     ∀ i j : Fin 3, i < j → P i j := by
   intros i j
   fin_cases i, j <;> intro ij <;> dsimp! at ij <;> try omega
@@ -576,7 +593,9 @@ namespace LieAlgebra
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
 
-/-- If the Lie algebra `L` of dimension `n + 1` is solvable, then its commutator ideal has dimension at most `n`. -/
+/-- If the Lie algebra `L` of dimension `n + 1` is solvable, then its commutator ideal has
+dimension at most `n`.
+-/
 theorem codim_commutator_ge_one_of_solvable {n : ℕ} (dimn : Module.finrank K L = n + 1)
     (issolvable: LieAlgebra.IsSolvable L) :
     Module.finrank K (LieAlgebra.commutator K L) ≤ n := by
@@ -630,7 +649,9 @@ theorem finrank_commutator_le_one_of_lie_basis {n : ℕ} (B : Basis (Fin n) K L)
 
 variable (K L : Type*) [CommRing K] [LieRing L] [LieAlgebra K L]
 
-/-- We define a Lie algebra to be two-step nilpotent if its commutator ideal is contained in the center. -/
+/-- We define a Lie algebra to be two-step nilpotent if its commutator ideal is contained in the
+center.
+-/
 def IsTwoStepNilpotent : Prop := commutator K L ≤ center K L
 
 theorem isTwoStepNilpotent_iff : IsTwoStepNilpotent K L ↔ commutator K L ≤ center K L := by rfl
@@ -669,7 +690,8 @@ def IsAlmostAbelian : Prop :=
     ∃ I : LieIdeal K L, IsLieAbelian I ∧ Module.finrank K L = Module.finrank K I + 1
 
 theorem isAlmostAbelian_iff :
-    IsAlmostAbelian K L ↔ ∃ I : LieIdeal K L, IsLieAbelian I ∧ Module.finrank K L = Module.finrank K I + 1 := by rfl
+    IsAlmostAbelian K L ↔ ∃ I : LieIdeal K L, IsLieAbelian I ∧
+        Module.finrank K L = Module.finrank K I + 1 := by rfl
 
 end LieAlgebra
 
@@ -753,7 +775,9 @@ open Module
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
 
-/-- A finite-dimensional Lie algebra is abelian if and only if its commutator ideal has dimension zero. -/
+/-- A finite-dimensional Lie algebra is abelian if and only if its commutator ideal has dimension
+zero.
+-/
 theorem LieAlgebra.abelian_iff_dim_comm_zero [FiniteDimensional K L] :
     Module.finrank K (LieAlgebra.commutator K L) = 0 ↔ IsLieAbelian L := by
   constructor
@@ -799,11 +823,14 @@ section lieequiv
 
 variable {K L L' : Type*} [CommRing K] [LieRing L] [LieRing L'] [LieAlgebra K L] [LieAlgebra K L']
 
-theorem LieEquiv.symm_toLinearEquiv (e : L ≃ₗ⁅K⁆ L') : e.symm.toLinearEquiv = e.toLinearEquiv.symm := rfl
+theorem LieEquiv.symm_toLinearEquiv (e : L ≃ₗ⁅K⁆ L') : e.symm.toLinearEquiv = e.toLinearEquiv.symm
+    := rfl
 
-/-- If `f` is a surjective homomorphism of Lie algebras, then `LieIdeal.map f I` is the image of `I` under `f`
+/-- If `f` is a surjective homomorphism of Lie algebras, then `LieIdeal.map f I` is the image of
+`I` under `f`
     (equality of submodules). -/
-theorem LieIdeal.map_eq_image_of_surj {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f) (I : LieIdeal K L) :
+theorem LieIdeal.map_eq_image_of_surj {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f)
+    (I : LieIdeal K L) :
     (LieIdeal.map f I).toSubmodule = Submodule.map f.toLinearMap I := by
   apply LieIdeal.map_toSubmodule
   ext x
@@ -816,22 +843,27 @@ theorem LieIdeal.map_eq_image_of_surj {f : L →ₗ⁅K⁆ L'} (h : Function.Sur
     rw [← hxy]
     exact LieIdeal.mem_map hy
 
-/-- If `f` is a surjective homomorphism of Lie algebras, then `LieIdeal.map f I` is the image of `I` under `f`
+/-- If `f` is a surjective homomorphism of Lie algebras, then `LieIdeal.map f I` is the image of
+`I` under `f`
     (equality of Lie subalgebras). -/
-theorem LieIdeal.map_eq_image_of_surj' {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f) (I : LieIdeal K L) :
+theorem LieIdeal.map_eq_image_of_surj' {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f)
+    (I : LieIdeal K L) :
     (LieIdeal.map f I).toLieSubalgebra = LieSubalgebra.map f I := by
   unfold LieSubalgebra.map
   rw [← LieSubalgebra.toSubmodule_inj, toLieSubalgebra_toSubmodule,
     LieIdeal.map_eq_image_of_surj h I]
 
-/-- If `f` is a surjective homomorphism of Lie algebras, then `LieIdeal.map f I` is the image of `I` under `f`
+/-- If `f` is a surjective homomorphism of Lie algebras, then `LieIdeal.map f I` is the image of
+`I` under `f`
     (equality of sets). -/
-theorem LieIdeal.map_eq_image_of_surj'' {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f) (I : LieIdeal K L) :
+theorem LieIdeal.map_eq_image_of_surj'' {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f)
+    (I : LieIdeal K L) :
     LieIdeal.map f I = f '' I := by
   rw [← coe_toLieSubalgebra, map_eq_image_of_surj' h I]
   rfl
 
-theorem LieIdeal.map_comap_eq_of_surjective {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f) (I : LieIdeal K L') :
+theorem LieIdeal.map_comap_eq_of_surjective {f : L →ₗ⁅K⁆ L'} (h : Function.Surjective f)
+    (I : LieIdeal K L') :
     LieIdeal.map f (LieIdeal.comap f I) = I := by
   rw [LieIdeal.map_comap_eq (LieHom.isIdealMorphism_of_surjective f h),
     LieHom.idealRange_eq_top_of_surjective f h, inf_of_le_right]
@@ -844,16 +876,19 @@ def LieEquiv.ofIdeals (e : L ≃ₗ⁅K⁆ L') (I : LieIdeal K L) (I' : LieIdeal
   rw [← LieIdeal.map_eq_image_of_surj' (LieEquiv.surjective e) I, h]
 
 /-- Under an equivalence of Lie algebras, the commutator is mapped to the commutator. -/
-theorem LieEquiv.commutator_map (e : L ≃ₗ⁅K⁆ L') : LieIdeal.map e (LieAlgebra.commutator K L) = LieAlgebra.commutator K L' := by
+theorem LieEquiv.commutator_map (e : L ≃ₗ⁅K⁆ L') : LieIdeal.map e
+    (LieAlgebra.commutator K L) = LieAlgebra.commutator K L' := by
   unfold LieAlgebra.commutator
   exact LieIdeal.derivedSeries_map_eq 1 (LieEquiv.surjective e)
 
 /-- An equivalence of Lie algebras induces an equivalence of commutator subalgebras. -/
-def LieEquiv.commutator_equiv (e : L ≃ₗ⁅K⁆ L') : LieAlgebra.commutator K L ≃ₗ⁅K⁆ LieAlgebra.commutator K L' := by
+def LieEquiv.commutator_equiv
+    (e : L ≃ₗ⁅K⁆ L') : LieAlgebra.commutator K L ≃ₗ⁅K⁆ LieAlgebra.commutator K L' := by
   apply LieEquiv.ofIdeals e (LieAlgebra.commutator K L) (LieAlgebra.commutator K L')
   exact LieEquiv.commutator_map e
 
-theorem LieEquiv.commutator_equiv_apply (e : L ≃ₗ⁅K⁆ L') (x : L) (hx : x ∈ LieAlgebra.commutator K L) :
+theorem LieEquiv.commutator_equiv_apply (e : L ≃ₗ⁅K⁆ L') (x : L)
+    (hx : x ∈ LieAlgebra.commutator K L) :
     LieEquiv.commutator_equiv e ⟨x, hx⟩ = ⟨e x, LieEquiv.commutator_map e ▸ LieIdeal.mem_map hx ⟩ :=
   rfl
 
@@ -866,7 +901,8 @@ theorem LieAlgebra.dim_commutator_eq_of_lieEquiv (e : L ≃ₗ⁅K⁆ L') :
   LinearEquiv.finrank_eq (LieEquiv.commutator_equiv e).toLinearEquiv
 
 /-- Under an equivalence of Lie algebras, the center is mapped to the center. -/
-theorem LieEquiv.center_map (e : L ≃ₗ⁅K⁆ L') : LieIdeal.map e (LieAlgebra.center K L) = LieAlgebra.center K L' := by
+theorem LieEquiv.center_map (e : L ≃ₗ⁅K⁆ L') : LieIdeal.map e
+    (LieAlgebra.center K L) = LieAlgebra.center K L' := by
   rw [← LieSubmodule.toSubmodule_inj, LieIdeal.map_eq_image_of_surj (LieEquiv.surjective e)]
   ext x
   simp only [LieIdeal.toLieSubalgebra_toSubmodule, Submodule.mem_map, LieSubmodule.mem_toSubmodule,
@@ -933,6 +969,7 @@ def LinearEquiv.smulId : K ≃ₗ[K] (K →ₗ[K] K) := {
 }
 
 /-- The basis of `K →ₗ[K] K` consisting of `LinearMap.id`. -/
-noncomputable def Basis.ofEndSelf : Basis (Fin 1) K (K →ₗ[K] K) := Basis.map (Basis.singleton (Fin 1) K) (LinearEquiv.smulId)
+noncomputable def Basis.ofEndSelf : Basis (Fin 1) K (K →ₗ[K] K)
+    := Basis.map (Basis.singleton (Fin 1) K) (LinearEquiv.smulId)
 
 end dim1linalg

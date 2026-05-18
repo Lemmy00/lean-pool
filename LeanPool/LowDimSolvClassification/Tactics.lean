@@ -75,7 +75,8 @@ def addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
 
 /-- TODO. -/
 def addAtomDoubleQ {u : Level} {α : Q(Type u)} (e₁ e₂ : Q($α)) :
-    AtomD (Nat × Sum {e' : Q($α) × Q($α) // $e₁ =Q $(e'.2) ∧ $e₂ =Q $(e'.1)} {e' : Q($α) × Q($α) // $e₁ =Q $(e'.1) ∧ $e₂ =Q $(e'.2)}) := do
+    AtomD (Nat × Sum {e' : Q($α) × Q($α) // $e₁ =Q $(e'.2) ∧ $e₂ =Q $(e'.1)}
+        {e' : Q($α) × Q($α) // $e₁ =Q $(e'.1) ∧ $e₂ =Q $(e'.2)}) := do
   let (n, b, e₁', e₂') ← AtomD.addAtomDouble e₁ e₂
   match b with
   | false =>
@@ -154,7 +155,8 @@ theorem add_eq_eval₃ [Semiring R] [LieRing M] [Module R M] {a₁ : R × V M} (
   congr! 2
   rw [add_comm]
 
-theorem add_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [LieRing M] [Semiring R] [Module R M] [Semiring R₁]
+theorem add_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [LieRing M] [Semiring R] [Module R M]
+    [Semiring R₁]
     [Module R₁ M] [Semiring R₂] [Module R₂ M] {l₁ l₂ l : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
     {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
     (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval + l₂.eval = l.eval) :
@@ -272,7 +274,8 @@ variable (R)
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
   l.map (fun ⟨s, x⟩ ↦ (_root_.algebraMap S R s, x))
 
-theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [LieRing M] [SMul S M]
+theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [LieRing M]
+    [SMul S M]
     [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
     (l.algebraMap R).eval = l.eval := by
   simp only [NF.eval, algebraMap, map_map]
