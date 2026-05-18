@@ -78,7 +78,7 @@ theorem heisenberg_iff : Nonempty (L ≃ₗ⁅K⁆ (Heisenberg K)) ↔
         change bxy = ⁅bx, by_⁆
         rw [Heisenberg.bracket]
         change bxy = ![bx 1 * by_ 2 - by_ 1 * bx 2, (0 : K), (0 : K)]
-        simp only [AddHom.toFun_eq_coe,
+        simp only [
           Basis.equivFun_apply, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, bxy, bx, by_]
         rw [Basis.repr_fin_three B x, Basis.repr_fin_three B y]
         simp only [lie_add, lie_smul, add_lie, smul_lie, lie_self, smul_zero,

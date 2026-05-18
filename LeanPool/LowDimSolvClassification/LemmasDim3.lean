@@ -209,7 +209,7 @@ lemma case1a (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
           · contradiction
         · simp only [Fin.mk_one, Matrix.cons_val_one, coef] at this
           simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero, mul_one,
-            e] at this
+            ] at this
           assumption
         · simp only [Fin.reduceFinMk, Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons,
           mul_one, coef] at this
@@ -1097,7 +1097,7 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
           have meq := Subtype.ext_iff.mp co
           unfold x at meq
           simp only [Nat.reduceAdd, Fin.isValue, LieSubmodule.coe_add, SetLike.val_smul, V, B,
-            Bn] at meq
+            ] at meq
           rw [XcXBasis0,XcXBasis1] at meq
           rw [coe_basisOfLinearIndependentOfCardEqFinrank]
           dsimp [Bn]
