@@ -526,9 +526,9 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect : AffinePlusAbeli
       ext i
       fin_cases i
       · change (0:K) = (x 2 • ![0, -(-y 1)] - y 2 • ![0, -(-x 1)] + 0) 0
-        simp [Matrix.smul_cons, Matrix.smul_empty]
+        simp [Matrix.smul_cons]
       · change -(x 1 * y 2 - y 1 * x 2) = (x 2 • ![0, -(-y 1)] - y 2 • ![0, -(-x 1)] + 0) 1
-        simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
+        simp [Matrix.smul_cons, Matrix.smul_empty]
         ring
   invFun:=fun ⟨k, v⟩ ↦ ![v 0, -v 1, k]
   left_inv:=by
@@ -539,7 +539,7 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect : AffinePlusAbeli
   right_inv:=by
     intro ⟨k, v⟩
     simp only [Matrix.cons_val_zero, Matrix.cons_val_two, Nat.succ_eq_add_one,
-      Matrix.tail_cons, Matrix.head_cons, neg_neg, Matrix.cons_val_one,
+      Matrix.tail_cons, neg_neg, Matrix.cons_val_one,
       Prod.mk.injEq, true_and]
     ext
     · rfl
@@ -581,16 +581,15 @@ def _root_.LieAlgebra.Dim3.Hyperbolic.equivToRealHyperbolic : Hyperbolic K ≃�
     simp only [Hyperbolic, RealHyperbolic, RealHyperbolicAux, RealHyperbolicAux', Bracket.bracket,
       Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_zero, Matrix.cons_val_two, Matrix.tail_cons,
-      mul_comm, sub_self, LieHom.coe_comp, LieHom.coe_mk, Function.comp_apply, map_smul,
-        LieDerivation.coe_smul,
-      Abelian.DerivationCoeFun', LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons,
-        smul_eq_mul, zero_mul,
-      Matrix.smul_empty, add_zero]
+      mul_comm, sub_self, LieHom.coe_comp, Function.comp_apply,
+      Abelian.DerivationCoeFun', Matrix.smul_cons,
+        smul_eq_mul,
+      Matrix.smul_empty]
     ext
     · simp only
     · change ![x 0 * y 1 - y 0 * x 1, x 0 * y 2 - y 0 * x 2] =
         x 0 • ![y 1, y 2] - y 0 • ![x 1, x 2] + 0
-      ext i; fin_cases i <;> simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
+      ext i; fin_cases i <;> simp [Matrix.smul_cons]
   invFun := fun ⟨k, v⟩ ↦ ![k, v 0, v 1]
   left_inv := by
     intro x
@@ -598,8 +597,7 @@ def _root_.LieAlgebra.Dim3.Hyperbolic.equivToRealHyperbolic : Hyperbolic K ≃�
     exact List.ofFn_inj.mp rfl
   right_inv := by
     intro ⟨k, v⟩
-    simp only [Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-      Matrix.head_cons, Matrix.cons_val_two, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons]
+    simp only [Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons]
     ext
     · rfl
     · simp only [mkAbelian]
@@ -674,16 +672,14 @@ theorem _root_.LieAlgebra.Dim3.Hyperbolic.stdBasis₁ : (stdBasis 0 : Hyperbolic
 theorem _root_.LieAlgebra.Dim3.Hyperbolic.stdBasis₂ : (stdBasis 1 : Hyperbolic K) = e₂ := by
   unfold stdBasis Hyperbolic
   rw [e₂_def]
-  simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
-    Nat.reduceAdd]
+  simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
   ext i
   fin_cases i <;> simp
 
 theorem _root_.LieAlgebra.Dim3.Hyperbolic.stdBasis₃ : (stdBasis 2 : Hyperbolic K) = e₃ := by
   unfold stdBasis Hyperbolic
   rw [e₃_def]
-  simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
-    Nat.reduceAdd]
+  simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
   ext i
   fin_cases i <;> simp
 
@@ -858,8 +854,7 @@ def _root_.LieAlgebra.Dim3.Family.equivToSemidirect : Family K α β ≃ₗ⁅K�
     simp only [smul_eq_mul, Matrix.cons_val_zero,
       Matrix.cons_val_one, Matrix.cons_val_two, Matrix.tail_cons, Bracket.bracket,
       LieHom.toLinearMap_comp, LinearMap.coe_comp, LieHom.coe_toLinearMap, LieHom.coe_smulRight,
-      Function.comp_apply, map_smul, LieDerivation.coe_smul, Abelian.DerivationCoeFun',
-      LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply, Matrix.smul_cons, Matrix.smul_empty, add_zero]
+      Function.comp_apply, Abelian.DerivationCoeFun', Matrix.smul_cons, Matrix.smul_empty, add_zero]
     ext
     · simp only
       rw [mul_comm, sub_self]
@@ -877,11 +872,11 @@ def _root_.LieAlgebra.Dim3.Family.equivToSemidirect : Family K α β ≃ₗ⁅K�
   invFun := fun ⟨k, v⟩ ↦ ![k, v 0, v 1]
   left_inv := by
     intro x
-    simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Heisenberg]
+    simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Heisenberg]
     exact List.ofFn_inj.mp rfl
   right_inv := by
     intro ⟨k, v⟩
-    simp only [Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_zero,
+    simp only [Matrix.cons_val_one, Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons]
     ext
     · rfl
