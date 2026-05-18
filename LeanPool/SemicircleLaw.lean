@@ -34,6 +34,14 @@ Random Matrix Theory notes.
 - `LeanPool.SemicircleLaw.semicirclePDFReal` — the real-valued probability
   density function of the semicircle distribution.
 - `LeanPool.SemicircleLaw.semicirclePDF` — the `ℝ≥0∞`-valued pdf.
+- `LeanPool.SemicircleLaw.integral_semicirclePDFReal_eq_one` — the density
+  integrates to one for nonzero variance.
 - `LeanPool.SemicircleLaw.semicircleReal` — the semicircle measure on `ℝ`,
   parametrized by mean `μ` and variance `v`.
+- `LeanPool.SemicircleLaw.semicircleReal_map_add_const` — translating the
+  measure translates the mean.
+- `LeanPool.SemicircleLaw.semicircleReal_map_const_mul` — scaling the measure
+  by a nonzero constant scales the mean and variance parameters.
+- `LeanPool.SemicircleLaw.memLp_id_semicircleReal` — the identity has all
+  finite `Lᵖ` moments under a semicircle distribution.
 -/
