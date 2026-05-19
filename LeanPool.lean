@@ -91,6 +91,14 @@ import LeanPool.DeadEnds.PrimeTail
 import LeanPool.DeadEnds.RelevantPrimes
 import LeanPool.DeadEnds.Solution
 import LeanPool.DeadEnds.TailEstimates
+import LeanPool.Duality
+import LeanPool.Duality.Common
+import LeanPool.Duality.ExtendedFields
+import LeanPool.Duality.FarkasBartl
+import LeanPool.Duality.FarkasBasic
+import LeanPool.Duality.FarkasSpecial
+import LeanPool.Duality.LinearProgramming
+import LeanPool.Duality.LinearProgrammingB
 import LeanPool.Erdos1196
 import LeanPool.Erdos1196.Basic
 import LeanPool.Erdos1196.FirstEntryRowTerm
