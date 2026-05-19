@@ -15,8 +15,10 @@ import LeanPool.Monlib4.LinearAlgebra.KroneckerToTensor
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.LmulRmul
 import LeanPool.Monlib4.LinearAlgebra.Matrix
+import LeanPool.Monlib4.LinearAlgebra.Mul''
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec
+import LeanPool.Monlib4.LinearAlgebra.Nacgor
 import LeanPool.Monlib4.LinearAlgebra.OfNorm
 import LeanPool.Monlib4.LinearAlgebra.PiDirectSum
 import LeanPool.Monlib4.LinearAlgebra.PiStarOrderedRing

@@ -333,8 +333,10 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.IsAlmostHermitian
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
+import LeanPool.Monlib4.LinearAlgebra.Mul''
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec
+import LeanPool.Monlib4.LinearAlgebra.Nacgor
 import LeanPool.Monlib4.LinearAlgebra.OfNorm
 import LeanPool.Monlib4.LinearAlgebra.PiDirectSum
 import LeanPool.Monlib4.LinearAlgebra.PiStarOrderedRing

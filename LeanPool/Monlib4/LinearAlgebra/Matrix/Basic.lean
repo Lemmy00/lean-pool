@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.TensorProduct.Matrix
 
 /-!
 # Matrix basics
@@ -14,7 +15,7 @@ formalization.
 
 namespace Matrix
 
-open scoped BigOperators Matrix
+open scoped BigOperators Matrix Kronecker
 
 theorem mulVec_stdBasis {R m n : Type _} [Semiring R] [Fintype n]
     (a : Matrix m n R) (i : m) (j : n) :
@@ -48,6 +49,18 @@ theorem smul_mulVec_assoc {R m n : Type _} [Semiring R] [Fintype n]
     (r • x) *ᵥ y = r • (x *ᵥ y) := by
   ext i
   simp [mulVec, dotProduct, Finset.mul_sum, mul_assoc]
+
+/-- Expand a square matrix indexed by a product as a sum of Kronecker products of matrix units. -/
+theorem kmul_representation {R n₁ n₂ : Type _} [Fintype n₁] [Fintype n₂]
+    [DecidableEq n₁] [DecidableEq n₂] [Semiring R]
+    (x : Matrix (n₁ × n₂) (n₁ × n₂) R) :
+    x =
+      ∑ i : n₁, ∑ j : n₁, ∑ k : n₂, ∑ l : n₂,
+        x (i, k) (j, l) • Matrix.single i j (1 : R) ⊗ₖ Matrix.single k l (1 : R) := by
+  simp_rw [← Matrix.ext_iff, Matrix.sum_apply, Matrix.smul_apply, Matrix.kroneckerMap,
+    Matrix.single, Matrix.of_apply, ite_mul, MulZeroClass.zero_mul, one_mul, smul_ite,
+    smul_zero, ite_and, Finset.sum_ite_irrel, Finset.sum_const_zero, Finset.sum_ite_eq',
+    Finset.mem_univ, if_true, Prod.mk.eta, smul_eq_mul, mul_one, forall₂_true_iff]
 
 end Matrix
 
