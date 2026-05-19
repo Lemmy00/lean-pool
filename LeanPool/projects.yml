@@ -1046,7 +1046,7 @@ projects:
       - "28D05"
   - slug: monlib4
     title: Monlib4 Operator-Algebra and Quantum-Set Core
-    summary: Formalizes monlib4's finite matrix-algebra inner-automorphism theorem, unitary inner automorphisms, star-preserving linear maps, the structural core of quantum sets, and the core Schur-product definition of quantum graphs.
+    summary: Formalizes monlib4's finite matrix-algebra inner-automorphism theorem, unitary inner automorphisms, star-preserving linear maps, the structural core of quantum sets, the core Schur-product definition of quantum graphs, and a self-contained digit-sum divisibility theorem.
     branch: operator algebras and quantum graph theory
     entry_module: LeanPool.Monlib4
     authors:
@@ -1089,6 +1089,10 @@ projects:
         informal: Defines quantum graphs as Schur-idempotent endomorphisms.
       - declaration: QuantumGraph.Real
         informal: Defines real quantum graphs as Schur-idempotent, star-preserving endomorphisms.
+      - declaration: nat_repr_mod_eq_sum_repr_mod
+        informal: Proves that the value represented by digits in base `a + 1` has the same remainder modulo `a` as the sum of those digits.
+      - declaration: nat_dvd_repr_iff_nat_dvd_sum_repr
+        informal: Proves the generalized digit-sum divisibility criterion for base `a + 1` modulo `a`.
     tags:
       - linear-algebra
       - operator-algebras

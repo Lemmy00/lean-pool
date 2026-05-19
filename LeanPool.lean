@@ -316,6 +316,7 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.MulOp
 import LeanPool.Monlib4.LinearAlgebra.Ips.OpUnop
 import LeanPool.Monlib4.LinearAlgebra.Ips.Pos
 import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
+import LeanPool.Monlib4.LinearAlgebra.Ips.Strict
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 import LeanPool.Monlib4.LinearAlgebra.IsProj'
 import LeanPool.Monlib4.LinearAlgebra.IsReal
@@ -338,6 +339,8 @@ import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.FiniteDimensional
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Lemmas
 import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
+import LeanPool.Monlib4.Other
+import LeanPool.Monlib4.Other.Sonia
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.Preq.Dite
 import LeanPool.Monlib4.Preq.Equiv

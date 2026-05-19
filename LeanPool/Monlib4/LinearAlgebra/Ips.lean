@@ -10,6 +10,7 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.MulOp
 import LeanPool.Monlib4.LinearAlgebra.Ips.OpUnop
 import LeanPool.Monlib4.LinearAlgebra.Ips.Pos
 import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
+import LeanPool.Monlib4.LinearAlgebra.Ips.Strict
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 
 /-!
