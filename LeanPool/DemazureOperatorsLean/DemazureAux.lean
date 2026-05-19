@@ -51,14 +51,14 @@ lemma r_equiv : Equivalence (r n) := by
       simp[h1, h2]
     · apply poly_cancel_left y.denominator_ne_zero
       apply poly_cancel_left h3
-      ring
+      ring_nf
       rw[mul_assoc y.numerator]
       rw[mul_comm y.denominator x.numerator]
       rw[h1]
       rw[mul_comm y.numerator (y.numerator * x.denominator)]
       rw[mul_assoc]
       rw[h2]
-      ring
+      ring_nf
 
 instance s (n : ℕ) : Setoid (PolyFraction' n) where
   r := r n
@@ -126,7 +126,7 @@ lemma add'_s {n : ℕ} : ∀ a₁ b₁ a₂ b₂ : PolyFraction' n, a₁ ≈ a�
     add_mk a₁ b₁ = add_mk a₂ b₂ := by
   intro a1 b1 a2 b2 h1 h2
   simp only [add_mk, add', mk_eq]
-  ring
+  ring_nf
   rw[← equiv_r] at h1
   rw[← equiv_r] at h2
   change a1.numerator * a2.denominator = a2.numerator * a1.denominator at h1
@@ -140,7 +140,7 @@ lemma add'_s {n : ℕ} : ∀ a₁ b₁ a₂ b₂ : PolyFraction' n, a₁ ≈ a�
   rw[mul_assoc a1.denominator]
   rw[mul_assoc a2.denominator]
   rw[h2]
-  ring
+  ring_nf
 
 /-- Addition on quotient polynomial fractions. -/
 def add : PolyFraction n → PolyFraction n → PolyFraction n :=
@@ -159,7 +159,7 @@ lemma sub'_s {n : ℕ} : ∀ a₁ b₁ a₂ b₂ : PolyFraction' n, a₁ ≈ a�
     (sub' a₁ b₁) = (sub' a₂ b₂) := by
   intro a1 b1 a2 b2 h1 h2
   simp only [sub', mk_eq]
-  ring
+  ring_nf
   rw[← equiv_r] at h1
   rw[← equiv_r] at h2
   change a1.numerator * a2.denominator = a2.numerator * a1.denominator at h1
@@ -173,7 +173,7 @@ lemma sub'_s {n : ℕ} : ∀ a₁ b₁ a₂ b₂ : PolyFraction' n, a₁ ≈ a�
   rw[mul_assoc a1.denominator]
   rw[mul_assoc a2.denominator]
   rw[h2]
-  ring
+  ring_nf
 
 /-- Subtraction on quotient polynomial fractions. -/
 def sub : PolyFraction n → PolyFraction n → PolyFraction n :=
@@ -192,7 +192,7 @@ lemma mul'_s {n : ℕ} : ∀ a₁ b₁ a₂ b₂ : PolyFraction' n, a₁ ≈ a�
     (mul_mk a₁ b₁) = (mul_mk a₂ b₂) := by
   intro a1 b1 a2 b2 h1 h2
   simp only [mul_mk, mul', mk_eq]
-  ring
+  ring_nf
   rw[← equiv_r] at h1
   rw[← equiv_r] at h2
   change a1.numerator * a2.denominator = a2.numerator * a1.denominator at h1
@@ -203,7 +203,7 @@ lemma mul'_s {n : ℕ} : ∀ a₁ b₁ a₂ b₂ : PolyFraction' n, a₁ ≈ a�
   rw[mul_comm b1.numerator]
   rw[mul_assoc (a2.numerator * a1.denominator)]
   rw[h2]
-  ring
+  ring_nf
 
 /-- Multiplication on quotient polynomial fractions. -/
 def mul : PolyFraction n → PolyFraction n → PolyFraction n :=
@@ -243,11 +243,11 @@ def neg_mk (p : PolyFraction' n) : PolyFraction n := mk (neg' p)
 lemma neg_s (n : ℕ) : ∀ (a₁ a₂ : PolyFraction' n), a₁ ≈ a₂ → (neg_mk a₁) = (neg_mk a₂) := by
   intro a1 a2 h
   simp only [neg_mk, neg', mk_eq, neg_mul, mul_neg, neg_inj]
-  ring
+  ring_nf
   rw[← equiv_r] at h
   change a1.numerator * a2.denominator = a2.numerator * a1.denominator at h
   rw[h]
-  ring
+  ring_nf
 
 /-- Negation on quotient polynomial fractions. -/
 def neg (p : PolyFraction n) : PolyFraction n := Quotient.lift neg_mk (neg_s n) p
@@ -261,7 +261,7 @@ lemma add_comm (p q : PolyFraction n) : add p q = add q p := by
   rw[← hq]
   simp[lift2_r]
   simp[add_mk, add']
-  ring
+  ring_nf
 
 lemma add_assoc (p q r : PolyFraction n) : add (add p q) r = add p (add q r) := by
   rcases get_polyfraction_rep p with ⟨p', hp⟩
@@ -280,7 +280,7 @@ lemma add_assoc (p q r : PolyFraction n) : add (add p q) r = add p (add q r) := 
   apply Quotient.sound
   apply equiv_r.mp
   simp[Demazure.r, add']
-  ring
+  ring_nf
 
 -- We don't prove that it is a ring since we don't need all the properties for our use
 
@@ -316,11 +316,11 @@ lemma DemAux_well_defined (i : Fin n) : ∀ (p q : PolyFraction' n),
         (q.denominator * S q.denominator * delta) =
       (p.numerator * q.denominator) * (S p.denominator * S q.denominator * delta) -
         (S p.numerator * S q.denominator) * (p.denominator * q.denominator * delta) := by
-        ring
+        ring_nf
     _ = p.denominator * S p.denominator * delta *
         (q.numerator * S q.denominator - S q.numerator * q.denominator) := by
         rw [h, h_swap]
-        ring
+        ring_nf
 
 /-- The auxiliary Demazure operator on quotient polynomial fractions. -/
 def DemAux (i : Fin n) (p : PolyFraction n) : PolyFraction n :=
