@@ -174,6 +174,7 @@ import LeanPool.LatticeTriangle.Solution
 import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
 import LeanPool.Polylean
+import LeanPool.Polylean.Complexes.GraphPaths
 import LeanPool.Polylean.UnitConjecture
 import LeanPool.Polylean.UnitConjecture.AddFreeGroup
 import LeanPool.Polylean.UnitConjecture.Cocycle

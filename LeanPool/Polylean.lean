@@ -5,6 +5,7 @@ Authors: Siddhartha Gadgil, Anand Rao
 -/
 
 import LeanPool.Polylean.UnitConjecture
+import LeanPool.Polylean.Complexes.GraphPaths
 
 /-!
 # Polylean Unit Conjecture Counterexample
