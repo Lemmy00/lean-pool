@@ -333,6 +333,7 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.LinearAlgebra.OfNorm
+import LeanPool.Monlib4.LinearAlgebra.PiStarOrderedRing
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.DeltaForm
