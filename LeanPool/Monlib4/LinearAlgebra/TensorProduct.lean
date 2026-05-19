@@ -7,6 +7,7 @@ Authors: Monica Omar
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.FiniteDimensional
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Lemmas
+import LeanPool.Monlib4.LinearAlgebra.TensorProduct.OrthonormalBasis
 
 /-!
 # TensorProduct
