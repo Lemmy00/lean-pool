@@ -445,8 +445,8 @@ projects:
       - "11E25"
       - "11H06"
   - slug: order-p-q
-    title: Auxiliary infrastructure for groups of order p * q
-    summary: Auxiliary group-theoretic infrastructure (cyclic helpers, semidirect products, MulZMod, prime-order lemmas) ported from wupr/order-p-q. The full p*q classification did not survive the bump in this session.
+    title: Classification of groups of order p * q
+    summary: Classification of noncyclic finite groups of order p*q, including the prime-square direct-product case and the p<q semidirect-product normal form.
     branch: group theory
     entry_module: LeanPool.OrderPQ
     authors:
@@ -457,10 +457,14 @@ projects:
       github_repo: wupr/order-p-q
     status: verified
     main_declarations:
-      - IsCyclic.of_card_eq_prime
+      - OrderPQ.exists_card_eq_prime_mul_prime_and_not_isCyclic_iff
     main_results:
-      - declaration: IsCyclic.of_card_eq_prime
-        informal: A finite group whose order is prime is cyclic.
+      - declaration: OrderPQ.exists_card_eq_prime_mul_prime_and_not_isCyclic_iff
+        informal: There exists a noncyclic group of order p*q exactly when p=q, p divides q-1, or q divides p-1.
+      - declaration: OrderPQ.nonempty_mulEquiv_of_card_eq_prime_mul_prime_of_not_isCyclic
+        informal: Any two noncyclic groups of order p*q are isomorphic.
+      - declaration: OrderPQ.nonempty_mulEquiv_semidirectProduct_of_card_eq_prime_mul_prime
+        informal: If p<q, every group of order p*q is isomorphic to a semidirect product of MulZMod q by MulZMod p.
     tags:
       - group-theory
       - finite-groups
