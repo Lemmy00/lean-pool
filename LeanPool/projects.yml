@@ -419,6 +419,38 @@ projects:
       - "28A75"
       - "52A40"
       - "49Q20"
+  - slug: duality
+    title: Duality theory in linear optimization and its extensions
+    summary: Formalizes Farkas-like theorems and strong LP duality, including extensions to a linearly ordered field with bot and top.
+    branch: linear optimization
+    entry_module: LeanPool.Duality
+    authors:
+      - Martin Dvorak
+    source:
+      arxiv: "2409.08119"
+      github_repo: madvorak/duality
+    status: verified
+    main_declarations:
+      - extendedFarkas
+      - StandardLP.strongDuality
+    main_results:
+      - declaration: equalityFarkas
+        informal: Farkas' lemma for linear equalities over nonnegative variables.
+      - declaration: inequalityFarkas
+        informal: Farkas' lemma for linear inequalities over nonnegative variables.
+      - declaration: extendedFarkas
+        informal: Extended Farkas theorem for matrices and vectors over a linearly ordered field with bot and top.
+      - declaration: ValidELP.strongDuality
+        informal: Strong duality theorem for extended linear programs.
+      - declaration: StandardLP.strongDuality
+        informal: Strong duality theorem for linear programs in standard form.
+    tags:
+      - linear-programming
+      - optimization
+      - farkas-lemma
+    msc:
+      - "90C05"
+      - "90C46"
   - slug: sumsthreesquares
     title: Sums of Three Squares
     summary: Formalizes a blueprint step in the three-squares theorem using quadratic forms and geometry of numbers.
@@ -474,3 +506,200 @@ projects:
       - classification
     msc:
       - "17B30"
+  - slug: artin-wedderburn
+    title: Artin-Wedderburn Theorem
+    summary: Formalizes the Artin-Wedderburn theorem for prime and simple Artinian rings.
+    branch: ring theory
+    entry_module: LeanPool.ArtinWedderburn
+    authors:
+      - Matevz Miščič
+      - Maša Žaucer
+      - Job Petrovčič
+    source:
+      title: A First Course in Noncommutative Rings
+      authors:
+        - T. Y. Lam
+      url: https://doi.org/10.1007/978-1-4419-8616-0
+      github_repo: JobPetrovcic/ArtinWedderburn
+    status: verified
+    main_declarations:
+      - LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
+    main_results:
+      - declaration: LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
+        informal: A nontrivial prime Artinian ring is isomorphic to a matrix ring over a division ring.
+    tags:
+      - ring-theory
+      - noncommutative-algebra
+      - artinian-rings
+    msc:
+      - "16K20"
+      - "16P20"
+  - slug: order-p-q
+    title: Classification of groups of order p * q
+    summary: Classification of noncyclic finite groups of order p*q, including the prime-square direct-product case and the p<q semidirect-product normal form.
+    branch: group theory
+    entry_module: LeanPool.OrderPQ
+    authors:
+      - Scott Harper
+      - Peiran Wu
+    source:
+      arxiv: "2501.09769"
+      github_repo: wupr/order-p-q
+    status: verified
+    main_declarations:
+      - OrderPQ.exists_card_eq_prime_mul_prime_and_not_isCyclic_iff
+    main_results:
+      - declaration: OrderPQ.exists_card_eq_prime_mul_prime_and_not_isCyclic_iff
+        informal: There exists a noncyclic group of order p*q exactly when p=q, p divides q-1, or q divides p-1.
+      - declaration: OrderPQ.nonempty_mulEquiv_of_card_eq_prime_mul_prime_of_not_isCyclic
+        informal: Any two noncyclic groups of order p*q are isomorphic.
+      - declaration: OrderPQ.nonempty_mulEquiv_semidirectProduct_of_card_eq_prime_mul_prime
+        informal: If p<q, every group of order p*q is isomorphic to a semidirect product of MulZMod q by MulZMod p.
+    tags:
+      - group-theory
+      - finite-groups
+      - semidirect-products
+    msc:
+      - "20D20"
+      - "20E22"
+      - "20D60"
+  - slug: factorizationsystems
+    title: Factorization Systems
+    summary: Formalizes factorization systems, orthogonality, orthogonal complements, and the standard construction from weak factorization plus orthogonality.
+    branch: category theory
+    entry_module: LeanPool.FactorizationSystems
+    authors:
+      - Ivan Kobe
+    source:
+      title: Category Theory in Context
+      authors:
+        - Emily Riehl
+      url: https://emilyriehl.github.io/files/context.pdf
+      github_repo: ivankobe/FactorizationSystems
+    status: verified
+    main_declarations:
+      - CategoryTheory.FactorizationSystem_characterization
+    main_results:
+      - declaration: CategoryTheory.FactorizationSystem
+        informal: Defines factorization systems on a category with specified left and right classes.
+      - declaration: CategoryTheory.FactorizationSystem_characterization
+        informal: Constructs a factorization system from repleteness, weak factorizations, and orthogonality.
+      - declaration: CategoryTheory.orthogonal
+        informal: Defines orthogonality of two morphisms by existence and uniqueness of diagonal fillers.
+      - declaration: CategoryTheory.right_orthogonal_complement
+        informal: Defines the right orthogonal complement of a morphism property.
+    tags:
+      - category-theory
+      - factorization-systems
+      - orthogonality
+    msc:
+      - "18A32"
+      - "18A40"
+  - slug: shannon-1948-formalization
+    title: Shannon Entropy Characterization
+    summary: Formalizes Shannon's finite-alphabet characterization theorem for entropy from the 1948 paper.
+    branch: information theory
+    entry_module: LeanPool.Shannon1948Formalization
+    authors:
+      - Samuel Schlesinger
+    source:
+      url: https://github.com/SamuelSchlesinger/shannon-1948-formalization
+      github_repo: SamuelSchlesinger/shannon-1948-formalization
+    status: verified
+    main_declarations:
+      - LeanPool.Shannon1948Formalization.entropyNat_unique
+    main_results:
+      - declaration: LeanPool.Shannon1948Formalization.entropyNat_unique
+        informal: Proves that any finite-alphabet uncertainty functional satisfying Shannon's conditions equals natural-log entropy up to a positive scale.
+      - declaration: LeanPool.Shannon1948Formalization.entropyBase_unique
+        informal: Restates the characterization for any logarithm base greater than one.
+      - declaration: LeanPool.Shannon1948Formalization.entropyNat_shannonAxioms
+        informal: Proves the converse, showing that Shannon entropy satisfies the formal condition bundle.
+      - declaration: LeanPool.Shannon1948Formalization.chain_rule
+        informal: Proves the finite joint-entropy chain rule.
+      - declaration: LeanPool.Shannon1948Formalization.entropyNat_joint_le_add
+        informal: Proves subadditivity of finite joint entropy.
+    tags:
+      - information-theory
+      - entropy
+      - probability
+    msc:
+      - "94A17"
+      - "60C05"
+  - slug: aharonikorman
+    title: Disproof of the Aharoni-Korman Conjecture
+    summary: Formalizes Hollom's counterexample to the Aharoni-Korman fishbone conjecture for partially ordered sets.
+    branch: order theory
+    entry_module: LeanPool.AharoniKorman
+    authors:
+      - Bhavik Mehta
+    source:
+      url: https://github.com/b-mehta/AharoniKorman
+      github_repo: b-mehta/AharoniKorman
+    status: verified
+    main_declarations:
+      - LeanPool.AharoniKorman.aharoni_korman_false
+    main_results:
+      - declaration: LeanPool.AharoniKorman.aharoni_korman_false
+        informal: Proves that not every partially ordered set has either an infinite antichain or a chain meeting every antichain in a partition.
+    tags:
+      - order-theory
+      - combinatorics
+      - partial-orders
+    msc:
+      - "06A06"
+      - "06A07"
+  - slug: pcf-theory
+    title: PCF Theory
+    summary: Formalizes foundational results from Shelah's Possible Cofinality theory, including the existence of club-guessing sequences.
+    branch: set theory
+    entry_module: LeanPool.PCFTheory
+    authors:
+      - YnirPaz
+    source:
+      url: https://github.com/YnirPaz/PCF-Theory
+      github_repo: YnirPaz/PCF-Theory
+    status: verified
+    main_declarations:
+      - Ordinal.exists_isClubGuessing_of_cof_uncountable
+    main_results:
+      - declaration: Ordinal.exists_isClubGuessing_of_cof_uncountable
+        informal: Proves the existence of a club-guessing sequence on a stationary set whose elements share a common uncountable cofinality bounded by the cofinality of the ambient ordinal.
+    tags:
+      - set-theory
+      - cardinal-arithmetic
+      - club-guessing
+    msc:
+      - "03E04"
+      - "03E10"
+      - "03E55"
+  - slug: pointwise-birkhoff
+    title: Pointwise Birkhoff Ergodic Theorem
+    summary: Formalizes the pointwise Birkhoff ergodic theorem for integrable real-valued observables.
+    branch: ergodic theory
+    entry_module: LeanPool.PointwiseBirkhoff
+    authors:
+      - Lua Viana Reis
+      - Oliver Butterley
+      - Pietro Monticone
+    source:
+      title: Ergodic Theory
+      authors:
+        - Karl Petersen
+      url: https://doi.org/10.1017/CBO9780511608728
+      github_repo: lua-vr/pointwise-birkhoff
+    status: verified
+    main_declarations:
+      - LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem'
+    main_results:
+      - declaration: LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem'
+        informal: Proves almost-everywhere convergence of Birkhoff averages to invariant conditional expectation for any integrable real-valued observable.
+      - declaration: LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem
+        informal: Proves the measurable-observable version of the pointwise Birkhoff ergodic theorem.
+    tags:
+      - ergodic-theory
+      - measure-theory
+      - probability
+    msc:
+      - "37A30"
+      - "28D05"
