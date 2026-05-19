@@ -242,6 +242,12 @@ import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
 import LeanPool.PointwiseBirkhoff
 import LeanPool.PointwiseBirkhoff.Main
+import LeanPool.PolyaEnumerationTheorem
+import LeanPool.PolyaEnumerationTheorem.Basic
+import LeanPool.PolyaEnumerationTheorem.Concrete
+import LeanPool.PolyaEnumerationTheorem.PermutationAuxiliary
+import LeanPool.PolyaEnumerationTheorem.ReductionToFin
+import LeanPool.PolyaEnumerationTheorem.StirlingFirstKindSum
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
 import LeanPool.RiemannMappingTheorem
