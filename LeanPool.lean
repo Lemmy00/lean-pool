@@ -121,6 +121,8 @@ import LeanPool.FactorizationSystems.OrthogonalComplements
 import LeanPool.FactorizationSystems.Orthogonality
 import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
+import LeanPool.Fineqs
+import LeanPool.Fineqs.Main
 import LeanPool.FormalLearningTheory
 import LeanPool.FormalLearningTheory.Basic
 import LeanPool.FormalLearningTheory.Bridge
