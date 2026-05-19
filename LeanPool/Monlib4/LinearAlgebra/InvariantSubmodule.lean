@@ -77,6 +77,11 @@ theorem linearProjOfIsCompl_eq_self_sub_linear_proj {p q : Submodule R E} (hpq :
   change Submodule.IsCompl.projection hpq.symm x = x - Submodule.IsCompl.projection hpq x
   exact Submodule.IsCompl.projection_eq_self_sub_projection hpq x
 
+theorem linear_proj_add_linearProjOfIsCompl_eq_self {p q : Submodule R E} (hpq : IsCompl p q)
+    (x : E) :
+    (p.linearProjOfIsCompl q hpq x : E) + (q.linearProjOfIsCompl p hpq.symm x : E) = x := by
+  rw [linearProjOfIsCompl_eq_self_sub_linear_proj hpq, add_comm, sub_add_cancel]
+
 theorem linearProjOfIsCompl_idempotent {p q : Submodule R E} (hpq : IsCompl p q) :
     (p.subtype.comp (p.linearProjOfIsCompl q hpq)) *
         (p.subtype.comp (p.linearProjOfIsCompl q hpq)) =

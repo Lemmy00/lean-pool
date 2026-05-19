@@ -6,6 +6,7 @@ Authors: Monica Omar
 
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
 import LeanPool.Monlib4.LinearAlgebra.Ips.Ips
+import LeanPool.Monlib4.LinearAlgebra.Ips.Pos
 import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 
