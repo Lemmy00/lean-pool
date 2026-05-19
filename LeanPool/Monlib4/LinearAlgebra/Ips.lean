@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
+import LeanPool.Monlib4.LinearAlgebra.Ips.Ips
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 
 /-!
