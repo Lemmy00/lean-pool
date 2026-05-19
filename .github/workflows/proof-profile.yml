@@ -314,6 +314,44 @@ jobs:
           # `## <file>` markers written by the profile loop).
           sections = split_sections(log_text)
 
+          # Parse `lake build` timing up front so the wall-clock number can
+          # lead the comment — it is the single most useful answer to "how
+          # long does this PR take to compile". The per-module breakdown
+          # remains below in the "Lake build timing" section.
+          build_clock: dict[str, float] = {}
+          build_times: dict[str, float] = {}
+          if build_log_path.exists():
+              for line in build_log_path.read_text(errors="replace").splitlines():
+                  built = built_re.search(line)
+                  if built:
+                      module = built.group("module")
+                      value = float(built.group("value"))
+                      if built.group("unit") == "ms":
+                          value /= 1000
+                      build_times[module] = max(build_times.get(module, 0.0), value)
+                      continue
+                  timing = time_re.match(line.strip())
+                  if timing:
+                      build_clock[timing.group(1)] = float(timing.group(2))
+          if "real" in build_clock:
+              lead = (
+                  f"**`lake build LeanPool` wall time:** "
+                  f"**{build_clock['real']:.2f} s** "
+                  f"(= {build_clock['real'] / 60:.2f} min)"
+              )
+              if "user" in build_clock and "sys" in build_clock:
+                  lead += (
+                      f" — `user {build_clock['user']:.2f} s`, "
+                      f"`sys {build_clock['sys']:.2f} s`"
+                  )
+              out.append(lead + ".\n\n")
+              out.append(
+                  "_This is the parallel build wall clock and is the "
+                  "compile-time answer for this PR. The serial per-file "
+                  "sums below are useful for ranking slow files, not as a "
+                  "build budget._\n\n"
+              )
+
           if not sections:
               out.append("_No files profiled._\n")
           else:
@@ -490,43 +528,20 @@ jobs:
                   fname.removesuffix(".lean").replace("/", ".")
                   for fname, *_ in summary_rows
               }
-              build_times: dict[str, float] = {}
-              build_clock: dict[str, float] = {}
-              if build_log_path.exists():
-                  for line in build_log_path.read_text(errors="replace").splitlines():
-                      built = built_re.search(line)
-                      if built:
-                          module = built.group("module")
-                          value = float(built.group("value"))
-                          if built.group("unit") == "ms":
-                              value /= 1000
-                          if module in changed_modules:
-                              build_times[module] = max(build_times.get(module, 0.0), value)
-                          continue
-                      timing = time_re.match(line.strip())
-                      if timing:
-                          build_clock[timing.group(1)] = float(timing.group(2))
-              if build_clock or build_times:
-                  out.append("### Lake build timing\n\n")
-                  if "real" in build_clock:
-                      out.append(
-                          f"`lake build LeanPool` wall time: "
-                          f"**{build_clock['real']:.2f} s**"
-                      )
-                      if "user" in build_clock and "sys" in build_clock:
-                          out.append(
-                              f" (`user {build_clock['user']:.2f} s`, "
-                              f"`sys {build_clock['sys']:.2f} s`)"
-                          )
-                      out.append(".\n\n")
-                  if build_times:
-                      out.append("| Changed module | Lake time |\n")
-                      out.append("|---|---:|\n")
-                      for module, seconds in sorted(
-                          build_times.items(), key=lambda row: -row[1]
-                      )[:12]:
-                          out.append(f"| `{module}` | {seconds:.2f} s |\n")
-                      out.append("\n")
+              changed_build_times = {
+                  module: seconds
+                  for module, seconds in build_times.items()
+                  if module in changed_modules
+              }
+              if changed_build_times:
+                  out.append("### Slowest changed modules (from `lake build`)\n\n")
+                  out.append("| Changed module | Lake time |\n")
+                  out.append("|---|---:|\n")
+                  for module, seconds in sorted(
+                      changed_build_times.items(), key=lambda row: -row[1]
+                  )[:12]:
+                      out.append(f"| `{module}` | {seconds:.2f} s |\n")
+                  out.append("\n")
 
               # Full per-file output, collapsed by default so the comment
               # stays scannable when many files are profiled.
