@@ -463,10 +463,14 @@ projects:
       github_repo: Whysoserioushah/BrauerGroup_new
     status: verified
     main_declarations:
+      - BrauerGroup.Bruaer_Group
+      - BrauerGroupHom.Br
       - Wedderburn_Artin
-      - IsCentralSimple.TensorProduct.simple
-      - CSA_implies_CSA
     main_results:
+      - declaration: BrauerGroup.Bruaer_Group
+        informal: Constructs the Brauer group of a field from Brauer equivalence classes of central simple algebras.
+      - declaration: BrauerGroupHom.Br
+        informal: Constructs the Brauer group functor from fields to commutative groups via scalar extension.
       - declaration: Wedderburn_Artin
         informal: Proves a Wedderburn-Artin decomposition for simple Artinian rings as matrix algebras over division rings.
       - declaration: Wedderburn_Artin_algebra_version
@@ -476,7 +480,7 @@ projects:
       - declaration: IsCentralSimple.TensorProduct.isCentral
         informal: Proves centrality of tensor products of central algebras over a field.
       - declaration: CSA_implies_CSA
-        informal: Shows that base change preserves central simple algebra structure under the imported hypotheses.
+        informal: Shows that the division algebra factor in a matrix presentation of a central simple algebra is central over the base field.
     tags:
       - algebra
       - ring-theory

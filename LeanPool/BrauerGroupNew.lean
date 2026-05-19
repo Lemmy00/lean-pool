@@ -8,6 +8,7 @@ import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Centralizer
 import LeanPool.BrauerGroupNew.ExtendScalar
 import LeanPool.BrauerGroupNew.FieldCat
+import LeanPool.BrauerGroupNew.BrauerGroup
 import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.MatrixCenterEquiv
 import LeanPool.BrauerGroupNew.MatrixEquivTensor
@@ -22,7 +23,7 @@ import LeanPool.BrauerGroupNew.Subfield
 Source: url:https://doi.org/10.1017/9781107359419
 Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 Status: verified
-Main declarations: `Wedderburn_Artin`, `IsCentralSimple.TensorProduct.simple`, `CSA_implies_CSA`
+Main declarations: `BrauerGroup.Bruaer_Group`, `BrauerGroupHom.Br`, `Wedderburn_Artin`
 Tags: algebra, ring-theory, central-simple-algebras, brauer-groups
 MSC: 16K20, 16K50, 16S35
 -/

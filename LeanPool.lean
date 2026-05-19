@@ -30,6 +30,7 @@ import LeanPool.ArchonFirstProofResults.FirstProof6.Auxiliary.ResolventBound
 import LeanPool.ArchonFirstProofResults.FirstProof6.Problem6
 import LeanPool.Basic
 import LeanPool.BrauerGroupNew
+import LeanPool.BrauerGroupNew.BrauerGroup
 import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Centralizer
 import LeanPool.BrauerGroupNew.ExtendScalar
