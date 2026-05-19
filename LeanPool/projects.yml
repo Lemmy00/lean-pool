@@ -1,7 +1,7 @@
 projects:
   - slug: demazureoperatorslean
     title: Demazure Operators and Lean
-    summary: Formalizes Demazure operators on multivariate polynomials and proves their basic braid, commutation, and scalar-action relations.
+    summary: Formalizes Demazure operators on multivariate polynomials, together with Coxeter-system strong exchange and Matsumoto reduced-word theorems.
     branch: algebraic combinatorics
     entry_module: LeanPool.DemazureOperatorsLean
     authors:
@@ -18,6 +18,8 @@ projects:
     main_declarations:
       - Demazure.Dem
       - Demazure.demazure_commutes_adjacent
+      - CoxeterSystem.strongExchangeProperty
+      - CoxeterSystem.matsumoto_reduced
     main_results:
       - declaration: Demazure.Dem
         informal: Defines the Demazure operator as a linear map over the subalgebra of symmetric polynomials.
@@ -29,6 +31,10 @@ projects:
         informal: Proves that non-adjacent Demazure operators commute.
       - declaration: Demazure.demazure_mul_symm
         informal: Proves that symmetric polynomials act as scalars with respect to Demazure operators.
+      - declaration: CoxeterSystem.strongExchangeProperty
+        informal: Proves the strong exchange property for Coxeter systems.
+      - declaration: CoxeterSystem.matsumoto_reduced
+        informal: Proves Matsumoto's theorem that reduced words for the same Coxeter group element are connected by braid moves.
     tags:
       - algebraic-combinatorics
       - demazure-operators

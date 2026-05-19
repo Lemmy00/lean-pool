@@ -8,6 +8,8 @@ import LeanPool.DemazureOperatorsLean.Demazure
 import LeanPool.DemazureOperatorsLean.DemazureAux
 import LeanPool.DemazureOperatorsLean.DemazureRelations
 import LeanPool.DemazureOperatorsLean.DemazureAuxRelations
+import LeanPool.DemazureOperatorsLean.StrongExchange
+import LeanPool.DemazureOperatorsLean.Matsumoto
 
 /-!
 # Demazure Operators and Lean
@@ -15,7 +17,7 @@ import LeanPool.DemazureOperatorsLean.DemazureAuxRelations
 Source: doi:10.1070/RM1973v028n03ABEH001549
 Authors: Óscar Álvarez Sánchez
 Status: verified
-Main declarations: `Demazure.Dem`, `Demazure.demazure_commutes_adjacent`
+Main declarations: `Demazure.Dem`, `Demazure.demazure_commutes_adjacent`, `CoxeterSystem.strongExchangeProperty`, `CoxeterSystem.matsumoto_reduced`
 Tags: algebraic-combinatorics, demazure-operators, polynomials, representation-theory
 MSC: 05E05, 13P10, 20F55
 -/

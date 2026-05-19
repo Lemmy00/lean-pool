@@ -79,6 +79,8 @@ import LeanPool.DemazureOperatorsLean.Demazure
 import LeanPool.DemazureOperatorsLean.DemazureAux
 import LeanPool.DemazureOperatorsLean.DemazureAuxRelations
 import LeanPool.DemazureOperatorsLean.DemazureRelations
+import LeanPool.DemazureOperatorsLean.Matsumoto
+import LeanPool.DemazureOperatorsLean.StrongExchange
 import LeanPool.Erdos1196
 import LeanPool.Erdos1196.Basic
 import LeanPool.Erdos1196.FirstEntryRowTerm
