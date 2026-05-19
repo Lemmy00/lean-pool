@@ -153,9 +153,17 @@ theorem α_nonTrivial : ¬ (trivialNonZeroElem α) := by
   The computational aspects of the group ring implementation and the Metabelian construction
   are used here. -/
 
+/-- The product of Gardam's unit and its inverse is one. -/
+theorem α_mul_α' : ringMul α α' = (1 : 𝔽₂[P]) := by
+  decide +kernel
+
+/-- The product of Gardam's inverse and its unit is one. -/
+theorem α'_mul_α : ringMul α' α = (1 : 𝔽₂[P]) := by
+  decide +kernel
+
 /-- A proof of the existence of a non-trivial unit in `𝔽₂[P]`. -/
 def Counterexample : {u : (𝔽₂[P])ˣ // ¬(trivialNonZeroElem u.val)} :=
-  ⟨⟨α, α', by native_decide, by native_decide⟩, α_nonTrivial⟩
+  ⟨⟨α, α', α_mul_α', α'_mul_α⟩, α_nonTrivial⟩
 
 /-- Giles Gardam's result - Kaplansky's Unit Conjecture is false. -/
 theorem GardamTheorem : ¬ UnitConjecture :=
