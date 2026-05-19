@@ -7,6 +7,7 @@ Authors: Monica Omar
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
+import LeanPool.Monlib4.LinearAlgebra.Matrix.IncludeBlock
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 

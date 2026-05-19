@@ -10,6 +10,7 @@ import LeanPool.Monlib4.Preq.Finset
 import LeanPool.Monlib4.Preq.Ites
 import LeanPool.Monlib4.Preq.RCLikeLe
 import LeanPool.Monlib4.Preq.Set
+import LeanPool.Monlib4.Preq.StarAlgEquiv
 
 /-!
 # Preq
