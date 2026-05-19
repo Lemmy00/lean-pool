@@ -313,11 +313,13 @@ import LeanPool.Monlib4.LinearAlgebra.Ips
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
 import LeanPool.Monlib4.LinearAlgebra.Ips.Ips
 import LeanPool.Monlib4.LinearAlgebra.Ips.MulOp
+import LeanPool.Monlib4.LinearAlgebra.Ips.OpUnop
 import LeanPool.Monlib4.LinearAlgebra.Ips.Pos
 import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 import LeanPool.Monlib4.LinearAlgebra.IsProj'
 import LeanPool.Monlib4.LinearAlgebra.IsReal
+import LeanPool.Monlib4.LinearAlgebra.KroneckerToTensor
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.Matrix
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
@@ -333,6 +335,8 @@ import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMul
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
+import LeanPool.Monlib4.LinearAlgebra.TensorProduct.FiniteDimensional
+import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Lemmas
 import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.Preq.Dite
