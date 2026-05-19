@@ -1,11 +1,15 @@
 """Tests for deterministic partial-port auditing."""
 
+from pathlib import Path
+
 from lean_pool.partial_port_audit import (
     LeanFile,
     LeanStats,
     count_lean_loc,
     evaluate_stats,
     has_forbidden_upstream_construct,
+    imported_modules,
+    module_name,
     normalize_stem,
     stats_from_worktree,
 )
@@ -47,6 +51,41 @@ def test_stats_from_worktree_skips_unimportable_upstream_files(tmp_path) -> None
     stats = stats_from_worktree(tmp_path)
 
     assert [file.path for file in stats.files] == ["Good.lean"]
+
+
+def test_stats_from_worktree_skips_dependents_of_unimportable_files(
+    tmp_path,
+) -> None:
+    """Files that import unimportable upstream modules do not count."""
+    (tmp_path / "Bad.lean").write_text(
+        "theorem missing : True := by sorry\n", encoding="utf-8"
+    )
+    (tmp_path / "UsesBad.lean").write_text(
+        "import Bad\ndef y := 1\n", encoding="utf-8"
+    )
+    (tmp_path / "UsesUsesBad.lean").write_text(
+        "import UsesBad\ndef z := 1\n", encoding="utf-8"
+    )
+    (tmp_path / "Good.lean").write_text("def x := 1\n", encoding="utf-8")
+
+    stats = stats_from_worktree(tmp_path)
+
+    assert [file.path for file in stats.files] == ["Good.lean"]
+
+
+def test_imported_modules_ignores_comments() -> None:
+    """Commented-out imports do not affect dependency analysis."""
+    text = """
+-- import Commented
+/- import Blocked -/
+import Real.One Real.Two
+"""
+    assert imported_modules(text) == ("Real.One", "Real.Two")
+
+
+def test_module_name_uses_repository_relative_path() -> None:
+    """Repository-relative paths map to dotted Lean module names."""
+    assert module_name(Path("Foo/Bar.lean")) == "Foo.Bar"
 
 
 def test_normalize_stem_matches_renamed_camel_case_file() -> None:

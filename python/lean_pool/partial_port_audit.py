@@ -23,6 +23,7 @@ MAX_MISSING_FILES = 8
 PROJECTS_YML = "LeanPool/projects.yml"
 GITHUB_REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 FORBIDDEN_PROOF_GAP_RE = re.compile(r"\b(?:sorry|admit)\b")
+IMPORT_RE = re.compile(r"^\s*import\s+(.+)$")
 
 
 @dataclass(frozen=True)
@@ -164,6 +165,23 @@ def normalize_stem(path: str | Path) -> str:
     return re.sub(r"[^a-z0-9]", "", Path(path).stem.lower())
 
 
+def module_name(path: Path) -> str:
+    """Return the Lean module name suggested by a repository-relative path."""
+    return ".".join(path.with_suffix("").parts)
+
+
+def imported_modules(text: str) -> tuple[str, ...]:
+    """Return module names imported by a Lean source file."""
+    stripped = _strip_lean_comments(text)
+    imports: list[str] = []
+    for line in stripped.splitlines():
+        match = IMPORT_RE.match(line)
+        if match is None:
+            continue
+        imports.extend(token.strip() for token in match.group(1).split() if token)
+    return tuple(imports)
+
+
 def ignored_lean_path(path: Path) -> bool:
     """Return true for Lean files that should not count as source content."""
     if path.name == "lakefile.lean":
@@ -174,12 +192,35 @@ def ignored_lean_path(path: Path) -> bool:
 
 def stats_from_worktree(root: Path) -> LeanStats:
     """Collect importable Lean stats from an upstream checkout."""
-    files: list[LeanFile] = []
+    source_files: dict[Path, str] = {}
     for path in sorted(root.rglob("*.lean")):
         relative = path.relative_to(root)
-        if ignored_lean_path(relative):
+        if not ignored_lean_path(relative):
+            source_files[relative] = path.read_text()
+
+    module_paths = {module_name(path): path for path in source_files}
+    excluded_paths = {
+        path
+        for path, text in source_files.items()
+        if has_forbidden_upstream_construct(text)
+    }
+    changed = True
+    while changed:
+        changed = False
+        for path, text in source_files.items():
+            if path in excluded_paths:
+                continue
+            for imported_module in imported_modules(text):
+                imported_path = module_paths.get(imported_module)
+                if imported_path is not None and imported_path in excluded_paths:
+                    excluded_paths.add(path)
+                    changed = True
+                    break
+
+    files: list[LeanFile] = []
+    for relative, text in sorted(source_files.items()):
+        if relative in excluded_paths:
             continue
-        text = path.read_text()
         if has_forbidden_upstream_construct(text):
             continue
         files.append(
