@@ -166,6 +166,7 @@ import LeanPool.FormalizationOfBoundedArithmetic.Syntax
 import LeanPool.FormalizationOfBoundedArithmetic.V0
 import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddAssoc
 import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddComm
+import LeanPool.FormalizationOfBoundedArithmetic.V0StrSuccAssoc
 import LeanPool.ForwardEuler
 import LeanPool.ForwardEuler.Main
 import LeanPool.GrothendieckVanishing

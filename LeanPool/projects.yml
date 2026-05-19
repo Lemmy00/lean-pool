@@ -459,6 +459,7 @@ projects:
       - IOPENModel.add_assoc
       - V0Model.ind_of_comp
       - str_add_assoc
+      - str_succ_assoc
     main_results:
       - declaration: IOPENModel.add_assoc
         informal: Proves associativity of addition in IOPEN models.
@@ -476,6 +477,8 @@ projects:
         informal: Proves commutativity of string addition in V0 extension models.
       - declaration: str_add_assoc
         informal: Proves associativity of string addition in V0 extension models.
+      - declaration: str_succ_assoc
+        informal: Proves that string addition associates with string successor in V0 extension models.
     tags:
       - logic
       - bounded-arithmetic

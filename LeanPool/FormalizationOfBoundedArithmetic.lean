@@ -23,6 +23,7 @@ import LeanPool.FormalizationOfBoundedArithmetic.Syntax
 import LeanPool.FormalizationOfBoundedArithmetic.V0
 import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddAssoc
 import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddComm
+import LeanPool.FormalizationOfBoundedArithmetic.V0StrSuccAssoc
 
 /-!
 # Formalization of bounded arithmetic
@@ -30,7 +31,7 @@ import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddComm
 Source: url:https://github.com/ruplet/formalization-of-bounded-arithmetic
 Authors: ruplet
 Status: verified
-Main declarations: `IOPENModel.add_assoc`, `V0Model.ind_of_comp`, `str_add_assoc`
+Main declarations: `IOPENModel.add_assoc`, `V0Model.ind_of_comp`, `str_add_assoc`, `str_succ_assoc`
 Tags: logic, bounded-arithmetic, model-theory, computational-complexity
 MSC: 03F30, 03D15
 -/
