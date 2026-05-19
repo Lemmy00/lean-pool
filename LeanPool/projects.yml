@@ -476,6 +476,36 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+
+  - slug: lowdimsolvclassification
+    title: Classification of low-dimensional solvable Lie algebras
+    summary: Formalises the classification of solvable Lie algebras up to dimension three.
+    branch: lie theory
+    entry_module: LeanPool.LowDimSolvClassification
+    authors:
+      - Viviana del Barco
+      - Gustavo Infanti
+      - Exequiel Rivas
+      - Paul Schwahn
+    source:
+      title: Classification and Identification of Lie Algebras
+      authors:
+        - Pavel Winternitz
+        - Libor Šnobl
+      url: https://bookstore.ams.org/crmm-33
+      github_repo: LieLean/LowDimSolvClassification
+    status: verified
+    main_declarations:
+      - LieAlgebra.Dim3.classification
+    main_results:
+      - declaration: LieAlgebra.Dim3.classification
+        informal: Classifies three-dimensional solvable Lie algebras over arbitrary fields.
+    tags:
+      - lie-algebras
+      - solvable
+      - classification
+    msc:
+      - "17B30"
   - slug: artin-wedderburn
     title: Artin-Wedderburn Theorem
     summary: Formalizes the Artin-Wedderburn theorem for prime and simple Artinian rings.
