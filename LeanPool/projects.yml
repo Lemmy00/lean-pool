@@ -467,3 +467,57 @@ projects:
     msc:
       - "06A06"
       - "06A07"
+  - slug: pcf-theory
+    title: PCF Theory
+    summary: Formalizes foundational results from Shelah's Possible Cofinality theory, including the existence of club-guessing sequences.
+    branch: set theory
+    entry_module: LeanPool.PCFTheory
+    authors:
+      - YnirPaz
+    source:
+      url: https://github.com/YnirPaz/PCF-Theory
+      github_repo: YnirPaz/PCF-Theory
+    status: verified
+    main_declarations:
+      - Ordinal.exists_isClubGuessing_of_cof_uncountable
+    main_results:
+      - declaration: Ordinal.exists_isClubGuessing_of_cof_uncountable
+        informal: Proves the existence of a club-guessing sequence on a stationary set whose elements share a common uncountable cofinality bounded by the cofinality of the ambient ordinal.
+    tags:
+      - set-theory
+      - cardinal-arithmetic
+      - club-guessing
+    msc:
+      - "03E04"
+      - "03E10"
+      - "03E55"
+  - slug: pointwise-birkhoff
+    title: Pointwise Birkhoff Ergodic Theorem
+    summary: Formalizes the pointwise Birkhoff ergodic theorem for integrable real-valued observables.
+    branch: ergodic theory
+    entry_module: LeanPool.PointwiseBirkhoff
+    authors:
+      - Lua Viana Reis
+      - Oliver Butterley
+      - Pietro Monticone
+    source:
+      title: Ergodic Theory
+      authors:
+        - Karl Petersen
+      url: https://doi.org/10.1017/CBO9780511608728
+      github_repo: lua-vr/pointwise-birkhoff
+    status: verified
+    main_declarations:
+      - LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem'
+    main_results:
+      - declaration: LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem'
+        informal: Proves almost-everywhere convergence of Birkhoff averages to invariant conditional expectation for any integrable real-valued observable.
+      - declaration: LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem
+        informal: Proves the measurable-observable version of the pointwise Birkhoff ergodic theorem.
+    tags:
+      - ergodic-theory
+      - measure-theory
+      - probability
+    msc:
+      - "37A30"
+      - "28D05"
