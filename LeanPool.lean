@@ -308,9 +308,11 @@ import LeanPool.Monlib4.LinearAlgebra
 import LeanPool.Monlib4.LinearAlgebra.DirectSumFromTo
 import LeanPool.Monlib4.LinearAlgebra.End
 import LeanPool.Monlib4.LinearAlgebra.InnerAut
+import LeanPool.Monlib4.LinearAlgebra.InvariantSubmodule
 import LeanPool.Monlib4.LinearAlgebra.Ips
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
+import LeanPool.Monlib4.LinearAlgebra.IsProj'
 import LeanPool.Monlib4.LinearAlgebra.IsReal
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.Matrix
