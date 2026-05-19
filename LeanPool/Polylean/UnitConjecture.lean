@@ -6,6 +6,7 @@ Authors: Siddhartha Gadgil, Anand Rao
 
 import LeanPool.Polylean.UnitConjecture.TorsionFree
 import LeanPool.Polylean.UnitConjecture.GroupRing
+import LeanPool.Polylean.UnitConjecture.GardamTheorem
 
 /-!
 # Polylean Unit Conjecture infrastructure
@@ -20,6 +21,8 @@ Gardam proved that for a group `P` (the *Promislow* or *Hantzsche-Wendt* group),
 following:
 
 * `P` is torsion free; this is proved in [`TorsionFree.lean`](UnitConjecture/TorsionFree.html)
+* `𝔽₂[P]` has a non-trivial unit, so Kaplansky's Unit Conjecture is false;
+  this is proved in [`GardamTheorem.lean`](UnitConjecture/GardamTheorem.html).
 
 The imported code constructs `P`, constructs group rings, and proves the required algebraic
 properties.
