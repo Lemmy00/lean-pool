@@ -6,6 +6,7 @@ Authors: Monica Omar
 
 import LeanPool.Monlib4.LinearAlgebra
 import LeanPool.Monlib4.Preq
+import LeanPool.Monlib4.QuantumGraph
 import LeanPool.Monlib4.RepTheory
 
 /-!
@@ -14,8 +15,8 @@ import LeanPool.Monlib4.RepTheory
 Source: doi:10.4169/amer.math.monthly.124.10.966
 Authors: Monica Omar
 Status: verified
-Main declarations: `Matrix.aut_mat_inner`, `Matrix.innerAut`, `LinearMap.IsReal`, `QuantumSet`
-Tags: linear-algebra, matrices, operator-algebras, quantum-sets, representation-theory
+Main declarations: `Matrix.aut_mat_inner`, `QuantumSet`, `schurMul`, `QuantumGraph`
+Tags: linear-algebra, operator-algebras, quantum-sets, quantum-graphs, representation-theory
 MSC: 15A69, 16W20
 -/
 
@@ -39,7 +40,9 @@ trace, spectrum, multiplication, star, inverses, and Hermitian matrices.  The
 quantum-set core now includes `starAlgebra`, `InnerProductAlgebra`,
 `QuantumSet`, the modular-automorphism identities, the complex quantum set
 instance `Complex.quantumSet`, and the star-preserving map API
-`LinearMap.IsReal` / `LinearMap.real`.
+`LinearMap.IsReal` / `LinearMap.real`. The recovered quantum-graph core includes
+the Schur product `schurMul`, Schur projections, and the predicates
+`QuantumGraph` / `QuantumGraph.Real`.
 
 The supporting imported infrastructure also includes a `Matrix.reshape` linear
 equivalence between `Mₙₓₘ(R)` and `Rⁿˣᵐ`, the entrywise conjugate `Matrix.conj`
@@ -53,9 +56,11 @@ dependent direct sum, basic spectrum commutativity (`isUnit_comm`,
 Imported from <https://github.com/themathqueen/monlib4> (originally Lean
 `v4.21.0-rc3`) and ported to Lean Pool's `v4.30.0-rc2` / Mathlib `v4.30.0-rc2`.
 The successor of <https://github.com/themathqueen/monlib> (the Lean 3 version).
-Large parts of the upstream quantum-graph and Schur-product stack are not yet
-vendored. In particular, upstream modules such as `QuantumSet.SchurMul`,
-`QuantumSet.Pi`, `QuantumGraph.Basic`, and `QuantumGraph.OfClassicalGraph`
-depend on the older `PiLp`/normed-ring scaffold and on upstream heartbeat or
-linter overrides that Lean Pool does not permit.
+Large parts of the upstream quantum-graph and Schur-product theorem stack are
+not yet vendored. In particular, upstream modules such as `QuantumSet.Pi`,
+`QuantumGraph.OfClassicalGraph`, and the deeper theorem sections of
+`QuantumSet.SchurMul` / `QuantumGraph.Basic` depend on the older
+`PiLp`/normed-ring scaffold, the finite-dimensional Hilbert-algebra coalgebra
+instance, and upstream heartbeat or linter overrides that Lean Pool does not
+permit.
 -/

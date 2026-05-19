@@ -186,12 +186,15 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
+import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMul
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.Preq.Dite
 import LeanPool.Monlib4.Preq.Finset
 import LeanPool.Monlib4.Preq.Ites
 import LeanPool.Monlib4.Preq.RCLikeLe
 import LeanPool.Monlib4.Preq.Set
+import LeanPool.Monlib4.QuantumGraph
+import LeanPool.Monlib4.QuantumGraph.Basic
 import LeanPool.Monlib4.RepTheory
 import LeanPool.Monlib4.RepTheory.AutMat
 import LeanPool.PartialRegularity

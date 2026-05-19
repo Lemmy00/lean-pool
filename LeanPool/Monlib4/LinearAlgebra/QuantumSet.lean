@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
+import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMul
 
 /-!
 # QuantumSet

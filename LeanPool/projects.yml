@@ -446,7 +446,7 @@ projects:
       - "11H06"
   - slug: monlib4
     title: Monlib4 Operator-Algebra and Quantum-Set Core
-    summary: Formalizes monlib4's finite matrix-algebra inner-automorphism theorem, unitary inner automorphisms, star-preserving linear maps, and the structural core of quantum sets.
+    summary: Formalizes monlib4's finite matrix-algebra inner-automorphism theorem, unitary inner automorphisms, star-preserving linear maps, the structural core of quantum sets, and the core Schur-product definition of quantum graphs.
     branch: operator algebras and quantum graph theory
     entry_module: LeanPool.Monlib4
     authors:
@@ -457,9 +457,9 @@ projects:
     status: verified
     main_declarations:
       - Matrix.aut_mat_inner
-      - Matrix.innerAut
-      - LinearMap.IsReal
       - QuantumSet
+      - schurMul
+      - QuantumGraph
     main_results:
       - declaration: Matrix.automorphism_matrix_inner
         informal: Shows that any automorphism of a finite nontrivial matrix algebra is implemented by an invertible intertwining matrix.
@@ -483,11 +483,17 @@ projects:
         informal: Defines the monlib4 quantum-set structure with modular automorphisms and a fixed orthonormal basis.
       - declaration: Complex.quantumSet
         informal: Instantiates the complex numbers as the base quantum set.
+      - declaration: schurMul
+        informal: Defines the Schur product of linear maps using multiplication, tensoring, and coalgebra comultiplication.
+      - declaration: QuantumGraph
+        informal: Defines quantum graphs as Schur-idempotent endomorphisms.
+      - declaration: QuantumGraph.Real
+        informal: Defines real quantum graphs as Schur-idempotent, star-preserving endomorphisms.
     tags:
       - linear-algebra
-      - matrices
       - operator-algebras
       - quantum-sets
+      - quantum-graphs
       - representation-theory
     msc:
       - "15A69"
