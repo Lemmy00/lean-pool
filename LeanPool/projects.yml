@@ -508,6 +508,43 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: selberg-sieve4
+    title: Selberg Sieve
+    summary: Formalizes the Selberg sieve with applications to prime-counting bounds and a Brun-Titchmarsh-style estimate.
+    branch: analytic number theory
+    entry_module: LeanPool.SelbergSieve4
+    authors:
+      - Arend Mellendijk
+    source:
+      title: Sieve Methods
+      authors:
+        - Heini Halberstam
+        - Hans-Egon Richert
+      url: https://archive.org/details/sievemethods0000halb
+      github_repo: FLDutchmann/selberg-sieve4
+    status: verified
+    main_declarations:
+      - fundamental_theorem_simple
+      - primeCounting_isBigO_atTop
+      - primesBetween_le
+    main_results:
+      - declaration: fundamental_theorem_simple
+        informal: Proves the simple Selberg sieve upper-bound theorem.
+      - declaration: primeCounting_isBigO_atTop
+        informal: Derives the asymptotic prime-counting upper bound.
+      - declaration: primeCounting_le_mul
+        informal: Gives an eventual explicit constant upper bound for the prime-counting function.
+      - declaration: primesBetween_le
+        informal: Bounds the number of primes in an interval using the sieve estimate.
+    tags:
+      - number-theory
+      - analytic-number-theory
+      - sieve-theory
+      - prime-counting
+    msc:
+      - "11N35"
+      - "11N05"
+      - "11N13"
   - slug: abc-exceptions
     title: Exceptional Set in the abc Conjecture
     summary: Formalizes reductions and optimization bounds for a power-saving estimate on exceptional triples in the abc conjecture.
