@@ -444,6 +444,34 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: artin-wedderburn
+    title: Artin-Wedderburn Theorem
+    summary: Formalizes the Artin-Wedderburn theorem for prime and simple Artinian rings.
+    branch: ring theory
+    entry_module: LeanPool.ArtinWedderburn
+    authors:
+      - Matevz Miščič
+      - Maša Žaucer
+      - Job Petrovčič
+    source:
+      title: A First Course in Noncommutative Rings
+      authors:
+        - T. Y. Lam
+      url: https://doi.org/10.1007/978-1-4419-8616-0
+      github_repo: JobPetrovcic/ArtinWedderburn
+    status: verified
+    main_declarations:
+      - LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
+    main_results:
+      - declaration: LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
+        informal: A nontrivial prime Artinian ring is isomorphic to a matrix ring over a division ring.
+    tags:
+      - ring-theory
+      - noncommutative-algebra
+      - artinian-rings
+    msc:
+      - "16K20"
+      - "16P20"
   - slug: order-p-q
     title: Classification of groups of order p * q
     summary: Classification of noncyclic finite groups of order p*q, including the prime-square direct-product case and the p<q semidirect-product normal form.
