@@ -5,6 +5,7 @@ Authors: seb488, Aristotle
 -/
 import LeanPool.LeanComplexAnalysis.Harmonic.PoissonIntegral
 import LeanPool.LeanComplexAnalysis.Harmonic.PoissonIntegral2
+import LeanPool.LeanComplexAnalysis.Harmonic.PoissonIntegralCircleAverage
 import LeanPool.LeanComplexAnalysis.Harmonic.Positive
 
 /-!
