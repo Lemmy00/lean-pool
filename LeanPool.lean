@@ -88,6 +88,7 @@ import LeanPool.DirectedTopologyLean4.DirectedMap
 import LeanPool.DirectedTopologyLean4.DirectedPathHomotopy
 import LeanPool.DirectedTopologyLean4.DirectedSpace
 import LeanPool.DirectedTopologyLean4.DirectedUnitInterval
+import LeanPool.DirectedTopologyLean4.DirectedVanKampen
 import LeanPool.DirectedTopologyLean4.Fraction
 import LeanPool.DirectedTopologyLean4.FractionEqualities
 import LeanPool.DirectedTopologyLean4.FundamentalCategory

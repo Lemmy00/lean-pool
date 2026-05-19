@@ -16,6 +16,7 @@ import LeanPool.DirectedTopologyLean4.DirectedMap
 import LeanPool.DirectedTopologyLean4.DirectedPathHomotopy
 import LeanPool.DirectedTopologyLean4.DirectedSpace
 import LeanPool.DirectedTopologyLean4.DirectedUnitInterval
+import LeanPool.DirectedTopologyLean4.DirectedVanKampen
 import LeanPool.DirectedTopologyLean4.DTop
 import LeanPool.DirectedTopologyLean4.Fraction
 import LeanPool.DirectedTopologyLean4.FractionEqualities
@@ -37,7 +38,8 @@ import LeanPool.DirectedTopologyLean4.UnitIntervalAux
 Source: url:https://github.com/Dominique-Lawson/Directed-Topology-Lean-4
 Authors: Dominique Lawson, Henning Basold, Peter Bruin
 Status: verified
-Main declarations: `DirectedSpace`, `Dipath`, `Dipath.Dihomotopic`
+Main declarations: `DirectedSpace`, `Dipath`, `Dipath.Dihomotopic`,
+`DirectedVanKampen.directed_van_kampen`
 Tags: directed-topology, algebraic-topology, category-theory
 MSC: 55U40, 55Q05, 18A30
 -/
