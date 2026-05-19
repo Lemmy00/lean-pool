@@ -51,8 +51,9 @@ with the `ᴴᵀ` notation, the projection `directSumFromTo` between summands of
 dependent direct sum, basic spectrum commutativity (`isUnit_comm`,
 `spectrum.comm`), the `PiMat` matrix-family abbreviation, permutation-matrix
 unitarity, self-adjoint/inner-product extensionality lemmas, strict
-tensor-product coercions, and helper lemmas for finite sums, ites/dites,
-digit-sum divisibility in arbitrary bases, and `RCLike`-valued order relations.
+tensor-product coercions, left/right multiplication maps and bimodule maps on
+tensor products, and helper lemmas for finite sums, ites/dites, digit-sum
+divisibility in arbitrary bases, and `RCLike`-valued order relations.
 
 ## Provenance
 
