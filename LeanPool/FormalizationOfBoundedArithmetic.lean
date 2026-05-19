@@ -28,7 +28,7 @@ import LeanPool.FormalizationOfBoundedArithmetic.V0StrSuccAssoc
 /-!
 # Formalization of bounded arithmetic
 
-Source: url:https://github.com/ruplet/formalization-of-bounded-arithmetic
+Source: doi:10.1017/CBO9780511676277
 Authors: ruplet
 Status: verified
 Main declarations: `IOPENModel.add_assoc`, `V0Model.ind_of_comp`, `str_add_assoc`, `str_succ_assoc`
