@@ -1,7 +1,7 @@
 projects:
   - slug: demazureoperatorslean
     title: Demazure Operators and Lean
-    summary: Formalizes Demazure operators on multivariate polynomials, together with Coxeter-system strong exchange and a Matsumoto reduced-word theorem under the imported MatsumotoCondition hypothesis.
+    summary: Formalizes Demazure operators on multivariate polynomials, together with standard Coxeter-theory strong exchange and a Matsumoto reduced-word theorem under the imported MatsumotoCondition hypothesis.
     branch: algebraic combinatorics
     entry_module: LeanPool.DemazureOperatorsLean
     authors:
@@ -31,8 +31,10 @@ projects:
         informal: Proves that symmetric polynomials act as scalars with respect to Demazure operators.
       - declaration: CoxeterSystem.strongExchangeProperty
         informal: Proves the strong exchange property for Coxeter systems.
+        source_ref: "J. E. Humphreys, Reflection Groups and Coxeter Groups, Cambridge University Press, 1990."
       - declaration: CoxeterSystem.matsumoto_reduced
         informal: Proves, assuming MatsumotoCondition, that reduced words for the same Coxeter group element are connected by braid moves.
+        source_ref: "J. E. Humphreys, Reflection Groups and Coxeter Groups, Cambridge University Press, 1990."
     tags:
       - algebraic-combinatorics
       - demazure-operators

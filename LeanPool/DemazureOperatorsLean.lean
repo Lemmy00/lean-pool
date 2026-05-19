@@ -21,3 +21,11 @@ Main declarations: `CoxeterSystem.strongExchangeProperty`, `CoxeterSystem.matsum
 Tags: algebraic-combinatorics, demazure-operators, polynomials, representation-theory
 MSC: 05E05, 13P10, 20F55
 -/
+
+/-!
+The Demazure-operator declarations are sourced to the BGG Schubert-cells paper
+listed in the project card. The strong-exchange and Matsumoto declarations are
+standard Coxeter-theory results, with source metadata attached to those main
+results in `LeanPool/projects.yml` using Humphreys' *Reflection Groups and
+Coxeter Groups*.
+-/
