@@ -40,10 +40,10 @@ specialization as linear maps (`Matrix.innerAut`), and preservation results for
 trace, spectrum, multiplication, star, inverses, and Hermitian matrices.  The
 quantum-set core now includes `starAlgebra`, `InnerProductAlgebra`,
 `QuantumSet`, the modular-automorphism identities, the complex quantum set
-instance `Complex.quantumSet`, delta-form quantum sets, and the star-preserving map API
-`LinearMap.IsReal` / `LinearMap.real`. The recovered quantum-graph core includes
-the Schur product `schurMul`, Schur projections, and the predicates
-`QuantumGraph` / `QuantumGraph.Real`.
+instance `Complex.quantumSet`, finite product quantum sets, delta-form quantum
+sets, and the star-preserving map API `LinearMap.IsReal` / `LinearMap.real`.
+The recovered quantum-graph core includes the Schur product `schurMul`, Schur
+projections, and the predicates `QuantumGraph` / `QuantumGraph.Real`.
 
 The supporting imported infrastructure also includes a `Matrix.reshape` linear
 equivalence between `Mₙₓₘ(R)` and `Rⁿˣᵐ`, the entrywise conjugate `Matrix.conj`
@@ -61,8 +61,8 @@ Imported from <https://github.com/themathqueen/monlib4> (originally Lean
 `v4.21.0-rc3`) and ported to Lean Pool's `v4.30.0-rc2` / Mathlib `v4.30.0-rc2`.
 The successor of <https://github.com/themathqueen/monlib> (the Lean 3 version).
 Large parts of the upstream quantum-graph and Schur-product theorem stack are
-not yet vendored. In particular, upstream modules such as `QuantumSet.Pi`,
-`QuantumGraph.OfClassicalGraph`, and the deeper theorem sections of
+not yet vendored. In particular, upstream modules such as
+`QuantumGraph.OfClassicalGraph` and the deeper theorem sections of
 `QuantumSet.SchurMul` / `QuantumGraph.Basic` depend on the older
 `PiLp`/normed-ring scaffold, the finite-dimensional Hilbert-algebra coalgebra
 instance, and upstream heartbeat or linter overrides that Lean Pool does not
