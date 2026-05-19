@@ -349,6 +349,7 @@ import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
 import LeanPool.Monlib4.Other
 import LeanPool.Monlib4.Other.Sonia
 import LeanPool.Monlib4.Preq
+import LeanPool.Monlib4.Preq.Complex
 import LeanPool.Monlib4.Preq.Dite
 import LeanPool.Monlib4.Preq.Equiv
 import LeanPool.Monlib4.Preq.Finset
