@@ -175,6 +175,14 @@ import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
 import LeanPool.Polylean
 import LeanPool.Polylean.Complexes.GraphPaths
+import LeanPool.Polylean.Complexes.Structures.Category
+import LeanPool.Polylean.Complexes.Structures.Groupoid
+import LeanPool.Polylean.Complexes.Structures.Quiver
+import LeanPool.Polylean.ConjInvLength.Length
+import LeanPool.Polylean.ConjInvLength.LengthBound
+import LeanPool.Polylean.ConjInvLength.MemoLength
+import LeanPool.Polylean.ConjInvLength.ProvedBound
+import LeanPool.Polylean.ConjInvLength.WordTree
 import LeanPool.Polylean.UnitConjecture
 import LeanPool.Polylean.UnitConjecture.AddFreeGroup
 import LeanPool.Polylean.UnitConjecture.Cocycle
