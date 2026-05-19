@@ -328,8 +328,10 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
 import LeanPool.Monlib4.LinearAlgebra.Matrix.IncludeBlock
+import LeanPool.Monlib4.LinearAlgebra.Matrix.IsAlmostHermitian
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
+import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.LinearAlgebra.OfNorm
