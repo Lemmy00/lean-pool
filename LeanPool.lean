@@ -323,8 +323,6 @@ import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMul
-import LeanPool.Monlib4.Other
-import LeanPool.Monlib4.Other.Sonia
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.Preq.Dite
 import LeanPool.Monlib4.Preq.Equiv
