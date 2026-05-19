@@ -326,6 +326,7 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.IncludeBlock
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.MySpec
+import LeanPool.Monlib4.LinearAlgebra.OfNorm
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMul

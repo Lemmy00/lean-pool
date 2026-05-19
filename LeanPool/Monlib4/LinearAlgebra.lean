@@ -14,6 +14,7 @@ import LeanPool.Monlib4.LinearAlgebra.IsReal
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.Matrix
 import LeanPool.Monlib4.LinearAlgebra.MySpec
+import LeanPool.Monlib4.LinearAlgebra.OfNorm
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct
 import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
