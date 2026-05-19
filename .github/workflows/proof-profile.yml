@@ -20,10 +20,24 @@ permissions:
   contents: read
   pull-requests: write
 
+# Workflow-level concurrency applies to every run regardless of the job-level
+# `if:`, so an `issue_comment` event for a non-`/profile` comment (e.g. `/review`)
+# would otherwise enter `proof-profile-<pr>` and cancel an in-flight `/profile`
+# run before the body check could short-circuit it. Route non-matching events
+# into a unique per-run group so they can't steal the slot.
 concurrency:
   group: >-
-    proof-profile-${{ github.event.pull_request.number ||
-      github.event.issue.number || inputs.pr_number }}
+    ${{
+      (github.event_name == 'workflow_dispatch' ||
+       github.event_name == 'pull_request' ||
+       (github.event_name == 'issue_comment' &&
+        startsWith(github.event.comment.body, '/profile')))
+      && format('proof-profile-{0}',
+           github.event.pull_request.number ||
+           github.event.issue.number ||
+           inputs.pr_number)
+      || format('proof-profile-noop-{0}', github.run_id)
+    }}
   cancel-in-progress: true
 
 jobs:
