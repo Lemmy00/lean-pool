@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Anand Rao
 -/
 
-import Batteries
+import Std.Data.HashMap
 import LeanPool.Polylean.ConjInvLength.LengthBound
 
 namespace LeanPool.Polylean
-open Batteries
 open Letter
 
 namespace Letter
@@ -33,14 +32,14 @@ abbrev Wrd := Array Letter
 namespace Word
 
 /-- Convert a list-backed word to an array-backed word. -/
-def wrd (w: Word) : Wrd := w.toArray -- .map <| fun l => l.int
+def wrd (w : Word) : Wrd := w.toArray -- .map <| fun l => l.int
 
 end Word
 
 namespace Wrd
 
 /-- Render an array-backed word by concatenating rendered letters. -/
-def toString(w: Wrd) := w.foldl (fun x y => s!"{x}{y}") ""
+def toString (w : Wrd) := w.foldl (fun x y => s!"{x}{y}") ""
 
 instance : ToString Wrd := ⟨Wrd.toString⟩
 
@@ -53,16 +52,17 @@ instance : Pow Wrd Nat where
   pow w n := w.pow n
 
 /-- Hash function for array-backed words. -/
-def hashfn (w: Wrd) : UInt64 :=
+def hashfn (w : Wrd) : UInt64 :=
   w.foldl (fun h i => mixHash h (hash i)) 7
 
 instance : Hashable Wrd := ⟨hashfn⟩
 
 /-- Cache for normalized word lengths. -/
-initialize normCache : IO.Ref (HashMap Wrd Nat) ← IO.mkRef (HashMap.empty)
+initialize normCache : IO.Ref (Std.HashMap Wrd Nat) ← IO.mkRef Std.HashMap.emptyWithCapacity
 
 /-- All splits of an array-backed word around occurrences of a letter. -/
-def splits(l : Letter) : (w : Wrd) → Array {p : Wrd × Wrd // p.1.size + p.2.size < w.size} := fun w =>
+def splits (l : Letter) :
+    (w : Wrd) → Array {p : Wrd × Wrd // p.1.size + p.2.size < w.size} := fun w =>
   match h:w.size with
   | 0 => #[]
   | m + 1  =>
@@ -78,7 +78,6 @@ def splits(l : Letter) : (w : Wrd) → Array {p : Wrd × Wrd // p.1.size + p.2.s
       ⟨(fst, snd.push x), by
         rw [Array.size_push]
         rw [ysize] at h
-        simp
         simp at h
         rw [← Nat.add_assoc]
         simp [Nat.succ_lt_succ h]⟩
@@ -89,10 +88,10 @@ def splits(l : Letter) : (w : Wrd) → Array {p : Wrd × Wrd // p.1.size + p.2.s
 termination_by  w => w.size
 
 /-- Memoized conjugation-invariant length candidate for array-backed words. -/
-def length(w : Wrd) :  IO Nat :=
+def length (w : Wrd) : IO Nat :=
 do
   let cache ← normCache.get
-  match cache.find? w with
+  match cache.get? w with
   | some n =>
       pure n
   | none =>
@@ -125,16 +124,16 @@ termination_by w.size
 end Wrd
 
 /-- Memoized length for list-backed words. -/
-def wordLength(w: Word):IO Nat :=
+def wordLength (w : Word) : IO Nat :=
   Wrd.length <| Word.wrd w
 
 namespace Wrd
 
 /-- Conjugate an array-backed word by a letter. -/
-def conj: Wrd → Letter → Wrd := fun w l => #[l] ++ w ++ #[l⁻¹]
+def conj : Wrd → Letter → Wrd := fun w l => #[l] ++ w ++ #[l⁻¹]
 
 end Wrd
 
-instance: Pow Wrd Letter where
+instance : Pow Wrd Letter where
   pow w l := w.conj l
 end LeanPool.Polylean

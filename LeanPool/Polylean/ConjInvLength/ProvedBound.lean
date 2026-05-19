@@ -10,11 +10,11 @@ namespace LeanPool.Polylean
 open Letter
 
 /-- A split of a word around a distinguished letter, with a proof of reconstruction. -/
-structure ProvedSplit (l: Letter)(w : Word) where
+structure ProvedSplit (l : Letter) (w : Word) where
   /-- The part before the distinguished letter. -/
   fst : Word
   /-- The part after the distinguished letter. -/
-  snd: Word
+  snd : Word
   /-- Reconstruction proof for the split. -/
   proof : w = fst ++ [l] ++ snd
 
@@ -23,13 +23,13 @@ structure ProvedSplit (l: Letter)(w : Word) where
 namespace ProvedSplit
 
 /-- Split with the first piece empty when the head matches the splitting letter. -/
-def head (x: Letter) (ys: Word) : ProvedSplit x (x :: ys) :=
+def head (x : Letter) (ys : Word) : ProvedSplit x (x :: ys) :=
   ⟨[], ys, rfl⟩
 
 -- Prepend to a proved split of the tail (`l` and `ys` implicit).
 /-- Prepend a letter to the first component of a proved split. -/
-def prepend{l: Letter}{ys : Word} (x: Letter)
-        (ps: ProvedSplit l ys) : ProvedSplit l (x :: ys) :=
+def prepend {l : Letter} {ys : Word} (x : Letter)
+        (ps : ProvedSplit l ys) : ProvedSplit l (x :: ys) :=
       let newFst := x :: ps.fst
       let newSnd := ps.snd
       have newProof : x :: ys = newFst ++ [l] ++ newSnd  :=
@@ -42,7 +42,7 @@ end ProvedSplit
 
 -- all proved splits of a word
 /-- All proved splits of a word around a letter. -/
-def provedSplits(z: Letter) : (w : Word) → List (ProvedSplit z w)
+def provedSplits (z : Letter) : (w : Word) → List (ProvedSplit z w)
   | [] => []
   | x :: ys =>
     let tailSplits := (provedSplits z ys).map (ProvedSplit.prepend x)
@@ -55,26 +55,26 @@ def provedSplits(z: Letter) : (w : Word) → List (ProvedSplit z w)
 abbrev Length := Word → Nat
 
 /-- A length function invariant under conjugation by letters. -/
-def conjInv(l: Length) : Prop := (x : Letter) → (g : Word) → l (g^x) = l (g)
+def conjInv (l : Length) : Prop := (x : Letter) → (g : Word) → l (g^x) = l (g)
 
 /-- The triangle inequality for a length function. -/
-def triangIneq(l: Length) : Prop := (g h : Word) → l (g ++ h) ≤ l g + l h
+def triangIneq (l : Length) : Prop := (g h : Word) → l (g ++ h) ≤ l g + l h
 
 /-- A length function normalized on single letters. -/
-def normalized(l: Length) : Prop := (x : Letter) → l [x] = 1
+def normalized (l : Length) : Prop := (x : Letter) → l [x] = 1
 
 /-- A length function that sends the empty word to zero. -/
-def emptyWord(l: Length) : Prop := l [] = 0
+def emptyWord (l : Length) : Prop := l [] = 0
 
 /-- A certified upper bound for the length of a word. -/
-structure ProvedBound(g: Word):  Type where
+structure ProvedBound (g : Word) : Type where
   /-- The numeric upper bound. -/
-  bound: Nat
+  bound : Nat
   /-- The proof that every normalized conjugation-invariant length is bounded by `bound`. -/
-  pf : (l: Length) → emptyWord l →
+  pf : (l : Length) → emptyWord l →
            normalized l → conjInv l → triangIneq l → l g ≤ bound
 
-theorem conj_split (x: Letter) (ys fst snd: Word) :
+theorem conj_split (x : Letter) (ys fst snd : Word) :
           ys = fst ++ [x⁻¹] ++ snd → x :: ys = fst^x ++ snd :=
             by
               intro hyp
@@ -87,13 +87,13 @@ theorem conj_split (x: Letter) (ys fst snd: Word) :
 namespace ProvedBound
 
 /-- Combine certified bounds across a split around a conjugating letter. -/
-def headMatches(x: Letter)(ys fst snd: Word)
+def headMatches (x : Letter) (ys fst snd : Word)
   (eqn : ys = fst ++ [x⁻¹] ++ snd) :
   ProvedBound fst → ProvedBound snd → ProvedBound (x :: ys) :=
     fun pb1 pb2 =>
     let bound := pb1.bound + pb2.bound
     let pf :
-      (l: Length) → emptyWord l → normalized l → conjInv l → triangIneq l →
+      (l : Length) → emptyWord l → normalized l → conjInv l → triangIneq l →
           l (x :: ys) ≤ bound := by
             intros l emp norm conj triang
             rw [conj_split x ys fst snd eqn]
@@ -108,8 +108,8 @@ def headMatches(x: Letter)(ys fst snd: Word)
 
 -- deducing `l(xh) ≤ b + 1` given `l(h) ≤ b`
 /-- Prepend a letter to a certified bound. -/
-def prepend{w : Word} (x: Letter)
-        (ps: ProvedBound w) : ProvedBound (x :: w) :=
+def prepend {w : Word} (x : Letter)
+        (ps : ProvedBound w) : ProvedBound (x :: w) :=
       let newBound := ps.bound + 1
       ⟨newBound, fun l emp norm conj triang => by
         let prev := ps.pf l emp norm conj triang
@@ -121,7 +121,7 @@ def prepend{w : Word} (x: Letter)
 
 -- `l(e) ≤ 0`
 /-- The zero bound for the empty word. -/
-def emptyWord: ProvedBound [] :=
+def emptyWord : ProvedBound [] :=
   ⟨0, fun l emp _ _ _ => by
     rw [emp]
     apply Nat.zero_le
@@ -129,7 +129,7 @@ def emptyWord: ProvedBound [] :=
 
 -- the best proved bound for a word
 /-- Choose the better bound from a nonempty list of alternatives. -/
-def min {w: Word}: ProvedBound w → List (ProvedBound w) →
+def min {w : Word} : ProvedBound w → List (ProvedBound w) →
     ProvedBound w :=
         fun head tail =>
           tail.foldl (fun pb1 pb2 =>
@@ -137,7 +137,7 @@ def min {w: Word}: ProvedBound w → List (ProvedBound w) →
 
 end ProvedBound
 
-theorem splitFirst{l: Letter}{w: Word}(ps: ProvedSplit l w):
+theorem splitFirst {l : Letter} {w : Word} (ps : ProvedSplit l w) :
           ps.fst.length + 1 ≤ w.length :=
           by
             let lem : (ps.fst ++ [l] ++ ps.snd).length =
@@ -149,7 +149,7 @@ theorem splitFirst{l: Letter}{w: Word}(ps: ProvedSplit l w):
             rw [lem2]
             apply Nat.le_add_right
 
-theorem splitSecond{l: Letter}{w: Word}(ps: ProvedSplit l w):
+theorem splitSecond {l : Letter} {w : Word} (ps : ProvedSplit l w) :
           ps.snd.length + 1 ≤ w.length :=
           by
             let lem : (ps.fst ++ [l] ++ ps.snd).length =
@@ -165,12 +165,12 @@ theorem splitSecond{l: Letter}{w: Word}(ps: ProvedSplit l w):
 
 -- bound with proof for words
 /-- Compute a certified length bound for a word. -/
-def provedBound : (w: Word) → ProvedBound w := fun w =>
+def provedBound : (w : Word) → ProvedBound w := fun w =>
   match h:w with
   | [] => ProvedBound.emptyWord
   | x :: ys =>
     have lb : (List.length ys) < List.length (x :: ys) := by
-      simp [List.length_cons, Nat.le_refl]
+      simp [List.length_cons]
     let head := ProvedBound.prepend x (provedBound ys)
     let splits := provedSplits x⁻¹  ys
     have wl:  w.length = ys.length + 1 := by

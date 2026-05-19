@@ -4,19 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Anand Rao
 -/
 
-import Batteries
+import Std.Data.HashMap
 import LeanPool.Polylean.ConjInvLength.LengthBound
 
 namespace LeanPool.Polylean
-open Batteries
 
 /-- Cache for memoized word lengths. -/
-initialize normCache : IO.Ref (HashMap Word Nat) ← IO.mkRef (HashMap.empty)
+initialize normCache : IO.Ref (Std.HashMap Word Nat) ← IO.mkRef Std.HashMap.emptyWithCapacity
 
 /-- Memoized list-backed conjugation-invariant length candidate. -/
 def memoLength : Word → IO Nat := fun w => do
   let cache ← normCache.get
-  match cache.find? w with
+  match cache.get? w with
   | some n =>
       pure n
   | none =>
@@ -24,7 +23,7 @@ def memoLength : Word → IO Nat := fun w => do
     | [] => return 0
     | x :: ys => do
       have lb : (List.length ys) < List.length (x :: ys) := by
-        simp [List.length_cons, Nat.le_refl]
+        simp [List.length_cons]
       let base := 1 + (← memoLength ys)
       let derived ←  (splits x⁻¹ ys).mapM fun ⟨(fst, snd), h⟩ => do
         have h : fst.length + snd.length < ys.length + 1 := Nat.lt_trans h (Nat.lt_succ_self _)

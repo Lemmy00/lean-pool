@@ -46,13 +46,13 @@ abbrev Word := List Letter
 namespace Word
 
 /-- Render a word by concatenating its rendered letters. -/
-def toString(w: Word) := w.foldl (fun x y => s!"{x}{y}") ""
+def toString (w : Word) := w.foldl (fun x y => s!"{x}{y}") ""
 
 instance : ToString Word := ⟨Word.toString⟩
 
 /-- Repeated concatenation of a word. -/
 def pow : Word → Nat → Word
-  | w, 0 => []
+  | _, 0 => []
   | w, Nat.succ m => w ++ (pow w m)
 
 instance : Pow Word Nat where
@@ -68,14 +68,14 @@ def splits (l : Letter) : (w : Word) → List {p : Word × Word // p.1.length + 
   | x :: ys =>
     let tailSplits := (splits l ys).map fun ⟨(fst, snd), h⟩ =>
       ⟨(x :: fst, snd), by simp [Nat.succ_add, Nat.succ_lt_succ h]⟩
-    if x = l then ⟨([], ys), by simp [Nat.lt_succ_self]⟩ :: tailSplits else tailSplits
+    if x = l then ⟨([], ys), by simp⟩ :: tailSplits else tailSplits
 
 /-- A recursively computed conjugation-invariant length candidate. -/
 def length : Word → Nat
   | [] => 0
   | x :: ys =>
     have lb : (List.length ys) < List.length (x :: ys) := by
-      simp [List.length_cons, Nat.le_refl]
+      simp [List.length_cons]
     let base := 1 + (length ys)
     let derived := (splits x⁻¹ ys).map fun ⟨(fst, snd), h⟩ =>
       have h : fst.length + snd.length < ys.length + 1 := Nat.lt_trans h (Nat.lt_succ_self _)
@@ -90,10 +90,10 @@ termination_by l => l.length
 namespace Word
 
 /-- Conjugate a word by a letter. -/
-def conj: Word → Letter → Word := fun w l => [l] ++ w ++ [l⁻¹]
+def conj : Word → Letter → Word := fun w l => [l] ++ w ++ [l⁻¹]
 
 end Word
 
-instance: Pow Word Letter where
+instance : Pow Word Letter where
   pow w l := w.conj l
 end LeanPool.Polylean
