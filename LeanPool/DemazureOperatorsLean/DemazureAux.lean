@@ -16,7 +16,11 @@ variable {n : ℕ} (n_pos : n > 0) (n_gt_1 : n > 1)
 
 /- We are going to define the Demazure operator acting on polynomial fractions. For this,
 we first define a structure to represent these fractions, and then we will quotient it by
-the proportionality equivalence relation -/
+the proportionality equivalence relation.
+
+This local quotient is auxiliary proof infrastructure for the Demazure relations below; it
+is not intended as reusable fraction-field or localization theory.
+-/
 
 /-- A numerator-denominator representative for a rational expression in the polynomial ring. -/
 structure PolyFraction' (n : ℕ) where

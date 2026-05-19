@@ -17,15 +17,16 @@ import LeanPool.DemazureOperatorsLean.Matsumoto
 Source: doi:10.1070/RM1973v028n03ABEH001549
 Authors: Óscar Álvarez Sánchez
 Status: verified
-Main declarations: `CoxeterSystem.strongExchangeProperty`, `CoxeterSystem.matsumoto_reduced`
+Main declarations: `Demazure.Dem`, `CoxeterSystem.strongExchangeProperty`
 Tags: algebraic-combinatorics, demazure-operators, polynomials, representation-theory
 MSC: 05E05, 13P10, 20F55
 -/
 
 /-!
 The Demazure-operator declarations are sourced to the BGG Schubert-cells paper
-listed in the project card. The strong-exchange and Matsumoto declarations are
-standard Coxeter-theory results, with source metadata attached to those main
-results in `LeanPool/projects.yml` using Humphreys' *Reflection Groups and
-Coxeter Groups*.
+listed in the project card. The strong-exchange declaration is included as
+supporting Coxeter theory with source metadata from Humphreys' *Reflection Groups
+and Coxeter Groups*. The Matsumoto development is retained as conditional
+auxiliary infrastructure because `CoxeterSystem.matsumoto_reduced` assumes the
+extra `MatsumotoCondition` hypothesis.
 -/
