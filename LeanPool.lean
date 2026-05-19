@@ -174,6 +174,7 @@ import LeanPool.LatticeTriangle.Solution
 import LeanPool.LeanComplexAnalysis
 import LeanPool.LeanComplexAnalysis.Harmonic
 import LeanPool.LeanComplexAnalysis.Harmonic.PoissonIntegral
+import LeanPool.LeanComplexAnalysis.Harmonic.PoissonIntegral2
 import LeanPool.LeanComplexAnalysis.Harmonic.Positive
 import LeanPool.LeanComplexAnalysis.Harmonic.Positive.HarnackIneq
 import LeanPool.LeanComplexAnalysis.Harmonic.Positive.HerglotzRieszRepresentations

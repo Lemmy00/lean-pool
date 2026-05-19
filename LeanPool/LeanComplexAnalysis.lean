@@ -25,9 +25,9 @@ A collection of formalized theorems in complex analysis using Lean 4 and Mathlib
 formalization centers on harmonic and analytic functions on the unit disc, with three
 headline results:
 
-* **The Poisson integral formula** for harmonic functions on the unit disc, expressing
-  the value of a harmonic function inside the disc as an integral over its boundary
-  values against the Poisson kernel.
+* **The Poisson integral formula** for harmonic functions on the unit disc and arbitrary
+  centered discs, expressing the value of a harmonic function inside the disc as an
+  integral over its boundary values against the Poisson kernel.
 * **The Herglotz–Riesz representation theorem** for positive harmonic functions on the
   unit disc, representing each such function as the Poisson integral of a uniquely
   determined probability measure on the unit circle. An analytic version is also
