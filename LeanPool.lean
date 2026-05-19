@@ -204,6 +204,13 @@ import LeanPool.Isoperimetric.Isoperimetric
 import LeanPool.Isoperimetric.PrekopaLeindler
 import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
+import LeanPool.LeanBooleanfun
+import LeanPool.LeanBooleanfun.Arrow
+import LeanPool.LeanBooleanfun.AuxLemmas
+import LeanPool.LeanBooleanfun.Basic
+import LeanPool.LeanBooleanfun.BooleanValued
+import LeanPool.LeanBooleanfun.ToMathlib
+import LeanPool.LeanBooleanfun.ToMathlib.Finset
 import LeanPool.LowDimSolvClassification
 import LeanPool.LowDimSolvClassification.Classification1
 import LeanPool.LowDimSolvClassification.Classification2
