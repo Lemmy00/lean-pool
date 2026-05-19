@@ -16,29 +16,25 @@ namespace N1000000BCompressionCompute
 theorem siIntGoal_block1_var12 :
     ∀ p q : Fin 3,
       SiIntGoal (r := (⟨1, by decide⟩ : Block)) (i := (⟨12, by decide⟩ : Var)) p q := by
-  intro p q
-  fin_cases p <;> fin_cases q <;> decide
+  decide +kernel
 
 -- Kernel-checked computation for the 9 entries of `SiIntGoal` at block `1` and variable `13`.
 theorem siIntGoal_block1_var13 :
     ∀ p q : Fin 3,
       SiIntGoal (r := (⟨1, by decide⟩ : Block)) (i := (⟨13, by decide⟩ : Var)) p q := by
-  intro p q
-  fin_cases p <;> fin_cases q <;> decide
+  decide +kernel
 
 -- Kernel-checked computation for the 9 entries of `SiIntGoal` at block `1` and variable `14`.
 theorem siIntGoal_block1_var14 :
     ∀ p q : Fin 3,
       SiIntGoal (r := (⟨1, by decide⟩ : Block)) (i := (⟨14, by decide⟩ : Var)) p q := by
-  intro p q
-  fin_cases p <;> fin_cases q <;> decide
+  decide +kernel
 
 -- Kernel-checked computation for the 9 entries of `SiIntGoal` at block `1` and variable `15`.
 theorem siIntGoal_block1_var15 :
     ∀ p q : Fin 3,
       SiIntGoal (r := (⟨1, by decide⟩ : Block)) (i := (⟨15, by decide⟩ : Var)) p q := by
-  intro p q
-  fin_cases p <;> fin_cases q <;> decide
+  decide +kernel
 
 end N1000000BCompressionCompute
 
