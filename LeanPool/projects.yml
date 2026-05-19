@@ -573,6 +573,34 @@ projects:
     msc:
       - "11E25"
       - "11H06"
+  - slug: polylean
+    title: Polylean Unit Conjecture Counterexample
+    summary: Formalizes Gardam's counterexample to Kaplansky's Unit Conjecture, including the Promislow group, group rings, torsion-freeness of the group, and the non-trivial unit in 𝔽₂[P].
+    branch: algebra
+    entry_module: LeanPool.Polylean
+    authors:
+      - Siddhartha Gadgil
+      - Anand Rao
+    source:
+      url: https://github.com/siddhartha-gadgil/Polylean
+      github_repo: siddhartha-gadgil/Polylean
+    status: verified
+    main_declarations:
+      - LeanPool.Polylean.P.torsionFree
+      - LeanPool.Polylean.Gardam.GardamTheorem
+    main_results:
+      - declaration: LeanPool.Polylean.P.torsionFree
+        informal: Proves that the Promislow group used in Gardam's construction is torsion-free.
+      - declaration: LeanPool.Polylean.Gardam.GardamTheorem
+        informal: Proves Gardam's counterexample to Kaplansky's Unit Conjecture by constructing a non-trivial unit in the group ring 𝔽₂[P].
+    tags:
+      - algebra
+      - group-theory
+      - ring-theory
+      - unit-conjecture
+    msc:
+      - "16S34"
+      - "20F65"
   - slug: directed-topology-lean-4
     title: Directed Topology in Lean 4
     summary: Foundational library for directed topological spaces, dipaths, dihomotopy, the fundamental category functor, and a directed Van Kampen pushout theorem.
