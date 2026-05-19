@@ -231,6 +231,13 @@ import LeanPool.PCFTheory.Background.Cofinality
 import LeanPool.PCFTheory.Background.Ordinal
 import LeanPool.PCFTheory.Background.Topology
 import LeanPool.PCFTheory.ClubGuessing
+import LeanPool.PartialCombinatoryAlgebras
+import LeanPool.PartialCombinatoryAlgebras.Basic
+import LeanPool.PartialCombinatoryAlgebras.CombinatoryAlgebra
+import LeanPool.PartialCombinatoryAlgebras.FreeCombinatoryAlgebra
+import LeanPool.PartialCombinatoryAlgebras.GraphModel
+import LeanPool.PartialCombinatoryAlgebras.PartialCombinatoryAlgebra
+import LeanPool.PartialCombinatoryAlgebras.Programming
 import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
 import LeanPool.PointwiseBirkhoff
