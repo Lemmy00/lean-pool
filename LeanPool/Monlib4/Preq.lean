@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.Preq.Dite
+import LeanPool.Monlib4.Preq.Equiv
 import LeanPool.Monlib4.Preq.Finset
 import LeanPool.Monlib4.Preq.Ites
 import LeanPool.Monlib4.Preq.RCLikeLe

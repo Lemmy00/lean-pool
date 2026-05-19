@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.LinearAlgebra
+import LeanPool.Monlib4.Other
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.QuantumGraph
 import LeanPool.Monlib4.RepTheory
@@ -48,8 +49,10 @@ The supporting imported infrastructure also includes a `Matrix.reshape` linear
 equivalence between `Mₙₓₘ(R)` and `Rⁿˣᵐ`, the entrywise conjugate `Matrix.conj`
 with the `ᴴᵀ` notation, the projection `directSumFromTo` between summands of a
 dependent direct sum, basic spectrum commutativity (`isUnit_comm`,
-`spectrum.comm`), and helper lemmas for finite sums, ites/dites, and
-`RCLike`-valued order relations.
+`spectrum.comm`), the `PiMat` matrix-family abbreviation, permutation-matrix
+unitarity, self-adjoint/inner-product extensionality lemmas, Sonia's
+base-`b + 1` divisibility tests, and helper lemmas for finite sums, ites/dites,
+and `RCLike`-valued order relations.
 
 ## Provenance
 
