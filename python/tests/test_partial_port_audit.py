@@ -5,7 +5,9 @@ from lean_pool.partial_port_audit import (
     LeanStats,
     count_lean_loc,
     evaluate_stats,
+    has_forbidden_upstream_construct,
     normalize_stem,
+    stats_from_worktree,
 )
 
 
@@ -20,6 +22,31 @@ def x := 1
 theorem y : x = 1 := rfl
 """
     assert count_lean_loc(text) == 2
+
+
+def test_forbidden_upstream_construct_ignores_comments() -> None:
+    """Forbidden words in comments do not make an upstream file unimportable."""
+    text = """
+-- axiom oldName : True
+/- sorry -/
+def x := 1
+"""
+    assert not has_forbidden_upstream_construct(text)
+
+
+def test_stats_from_worktree_skips_unimportable_upstream_files(tmp_path) -> None:
+    """Upstream files with sorries or unchecked declarations do not count."""
+    (tmp_path / "Good.lean").write_text("def x := 1\n", encoding="utf-8")
+    (tmp_path / "Axiom.lean").write_text(
+        "axiom missingProof : True\n", encoding="utf-8"
+    )
+    (tmp_path / "Sorry.lean").write_text(
+        "theorem t : True := by sorry\n", encoding="utf-8"
+    )
+
+    stats = stats_from_worktree(tmp_path)
+
+    assert [file.path for file in stats.files] == ["Good.lean"]
 
 
 def test_normalize_stem_matches_renamed_camel_case_file() -> None:

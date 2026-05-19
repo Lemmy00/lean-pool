@@ -15,13 +15,14 @@ from typing import Any
 
 import yaml
 
-from lean_pool.quality import _strip_lean_comments
+from lean_pool.quality import FORBIDDEN_SOUNDNESS, _strip_lean_comments
 
 DEFAULT_LOC_TOLERANCE = 0.10
 DEFAULT_MIN_UPSTREAM_LOC = 200
 MAX_MISSING_FILES = 8
 PROJECTS_YML = "LeanPool/projects.yml"
 GITHUB_REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+FORBIDDEN_PROOF_GAP_RE = re.compile(r"\b(?:sorry|admit)\b")
 
 
 @dataclass(frozen=True)
@@ -149,6 +150,15 @@ def count_lean_loc(text: str) -> int:
     return sum(1 for line in stripped.splitlines() if line.strip())
 
 
+def has_forbidden_upstream_construct(text: str) -> bool:
+    """Return true when upstream Lean text cannot be imported as Lean Pool content."""
+    stripped = _strip_lean_comments(text)
+    return any(
+        FORBIDDEN_PROOF_GAP_RE.search(line) or FORBIDDEN_SOUNDNESS.search(line)
+        for line in stripped.splitlines()
+    )
+
+
 def normalize_stem(path: str | Path) -> str:
     """Normalize a Lean filename stem for rough source/import matching."""
     return re.sub(r"[^a-z0-9]", "", Path(path).stem.lower())
@@ -163,13 +173,15 @@ def ignored_lean_path(path: Path) -> bool:
 
 
 def stats_from_worktree(root: Path) -> LeanStats:
-    """Collect Lean stats from an upstream checkout."""
+    """Collect importable Lean stats from an upstream checkout."""
     files: list[LeanFile] = []
     for path in sorted(root.rglob("*.lean")):
         relative = path.relative_to(root)
         if ignored_lean_path(relative):
             continue
         text = path.read_text()
+        if has_forbidden_upstream_construct(text):
+            continue
         files.append(
             LeanFile(
                 path=relative.as_posix(),
