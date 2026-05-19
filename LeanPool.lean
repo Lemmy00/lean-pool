@@ -180,6 +180,8 @@ import LeanPool.PCFTheory.Background.Topology
 import LeanPool.PCFTheory.ClubGuessing
 import LeanPool.PartialRegularity
 import LeanPool.PartialRegularity.Extension
+import LeanPool.PointwiseBirkhoff
+import LeanPool.PointwiseBirkhoff.Main
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
 import LeanPool.RiemannMappingTheorem
