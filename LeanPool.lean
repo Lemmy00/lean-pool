@@ -181,6 +181,15 @@ import LeanPool.Isoperimetric.Isoperimetric
 import LeanPool.Isoperimetric.PrekopaLeindler
 import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
+import LeanPool.OrderPQ
+import LeanPool.OrderPQ.Basic
+import LeanPool.OrderPQ.IsCyclic
+import LeanPool.OrderPQ.Main
+import LeanPool.OrderPQ.MonoidHom
+import LeanPool.OrderPQ.MulZMod
+import LeanPool.OrderPQ.PrimeOrder
+import LeanPool.OrderPQ.SemidirectProduct
+import LeanPool.OrderPQ.TorsionBy
 import LeanPool.PCFTheory
 import LeanPool.PCFTheory.Background
 import LeanPool.PCFTheory.Background.Club
