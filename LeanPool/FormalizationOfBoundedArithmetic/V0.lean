@@ -43,7 +43,13 @@ open HasLen
 
 
 -- page 129, CN10: Finite axiomatizability of V0
-/-- Two-sorted models of the bounded-arithmetic theory `V0`. -/
+/--
+Two-sorted V0-style models used by this development.
+
+This is a strengthened bundled API: besides the finite V0 comprehension axioms,
+it includes induction, order, and algebraic laws as fields so later files can
+build the string-addition theory over a compact typeclass interface.
+-/
 class V0Model
   (num : Type) (str : outParam Type)
   extends
