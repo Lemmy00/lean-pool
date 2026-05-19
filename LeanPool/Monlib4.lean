@@ -40,7 +40,7 @@ specialization as linear maps (`Matrix.innerAut`), and preservation results for
 trace, spectrum, multiplication, star, inverses, and Hermitian matrices.  The
 quantum-set core now includes `starAlgebra`, `InnerProductAlgebra`,
 `QuantumSet`, the modular-automorphism identities, the complex quantum set
-instance `Complex.quantumSet`, and the star-preserving map API
+instance `Complex.quantumSet`, delta-form quantum sets, and the star-preserving map API
 `LinearMap.IsReal` / `LinearMap.real`. The recovered quantum-graph core includes
 the Schur product `schurMul`, Schur projections, and the predicates
 `QuantumGraph` / `QuantumGraph.Real`.
