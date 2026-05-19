@@ -175,6 +175,8 @@ import LeanPool.Monlib4
 import LeanPool.Monlib4.LinearAlgebra
 import LeanPool.Monlib4.LinearAlgebra.DirectSumFromTo
 import LeanPool.Monlib4.LinearAlgebra.End
+import LeanPool.Monlib4.LinearAlgebra.InnerAut
+import LeanPool.Monlib4.LinearAlgebra.IsReal
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.Matrix
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
@@ -182,6 +184,8 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.MySpec
+import LeanPool.Monlib4.LinearAlgebra.QuantumSet
+import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.Preq
 import LeanPool.Monlib4.Preq.Dite
 import LeanPool.Monlib4.Preq.Finset
