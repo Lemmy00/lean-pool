@@ -38,8 +38,7 @@ import LeanPool.DirectedTopologyLean4.UnitIntervalAux
 Source: url:https://github.com/Dominique-Lawson/Directed-Topology-Lean-4
 Authors: Dominique Lawson, Henning Basold, Peter Bruin
 Status: verified
-Main declarations: `DirectedSpace`, `Dipath`, `Dipath.Dihomotopic`,
-`DirectedVanKampen.directed_van_kampen`
+Main declarations: `DirectedSpace`, `Dipath`, `DirectedVanKampen.directed_van_kampen`
 Tags: directed-topology, algebraic-topology, category-theory
 MSC: 55U40, 55Q05, 18A30
 -/
