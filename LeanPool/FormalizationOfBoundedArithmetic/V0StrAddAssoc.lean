@@ -44,10 +44,13 @@ def CarryAssocPred (X Y Z : str) (i : num) : Prop :=
   ((Carry i Y Z ∧ Carry i X (Y + Z)) ↔ (Carry i X Y ∧ Carry i (X + Y) Z)) ∧
   (Xor' (Carry i Y Z) (Carry i X (Y + Z)) ↔ Xor' (Carry i X Y) (Carry i (X + Y) Z))
 
-/-
-This is the only induction instance assumed here for proving associativity of string
-addition. The displayed predicate is exactly the stronger Cook–Nguyen carry invariant,
-and it is built from bounded formulas already present in `V0`.
+/--
+Induction step supplied by the strengthened `V0Model` interface.
+
+This calls the bundled field `V0Model.prop_induction_ax`. The displayed
+predicate is the stronger Cook–Nguyen carry invariant built from bounded
+formulas, but this file does not derive the induction principle from a separate
+raw V0 axiom class.
 -/
 lemma carry_assoc_induction :
     ∀ {X Y Z : str},
@@ -100,10 +103,14 @@ lemma carry_pair_assoc : ∀ {X Y Z : str}, ∀ {i : num},
   exact hφ i
 
 
--- For Associativity, first show in V0(+) that
--- Carry(i, Y, Z) ⊕ Carry(i, X, Y + Z) ↔
--- Carry(i, X, Y ) ⊕ Carry(i, X + Y, Z).
--- Derive a stronger statement than this, and prove it by induction on i.
+/--
+Associativity of string addition for `V0ExtModel`.
+
+The theorem is stated for the enriched extension model whose parent `V0Model`
+already bundles the propositional induction/order/algebra fields used above.
+It is not advertised here as a derivation from only the raw finite V0
+comprehension axioms.
+-/
 theorem str_add_assoc : ∀ {X Y Z : str}, (X + Y) + Z = X + (Y + Z) := by
   intro X Y Z
   refine str_eq_of_mem_iff (num := num) (str := str) (X := (X + Y) + Z) (Y := X + (Y + Z)) ?_
