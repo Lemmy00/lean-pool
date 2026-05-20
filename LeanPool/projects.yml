@@ -446,7 +446,7 @@ projects:
       - "11H06"
   - slug: sardmoreira
     title: Moreira's version of Sard's theorem
-    summary: Vendors infrastructure toward Moreira's strengthening of Sard's theorem on the Hausdorff dimension of critical-value sets.
+    summary: Formalizes Moreira's strengthening of Sard's theorem, bounding the Hausdorff dimension of critical-value images of C^{k+alpha} maps.
     branch: geometric measure theory
     entry_module: LeanPool.SardMoreira
     authors:
@@ -454,12 +454,17 @@ projects:
     source:
       url: https://github.com/urkud/SardMoreira
       github_repo: urkud/SardMoreira
+      paper: http://dmle.icmat.es/pdf/PUBLICACIONSMATEMATIQUES_2001_45_01_06.pdf
     status: verified
     main_declarations:
-      - MeasureTheory.Measure.hasudorffMeasure_image_le_mul
+      - dimH_image_le_sardMoreiraBound_of_finrank_le
     main_results:
-      - declaration: MeasureTheory.Measure.hasudorffMeasure_image_le_mul
-        informal: Bounds the Hausdorff measure of the image of a set under a Hölder continuous map by the measure of the set scaled by the Hölder constant.
+      - declaration: hausdorffMeasure_sardMoreiraBound_image_null_of_finrank_le
+        informal: Proves Hausdorff-measure nullity for images of points where the derivative rank is bounded by p, at Moreira's Sard bound.
+        source_ref: Moreira 2001, http://dmle.icmat.es/pdf/PUBLICACIONSMATEMATIQUES_2001_45_01_06.pdf
+      - declaration: dimH_image_le_sardMoreiraBound_of_finrank_le
+        informal: Converts the measure-null theorem into the headline Hausdorff-dimension upper bound for critical-value images.
+        source_ref: Moreira 2001, http://dmle.icmat.es/pdf/PUBLICACIONSMATEMATIQUES_2001_45_01_06.pdf
     tags:
       - analysis
       - measure-theory

@@ -225,6 +225,8 @@ import LeanPool.RlTheoryInLean.Probability.MarkovChain.Trajectory
 import LeanPool.RlTheoryInLean.StochasticApproximation
 import LeanPool.RlTheoryInLean.StochasticApproximation.DiscreteGronwall
 import LeanPool.SardMoreira
+import LeanPool.SardMoreira.Chart
+import LeanPool.SardMoreira.ChartEstimates
 import LeanPool.SardMoreira.ContDiff
 import LeanPool.SardMoreira.ContDiffMoreiraHolder
 import LeanPool.SardMoreira.ContinuousMultilinearMap
@@ -232,6 +234,7 @@ import LeanPool.SardMoreira.ImplicitFunction
 import LeanPool.SardMoreira.LebesgueDensity
 import LeanPool.SardMoreira.LinearAlgebra
 import LeanPool.SardMoreira.LocalEstimates
+import LeanPool.SardMoreira.MainTheorem
 import LeanPool.SardMoreira.MeasureBallSemicontinuous
 import LeanPool.SardMoreira.MeasureComap
 import LeanPool.SardMoreira.MeasureNNReal
@@ -247,6 +250,7 @@ import LeanPool.SardMoreira.ToMathlib.PR33029
 import LeanPool.SardMoreira.ToMathlib.PR33114
 import LeanPool.SardMoreira.Topology
 import LeanPool.SardMoreira.UnifDoublingCover
+import LeanPool.SardMoreira.Unused
 import LeanPool.SardMoreira.UpperLowerSemicontinuous
 import LeanPool.SardMoreira.WithRPowDist
 import LeanPool.Sensitivity
