@@ -30,7 +30,10 @@ jobs:
         working-directory: python
         run: |
           set -euo pipefail
-          git fetch origin "${{ github.base_ref }}" --depth=1
+          # Full fetch (not --depth=1): the audit diffs base...HEAD, which needs
+          # the merge base. A shallow base fails with "no merge base" once base
+          # has advanced past the PR's fork point (e.g. on a re-run).
+          git fetch origin "${{ github.base_ref }}"
           uv run python -m lean_pool.partial_port_audit \
             --repo .. \
             --base-ref "origin/${{ github.base_ref }}" \
