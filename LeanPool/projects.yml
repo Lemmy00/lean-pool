@@ -1,7 +1,7 @@
 projects:
   - slug: brauergroup_new
     title: Brauer Group Core
-    summary: Formalizes central simple algebra infrastructure and Wedderburn-Artin structure theorems toward Brauer groups.
+    summary: Formalizes central simple algebra infrastructure, Wedderburn-Artin structure theorems, and finite-field triviality for Brauer groups.
     branch: ring theory
     entry_module: LeanPool.BrauerGroupNew
     authors:
@@ -27,6 +27,8 @@ projects:
         informal: Constructs the Brauer group functor from fields to commutative groups via scalar extension.
       - declaration: Wedderburn_Artin
         informal: Proves a Wedderburn-Artin decomposition for simple Artinian rings as matrix algebras over division rings.
+      - declaration: trivialBrauer
+        informal: Proves that every element of the Brauer group of a finite field is trivial.
       - declaration: Wedderburn_Artin_algebra_version
         informal: Gives an algebra equivalence form of Wedderburn-Artin for finite-dimensional central simple algebras.
       - declaration: IsCentralSimple.TensorProduct.simple

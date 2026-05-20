@@ -59,6 +59,7 @@ import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Centralizer
 import LeanPool.BrauerGroupNew.ExtendScalar
 import LeanPool.BrauerGroupNew.FieldCat
+import LeanPool.BrauerGroupNew.FiniteField
 import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.Mathlib
 import LeanPool.BrauerGroupNew.Mathlib.Algebra
