@@ -315,6 +315,7 @@ import LeanPool.Monlib4.LinearAlgebra.InnerAut
 import LeanPool.Monlib4.LinearAlgebra.InvariantSubmodule
 import LeanPool.Monlib4.LinearAlgebra.Ips
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
+import LeanPool.Monlib4.LinearAlgebra.Ips.Functional
 import LeanPool.Monlib4.LinearAlgebra.Ips.Ips
 import LeanPool.Monlib4.LinearAlgebra.Ips.MinimalProj
 import LeanPool.Monlib4.LinearAlgebra.Ips.MulOp

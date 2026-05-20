@@ -116,6 +116,34 @@ theorem Matrix.PosDef.trace_ne_zero [Fintype n] [Nonempty n]
     x.trace ≠ 0 := by
   exact ne_of_gt hx.trace_pos
 
+/-- A positive definite matrix has trace with positive real part. -/
+theorem Matrix.PosDef.pos_trace [Fintype n] [DecidableEq n] [Nonempty n]
+    {x : Matrix n n 𝕜} (hx : x.PosDef) :
+    0 < RCLike.re x.trace :=
+  (RCLike.pos_def.mp hx.trace_pos).1
+
+/-- The Euclidean linear map associated to a matrix acts by matrix-vector multiplication. -/
+lemma Matrix.toEuclideanLin_apply' [Fintype n] [DecidableEq n]
+    (x : Matrix n n 𝕜) (v : EuclideanSpace 𝕜 n) :
+    x.toEuclideanLin v = x.mulVec v :=
+  rfl
+
+/-- For complex matrices, positive semidefiniteness is equivalent to nonnegative quadratic
+forms. -/
+theorem Matrix.PosSemidef.complex [Fintype n] [DecidableEq n] (x : Matrix n n ℂ) :
+    x.PosSemidef ↔ ∀ y : n → ℂ, 0 ≤ star y ⬝ᵥ x.mulVec y := by
+  rw [Matrix.posSemidef_eq_linearMap_positive' x, LinearMap.complex_isPositive']
+  constructor
+  · intro h y
+    specialize h (WithLp.toLp 2 y)
+    simpa [Matrix.toLpLin_toLp, PiLp.inner_apply, Matrix.dotProduct_eq_inner,
+      RCLike.inner_apply, Matrix.mulVec] using h
+  · intro h v
+    let y : n → ℂ := v
+    specialize h y
+    simpa [y, Matrix.toLpLin_toLp, PiLp.inner_apply, Matrix.dotProduct_eq_inner,
+      RCLike.inner_apply, Matrix.mulVec] using h
+
 theorem single.sum_eq_one [Fintype n] [DecidableEq n] (a : 𝕜) :
     ∑ k : n, single k k a = a • 1 := by
   rw [Matrix.one_eq_sum_std_matrix]
@@ -170,3 +198,70 @@ theorem Matrix.PosDef.diagonal_iff [DecidableEq n] (x : n → 𝕜) :
   Matrix.posDef_diagonal_iff
 
 alias Matrix.commute_iff := Matrix.IsHermitian.commute_iff
+
+namespace Matrix
+
+/-- The trace of `xᴴ * x` is nonnegative. -/
+theorem trace_conjTranspose_hMul_self_nonneg {m : Type*} [Fintype m] [Fintype n]
+    (x : Matrix m n 𝕜) :
+    0 ≤ (xᴴ * x).trace :=
+  (Matrix.posSemidef_conjTranspose_mul_self x).trace_nonneg
+
+/-- A positive semidefinite matrix gives a nonnegative weighted `xᴴ * x` trace. -/
+theorem _root_.Matrix.PosSemidef.trace_conjTranspose_hMul_self_nonneg {m : Type*}
+    [Fintype m] [Fintype n] [DecidableEq m] {Q : Matrix m m 𝕜}
+    (hQ : Q.PosSemidef) (x : Matrix n m 𝕜) :
+    0 ≤ (Q * xᴴ * x).trace := by
+  rcases (Matrix.posSemidef_iff Q).mp hQ with ⟨y, rfl⟩
+  rw [Matrix.trace_mul_cycle, ← Matrix.mul_assoc]
+  nth_rw 1 [← conjTranspose_conjTranspose x]
+  rw [← Matrix.conjTranspose_mul]
+  simp_rw [Matrix.mul_assoc]
+  exact Matrix.trace_conjTranspose_hMul_self_nonneg _
+
+/-- The trace of `xᴴ * x` vanishes exactly when `x` is zero. -/
+theorem trace_conjTranspose_hMul_self_eq_zero {m : Type*} [Fintype n] [Fintype m]
+    (x : Matrix n m 𝕜) :
+    (xᴴ * x).trace = 0 ↔ x = 0 :=
+  Matrix.trace_conjTranspose_mul_self_eq_zero_iff
+
+/-- A positive definite matrix gives a faithful weighted `xᴴ * x` trace. -/
+theorem _root_.Matrix.PosDef.trace_conjTranspose_hMul_self_eq_zero {m : Type*}
+    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] {Q : Matrix m m 𝕜}
+    (hQ : Q.PosDef) {x : Matrix n m 𝕜} :
+    (Q * xᴴ * x).trace = 0 ↔ x = 0 := by
+  rcases (Matrix.posSemidef_iff Q).mp hQ.posSemidef with ⟨y, hy⟩
+  rw [hy, trace_mul_cycle, ← Matrix.mul_assoc]
+  nth_rw 1 [← conjTranspose_conjTranspose x]
+  rw [← conjTranspose_mul]
+  simp_rw [Matrix.mul_assoc]
+  rw [Matrix.trace_conjTranspose_hMul_self_eq_zero _]
+  constructor
+  · intro h
+    have hQx : Q * xᴴ = 0 := by
+      rw [hy, Matrix.mul_assoc, h, Matrix.mul_zero]
+    letI := hQ.invertible
+    have hxT : xᴴ = 0 := by
+      exact (Matrix.mul_right_injective_of_invertible (A := Q)) (by simpa using hQx)
+    rwa [← Matrix.conjTranspose_eq_zero]
+  · intro h
+    rw [h, conjTranspose_zero, Matrix.mul_zero]
+
+alias _root_.Matrix.Nontracial.trace_conjTranspose_hMul_self_eq_zero :=
+  _root_.Matrix.PosDef.trace_conjTranspose_hMul_self_eq_zero
+
+/-- Hermitian weighted traces are conjugate symmetric. -/
+theorem _root_.Matrix.IsHermitian.trace_conj_symm_star_hMul {m : Type*} [Fintype m] [Fintype n]
+    {Q : Matrix m m 𝕜} (hQ : Q.IsHermitian) (x y : Matrix n m 𝕜) :
+    (starRingEnd 𝕜) (Q * yᴴ * x).trace = (Q * xᴴ * y).trace := by
+  simp_rw [starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
+    conjTranspose_conjTranspose, hQ.eq, Matrix.mul_assoc]
+  rw [trace_mul_cycle']
+
+/-- `xᴴ * x` vanishes exactly when `x` is zero. -/
+theorem conjTranspose_hMul_self_eq_zero {m : Type*} [Fintype m] [Fintype n]
+    (x : Matrix n m 𝕜) :
+    xᴴ * x = 0 ↔ x = 0 :=
+  Matrix.conjTranspose_mul_self_eq_zero
+
+end Matrix
