@@ -51,6 +51,15 @@ theorem Matrix.posSemidef_eq_linearMap_positive' [Fintype n] [DecidableEq n]
   rw [LinearMap.isPositive'_iff_isPositive]
   exact Matrix.isPositive_toEuclideanLin_iff.symm
 
+open scoped MatrixOrder
+
+theorem Matrix.posSemidef_iff [Fintype n] (x : Matrix n n 𝕜) :
+    x.PosSemidef ↔ ∃ y : Matrix n n 𝕜, x = yᴴ * y := by
+  classical
+  rw [← Matrix.nonneg_iff_posSemidef]
+  simpa [Matrix.star_eq_conjTranspose] using
+    (CStarAlgebra.nonneg_iff_eq_star_mul_self (a := x))
+
 local notation "⟪" x "," y "⟫_𝕜" => @inner 𝕜 _ _ x y
 
 open scoped BigOperators
@@ -66,6 +75,11 @@ theorem Matrix.isHermitian_self_hMul_conjTranspose {m n : Type*} [Fintype m]
 
 theorem Matrix.trace_star [Fintype n] {A : Matrix n n 𝕜} : star A.trace = Aᴴ.trace := by
   rw [Matrix.trace_conjTranspose]
+
+theorem Matrix.IsHermitian.nonneg_eigenvalues_of_posSemidef [Fintype n] [DecidableEq n]
+    {A : Matrix n n 𝕜} (hA : A.PosSemidef) (i : n) :
+    0 ≤ hA.1.eigenvalues i :=
+  hA.eigenvalues_nonneg i
 
 /-- A positive definite matrix is invertible. -/
 @[reducible]
@@ -154,3 +168,5 @@ theorem Matrix.PosSemidef.diagonal_iff [DecidableEq n] (x : n → 𝕜) :
 theorem Matrix.PosDef.diagonal_iff [DecidableEq n] (x : n → 𝕜) :
     (diagonal x).PosDef ↔ ∀ i, 0 < x i :=
   Matrix.posDef_diagonal_iff
+
+alias Matrix.commute_iff := Matrix.IsHermitian.commute_iff

@@ -8,6 +8,7 @@ import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.RepTheory.AutMat
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.UnitaryStarAlgAut
+import Mathlib.Analysis.Matrix.Order
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.UnitaryGroup
 
@@ -338,6 +339,62 @@ theorem innerAut_isHermitian_iff (U : unitaryGroup n 𝕜) (x : Matrix n n 𝕜)
     Function.Injective.eq_iff (innerAut.is_injective U)]
 
 end
+
+section Positivity
+
+variable [RCLike 𝕜] [DecidableEq n]
+
+open scoped ComplexOrder MatrixOrder
+
+/-- A unitary inner automorphism preserves positive semidefinite matrices. -/
+theorem _root_.Matrix.innerAut_posSemidef_iff (U : unitaryGroup n 𝕜) {a : Matrix n n 𝕜} :
+    (innerAut U a).PosSemidef ↔ a.PosSemidef := by
+  constructor
+  · intro h
+    rw [← Matrix.nonneg_iff_posSemidef] at h ⊢
+    rcases CStarAlgebra.nonneg_iff_eq_star_mul_self.mp h with ⟨b, hb⟩
+    rw [← innerAut_inv_apply_innerAut_self U a, hb, Matrix.innerAut.map_mul]
+    rw [← Matrix.innerAut.map_star]
+    exact CStarAlgebra.nonneg_iff_eq_star_mul_self.mpr ⟨innerAut U⁻¹ b, rfl⟩
+  · intro h
+    rw [← Matrix.nonneg_iff_posSemidef] at h ⊢
+    rcases CStarAlgebra.nonneg_iff_eq_star_mul_self.mp h with ⟨b, hb⟩
+    rw [hb, Matrix.innerAut.map_mul]
+    rw [← Matrix.innerAut.map_star]
+    exact CStarAlgebra.nonneg_iff_eq_star_mul_self.mpr ⟨innerAut U b, rfl⟩
+
+theorem _root_.Matrix.posSemidef_innerAut {a : Matrix n n 𝕜} (ha : a.PosSemidef)
+    (U : unitaryGroup n 𝕜) :
+    (innerAut U a).PosSemidef :=
+  (innerAut_posSemidef_iff U).mpr ha
+
+theorem _root_.Matrix.innerAut_isUnit_iff (U : unitaryGroup n 𝕜) {x : Matrix n n 𝕜} :
+    IsUnit (innerAut U x) ↔ IsUnit x := by
+  simpa [innerAut_coe] using (isUnit_map_iff (innerAutStarAlg U).toAlgEquiv.toMulEquiv x)
+
+/-- A unitary inner automorphism preserves positive definite matrices. -/
+theorem _root_.Matrix.innerAut_posDef_iff (U : unitaryGroup n 𝕜) {x : Matrix n n 𝕜} :
+    (innerAut U x).PosDef ↔ x.PosDef := by
+  constructor
+  · intro h
+    exact ((innerAut_posSemidef_iff U).mp h.posSemidef).posDef_iff_isUnit.mpr
+      ((innerAut_isUnit_iff U).mp h.isUnit)
+  · intro h
+    exact ((innerAut_posSemidef_iff U).mpr h.posSemidef).posDef_iff_isUnit.mpr
+      ((innerAut_isUnit_iff U).mpr h.isUnit)
+
+theorem _root_.Matrix.posDef_innerAut {a : Matrix n n 𝕜} (ha : a.PosDef)
+    (U : unitaryGroup n 𝕜) :
+    (innerAut U a).PosDef :=
+  (innerAut_posDef_iff U).mpr ha
+
+/-- Spectral theorem in Monlib's inner-automorphism notation. -/
+theorem _root_.Matrix.IsHermitian.spectral_theorem'' {x : Matrix n n 𝕜}
+    (hx : x.IsHermitian) :
+    x = innerAut hx.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ hx.eigenvalues)) := by
+  simpa [innerAut, innerAutStarAlg] using hx.spectral_theorem
+
+end Positivity
 
 variable [Field 𝕜] [StarRing 𝕜] [DecidableEq n]
 
