@@ -37,6 +37,34 @@ variable {𝕜 E F G : Type _}
   [Module.Finite 𝕜 E] [Module.Finite 𝕜 F]
   [Module.Finite 𝕜 G]
 
+omit [StarModule 𝕜 G] [Module.Finite 𝕜 E] [Module.Finite 𝕜 F]
+  [Module.Finite 𝕜 G] in
+/-- Compatibility name for the tensor-product star instance now provided by Mathlib. -/
+noncomputable abbrev TensorProduct.Star [StarModule 𝕜 E] [StarModule 𝕜 F] :
+    Star (E ⊗[𝕜] F) :=
+  inferInstance
+
+omit [StarModule 𝕜 G] [Module.Finite 𝕜 E] [Module.Finite 𝕜 F]
+  [Module.Finite 𝕜 G] in
+/-- Compatibility name for the tensor-product involutive-star instance. -/
+noncomputable abbrev TensorProduct.InvolutiveStar [StarModule 𝕜 E] [StarModule 𝕜 F] :
+    InvolutiveStar (E ⊗[𝕜] F) :=
+  inferInstance
+
+omit [StarModule 𝕜 G] [Module.Finite 𝕜 E] [Module.Finite 𝕜 F]
+  [Module.Finite 𝕜 G] in
+/-- Compatibility name for the tensor-product star-additive instance. -/
+noncomputable abbrev TensorProduct.starAddMonoid [StarModule 𝕜 E] [StarModule 𝕜 F] :
+    StarAddMonoid (E ⊗[𝕜] F) :=
+  inferInstance
+
+omit [StarModule 𝕜 G] [Module.Finite 𝕜 E] [Module.Finite 𝕜 F]
+  [Module.Finite 𝕜 G] in
+/-- Compatibility name for the tensor-product star-module instance. -/
+theorem TensorProduct.starModule [StarModule 𝕜 E] [StarModule 𝕜 F] :
+    StarModule 𝕜 (E ⊗[𝕜] F) :=
+  inferInstance
+
 omit [Module.Finite 𝕜 E] [Module.Finite 𝕜 F] in
 /-- Tensor-product star is additive. -/
 theorem TensorProduct.star_add
