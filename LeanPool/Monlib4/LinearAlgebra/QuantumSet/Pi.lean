@@ -98,8 +98,16 @@ variable [hQ : (i : ι) -> QuantumSet (A i)]
 variable [Fintype ι]
 
 noncomputable instance piInnerProductAlgebra : InnerProductAlgebra (PiQ A) where
-  toNormedAddCommGroup := inferInstance
-  toInnerProductSpace := inferInstance
+  norm_smul_le := norm_smul_le
+  norm_sq_eq_inner := norm_sq_eq_re_inner
+  dist_eq x y := by
+    rw [dist_eq_norm']
+    congr 1
+    ext i
+    simp [sub_eq_add_neg, add_comm]
+  conj_symm := inner_conj_symm
+  add_left := inner_add_left
+  smul_left := inner_smul_left
 
 theorem piInnerProductAlgebra_inner_apply (a b : PiQ A) :
     ⟪a, b⟫_ℂ = ∑ i, ⟪a i, b i⟫_ℂ := by

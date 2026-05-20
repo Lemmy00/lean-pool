@@ -70,9 +70,40 @@ theorem starAlgebra.modAut_symm {A : Type*} [ha : starAlgebra A] (r : ℝ) :
 
 attribute [simp] starAlgebra.modAut_zero
 
-/-- A star algebra whose underlying complex module is an inner-product space. -/
+/-- A star algebra whose ring additive group carries a compatible complex inner product. -/
 class InnerProductAlgebra (A : Type*) [starAlgebra A]
-    extends NormedAddCommGroup A, InnerProductSpace ℂ A
+    extends Norm A, MetricSpace A, Inner ℂ A where
+  norm_smul_le : ∀ (c : ℂ) (x : A), ‖c • x‖ ≤ ‖c‖ * ‖x‖
+  norm_sq_eq_inner : ∀ x : A, ‖x‖ ^ 2 = RCLike.re (inner x x)
+  dist_eq : ∀ x y : A, dist x y = ‖-x + y‖ := by aesop
+  conj_symm : ∀ x y : A, starRingEnd ℂ (inner y x) = inner x y
+  add_left : ∀ x y z : A, inner (x + y) z = inner x z + inner y z
+  smul_left : ∀ x y : A, ∀ r : ℂ, inner (r • x) y = starRingEnd ℂ r * inner x y
+
+noncomputable instance InnerProductAlgebra.toNormedAddCommGroup {A : Type*}
+    [starAlgebra A] [InnerProductAlgebra A] :
+    NormedAddCommGroup A where
+  dist_eq := InnerProductAlgebra.dist_eq
+
+noncomputable instance InnerProductAlgebra.toNormedAddCommGroupOfRing {A : Type*}
+    [starAlgebra A] [InnerProductAlgebra A] :
+    NormedAddCommGroupOfRing A where
+  dist_eq := InnerProductAlgebra.dist_eq
+
+noncomputable instance InnerProductAlgebra.toNormedSpace {A : Type*} [starAlgebra A]
+    [InnerProductAlgebra A] :
+    NormedSpace ℂ A where
+  toModule := inferInstance
+  norm_smul_le := InnerProductAlgebra.norm_smul_le
+
+noncomputable instance InnerProductAlgebra.toInnerProductSpace {A : Type*}
+    [starAlgebra A] [InnerProductAlgebra A] :
+    InnerProductSpace ℂ A where
+  toNormedSpace := InnerProductAlgebra.toNormedSpace
+  norm_sq_eq_re_inner := InnerProductAlgebra.norm_sq_eq_inner
+  conj_inner_symm := InnerProductAlgebra.conj_symm
+  add_left := InnerProductAlgebra.add_left
+  smul_left := InnerProductAlgebra.smul_left
 
 open scoped InnerProductSpace
 open scoped TensorProduct
@@ -108,6 +139,16 @@ variable {A : Type*} [ha : _root_.starAlgebra A]
 /-- The fixed basis index type of a quantum set is finite. -/
 instance n_isFinite [QuantumSet A] : Finite (n A) := by
   infer_instance
+
+/-- A quantum set is finite-dimensional over `ℂ` via its fixed orthonormal basis. -/
+instance QuantumSet.toFinite [hA : QuantumSet A] :
+    Module.Finite ℂ A := by
+  exact Module.Finite.of_basis hA.onb.toBasis
+
+lemma QuantumSet.modAut_isSelfAdjoint [hA : QuantumSet A] (r : ℝ) :
+    IsSelfAdjoint (ha.modAut r).toLinearMap := by
+  rw [← LinearMap.isSymmetric_iff_isSelfAdjoint]
+  exact modAut_isSymmetric _
 
 alias QuantumSet.modAut_apply_modAut := starAlgebra.modAut_apply_modAut
 
@@ -157,20 +198,33 @@ noncomputable instance Complex.starAlgebra : starAlgebra ℂ where
   modAut_star _ _ := rfl
 
 noncomputable instance : InnerProductAlgebra ℂ where
+  norm_smul_le _ _ := norm_smul_le _ _
+  norm_sq_eq_inner := norm_sq_eq_re_inner
+  dist_eq x y := by
+    rw [dist_eq_norm']
+    congr 1
+    abel
+  conj_symm := inner_conj_symm
+  add_left := inner_add_left
+  smul_left := inner_smul_left
 
 noncomputable instance Complex.quantumSet : QuantumSet ℂ where
   modAut_isSymmetric _ _ _ := rfl
   k := 0
-  inner_star_left _ _ _ := by
+  inner_star_left x y z := by
     simp_rw [RCLike.inner_apply, modAut, RCLike.star_def, AlgEquiv.one_apply, mul_comm, map_mul]
     ring
   inner_conj_left x y z := by
     simp_rw [RCLike.inner_apply, modAut, map_mul, RCLike.star_def, AlgEquiv.one_apply, mul_comm z]
     rw [mul_assoc, mul_comm]
-  n := Unit
-  n_isFintype := inferInstance
+  n := Fin 1
+  n_isFintype := Fin.fintype 1
   n_isDecidableEq := inferInstance
-  onb := OrthonormalBasis.singleton Unit ℂ
+  onb := by
+    refine (Module.Basis.singleton (Fin 1) ℂ).toOrthonormalBasis (orthonormal_iff_ite.mpr ?_)
+    intro i j
+    simp_rw [Fin.fin_one_eq_zero, Module.Basis.singleton_apply,
+      RCLike.inner_apply, map_one, mul_one, if_true]
 
 @[simp]
 theorem QuantumSet.complex_modAut :
@@ -182,6 +236,36 @@ theorem QuantumSet.complex_comul :
   ext
   rw [TensorProduct.inner_ext_iff']
   intro a b
-  simp
+  rw [Coalgebra.comul_eq_mul_adjoint, LinearMap.adjoint_inner_left, LinearMap.mul'_apply]
+  simp [RCLike.inner_apply]
 
 end Complex
+
+variable {B : Type*} [hb : _root_.starAlgebra B]
+
+theorem LinearMap.adjoint_real_eq [hA : QuantumSet A] [hB : QuantumSet B]
+    (f : A →ₗ[ℂ] B) :
+    (LinearMap.adjoint f).real =
+      (ha.modAut (2 * hA.k + 1)).toLinearMap ∘ₗ
+        (LinearMap.adjoint f.real) ∘ₗ (hb.modAut (-(2 * hB.k) - 1)).toLinearMap := by
+  ext x
+  apply ext_inner_right ℂ
+  intro u
+  calc
+    ⟪(LinearMap.adjoint f).real x, u⟫_ℂ
+        = ⟪f (ha.modAut (-(2 * hA.k) - 1) (star u)), star x⟫_ℂ := by
+          rw [LinearMap.real_apply, QuantumSet.inner_conj']
+          simp only [star_star]
+          rw [LinearMap.adjoint_inner_right]
+    _ = ⟪hb.modAut (-(2 * hB.k) - 1) x,
+          star (f (ha.modAut (-(2 * hA.k) - 1) (star u)))⟫_ℂ := by
+          rw [QuantumSet.inner_conj']
+          simp
+    _ = ⟪((ha.modAut (2 * hA.k + 1)).toLinearMap ∘ₗ LinearMap.adjoint f.real ∘ₗ
+          (hb.modAut (-(2 * hB.k) - 1)).toLinearMap) x, u⟫_ℂ := by
+          symm
+          simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply]
+          rw [QuantumSet.modAut_isSymmetric]
+          rw [LinearMap.adjoint_inner_left]
+          simp only [LinearMap.real_apply, starAlgebra.modAut_star]
+          ring_nf
