@@ -130,6 +130,13 @@ import LeanPool.DeadEnds.PrimeTail
 import LeanPool.DeadEnds.RelevantPrimes
 import LeanPool.DeadEnds.Solution
 import LeanPool.DeadEnds.TailEstimates
+import LeanPool.DemazureOperatorsLean
+import LeanPool.DemazureOperatorsLean.Demazure
+import LeanPool.DemazureOperatorsLean.DemazureAux
+import LeanPool.DemazureOperatorsLean.DemazureAuxRelations
+import LeanPool.DemazureOperatorsLean.DemazureRelations
+import LeanPool.DemazureOperatorsLean.Matsumoto
+import LeanPool.DemazureOperatorsLean.StrongExchange
 import LeanPool.DirectedTopologyLean4
 import LeanPool.DirectedTopologyLean4.Constructions
 import LeanPool.DirectedTopologyLean4.CoverLemma
