@@ -25,6 +25,18 @@ variable {𝕜 E F G H : Type*} [RCLike 𝕜]
   [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
   [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
+/-- Compatibility alias for Monlib's named tensor-product inner structure. -/
+noncomputable abbrev Inner : _root_.Inner 𝕜 (E ⊗[𝕜] F) :=
+  inferInstance
+
+/-- Compatibility alias for Monlib's named tensor-product normed additive group. -/
+noncomputable abbrev normedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
+  inferInstance
+
+/-- Compatibility alias for Monlib's named tensor-product inner product space. -/
+noncomputable abbrev innerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) :=
+  inferInstance
+
 /-- Inner products distribute over addition on the left in a tensor product. -/
 protected theorem inner_add_left (x y z : E ⊗[𝕜] F) :
     inner 𝕜 (x + y) z = inner 𝕜 x z + inner 𝕜 y z :=
