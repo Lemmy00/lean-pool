@@ -493,3 +493,11 @@ import LeanPool.VirasoroProject.VirasoroCocycle
 import LeanPool.VirasoroProject.VirasoroVerma
 import LeanPool.VirasoroProject.WittAlgebra
 import LeanPool.VirasoroProject.WittAlgebraCohomology
+import LeanPool.Zeta3Irrational
+import LeanPool.Zeta3Irrational.Basic
+import LeanPool.Zeta3Irrational.Bound
+import LeanPool.Zeta3Irrational.D
+import LeanPool.Zeta3Irrational.Equality
+import LeanPool.Zeta3Irrational.Integral
+import LeanPool.Zeta3Irrational.LegendrePoly
+import LeanPool.Zeta3Irrational.LinearForm
