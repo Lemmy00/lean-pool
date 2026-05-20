@@ -338,6 +338,7 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PosEqLinearMapIsPositive
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
+import LeanPool.Monlib4.LinearAlgebra.Matrix.StarOrderedRing
 import LeanPool.Monlib4.LinearAlgebra.Mul''
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec

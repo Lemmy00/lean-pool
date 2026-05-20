@@ -13,6 +13,7 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PosEqLinearMapIsPositive
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
+import LeanPool.Monlib4.LinearAlgebra.Matrix.StarOrderedRing
 
 /-!
 # Matrix
