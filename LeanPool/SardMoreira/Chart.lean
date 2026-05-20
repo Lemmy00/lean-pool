@@ -211,7 +211,7 @@ def IsLargeAt (k : ℕ) (α : I) (s : Set (E × G)) (a : E × G) : Prop :=
 omit [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [FiniteDimensional ℝ G] in
 /-- Definition of `IsLargeAt` talks about `f : E × F → ℝ` only,
 but it implies a similar statement for any codomain. -/
-theorem IsLargeAt.fderiv_comp_inr_eq_zero (h : IsLargeAt k α s a) {f : E × F → G}
+theorem _root_.Moreira2001.IsLargeAt.fderiv_comp_inr_eq_zero (h : IsLargeAt k α s a) {f : E × F → G}
     (hf : ∀ᶠ x in 𝓝[s] a, ContDiffMoreiraHolderAt k α f x) (hf₀ : f =ᶠ[𝓝[s] a] 0) :
     fderiv ℝ f a ∘L .inr ℝ E F = 0 := by
   by_cases hfa : DifferentiableAt ℝ f a
@@ -470,14 +470,15 @@ namespace Atlas
 universe x u v w
 
 /-- Choose one atlas supplied by `nonempty_atlas`. -/
-def choice {E : Type u} {F : Type v}
+def _root_.Moreira2001.Atlas.choice {E : Type u} {F : Type v}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   (k : ℕ) (α : I) (s : Set (E × F)) : Atlas (k + 1) α s :=
   Classical.choice (nonempty_atlas k.succ_ne_zero α s)
 
 /-- The recursive Moreira atlas covering construction. -/
-def main {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] :
+def _root_.Moreira2001.Atlas.main {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] :
     ∀ {F : Type v} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
     (_k : ℕ) (α : I) (s : Set (E × F)), Atlas 1 α s
   | _, _, _, _, 0, α, s => choice 0 α s

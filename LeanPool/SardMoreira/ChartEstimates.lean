@@ -195,7 +195,7 @@ variable {E : Type u} {F : Type v} {G : Type w}
   {k : ℕ} {α : I} {s : Set (E × F)} {a : E × F}
   {f : E × F → G} {ψ : Chart 1 α s} {x : E × ψ.Dom}
 
-theorem isBigO_main_inr
+theorem _root_.Moreira2001.Atlas.isBigO_main_inr
     (hψ : ψ ∈ (main k α s).charts) (hx : x ∈ ψ.set)
     (hfk : ∀ᶠ y in 𝓝[s] (ψ x), ContDiffMoreiraHolderAt k α f y)
     (hf₀ : f =ᶠ[𝓝[s] (ψ x)] 0) :
@@ -208,7 +208,7 @@ theorem isBigO_main_inr
   refine .trans ?_ (isBigO_main_aux hψ hx hgk hg₀)
   apply e.isBigO_comp_rev
 
-theorem isBigO_main_sub_of_fderiv_zero_right
+theorem _root_.Moreira2001.Atlas.isBigO_main_sub_of_fderiv_zero_right
     (hψ : ψ ∈ (main k α s).charts) (hx : x ∈ ψ.set)
     (hfk : ∀ᶠ y in 𝓝[s] (ψ x), ContDiffMoreiraHolderAt (k + 1) α f y)
     (hf₀ : (fderiv ℝ f · ∘L .inr ℝ E F) =ᶠ[𝓝[s] (ψ x)] 0) :
@@ -222,7 +222,7 @@ theorem isBigO_main_sub_of_fderiv_zero_right
     · apply ψ.step_aux hx hcontDiff (by simp)
     · exact (hy.fderiv le_rfl).continuousLinearMap_comp (.precomp _ (.inr ℝ E F))
 
-theorem isLittleO_main_sub_of_fderiv_zero_right
+theorem _root_.Moreira2001.Atlas.isLittleO_main_sub_of_fderiv_zero_right
     (hψ : ψ ∈ (main k α s).charts) (hx : x ∈ ψ.set)
     (hfk : ∀ᶠ y in 𝓝[s] (ψ x), ContDiffMoreiraHolderAt (k + 1) α f y)
     (hf₀ : (fderiv ℝ f · ∘L .inr ℝ E F) =ᶠ[𝓝[s] (ψ x)] 0)
