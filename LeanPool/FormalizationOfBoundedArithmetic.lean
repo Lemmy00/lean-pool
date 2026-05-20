@@ -26,7 +26,7 @@ import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddComm
 import LeanPool.FormalizationOfBoundedArithmetic.V0StrSuccAssoc
 
 /-!
-# Bounded Arithmetic Model Interfaces
+# Strengthened V0 Bounded Arithmetic Interfaces
 
 Source: doi:10.1017/CBO9780511676277
 Authors: ruplet
