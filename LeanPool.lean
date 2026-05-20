@@ -349,6 +349,7 @@ import LeanPool.Monlib4.LinearAlgebra.Nacgor
 import LeanPool.Monlib4.LinearAlgebra.OfNorm
 import LeanPool.Monlib4.LinearAlgebra.PiDirectSum
 import LeanPool.Monlib4.LinearAlgebra.PiStarOrderedRing
+import LeanPool.Monlib4.LinearAlgebra.PosMapIsReal
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.DeltaForm
