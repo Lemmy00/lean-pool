@@ -338,6 +338,15 @@ theorem innerAut_isHermitian_iff (U : unitaryGroup n 𝕜) (x : Matrix n n 𝕜)
   simp_rw [IsHermitian, innerAut_conjTranspose,
     Function.Injective.eq_iff (innerAut.is_injective U)]
 
+theorem _root_.Matrix.unitaryGroup.injective_hMul (U : unitaryGroup n 𝕜) (x y : Matrix n n 𝕜) :
+    x = y ↔ x * (U : Matrix n n 𝕜) = y * (U : Matrix n n 𝕜) := by
+  constructor
+  · intro h
+    rw [h]
+  · intro h
+    have h' := congrArg (fun z : Matrix n n 𝕜 => z * (U⁻¹ : unitaryGroup n 𝕜)) h
+    simpa [Matrix.mul_assoc, UnitaryGroup.inv_apply] using h'
+
 end
 
 section Positivity
@@ -387,6 +396,125 @@ theorem _root_.Matrix.posDef_innerAut {a : Matrix n n 𝕜} (ha : a.PosDef)
     (U : unitaryGroup n 𝕜) :
     (innerAut U a).PosDef :=
   (innerAut_posDef_iff U).mpr ha
+
+open scoped BigOperators
+
+/-- Every star-algebra equivalence of `Mₙ` is implemented by a unitary conjugation. -/
+theorem _root_.StarAlgEquiv.of_matrix_is_inner
+    (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
+    ∃ U : unitaryGroup n 𝕜, innerAutStarAlg U = f := by
+  by_cases h : IsEmpty n
+  · haveI := h
+    use 1
+    ext a
+    have : a = 0 := by simp only [eq_iff_true_of_subsingleton]
+    simp_rw [this, map_zero]
+  rw [not_isEmpty_iff] at h
+  haveI := h
+  let f' := f.toAlgEquiv
+  obtain ⟨y', hy⟩ := aut_mat_inner f'
+  let y := LinearMap.toMatrix' (y'.toLinearMap)
+  let yinv := LinearMap.toMatrix' y'.symm.toLinearMap
+  have Hy : y * yinv = 1 ∧ yinv * y = 1 := by
+    simp_rw [y, yinv, ← LinearMap.toMatrix'_comp,
+      LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.self_trans_symm,
+      LinearEquiv.refl_toLinearMap, LinearMap.toMatrix'_id, and_self_iff]
+  have H : y⁻¹ = yinv := inv_eq_left_inv Hy.2
+  have hf' : ∀ x : Matrix n n 𝕜, f' x = y * x * y⁻¹ := by
+    intro x
+    simp_rw [hy, Algebra.autInner_apply, H]
+    rfl
+  have hf : ∀ x : Matrix n n 𝕜, f x = y * x * y⁻¹ := by
+    intro x
+    rw [← hf']
+    rfl
+  have hstar : ∀ x : Matrix n n 𝕜, (f x)ᴴ = f xᴴ :=
+    fun _ => (map_star f _).symm
+  simp_rw [hf, conjTranspose_mul, conjTranspose_nonsing_inv] at hstar
+  have hcomm_aux : ∀ x : Matrix n n 𝕜, yᴴ * y * xᴴ * y⁻¹ = xᴴ * yᴴ := by
+    intro x
+    simp_rw [Matrix.mul_assoc, ← Matrix.mul_assoc y, ← hstar, ← Matrix.mul_assoc, ←
+      conjTranspose_nonsing_inv, ← conjTranspose_mul, H, Hy.2, Matrix.mul_one]
+  have hcomm_star : ∀ x : Matrix n n 𝕜, Commute xᴴ (yᴴ * y) := by
+    intro x
+    simp_rw [Commute, SemiconjBy, ← Matrix.mul_assoc, ← hcomm_aux, Matrix.mul_assoc, H,
+      Hy.2, Matrix.mul_one]
+  have hcomm : ∀ x : Matrix n n 𝕜, Commute x (yᴴ * y) := by
+    intro x
+    specialize hcomm_star xᴴ
+    simp_rw [conjTranspose_conjTranspose] at hcomm_star
+    exact hcomm_star
+  obtain ⟨α, hα⟩ := commutes_with_all_iff.mp hcomm
+  have hpos_semidef : (yᴴ * y).PosSemidef := Matrix.posSemidef_conjTranspose_mul_self y
+  have hy_unit : IsUnit y := ⟨⟨y, yinv, Hy.1, Hy.2⟩, rfl⟩
+  have hunit_yhy : IsUnit (yᴴ * y) := by
+    simpa [star_eq_conjTranspose] using (isUnit_star.mpr hy_unit).mul hy_unit
+  have hpos_def := hpos_semidef.posDef_iff_isUnit.mpr hunit_yhy
+  have hα_re : α = RCLike.re α := by
+    have hdiag := IsHermitian.coe_re_diag hpos_semidef.1
+    simp_rw [hα, diag_smul, diag_one, Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one] at hdiag
+    have hone_ne_zero : (1 : n → 𝕜) ≠ 0 := by
+      simp_rw [ne_eq, funext_iff, Pi.one_apply, Pi.zero_apply, one_ne_zero]
+      simp only [Classical.not_forall, not_false_iff, exists_const]
+    have hsmul : (RCLike.re α : 𝕜) • (1 : n → 𝕜) = α • 1 := by
+      rw [← hdiag]
+      ext1
+      simp only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+    rw [(smul_left_injective _ hone_ne_zero).eq_iff] at hsmul
+    rw [hsmul]
+  have hdiag_pos : (diagonal fun _ : n => α).PosDef := by
+    rw [← Matrix.smul_one_eq_diagonal α, ← hα]
+    exact hpos_def
+  have hpositive : 0 < RCLike.re α := by
+    have hαpos : 0 < α := (Matrix.posDef_diagonal_iff.mp hdiag_pos) h.some
+    rw [hα_re, RCLike.ofReal_pos] at hαpos
+    exact hαpos
+  have hunitary :
+      (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜) • y ∈ unitaryGroup n 𝕜 := by
+    rw [mem_unitaryGroup_iff', star_eq_conjTranspose]
+    simp_rw [conjTranspose_smul, RCLike.star_def, Matrix.smul_mul, Matrix.mul_smul,
+      RCLike.conj_ofReal, smul_smul, ← RCLike.ofReal_mul]
+    rw [← Real.rpow_add hpositive, hα, hα_re, smul_smul, ← RCLike.ofReal_mul,
+      RCLike.ofReal_re, ← Real.rpow_add_one (NeZero.of_pos hpositive).out]
+    norm_num
+  let U : unitaryGroup n 𝕜 := ⟨_, hunitary⟩
+  have hU : (U : Matrix n n 𝕜) =
+      (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜) • y := rfl
+  have hU_inv :
+      ((((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜) • y)⁻¹ =
+        ((U⁻¹ : _) : Matrix n n 𝕜) := by
+    apply inv_eq_left_inv
+    rw [← hU, UnitaryGroup.inv_apply, UnitaryGroup.star_mul_self]
+  have hscalar_inv :
+      ((((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜) • y)⁻¹ =
+        (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜)⁻¹ • y⁻¹ := by
+    apply inv_eq_left_inv
+    simp_rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul]
+    rw [inv_mul_cancel₀, one_smul, H, Hy.2]
+    · simp_rw [ne_eq, RCLike.ofReal_eq_zero, Real.rpow_eq_zero_iff_of_nonneg (le_of_lt hpositive),
+        (NeZero.of_pos hpositive).out, false_and]
+      exact not_false
+  use U
+  ext1 x
+  simp_rw [innerAutStarAlg_apply_eq_innerAut_apply, innerAut_apply, ← hU_inv, hscalar_inv, hf,
+    hU, Matrix.smul_mul, Matrix.mul_smul, smul_smul, ← RCLike.ofReal_inv, ←
+    RCLike.ofReal_mul, ← Real.rpow_neg_one, ← Real.rpow_mul (le_of_lt hpositive),
+    ← Real.rpow_add hpositive]
+  norm_num
+
+/-- A unitary matrix implementing a star-algebra equivalence of full matrix algebras. -/
+noncomputable def _root_.StarAlgEquiv.of_matrix_unitary
+    (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) : unitaryGroup n 𝕜 := by
+  choose U _ using f.of_matrix_is_inner
+  exact U
+
+lemma _root_.StarAlgEquiv.eq_innerAut
+    (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
+    innerAutStarAlg f.of_matrix_unitary = f := by
+  rw [StarAlgEquiv.of_matrix_unitary]
+  generalize_proofs
+  expose_names
+  exact pf_1
 
 /-- Spectral theorem in Monlib's inner-automorphism notation. -/
 theorem _root_.Matrix.IsHermitian.spectral_theorem'' {x : Matrix n n 𝕜}
