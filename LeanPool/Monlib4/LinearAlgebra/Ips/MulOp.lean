@@ -29,6 +29,15 @@ theorem Basis.mulOpposite_repr_apply (b : Basis ι R H) (x : Hᵐᵒᵖ) :
     b.mulOpposite.repr x = b.repr (MulOpposite.unop x) :=
   (Basis.repr_unop_eq_mulOpposite_repr b x).symm
 
+theorem mulOpposite_finiteDimensional {R H : Type _} [DivisionRing R] [AddCommGroup H]
+    [Module R H] [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ := by
+  infer_instance
+
+/-- The named inner-product data on a multiplicative opposite space. -/
+abbrev MulOpposite.hasInner {𝕜 H : Type _} [RCLike 𝕜] [NormedAddCommGroup H]
+    [InnerProductSpace 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ :=
+  inferInstance
+
 theorem MulOpposite.inner_eq {𝕜 H : Type _} [RCLike 𝕜] [NormedAddCommGroup H]
     [InnerProductSpace 𝕜 H] (x y : Hᵐᵒᵖ) :
     inner 𝕜 x y = inner 𝕜 (MulOpposite.unop x) (MulOpposite.unop y) :=
@@ -38,6 +47,16 @@ theorem MulOpposite.inner_eq' {𝕜 H : Type _} [RCLike 𝕜] [NormedAddCommGrou
     [InnerProductSpace 𝕜 H] (x y : H) :
     inner 𝕜 (MulOpposite.op x) (MulOpposite.op y) = inner 𝕜 x y :=
   MulOpposite.inner_op x y
+
+/-- The named inner-product-space structure on a multiplicative opposite space. -/
+abbrev MulOpposite.innerProductSpace {𝕜 H : Type _} [RCLike 𝕜] [NormedAddCommGroup H]
+    [InnerProductSpace 𝕜 H] : InnerProductSpace 𝕜 Hᵐᵒᵖ :=
+  inferInstance
+
+theorem Basis.orthonormal_iff_mulOpposite {𝕜 H : Type _} [RCLike 𝕜]
+    [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] {ι : Type _} (b : Basis ι 𝕜 H) :
+    Orthonormal 𝕜 b ↔ Orthonormal 𝕜 b.mulOpposite :=
+  (Basis.mulOpposite_is_orthonormal_iff b).symm
 
 instance MulOpposite.starModule {R H : Type _} [Star R] [SMul R H] [Star H] [StarModule R H] :
     StarModule R Hᵐᵒᵖ
