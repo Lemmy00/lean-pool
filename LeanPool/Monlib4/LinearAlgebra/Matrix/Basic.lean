@@ -172,6 +172,55 @@ theorem Matrix.single.mul_apply_basis' {R p q : Type _} [Semiring R] [DecidableE
   simp_rw [Matrix.single.hMul_apply_basis, Matrix.single, ite_and, of_apply, ite_mul,
     MulZeroClass.zero_mul, one_mul]
 
+theorem Matrix.single.hMul_apply {R : Type _} [Fintype n] [Semiring R]
+    (i j k l m p : n) :
+    ∑ x : n × n, ∑ x_1 : n × n, ∑ x_2 : n, ∑ x_3 : n,
+        Matrix.single l k (Matrix.single p m (1 : R) x_1.snd x_1.fst) x.snd x.fst *
+          Matrix.single i x_2 (Matrix.single x_3 j (1 : R) x_1.fst x_1.snd) x.fst x.snd =
+      ∑ x : n × n, ∑ x_1 : n × n, ∑ x_2 : n, ∑ x_3 : n,
+        ite
+          (p = x_1.snd ∧
+            m = x_1.fst ∧
+              l = x.snd ∧ k = x.fst ∧ x_3 = x_1.fst ∧ j = x_1.snd ∧ i = x.fst ∧
+                x_2 = x.snd)
+          1 0 := by
+  simp_rw [Matrix.single.mul_apply_basis', ite_mul, one_mul, MulZeroClass.zero_mul, ← ite_and,
+    and_assoc]
+
+theorem Matrix.single.sum_star_hMul_self [Fintype n] (i j : n) (a b : R) :
+    ∑ k : n, ∑ l : n, ∑ m : n, ∑ p : n,
+        Matrix.single i j a k l * star (Matrix.single i j b) m p =
+      a * star b := by
+  simp_rw [Matrix.star_apply, Matrix.single.star_apply, Matrix.single, Matrix.of_apply, ite_mul,
+    MulZeroClass.zero_mul, mul_ite, MulZeroClass.mul_zero, ite_and, Finset.sum_ite_irrel,
+    Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+
+theorem Matrix.single.sum_star_hMul_self' {R : Type _} [Fintype n] [Semiring R] [StarRing R]
+    (i j : n) :
+    ∑ kl : n × n, ∑ mp : n × n,
+        Matrix.single i j (1 : R) kl.1 kl.2 * star (Matrix.single i j (1 : R)) mp.1 mp.2 =
+      1 := by
+  classical
+  rw [Finset.sum_eq_single (i, j)]
+  · rw [Finset.sum_eq_single (j, i)]
+    · simp [Matrix.star_apply, Matrix.single, Matrix.of_apply]
+    · intro b _ hne
+      have hcond : ¬(i = b.2 ∧ j = b.1) := by
+        intro h
+        apply hne
+        ext <;> simp [h.1, h.2]
+      simp [Matrix.star_apply, Matrix.single, Matrix.of_apply, hcond]
+    · intro hnot
+      simp at hnot
+  · intro b _ hne
+    have hcond : ¬(i = b.1 ∧ j = b.2) := by
+      intro h
+      apply hne
+      ext <;> simp [h.1, h.2]
+    simp [Matrix.single, Matrix.of_apply, hcond]
+  · intro hnot
+    simp at hnot
+
 theorem Matrix.single.hMul_stdBasisMatrix {R p : Type _} [Semiring R] [DecidableEq p]
     [Fintype m] (i x : n) (j k : m) (l y : p) (a b : R) :
     (Matrix.single i j a * Matrix.single k l b) x y =
@@ -189,6 +238,26 @@ theorem Matrix.single.hMul_stdBasis_matrix' {R p : Type _} [Fintype n] [Decidabl
     MulZeroClass.zero_mul, one_mul, Finset.sum_ite_irrel, Finset.sum_ite_eq, Finset.mem_univ,
     if_true, Finset.sum_const_zero, smul_ite, smul_zero, smul_eq_mul, mul_one, ← ite_and,
     eq_comm, and_comm]
+
+theorem Matrix.transposeAlgEquiv_symm_op_apply {n R α : Type _} [CommSemiring R]
+    [CommSemiring α] [Fintype n] [DecidableEq n] [Algebra R α] (x : Matrix n n α) :
+    (Matrix.transposeAlgEquiv n R α).symm (MulOpposite.op x) = xᵀ := by
+  rw [Matrix.transposeAlgEquiv_symm_apply]
+  rfl
+
+open Matrix
+
+theorem Matrix.dotProduct_eq_trace {R n : Type _} [CommSemiring R] [StarRing R] [Fintype n]
+    (x : n → R) (y : Matrix n n R) :
+    star x ⬝ᵥ y.mulVec x =
+      ((Matrix.replicateCol (Fin 1) x * Matrix.replicateRow (Fin 1) (star x))ᴴ * y).trace := by
+  simp_rw [Matrix.trace_iff, dotProduct, Matrix.conjTranspose_mul,
+    Matrix.conjTranspose_replicateRow, Matrix.conjTranspose_replicateCol, star_star,
+    Matrix.mul_apply, Matrix.mulVec, dotProduct, Matrix.replicateCol_apply,
+    Matrix.replicateRow_apply, Pi.star_apply, Finset.sum_const]
+  simp only [Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Finset.card_singleton, one_smul]
+  simp_rw [Finset.mul_sum, mul_comm (x _), mul_comm _ (x _), ← mul_assoc, mul_comm]
+  rw [Finset.sum_comm]
 
 theorem forall_left_hMul {n R : Type _} [Fintype n] [Semiring R]
     (x y : Matrix n n R) : x = y ↔ ∀ a : Matrix n n R, a * x = a * y := by
