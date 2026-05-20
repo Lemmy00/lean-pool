@@ -339,4 +339,32 @@ theorem innerAut_isHermitian_iff (U : unitaryGroup n 𝕜) (x : Matrix n n 𝕜)
 
 end
 
+variable [Field 𝕜] [StarRing 𝕜] [DecidableEq n]
+
+theorem _root_.Matrix.innerAutStarAlg_equiv_toLinearMap (U : unitaryGroup n 𝕜) :
+    (innerAutStarAlg U).toAlgEquiv.toLinearMap = innerAut U :=
+  rfl
+
+theorem _root_.Matrix.innerAutStarAlg_equiv_symm_toLinearMap (U : unitaryGroup n 𝕜) :
+    (innerAutStarAlg U).symm.toAlgEquiv.toLinearMap = innerAut U⁻¹ := by
+  ext1
+  simp only [innerAut_apply, inv_inv]
+  rw [UnitaryGroup.inv_apply]
+  rfl
+
+theorem _root_.Matrix.innerAut_comp_inj (U : Matrix.unitaryGroup n 𝕜)
+    (S T : Matrix n n 𝕜 →ₗ[𝕜] Matrix n n 𝕜) :
+    S = T ↔ innerAut U ∘ₗ S = innerAut U ∘ₗ T := by
+  simp_rw [LinearMap.ext_iff, LinearMap.comp_apply, innerAut_eq_iff,
+    innerAut_inv_apply_innerAut_self]
+
+theorem _root_.Matrix.innerAut_inj_comp (U : unitaryGroup n 𝕜)
+    (S T : Matrix n n 𝕜 →ₗ[𝕜] Matrix n n 𝕜) :
+    S = T ↔ S ∘ₗ innerAut U = T ∘ₗ innerAut U := by
+  refine ⟨fun h => by rw [h], fun h => ?_⟩
+  simp_rw [LinearMap.ext_iff, LinearMap.comp_apply] at h ⊢
+  intro x
+  nth_rw 1 [← innerAut_apply_innerAut_inv_self U x]
+  rw [h, innerAut_apply_innerAut_inv_self]
+
 end Matrix
