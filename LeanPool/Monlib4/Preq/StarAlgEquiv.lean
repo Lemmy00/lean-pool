@@ -88,6 +88,22 @@ theorem StarAlgEquiv.symm_apply_eq {R A B : Type _}
     f.symm y = x ↔ y = f x :=
   EquivLike.inv_apply_eq (e := f)
 
+@[simp]
+theorem StarAlgEquiv.ofAlgEquiv_coe {R A B : Type _}
+    [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] [Star A] [Star B]
+    (f : A ≃ₐ[R] B) (hf : ∀ x : A, f (star x) = star (f x)) :
+    ⇑(StarAlgEquiv.ofAlgEquiv f hf) = f :=
+  rfl
+
+@[simp]
+theorem StarAlgEquiv.ofAlgEquiv_symm_coe {R A B : Type _}
+    [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] [Star A] [Star B]
+    (f : A ≃ₐ[R] B) (hf : ∀ x : A, f (star x) = star (f x)) :
+    ⇑(StarAlgEquiv.ofAlgEquiv f hf).symm = f.symm :=
+  rfl
+
 theorem StarAlgEquiv.comp_eq_iff {R E₁ E₂ E₃ : Type _} [CommSemiring R]
     [AddCommMonoid E₁] [AddCommMonoid E₂] [AddCommMonoid E₃]
     [Module R E₁] [Module R E₂] [Module R E₃] [Star E₁] [Star E₂] [Mul E₁] [Mul E₂]
