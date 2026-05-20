@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.QuantumGraph.Basic
+import LeanPool.Monlib4.QuantumGraph.PiMatFinTwo
 
 /-!
 # QuantumGraph

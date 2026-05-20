@@ -368,6 +368,7 @@ import LeanPool.Monlib4.Preq.Set
 import LeanPool.Monlib4.Preq.StarAlgEquiv
 import LeanPool.Monlib4.QuantumGraph
 import LeanPool.Monlib4.QuantumGraph.Basic
+import LeanPool.Monlib4.QuantumGraph.PiMatFinTwo
 import LeanPool.Monlib4.RepTheory
 import LeanPool.Monlib4.RepTheory.AutMat
 import LeanPool.OrderPQ
