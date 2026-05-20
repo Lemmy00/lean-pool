@@ -11,6 +11,7 @@ import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Pi
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.QIso
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMul
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMulTensor
+import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Subset
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Symm
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.TensorProduct
 
