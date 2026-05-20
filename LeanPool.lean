@@ -324,6 +324,7 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
 import LeanPool.Monlib4.LinearAlgebra.Ips.Strict
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 import LeanPool.Monlib4.LinearAlgebra.Ips.TensorHilbert
+import LeanPool.Monlib4.LinearAlgebra.Ips.Vn
 import LeanPool.Monlib4.LinearAlgebra.IsProj'
 import LeanPool.Monlib4.LinearAlgebra.IsReal
 import LeanPool.Monlib4.LinearAlgebra.KroneckerToTensor
@@ -363,6 +364,7 @@ import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.FiniteDimensional
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Lemmas
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.OrthonormalBasis
+import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Submodule
 import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
 import LeanPool.Monlib4.Other
 import LeanPool.Monlib4.Other.Sonia
