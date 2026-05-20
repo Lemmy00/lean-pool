@@ -27,28 +27,6 @@ open scoped TensorProduct
 
 local notation x " ⊗ₘ " y => TensorProduct.map x y
 
-theorem TensorProduct.tmul_eq_zero {K M N : Type*} [Field K] [AddCommGroup M]
-    [Module K M] [AddCommGroup N] [Module K N] (m : M) (n : N) :
-    m ⊗ₜ[K] n = 0 ↔ m = 0 ∨ n = 0 := by
-  classical
-  constructor
-  · intro h
-    by_cases hn : n = 0
-    · exact Or.inr hn
-    · left
-      let basis := Module.Basis.ofVectorSpace K N
-      have hrepr : basis.repr n ≠ 0 := by
-        intro hzero
-        exact hn ((LinearEquiv.map_eq_zero_iff basis.repr).mp hzero)
-      obtain ⟨i, hi⟩ := Finsupp.ne_iff.mp hrepr
-      have hcoeff : basis.repr n i • m = 0 := by
-        have hmap := congrArg (fun t => TensorProduct.equivFinsuppOfBasisRight basis t i) h
-        simpa [TensorProduct.equivFinsuppOfBasisRight_apply_tmul_apply] using hmap
-      exact (smul_eq_zero.mp hcoeff).resolve_left hi
-  · rintro (rfl | rfl)
-    · rw [TensorProduct.zero_tmul]
-    · rw [TensorProduct.tmul_zero]
-
 /-- Left multiplication on the left tensor factor. -/
 noncomputable def Bimodule.lsmul (x : H₁) (y : H₁ ⊗[R] H₂) : H₁ ⊗[R] H₂ :=
   (LinearMap.mulLeft R x ⊗ₘ 1) y
