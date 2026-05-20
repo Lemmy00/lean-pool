@@ -11,13 +11,15 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Tactic.Ring
+import LeanPool.Monlib4.LinearAlgebra.Coalgebra.FiniteDimensional
 
 /-!
 # Quantum Sets
 
 This file ports the structural core of upstream `Monlib.LinearAlgebra.QuantumSet.Basic`:
 star algebras with modular automorphisms, inner-product algebras, quantum sets,
-and the base quantum set on `ℂ`.
+the base quantum set on `ℂ`, basic modular inner-product identities, and the
+coalgebra comultiplication on `ℂ`.
 
 The coalgebra, `Psi`/`Upsilon`, and Schur-product layers of the upstream file
 still depend on older normed-ring scaffolding and large heartbeat overrides, so
@@ -73,6 +75,7 @@ class InnerProductAlgebra (A : Type*) [starAlgebra A]
     extends NormedAddCommGroup A, InnerProductSpace ℂ A
 
 open scoped InnerProductSpace
+open scoped TensorProduct
 
 /-- A finite-dimensional quantum set with a modular automorphism and fixed orthonormal basis. -/
 class QuantumSet (A : Type _) [ha : starAlgebra A]
@@ -93,6 +96,8 @@ class QuantumSet (A : Type _) [ha : starAlgebra A]
   onb : OrthonormalBasis n ℂ A
 
 attribute [instance] QuantumSet.toInnerProductAlgebra
+attribute [reducible, instance] QuantumSet.n_isFintype
+attribute [reducible, instance] QuantumSet.n_isDecidableEq
 attribute [simp] QuantumSet.inner_star_left
 attribute [simp] QuantumSet.modAut_isSymmetric
 
@@ -100,7 +105,49 @@ export QuantumSet (n onb k)
 
 variable {A : Type*} [ha : _root_.starAlgebra A]
 
+/-- The fixed basis index type of a quantum set is finite. -/
+instance n_isFinite [QuantumSet A] : Finite (n A) := by
+  infer_instance
+
 alias QuantumSet.modAut_apply_modAut := starAlgebra.modAut_apply_modAut
+
+lemma QuantumSet.inner_conj [QuantumSet A] (a b : A) :
+    ⟪a, b⟫_ℂ = ⟪star b, ha.modAut (-(2 * k A) - 1) (star a)⟫_ℂ :=
+calc
+  ⟪a, b⟫_ℂ = ⟪1 * a, b⟫_ℂ := by rw [one_mul]
+  _ = ⟪1, b * ha.modAut (-k A - 1) (star a)⟫_ℂ := by rw [inner_conj_left]
+  _ = starRingEnd ℂ ⟪b * ha.modAut (-k A - 1) (star a), 1⟫_ℂ := by
+    rw [inner_conj_symm]
+  _ = starRingEnd ℂ ⟪ha.modAut (-k A - 1) (star a), ha.modAut (-k A) (star b)⟫_ℂ := by
+    rw [inner_star_left, mul_one]
+  _ = ⟪star b, ha.modAut (-(2 * k A) - 1) (star a)⟫_ℂ := by
+    rw [inner_conj_symm, modAut_isSymmetric, modAut_apply_modAut]
+    ring_nf
+
+lemma QuantumSet.inner_conj' [QuantumSet A] (a b : A) :
+    ⟪a, b⟫_ℂ = ⟪ha.modAut (-(2 * k A) - 1) (star b), star a⟫_ℂ := by
+  rw [inner_conj, modAut_isSymmetric]
+
+lemma QuantumSet.inner_modAut_right_conj [QuantumSet A] (a b : A) :
+    ⟪a, ha.modAut (-k A) (star b)⟫_ℂ =
+      ⟪b, ha.modAut (-k A - 1) (star a)⟫_ℂ := by
+  nth_rw 1 [← one_mul a]
+  rw [inner_conj_left, ← inner_star_left, mul_one]
+
+lemma QuantumSet.inner_conj'' [QuantumSet A] (a b : A) :
+    ⟪a, b⟫_ℂ =
+      ⟪ha.modAut ((-(2 * k A) - 1) / 2) (star b),
+        ha.modAut ((-(2 * k A) - 1) / 2) (star a)⟫_ℂ :=
+calc
+  ⟪a, b⟫_ℂ = ⟪ha.modAut (-(2 * k A) - 1) (star b), star a⟫_ℂ := by
+    rw [inner_conj']
+  _ = ⟪ha.modAut ((-(2 * k A) - 1) / 2)
+        (ha.modAut ((-(2 * k A) - 1) / 2) (star b)), star a⟫_ℂ := by
+    rw [modAut_apply_modAut]
+    norm_num
+  _ = ⟪ha.modAut ((-(2 * k A) - 1) / 2) (star b),
+        ha.modAut ((-(2 * k A) - 1) / 2) (star a)⟫_ℂ := by
+    rw [modAut_isSymmetric]
 
 section Complex
 
@@ -124,5 +171,17 @@ noncomputable instance Complex.quantumSet : QuantumSet ℂ where
   n_isFintype := inferInstance
   n_isDecidableEq := inferInstance
   onb := OrthonormalBasis.singleton Unit ℂ
+
+@[simp]
+theorem QuantumSet.complex_modAut :
+    Complex.starAlgebra.modAut = 1 :=
+rfl
+
+theorem QuantumSet.complex_comul :
+    (Coalgebra.comul : ℂ →ₗ[ℂ] ℂ ⊗[ℂ] ℂ) = (TensorProduct.lid ℂ ℂ).symm.toLinearMap := by
+  ext
+  rw [TensorProduct.inner_ext_iff']
+  intro a b
+  simp
 
 end Complex
