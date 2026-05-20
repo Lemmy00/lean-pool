@@ -1185,3 +1185,7 @@ theorem str_succ_assoc : ∀ {X Y : str}, X + succ Y = succ (X + Y) := by
   · exact succ_len_eq
   · intro y y_lt
     exact ⟨succ_add_of_add_succ, add_succ_of_succ_add⟩
+
+/-- Named alias emphasizing that this theorem is conditional on the strengthened V0 extension. -/
+theorem str_succ_assoc_strengthened_v0 : ∀ {X Y : str}, X + succ Y = succ (X + Y) :=
+  str_succ_assoc

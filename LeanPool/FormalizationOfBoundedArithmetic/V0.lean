@@ -544,6 +544,12 @@ by
   · exact hzX
   · exact lt_succ z
 
+/-- Named alias emphasizing that this induction theorem uses the strengthened `V0Model` bundle. -/
+theorem ind_strengthened_v0 (P : num -> Prop) :
+  (∀ y : num, ∃ Y : str, (len Y : num) ≤ y ∧ ∀ z < y, z ∈ Y ↔ P z)
+  -> (P 0 -> (∀ x, P x -> P (x + 1)) -> ∀ x, P x) :=
+  ind_of_comp P
+
 
 instance : IDelta0Model num where
   open_induction phi h_open := M.open_induction_ax phi h_open

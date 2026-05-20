@@ -31,7 +31,7 @@ import LeanPool.FormalizationOfBoundedArithmetic.V0StrSuccAssoc
 Source: doi:10.1017/CBO9780511676277
 Authors: ruplet
 Status: verified
-Main declarations: `IOPENModel.add_assoc`, `V0Model.ind_of_comp`, `str_add_assoc`, `str_succ_assoc`
+Main declarations: `V0Model.ind_strengthened_v0`, `str_add_assoc_strengthened_v0`
 Tags: logic, bounded-arithmetic, model-theory, computational-complexity
 MSC: 03F30, 03D15
 -/

@@ -120,3 +120,7 @@ theorem str_add_assoc : ∀ {X Y Z : str}, (X + Y) + Z = X + (Y + Z) := by
   rw [mem_add_iff_xor (X := X) (Y := Y) (i := i)]
   rw [mem_add_iff_xor (X := Y) (Y := Z) (i := i)]
   exact add_assoc_bit_bool (carry_pair_assoc (X := X) (Y := Y) (Z := Z) (i := i)).2
+
+/-- Named alias emphasizing that this theorem is conditional on the strengthened V0 extension. -/
+theorem str_add_assoc_strengthened_v0 : ∀ {X Y Z : str}, (X + Y) + Z = X + (Y + Z) :=
+  str_add_assoc
