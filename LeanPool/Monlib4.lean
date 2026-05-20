@@ -52,8 +52,10 @@ dependent direct sum, basic spectrum commutativity (`isUnit_comm`,
 `spectrum.comm`), the `PiMat` matrix-family abbreviation, permutation-matrix
 unitarity, self-adjoint/inner-product extensionality lemmas, strict
 tensor-product coercions, left/right multiplication maps and bimodule maps on
-tensor products, and helper lemmas for finite sums, ites/dites, digit-sum
-divisibility in arbitrary bases, and `RCLike`-valued order relations.
+tensor products, the finite-dimensional Hilbert-algebra coalgebra instance,
+coalgebras on multiplicative opposites, and helper lemmas for finite sums,
+ites/dites, digit-sum divisibility in arbitrary bases, and `RCLike`-valued
+order relations.
 
 ## Provenance
 
@@ -64,7 +66,6 @@ Large parts of the upstream quantum-graph and Schur-product theorem stack are
 not yet vendored. In particular, upstream modules such as
 `QuantumGraph.OfClassicalGraph` and the deeper theorem sections of
 `QuantumSet.SchurMul` / `QuantumGraph.Basic` depend on the older
-`PiLp`/normed-ring scaffold, the finite-dimensional Hilbert-algebra coalgebra
-instance, and upstream heartbeat or linter overrides that Lean Pool does not
-permit.
+`PiLp`/normed-ring scaffold and upstream heartbeat or linter overrides that
+Lean Pool does not permit.
 -/

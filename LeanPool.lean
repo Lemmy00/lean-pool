@@ -305,6 +305,10 @@ import LeanPool.LowDimSolvClassification.Semidirect
 import LeanPool.LowDimSolvClassification.Tactics
 import LeanPool.Monlib4
 import LeanPool.Monlib4.LinearAlgebra
+import LeanPool.Monlib4.LinearAlgebra.Coalgebra
+import LeanPool.Monlib4.LinearAlgebra.Coalgebra.FiniteDimensional
+import LeanPool.Monlib4.LinearAlgebra.Coalgebra.Lemmas
+import LeanPool.Monlib4.LinearAlgebra.Coalgebra.MulOpposite
 import LeanPool.Monlib4.LinearAlgebra.DirectSumFromTo
 import LeanPool.Monlib4.LinearAlgebra.End
 import LeanPool.Monlib4.LinearAlgebra.InnerAut

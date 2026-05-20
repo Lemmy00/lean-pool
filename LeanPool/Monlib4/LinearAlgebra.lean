@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 
+import LeanPool.Monlib4.LinearAlgebra.Coalgebra
 import LeanPool.Monlib4.LinearAlgebra.DirectSumFromTo
 import LeanPool.Monlib4.LinearAlgebra.End
 import LeanPool.Monlib4.LinearAlgebra.InnerAut
