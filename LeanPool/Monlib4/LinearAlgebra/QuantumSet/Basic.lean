@@ -241,6 +241,18 @@ theorem QuantumSet.complex_comul :
 
 end Complex
 
+/-- Modular automorphisms preserve the coalgebra structure of a quantum set. -/
+theorem QuantumSet.modAut_isCoalgHom
+    {A : Type*} [hA : starAlgebra A] [QuantumSet A] (r : ℝ) :
+    LinearMap.IsCoalgHom (AlgEquiv.toLinearMap (hA.modAut r)) := by
+  rw [← modAut_isSelfAdjoint, LinearMap.star_eq_adjoint]
+  simp_rw [LinearMap.isCoalgHom_iff, Coalgebra.counit_eq_unit_adjoint,
+    Coalgebra.comul_eq_mul_adjoint, ← TensorProduct.map_adjoint, ← LinearMap.adjoint_comp,
+    Function.Injective.eq_iff (LinearEquiv.injective _), TensorProduct.ext_iff',
+    LinearMap.ext_iff, LinearMap.comp_apply, TensorProduct.map_tmul, LinearMap.mul'_apply]
+  simp only [Algebra.linearMap_apply, AlgEquiv.toLinearMap_apply, map_mul, implies_true,
+    and_true, Algebra.algebraMap_eq_smul_one, map_smul, map_one]
+
 variable {B : Type*} [hb : _root_.starAlgebra B]
 
 theorem LinearMap.adjoint_real_eq [hA : QuantumSet A] [hB : QuantumSet B]
