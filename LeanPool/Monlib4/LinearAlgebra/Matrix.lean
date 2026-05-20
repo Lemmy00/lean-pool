@@ -10,6 +10,7 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
 import LeanPool.Monlib4.LinearAlgebra.Matrix.IncludeBlock
 import LeanPool.Monlib4.LinearAlgebra.Matrix.IsAlmostHermitian
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
+import LeanPool.Monlib4.LinearAlgebra.Matrix.PosDefRpow
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PosEqLinearMapIsPositive
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
