@@ -135,6 +135,27 @@ theorem inner_ext_iff' (x y : E ⊗[𝕜] F) :
     x = y ↔ ∀ (a : E) (b : F), inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) :=
   TensorProduct.ext_iff_inner_right (x := x) (y := y)
 
+omit [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] in
+/-- Equality of pure tensors can be tested against pure tensors. -/
+theorem inner_ext_iff (x z : E) (y w : F) :
+    x ⊗ₜ[𝕜] y = z ⊗ₜ[𝕜] w ↔
+      ∀ (a : E) (b : F),
+        inner 𝕜 (x ⊗ₜ[𝕜] y) (a ⊗ₜ[𝕜] b) =
+          inner 𝕜 (z ⊗ₜ[𝕜] w) (a ⊗ₜ[𝕜] b) :=
+  TensorProduct.ext_iff_inner_right (x := x ⊗ₜ[𝕜] y) (y := z ⊗ₜ[𝕜] w)
+
+omit [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] in
+/-- A tensor is zero iff its inner product against every pure tensor is zero. -/
+theorem forall_inner_eq_zero (x : E ⊗[𝕜] F) :
+    (∀ (a : E) (b : F), inner 𝕜 x (a ⊗ₜ[𝕜] b) = 0) ↔ x = 0 := by
+  constructor
+  · intro h
+    rw [TensorProduct.inner_ext_iff' x 0]
+    intro a b
+    simp [h a b]
+  · intro hx a b
+    simp [hx]
+
 omit [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
   [FiniteDimensional 𝕜 G] [FiniteDimensional 𝕜 H] in
 /-- Equality in a fourfold tensor product can be tested against pure tensors. -/
