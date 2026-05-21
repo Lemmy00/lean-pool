@@ -200,6 +200,13 @@ import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
 import LeanPool.Fineqs
 import LeanPool.Fineqs.Main
+import LeanPool.FoZfc
+import LeanPool.FoZfc.Axioms
+import LeanPool.FoZfc.Basic
+import LeanPool.FoZfc.BoundedFormulaOps
+import LeanPool.FoZfc.FixedSnoc
+import LeanPool.FoZfc.Replacement
+import LeanPool.FoZfc.Tostring
 import LeanPool.FormalLearningTheory
 import LeanPool.FormalLearningTheory.Basic
 import LeanPool.FormalLearningTheory.Bridge
