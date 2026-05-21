@@ -71,6 +71,7 @@ Soft preference for ≥ ~1k LOC (fragments below that are not worth importing).
 | [kckennylau/EllipticCurve](https://github.com/kckennylau/EllipticCurve) | Elliptic curve over schemes | Apache-2.0 | v4.25.0-rc2 | 7,309 | 2025-11-04 |
 | [mariainesdff/ostrowski2024](https://github.com/mariainesdff/ostrowski2024) | Ostrowski's theorem | *none* | v4.26.0-rc2 | 2,507 | 2025-12-14 |
 | [pitmonticone/QuadraticIntegers](https://github.com/pitmonticone/QuadraticIntegers) | Ring of integers in quadratic fields | Apache-2.0 | v4.24.0 | 2,126 | 2026-03-09 |
+| [CBirkbeck/LeanModularForms](https://github.com/CBirkbeck/LeanModularForms) | Modular forms | Apache-2.0 | v4.29.0-rc8 | 77,344 | 2026-05-21 |
 
 ### Algebra / commutative algebra
 
@@ -197,7 +198,6 @@ Soft preference for ≥ ~1k LOC (fragments below that are not worth importing).
 | [pannous/hyper-lean](https://github.com/pannous/hyper-lean) | Hyperreal numbers | Apache-2.0 | v4.27.0 | 9,636 | 2026-03-21 |
 | [thejohncrafter/Catlib4](https://github.com/thejohncrafter/Catlib4) | Category theory + theoretical CS | *none* | nightly-2023-04-20 | 3,045 | 2024-11-25 |
 | [ChrisHughes24/axgroth](https://github.com/ChrisHughes24/axgroth) | Ax–Grothendieck (likely) | *none* | v4.23.0-rc2 | 933 | 2026-03-29 |
-| [CBirkbeck/ModularForms_Lean4](https://github.com/CBirkbeck/ModularForms_Lean4) | Modular forms | *none* | v4.5.0-rc1 | 11,539 | 2024-11-08 |
 | [Louis-Le-Grand/Formalisation-of-constructable-numbers](https://github.com/Louis-Le-Grand/Formalisation-of-constructable-numbers) | Constructible numbers | *none* | v4.11.0-rc2 | 6,146 | 2024-11-13 |
 | [penteract/pythagTreeProof](https://github.com/penteract/pythagTreeProof) | Area of the Pythagoras tree | *none* | v4.22.0-rc3 | 7,813 | 2025-07-22 |
 | [roos-j/lean-booleanfun](https://github.com/roos-j/lean-booleanfun) | Arrow's theorem via Fourier analysis | Apache-2.0 | v4.16.0-rc2 | 1,517 | 2026-03-03 |
