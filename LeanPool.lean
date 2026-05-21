@@ -680,3 +680,12 @@ import LeanPool.Zeta3Irrational.Equality
 import LeanPool.Zeta3Irrational.Integral
 import LeanPool.Zeta3Irrational.LegendrePoly
 import LeanPool.Zeta3Irrational.LinearForm
+import LeanPool.ZhangYeungInequality
+import LeanPool.ZhangYeungInequality.CopyLemma
+import LeanPool.ZhangYeungInequality.Delta
+import LeanPool.ZhangYeungInequality.EntropyRegion
+import LeanPool.ZhangYeungInequality.Prelude
+import LeanPool.ZhangYeungInequality.Theorem2
+import LeanPool.ZhangYeungInequality.Theorem3
+import LeanPool.ZhangYeungInequality.Theorem4
+import LeanPool.ZhangYeungInequality.Theorem5
