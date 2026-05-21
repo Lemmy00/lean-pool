@@ -1168,6 +1168,35 @@ projects:
     msc:
       - "37A30"
       - "28D05"
+  - slug: fo-zfc
+    title: First Order Language of ZF Set Theory
+    summary: Formalizes ZF set theory inside Lean's `FirstOrder.Language` framework, enabling meta-mathematical arguments such as elementary submodels.
+    branch: mathematical logic
+    entry_module: LeanPool.FoZfc
+    authors:
+      - Tetsuya Ishiu
+    source:
+      title: Set Theory
+      authors:
+        - Thomas Jech
+      url: https://doi.org/10.1007/3-540-44761-X
+      github_repo: ishiut/fo_zfc
+    status: verified
+    main_declarations:
+      - FirstOrder.ZFC.ModelZF
+      - FirstOrder.ZFC.ext_induction
+    main_results:
+      - declaration: FirstOrder.ZFC.ModelZF
+        informal: Bundles the ZF axioms (Emptyset, Pairing, Union, Powerset, Infinity, Regularity, Comprehension, Replacement) into a single model class.
+      - declaration: FirstOrder.ZFC.ext_induction
+        informal: States the principle of mathematical induction over ω externally for any bounded formula in LZFC.
+    tags:
+      - model-theory
+      - set-theory
+      - zf
+    msc:
+      - "03B10"
+      - "03E30"
   - slug: 2-coloring-1-round
     title: 2-Coloring Cycles in One Round
     summary: Formalizes certified upper and lower bounds for one-round randomized algorithms that 2-color cycles.
