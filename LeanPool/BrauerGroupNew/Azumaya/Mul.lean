@@ -435,7 +435,9 @@ abbrev projection' (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M
 lemma projection'_inclusion' (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
     [Module.Projective R M] : projection' R M ∘ₗ inclusion' R M = LinearMap.id := by
   ext f : 1
-  simp [LinearMap.comp_assoc, fg]
+  simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, comp_apply, LinearMap.id_coe,
+    id_eq]
+  simp only [LinearMap.comp_assoc, fg, LinearMap.comp_id]
   rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp]
 
 lemma projection'_surj (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
@@ -493,9 +495,13 @@ abbrev tensor_projection1' :
 
 lemma tensor_projection_inclusion1' : tensor_projection1' R M ∘ₗ tensor_inclusion1' R M = .id := by
   ext f g
-  simp [LinearMap.comp_assoc, fg]
-  rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp, ← LinearMap.comp_assoc,
-    fg, LinearMap.id_comp, op_unop]
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
+    TensorProduct.curry_apply, LinearMap.coe_comp, comp_apply, TensorProduct.map_tmul,
+    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe, coe_opLinearEquiv,
+    coe_opLinearEquiv_symm, unop_op, LinearMap.id_coe, id_eq]
+  simp only [LinearMap.comp_assoc, fg, LinearMap.comp_id]
+  rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp]
+  rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp, op_unop]
 
 lemma tensor_inclusion1'_inj : Function.Injective (tensor_inclusion1' R M) := by
   exact Function.LeftInverse.injective (g := tensor_projection1' R M)
