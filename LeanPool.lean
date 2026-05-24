@@ -79,6 +79,9 @@ import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.LinearIndependent.Defs
 import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.Span
 import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.Span.Basic
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence.Basic
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence.Defs
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubring
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubring.Defs
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring
@@ -91,6 +94,7 @@ import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Operations
 import LeanPool.BrauerGroupNew.MatrixCenterEquiv
 import LeanPool.BrauerGroupNew.MatrixEquivTensor
 import LeanPool.BrauerGroupNew.MoritaEquivalence
+import LeanPool.BrauerGroupNew.SplittingOfCSA
 import LeanPool.BrauerGroupNew.Subfield
 import LeanPool.BrauerGroupNew.Subfield.Defs
 import LeanPool.BrauerGroupNew.Subfield.FiniteDimensional

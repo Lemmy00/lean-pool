@@ -15,6 +15,7 @@ import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.MatrixCenterEquiv
 import LeanPool.BrauerGroupNew.MatrixEquivTensor
 import LeanPool.BrauerGroupNew.MoritaEquivalence
+import LeanPool.BrauerGroupNew.SplittingOfCSA
 import LeanPool.BrauerGroupNew.TwoSidedIdeal
 import LeanPool.BrauerGroupNew.Wedderburn
 import LeanPool.BrauerGroupNew.Mathlib
