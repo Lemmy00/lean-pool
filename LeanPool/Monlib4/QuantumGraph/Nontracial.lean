@@ -55,7 +55,8 @@ local notation "υ" =>
   LinearEquiv.toLinearMap (TensorProduct.assoc ℂ (Matrix n n ℂ) (Matrix n n ℂ) (Matrix n n ℂ))
 
 local notation "υ⁻¹" =>
-  LinearEquiv.toLinearMap (LinearEquiv.symm (TensorProduct.assoc ℂ (Matrix n n ℂ) (Matrix n n ℂ) (Matrix n n ℂ)))
+  LinearEquiv.toLinearMap (LinearEquiv.symm (TensorProduct.assoc ℂ (Matrix n n ℂ) (Matrix n n
+    ℂ) (Matrix n n ℂ)))
 
 local notation "ϰ" =>
   LinearEquiv.toLinearMap ((TensorProduct.comm ℂ (Matrix n n ℂ) ℂ))
@@ -79,7 +80,8 @@ theorem Finset.sum_fin_one {α : Type _} [AddCommMonoid α] (f : Fin 1 → α) :
     simp [Subsingleton.elim i 0]
   rw [h, Finset.sum_singleton]
 
--- theorem LinearMap.IsReal.adjoint_isReal_iff_commute_with_sig  [hφ : φ.IsFaithfulPosMap] {f : ℍ →ₗ[ℂ] ℍ} (hf : LinearMap.IsReal f) :
+-- theorem LinearMap.IsReal.adjoint_isReal_iff_commute_with_sig  [hφ : φ.IsFaithfulPosMap] {f : ℍ
+-- →ₗ[ℂ] ℍ} (hf : LinearMap.IsReal f) :
 --     LinearMap.IsReal (LinearMap.adjoint f) ↔ Commute f (hφ.sig 1).toLinearMap :=
 --   by
 --   rw [LinearMap.isReal_iff] at hf
@@ -91,7 +93,8 @@ theorem Finset.sum_fin_one {α : Type _} [AddCommMonoid α] (f : Fin 1 → α) :
 --     rw [commute.adjoint_adjoint_lm]
 --   rw [this]
 --   clear this
---   rw [LinearMap.isReal_iff, LinearMap.adjoint_real_apply, hf, ← LinearMap.comp_assoc, comp_sig_eq,
+--   rw [LinearMap.isReal_iff, LinearMap.adjoint_real_apply, hf, ← LinearMap.comp_assoc,
+-- comp_sig_eq,
 --     neg_neg]
 --   simp_rw [Commute, SemiconjBy, LinearMap.mul_eq_comp, @eq_comm _ _ ((σ 1).toLinearMap ∘ₗ _)]
 
@@ -112,13 +115,15 @@ theorem sig_apply_matrix_hMul_posDef [hφ : φ.IsFaithfulPosMap] (t : ℝ) (x : 
   simp_rw [Module.Dual.IsFaithfulPosMap.sig_apply, Matrix.mul_assoc, PosDef.rpow_mul_rpow,
     neg_add_cancel, PosDef.rpow_zero, Matrix.mul_one]
 
-theorem sig_apply_matrix_hMul_posDef' [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig (-1) (x * φ.matrix) = φ.matrix * x :=
+theorem sig_apply_matrix_hMul_posDef' [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig (-1) (x *
+  φ.matrix) = φ.matrix * x :=
   by
   nth_rw 2 [← PosDef.rpow_one_eq_self hφ.matrixIsPosDef]
   nth_rw 2 [← neg_neg (1 : ℝ)]
   rw [← sig_apply_matrix_hMul_posDef, neg_neg, PosDef.rpow_one_eq_self]
 
-theorem sig_apply_matrix_hMul_posDef'' [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig 1 (x * φ.matrix⁻¹) = φ.matrix⁻¹ * x :=
+theorem sig_apply_matrix_hMul_posDef'' [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig 1 (x *
+  φ.matrix⁻¹) = φ.matrix⁻¹ * x :=
   by
   nth_rw 2 [← PosDef.rpow_neg_one_eq_inv_self hφ.matrixIsPosDef]
   rw [← sig_apply_matrix_hMul_posDef, PosDef.rpow_neg_one_eq_inv_self]
@@ -132,13 +137,16 @@ theorem sig_apply_basis [hφ : φ.IsFaithfulPosMap] (i : n × n) :
     PosDef.rpow_neg_one_eq_inv_self]
   norm_num
 
+omit [DecidableEq n] in
 theorem Qam.symm'_symm_real_apply_adjoint_tFAE [hφ : φ.IsFaithfulPosMap] (A : ℍ →ₗ[ℂ] ℍ) :
+    letI : DecidableEq n := Classical.decEq n
     withMatrixQuantum[φ]
       (List.TFAE
         [symmMap ℂ ℍ _ A = A, (symmMap ℂ ℍ _).symm A = A,
           A.real = LinearMap.adjoint A,
           ∀ x y, φ (A x * y) = φ (x * A y)]) :=
 by
+  classical
   exact withMatrixQuantum[φ] (by
     letI : Coalgebra ℂ ℍ := Coalgebra.ofFiniteDimensionalHilbertAlgebra
     suffices φ = Coalgebra.counit by
@@ -148,7 +156,7 @@ by
     simp_rw [← Coalgebra.inner_eq_counit', Module.Dual.IsFaithfulPosMap.inner_eq,
       conjTranspose_one, one_mul])
 
-theorem sig_comp_eq_iff [hφ : φ.IsFaithfulPosMap]  (t : ℝ) (A B : ℍ →ₗ[ℂ] ℍ) :
+theorem sig_comp_eq_iff [hφ : φ.IsFaithfulPosMap] (t : ℝ) (A B : ℍ →ₗ[ℂ] ℍ) :
     (hφ.sig t).toLinearMap.comp A = B ↔ A = (hφ.sig (-t)).toLinearMap.comp B :=
 by
   rw [AlgEquiv.comp_linearMap_eq_iff, Module.Dual.IsFaithfulPosMap.sig_symm_eq]
@@ -280,10 +288,13 @@ theorem LinearMap.matrix.mulRight_adjoint [hφ : φ.IsFaithfulPosMap] (x : ℍ) 
       neg_neg, PosDef.rpow_one_eq_self, PosDef.rpow_neg_one_eq_inv_self, ←
       Module.Dual.IsFaithfulPosMap.inner_left_conj])
 
+omit [DecidableEq n] in
 theorem LinearMap.matrix.mulLeft_adjoint [hφ : φ.IsFaithfulPosMap] (x : ℍ) :
+    letI : DecidableEq n := Classical.decEq n
     withMatrixQuantum[φ]
       (LinearMap.adjoint (LinearMap.mulLeft ℂ x) = LinearMap.mulLeft ℂ xᴴ) :=
   by
+  classical
   exact withMatrixQuantum[φ] (by
     symm
     rw [@LinearMap.eq_adjoint_iff ℂ _]

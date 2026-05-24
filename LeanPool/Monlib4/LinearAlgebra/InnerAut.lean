@@ -5,6 +5,9 @@ Authors: Monica Omar
 -/
 
 import LeanPool.Monlib4.LinearAlgebra.MySpec
+import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
+import LeanPool.Monlib4.LinearAlgebra.Matrix.IsAlmostHermitian
+import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
 import LeanPool.Monlib4.RepTheory.AutMat
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.UnitaryStarAlgAut
@@ -21,6 +24,21 @@ available as `Unitary.conjStarAlgAut`; the declarations here keep monlib4's
 names for the matrix-algebra specialization and its trace, spectrum, and
 Hermitian-preservation lemmas.
 -/
+
+open scoped ComplexOrder
+
+lemma RCLike.neg_ofReal {𝕜 : Type*} [RCLike 𝕜] (a : ℝ) :
+    (a : 𝕜) < 0 ↔ a < 0 := by
+  exact RCLike.ofReal_lt_zero
+
+instance Pi.coe {k : Type _} {s r : k → Type _} [∀ i, CoeTC (s i) (r i)] :
+    CoeTC (Π i, s i) (Π i, r i) :=
+  ⟨fun U i => U i⟩
+
+lemma Pi.coe_eq {k : Type _} {s r : k → Type _} [∀ i, CoeTC (s i) (r i)]
+    (U : Π i, s i) :
+    HEq (fun i => (U i : r i)) (↑U : Π i, r i) :=
+  HEq.rfl
 
 section
 
@@ -344,8 +362,14 @@ theorem _root_.Matrix.unitaryGroup.injective_hMul (U : unitaryGroup n 𝕜) (x y
   · intro h
     rw [h]
   · intro h
-    have h' := congrArg (fun z : Matrix n n 𝕜 => z * (U⁻¹ : unitaryGroup n 𝕜)) h
+    have h' : x * (U : Matrix n n 𝕜) * (U⁻¹ : unitaryGroup n 𝕜) =
+        y * (U : Matrix n n 𝕜) * (U⁻¹ : unitaryGroup n 𝕜) :=
+      congrArg (fun z : Matrix n n 𝕜 => z * (U⁻¹ : unitaryGroup n 𝕜)) h
     simpa [Matrix.mul_assoc, UnitaryGroup.inv_apply] using h'
+
+lemma unitaryGroup_conjTranspose (U : unitaryGroup n 𝕜) :
+    (↑U)ᴴ = (↑(U⁻¹ : unitaryGroup n 𝕜) : Matrix n n 𝕜) :=
+  rfl
 
 end
 
@@ -377,6 +401,11 @@ theorem _root_.Matrix.posSemidef_innerAut {a : Matrix n n 𝕜} (ha : a.PosSemid
     (innerAut U a).PosSemidef :=
   (innerAut_posSemidef_iff U).mpr ha
 
+theorem _root_.Matrix.PosSemidef.innerAut {a : Matrix n n 𝕜}
+    (ha : a.PosSemidef) (U : unitaryGroup n 𝕜) :
+    (innerAut U a).PosSemidef :=
+  Matrix.posSemidef_innerAut ha U
+
 theorem _root_.Matrix.innerAut_isUnit_iff (U : unitaryGroup n 𝕜) {x : Matrix n n 𝕜} :
     IsUnit (innerAut U x) ↔ IsUnit x := by
   simpa [innerAut_coe] using (isUnit_map_iff (innerAutStarAlg U).toAlgEquiv.toMulEquiv x)
@@ -396,6 +425,11 @@ theorem _root_.Matrix.posDef_innerAut {a : Matrix n n 𝕜} (ha : a.PosDef)
     (U : unitaryGroup n 𝕜) :
     (innerAut U a).PosDef :=
   (innerAut_posDef_iff U).mpr ha
+
+theorem _root_.Matrix.PosDef.innerAut {a : Matrix n n 𝕜}
+    (ha : a.PosDef) (U : unitaryGroup n 𝕜) :
+    (innerAut U a).PosDef :=
+  Matrix.posDef_innerAut ha U
 
 open scoped BigOperators
 
@@ -522,9 +556,70 @@ theorem _root_.Matrix.IsHermitian.spectral_theorem'' {x : Matrix n n 𝕜}
     x = innerAut hx.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ hx.eigenvalues)) := by
   simpa [innerAut, innerAutStarAlg] using hx.spectral_theorem
 
+theorem _root_.Matrix.diagonal.spectrum {𝕜 n : Type _} [Field 𝕜] [Fintype n]
+    [DecidableEq n] (A : n → 𝕜) :
+    spectrum 𝕜 (toLin' (diagonal A : Matrix n n 𝕜)) = {x : 𝕜 | ∃ i : n, A i = x} := by
+  simp_rw [Set.ext_iff, ← Module.End.hasEigenvalue_iff_mem_spectrum, ←
+    Module.End.has_eigenvector_iff_hasEigenvalue, toLin'_apply, funext_iff, mulVec,
+    diagonal_dotProduct, Pi.smul_apply, smul_eq_mul, mul_eq_mul_right_iff, ne_eq,
+    Set.mem_setOf_eq, funext_iff, Pi.zero_apply, Classical.not_forall]
+  intro x
+  constructor
+  · rintro ⟨v, ⟨h, ⟨j, hj⟩⟩⟩
+    specialize h j
+    rcases h with (h | h)
+    · exact ⟨j, h⟩
+    · contradiction
+  · rintro ⟨i, hi⟩
+    let v : n → 𝕜 := fun j => if j = i then 1 else 0
+    use v
+    simp_rw [v, ite_eq_right_iff, one_ne_zero, imp_false, Classical.not_not]
+    constructor
+    · intro j
+      by_cases h : j = i
+      · left
+        rw [h, hi]
+      · right
+        exact h
+    · use i
+
+theorem _root_.Matrix.IsHermitian.spectrum {x : Matrix n n 𝕜}
+    (hx : x.IsHermitian) :
+    spectrum 𝕜 (toLin' x) = {x : 𝕜 | ∃ i : n, (hx.eigenvalues i : 𝕜) = x} := by
+  nth_rw 1 [Matrix.IsHermitian.spectral_theorem'' hx]
+  simp_rw [innerAut.spectrum_eq, diagonal.spectrum]
+  rfl
+
+theorem _root_.Matrix.IsHermitian.hasEigenvalue_iff {x : Matrix n n 𝕜}
+    (hx : x.IsHermitian) (α : 𝕜) :
+    Module.End.HasEigenvalue (toLin' x) α ↔ ∃ i, (hx.eigenvalues i : 𝕜) = α := by
+  rw [Module.End.hasEigenvalue_iff_mem_spectrum, hx.spectrum, Set.mem_setOf]
+
+theorem _root_.Matrix.IsAlmostHermitian.schur_decomp {A : Matrix n n 𝕜}
+    (hA : A.IsAlmostHermitian) :
+    ∃ (D : n → 𝕜) (U : unitaryGroup n 𝕜), innerAut U (diagonal D) = A := by
+  rcases hA with ⟨α, B, ⟨rfl, hB⟩⟩
+  use α • RCLike.ofReal ∘ hB.eigenvalues, hB.eigenvectorUnitary
+  simp_rw [diagonal_smul, _root_.map_smul, innerAut_apply, UnitaryGroup.inv_apply]
+  change α • innerAut hB.eigenvectorUnitary
+      (diagonal (RCLike.ofReal ∘ hB.eigenvalues)) = α • B
+  rw [← Matrix.IsHermitian.spectral_theorem'' hB]
+
+lemma _root_.toEuclideanLin_one :
+    Matrix.toEuclideanLin (1 : Matrix n n 𝕜) = 1 := by
+  simp_rw [Matrix.toLpLin_eq_toLin, Matrix.toLin_one]
+  rfl
+
 end Positivity
 
 variable [Field 𝕜] [StarRing 𝕜] [DecidableEq n]
+
+theorem _root_.Matrix.coe_diagonal_eq_diagonal_coe {n 𝕜 : Type _} [RCLike 𝕜]
+    [DecidableEq n] (x : n → ℝ) :
+    (diagonal (RCLike.ofReal ∘ x) : Matrix n n 𝕜) = CoeTC.coe ∘ diagonal x := by
+  ext i j
+  change (if i = j then (x i : 𝕜) else 0) = ((if i = j then x i else 0 : ℝ) : 𝕜)
+  by_cases h : i = j <;> simp [h]
 
 theorem _root_.Matrix.innerAutStarAlg_equiv_toLinearMap (U : unitaryGroup n 𝕜) :
     (innerAutStarAlg U).toAlgEquiv.toLinearMap = innerAut U :=
@@ -536,6 +631,25 @@ theorem _root_.Matrix.innerAutStarAlg_equiv_symm_toLinearMap (U : unitaryGroup n
   simp only [innerAut_apply, inv_inv]
   rw [UnitaryGroup.inv_apply]
   rfl
+
+theorem _root_.Matrix.innerAut_commutes_with_map_lid_symm (U : Matrix.unitaryGroup n 𝕜) :
+    TensorProduct.map 1 (innerAut U) ∘ₗ
+        (TensorProduct.lid 𝕜 (Matrix n n 𝕜)).symm.toLinearMap =
+      (TensorProduct.lid 𝕜 (Matrix n n 𝕜)).symm.toLinearMap ∘ₗ innerAut U := by
+  simp_rw [LinearMap.ext_iff, LinearMap.comp_apply,
+    LinearEquiv.coe_coe, TensorProduct.lid_symm_apply, TensorProduct.map_tmul,
+    Module.End.one_apply, forall_const]
+
+theorem _root_.Matrix.innerAut_commutes_with_lid_comm (U : Matrix.unitaryGroup n 𝕜) :
+    (TensorProduct.lid 𝕜 (Matrix n n 𝕜)).toLinearMap ∘ₗ
+        (TensorProduct.comm 𝕜 (Matrix n n 𝕜) 𝕜).toLinearMap ∘ₗ
+          TensorProduct.map (innerAut U) 1 =
+      innerAut U ∘ₗ
+        (TensorProduct.lid 𝕜 (Matrix n n 𝕜)).toLinearMap ∘ₗ
+          (TensorProduct.comm 𝕜 (Matrix n n 𝕜) 𝕜).toLinearMap := by
+  simp_rw [TensorProduct.ext_iff', LinearMap.comp_apply, TensorProduct.map_apply,
+    LinearEquiv.coe_coe, TensorProduct.comm_tmul, TensorProduct.lid_tmul,
+    Module.End.one_apply, _root_.map_smul, forall₂_true_iff]
 
 theorem _root_.Matrix.innerAut_comp_inj (U : Matrix.unitaryGroup n 𝕜)
     (S T : Matrix n n 𝕜 →ₗ[𝕜] Matrix n n 𝕜) :
@@ -551,5 +665,84 @@ theorem _root_.Matrix.innerAut_inj_comp (U : unitaryGroup n 𝕜)
   intro x
   nth_rw 1 [← innerAut_apply_innerAut_inv_self U x]
   rw [h, innerAut_apply_innerAut_inv_self]
+
+theorem _root_.Matrix.innerAut.comp_inj (U : Matrix.unitaryGroup n 𝕜)
+    (S T : Matrix n n 𝕜 →ₗ[𝕜] Matrix n n 𝕜) :
+    S = T ↔ innerAut U ∘ₗ S = innerAut U ∘ₗ T :=
+  Matrix.innerAut_comp_inj U S T
+
+theorem _root_.Matrix.innerAut.inj_comp (U : unitaryGroup n 𝕜)
+    (S T : Matrix n n 𝕜 →ₗ[𝕜] Matrix n n 𝕜) :
+    S = T ↔ S ∘ₗ innerAut U = T ∘ₗ innerAut U :=
+  Matrix.innerAut_inj_comp U S T
+
+section ConjKronecker
+
+variable {n p 𝕜 : Type _} [RCLike 𝕜]
+
+theorem _root_.Matrix.unitaryGroup.conj_mem [Fintype n] [DecidableEq n]
+    (U : unitaryGroup n 𝕜) :
+    (U : Matrix n n 𝕜)ᴴᵀ ∈ unitaryGroup n 𝕜 := by
+  rw [Matrix.mem_unitaryGroup_iff]
+  calc (U : Matrix n n 𝕜)ᴴᵀ * star ((U : Matrix n n 𝕜)ᴴᵀ)
+      = ((U : Matrix n n 𝕜) * star (U : Matrix n n 𝕜))ᴴᵀ := by
+        rw [Matrix.conj_mul]
+        rfl
+    _ = 1 := by
+        rw [U.2.2]
+        simp [Matrix.conj_one]
+
+/-- Entrywise conjugate of a unitary matrix as a unitary. -/
+def _root_.Matrix.unitaryGroup.conj [Fintype n] [DecidableEq n]
+    (U : unitaryGroup n 𝕜) :
+    unitaryGroup n 𝕜 :=
+  ⟨(U : Matrix n n 𝕜)ᴴᵀ, Matrix.unitaryGroup.conj_mem U⟩
+
+@[norm_cast]
+theorem _root_.Matrix.unitaryGroup.conj_coe [Fintype n] [DecidableEq n]
+    (U : unitaryGroup n 𝕜) :
+    (unitaryGroup.conj U : Matrix n n 𝕜) = (U : Matrix n n 𝕜)ᴴᵀ :=
+  rfl
+
+theorem _root_.Matrix.innerAut.conj [Fintype n] [DecidableEq n]
+    (U : unitaryGroup n 𝕜) (x : Matrix n n 𝕜) :
+    (innerAut U x)ᴴᵀ = innerAut (unitaryGroup.conj U) xᴴᵀ := by
+  simp_rw [innerAut_apply, Matrix.conj_mul, UnitaryGroup.inv_apply, unitaryGroup.conj_coe]
+  rfl
+
+theorem _root_.Matrix.UnitaryGroup.mul_star_self [Fintype n] [DecidableEq n]
+    (U : unitaryGroup n 𝕜) :
+    (U : Matrix n n 𝕜) * star (U : Matrix n n 𝕜) = 1 :=
+  Matrix.mem_unitaryGroup_iff.mp (SetLike.coe_mem U)
+
+open scoped Kronecker
+
+theorem _root_.Matrix.kronecker_mem_unitaryGroup [Fintype n] [DecidableEq n]
+    [Fintype p] [DecidableEq p] (U₁ : unitaryGroup n 𝕜) (U₂ : unitaryGroup p 𝕜) :
+    (U₁ : Matrix n n 𝕜) ⊗ₖ (U₂ : Matrix p p 𝕜) ∈ unitaryGroup (n × p) 𝕜 := by
+  simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, kronecker_conjTranspose, ←
+    mul_kronecker_mul, ← star_eq_conjTranspose, Matrix.UnitaryGroup.mul_star_self,
+    one_kronecker_one]
+
+/-- The Kronecker product of two unitary matrices as a unitary matrix. -/
+def _root_.Matrix.unitaryGroup.kronecker [Fintype n] [DecidableEq n]
+    [Fintype p] [DecidableEq p] (U₁ : unitaryGroup n 𝕜) (U₂ : unitaryGroup p 𝕜) :
+    unitaryGroup (n × p) 𝕜 :=
+  ⟨(U₁ : Matrix n n 𝕜) ⊗ₖ (U₂ : Matrix p p 𝕜), kronecker_mem_unitaryGroup U₁ U₂⟩
+
+theorem _root_.Matrix.unitaryGroup.kronecker_coe [Fintype n] [DecidableEq n]
+    [Fintype p] [DecidableEq p] (U₁ : unitaryGroup n 𝕜) (U₂ : unitaryGroup p 𝕜) :
+    (unitaryGroup.kronecker U₁ U₂ : Matrix (n × p) (n × p) 𝕜) =
+      (U₁ : Matrix n n 𝕜) ⊗ₖ (U₂ : Matrix p p 𝕜) :=
+  rfl
+
+theorem _root_.Matrix.innerAut_kronecker [Fintype n] [DecidableEq n]
+    [Fintype p] [DecidableEq p] (U₁ : unitaryGroup n 𝕜) (U₂ : unitaryGroup p 𝕜)
+    (x : Matrix n n 𝕜) (y : Matrix p p 𝕜) :
+    innerAut U₁ x ⊗ₖ innerAut U₂ y = innerAut (unitaryGroup.kronecker U₁ U₂) (x ⊗ₖ y) := by
+  simp_rw [innerAut_apply, UnitaryGroup.inv_apply, unitaryGroup.kronecker_coe,
+    star_eq_conjTranspose, kronecker_conjTranspose, ← mul_kronecker_mul]
+
+end ConjKronecker
 
 end Matrix

@@ -18,10 +18,10 @@ noncomputable instance {n : Type*} [Fintype n] :
 
 open scoped InnerProductSpace
 
-theorem EuclideanSpace.comul_eq {n : Type*} [Fintype n] [DecidableEq n] (x : PiQ (λ _ : n => ℂ))
+theorem EuclideanSpace.comul_eq {n : Type*} [Fintype n] [DecidableEq n] (x : PiQ (fun _ : n => ℂ))
   :
   let e : ∀ _ : n, (PiQ (fun _ : n => ℂ)) := fun i => PiLp.single 2 i (1 : ℂ)
-  (Coalgebra.comul : PiQ (λ _ : n => ℂ) →ₗ[ℂ] _) x
+  (Coalgebra.comul : PiQ (fun _ : n => ℂ) →ₗ[ℂ] _) x
     = ∑ i, x i • (e i ⊗ₜ[ℂ] e i) :=
 by
   intro e

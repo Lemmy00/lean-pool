@@ -96,7 +96,7 @@ theorem innerAut_adjoint_eq_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n]
       by
       intro V
       ext1
-      simp_rw [innerAutStarAlg_symm_apply, innerAutStarAlg_apply, unitary.star_eq_inv,
+      simp_rw [innerAutStarAlg_symm_apply, innerAutStarAlg_apply, Unitary.star_eq_inv,
         UnitaryGroup.inv_apply, star_star]
     have hf' : innerAut (star U) = (innerAutStarAlg U).symm.toLinearMap := by
       rw [hh, hf]
@@ -118,8 +118,7 @@ theorem Qam.mul'_adjoint_commutes_with_innerAut_lm [hφ : φ.IsFaithfulPosMap] [
 by
   exact withMatrixQuantum[φ] (commutes_with_mul''_adjoint (f := innerAutStarAlg x) (by
       rw [innerAutStarAlg_apply, ← hx, mul_assoc, ← unitaryGroup.star_coe_eq_coe_star,
-        unitaryGroup.star_coe_eq_coe_star]
-      simpa using congrArg (fun a => φ.matrix * a) (unitaryGroup.coe_hMul_star_self x)))
+        unitaryGroup.star_coe_eq_coe_star, Unitary.coe_mul_star_self, mul_one]))
 
 theorem Qam.unit_commutes_with_innerAut_lm (U : Matrix.unitaryGroup n ℂ) :
   innerAut U ∘ₗ η = η := by
@@ -141,14 +140,15 @@ theorem Qam.unit_adjoint_commutes_with_innerAut_lm [hφ : φ.IsFaithfulPosMap] [
     rw [LinearMap.adjoint_comp, Coalgebra.counit_eq_unit_adjoint, LinearMap.adjoint_adjoint,
       hU]
     ext1
-    simp [LinearMap.comp_apply, Algebra.linearMap_apply, innerAut_apply_one])
+    simp [LinearMap.comp_apply, Algebra.linearMap_apply])
 
 local notation "f_{" x "}" => innerAut x
 
 theorem innerAutIsReal (U : unitaryGroup n ℂ) : LinearMap.IsReal (innerAut U) := fun _ =>
   (innerAut.map_star _ _).symm
 
--- def StarAlgEquiv.IsIsometry [hφ : φ.IsFaithfulPosMap] (f : (Matrix n n ℂ) ≃⋆ₐ[ℂ] (Matrix n n ℂ)) : Prop :=
+-- def StarAlgEquiv.IsIsometry [hφ : φ.IsFaithfulPosMap] (f : (Matrix n n ℂ) ≃⋆ₐ[ℂ] (Matrix n n ℂ))
+-- : Prop :=
   -- ∀ x, ‖f x‖ = ‖x‖
 @[reducible]
 alias StarAlgEquiv.IsIsometry := Isometry
@@ -163,13 +163,12 @@ theorem InnerAut.toMatrix [hφ : φ.IsFaithfulPosMap] (U : unitaryGroup n ℂ) :
   exact withMatrixQuantum[φ] (by
     ext
     simp only [Module.Dual.IsFaithfulPosMap.toMatrix, LinearMap.toMatrixAlgEquiv_apply,
-      StarAlgEquiv.toLinearMap_apply,
-      modAut, innerAutStarAlg_apply,
+      modAut,
       Module.Dual.IsFaithfulPosMap.inner_coord', Module.Dual.IsFaithfulPosMap.basis_repr_apply,
       Module.Dual.IsFaithfulPosMap.inner_coord']
-    simp only [innerAutStarAlg_apply, mul_apply, stdBasisMatrix, single, mul_ite, ite_mul,
-      MulZeroClass.mul_zero, MulZeroClass.zero_mul, mul_one, one_mul, Finset.sum_ite_irrel,
-      Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.sum_const_zero, Finset.mem_univ,
+    simp only [mul_apply, single, mul_ite, ite_mul,
+      MulZeroClass.mul_zero, MulZeroClass.zero_mul, one_mul, Finset.sum_ite_irrel,
+      Finset.sum_ite_eq, Finset.sum_const_zero, Finset.mem_univ,
       if_true, ite_and, kroneckerMap, of_apply, conj_apply, sig_apply, star_sum,
       star_mul', neg_neg, Finset.mul_sum, Finset.sum_mul, mul_assoc, innerAut_apply',
       Module.Dual.IsFaithfulPosMap.basis_apply]
@@ -236,10 +235,14 @@ theorem InnerAut.symmetric_eq [hφ : φ.IsFaithfulPosMap] [Nontrivial n] (A : l(
     exact Qam.symm_apply_starAlgEquiv_conj
       ((unitary_commutes_with_hφ_matrix_iff_isIsometry hφ U).mp hU) _)
 
+open scoped Classical in
+omit [DecidableEq n] in
 theorem StarAlgEquiv.commutes_with_mul' (f : (Matrix n n ℂ) ≃⋆ₐ[ℂ] (Matrix n n ℂ)) :
+    letI : DecidableEq n := Classical.decEq n
     (LinearMap.mul' ℂ (Matrix n n ℂ) ∘ₗ f.toLinearMap ⊗ₘ f.toLinearMap) =
       f.toLinearMap ∘ₗ LinearMap.mul' ℂ (Matrix n n ℂ) :=
   by
+  classical
   rw [commutes_with_mul'_iff]
   intro x y
   simp only [StarAlgEquiv.toLinearMap_apply, _root_.map_mul]
@@ -314,7 +317,8 @@ def Qam.Iso (A B : l((Matrix n n ℂ))) : Prop :=
   ∃ f : (Matrix n n ℂ) ≃⋆ₐ[ℂ] (Matrix n n ℂ),
     A ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ B ∧ f φ.matrix = φ.matrix
 
--- structure QamIso [hφ : φ.IsFaithfulPosMap] {A B : l((Matrix n n ℂ))} (hA : Qam φ A) (hB : Qam φ B) extends
+-- structure QamIso [hφ : φ.IsFaithfulPosMap] {A B : l((Matrix n n ℂ))} (hA : Qam φ A) (hB : Qam φ
+-- B) extends
 --     StarAlgEquiv ℂ (Matrix n n ℂ) (Matrix n n ℂ) where
 --   IsHom :=
 --     A ∘ₗ toStarAlgEquiv.toLinearMap = toStarAlgEquiv.toLinearMap ∘ₗ B
@@ -340,7 +344,7 @@ theorem Qam.iso_iff [hφ : φ.IsFaithfulPosMap] {A B : l((Matrix n n ℂ))} [Non
       by
       intro V
       ext1
-      simp_rw [innerAutStarAlg_symm_apply, innerAutStarAlg_apply, unitary.star_eq_inv,
+      simp_rw [innerAutStarAlg_symm_apply, innerAutStarAlg_apply, Unitary.star_eq_inv,
         UnitaryGroup.inv_apply, star_star]
     have := fun U =>
       List.TFAE.out
@@ -396,7 +400,8 @@ theorem innerAut_lm_basis_apply (U : Matrix.unitaryGroup n ℂ) (i j k l : n) :
     (f_{U} e_{i,j}) k l = (U ⊗ₖ star U) (k, j) (i, l) :=
   by
   simp_rw [Matrix.innerAut_apply, Matrix.mul_apply, Matrix.UnitaryGroup.inv_apply,
-    Matrix.stdBasisMatrix, Matrix.single, of_apply, mul_boole, Finset.sum_mul, ite_mul, MulZeroClass.zero_mul, ite_and,
+    Matrix.stdBasisMatrix, Matrix.single, of_apply, mul_boole, Finset.sum_mul, ite_mul,
+      MulZeroClass.zero_mul, ite_and,
     Matrix.kroneckerMap, Matrix.of_apply]
   simp only [Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
@@ -426,8 +431,7 @@ by
       rankOne_toMatrix_of_onb]
     simp_rw [conjTranspose_replicateCol, Matrix.mul_apply, Matrix.replicateCol_apply,
       Matrix.replicateRow_apply, Pi.star_apply, kronecker_apply, conj_apply]
-    simp only [Fintype.univ_punit, Finset.sum_const, Finset.card_singleton, nsmul_eq_mul,
-      Nat.cast_one, one_mul]
+    simp only [Finset.sum_const, nsmul_eq_mul]
     simp only [OrthonormalBasis.repr_apply_apply,
       Module.Dual.IsFaithfulPosMap.inner_coord]
     simp only [Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Finset.card_singleton,

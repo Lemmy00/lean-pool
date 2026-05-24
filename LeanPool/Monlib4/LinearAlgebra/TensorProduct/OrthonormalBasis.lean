@@ -14,3 +14,17 @@ Compatibility module for the upstream Monlib4 file. The old declarations in this
 including `OrthonormalBasis.tensorProduct` and its simp lemmas, are already available
 from current Mathlib through the imports above.
 -/
+
+open scoped TensorProduct
+
+namespace Basis
+
+theorem tensorProduct_repr_tmul_apply'
+    {R S M N ι κ : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+    [AddCommMonoid N] [Module R N] (b : Module.Basis ι S M)
+    (c : Module.Basis κ R N) (m : M) (n : N) (i : ι × κ) :
+    ((b.tensorProduct c).repr (m ⊗ₜ[R] n)) i = (c.repr n) i.2 • (b.repr m) i.1 :=
+  Module.Basis.tensorProduct_repr_tmul_apply b c m n i.1 i.2
+
+end Basis

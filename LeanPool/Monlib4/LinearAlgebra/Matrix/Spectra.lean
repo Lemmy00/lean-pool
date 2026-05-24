@@ -20,6 +20,14 @@ instance multisetCoe {α β : Type _} [Coe α β] : Coe (Multiset α) (Multiset 
 instance multisetCoeTC {α β : Type _} [CoeTC α β] : CoeTC (Multiset α) (Multiset β)
     where coe s := s.map (CoeTC.coe : α → β)
 
+theorem Finset.val.map_coe {α β γ : Type _} (f : α → β) (s : Finset α) [CoeTC β γ] :
+    (s.val.map f).map (fun x : β => (x : γ)) = s.val.map (fun x => (f x : γ)) := by
+  simp only [Multiset.map_map, Function.comp_apply]
+
+theorem Finset.val.map_coe' {α β γ : Type _} (f : α → β) (s : Finset α) [Coe β γ] :
+    (s.val.map f).map (fun x : β => (x : γ)) = s.val.map (fun x => (f x : γ)) :=
+  Finset.val.map_coe f s
+
 noncomputable instance multisetCoeTC_RToRCLike {𝕜 : Type _} [RCLike 𝕜] :
   CoeTC (Multiset ℝ) (Multiset 𝕜) :=
 @multisetCoeTC ℝ 𝕜 ⟨RCLike.ofReal⟩

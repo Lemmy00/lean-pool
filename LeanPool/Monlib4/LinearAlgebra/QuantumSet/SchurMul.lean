@@ -95,6 +95,116 @@ theorem schurMul.apply_rankOne (a c : B) (b d : A) :
     Coalgebra.comul_eq_mul_adjoint, LinearMap.adjoint_inner_right,
     LinearMap.mul'_apply]
 
+omit [FiniteDimensional ℂ B] in
+theorem schurMul.apply_ket (a b : B) :
+    (ket ℂ a) •ₛ (ket ℂ b) = (ket ℂ (a * b)).toLinearMap := by
+  simp only [schurMul_apply_apply, QuantumSet.complex_comul]
+  ext
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    TensorProduct.lid_symm_apply, TensorProduct.map_tmul, ContinuousLinearMap.coe_coe,
+    ket_apply_apply, one_smul, LinearMap.mul'_apply]
+
+section TensorRankOne
+
+variable {𝕜 B C : Type*} [RCLike 𝕜] [NormedAddCommGroup B] [NormedAddCommGroup C]
+  [InnerProductSpace 𝕜 B] [InnerProductSpace 𝕜 C]
+  [FiniteDimensional 𝕜 B] [FiniteDimensional 𝕜 C]
+
+omit [FiniteDimensional 𝕜 B] [FiniteDimensional 𝕜 C] in
+theorem bra_tmul (a : B) (b : C) :
+    (bra 𝕜 (a ⊗ₜ[𝕜] b)).toLinearMap =
+      (TensorProduct.lid 𝕜 _).toLinearMap ∘ₗ
+        TensorProduct.map (bra 𝕜 a).toLinearMap (bra 𝕜 b).toLinearMap := by
+  ext
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+    LinearMap.coe_restrictScalars, TensorProduct.map_tmul, ContinuousLinearMap.coe_coe,
+    innerSL_apply_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    TensorProduct.inner_tmul, TensorProduct.lid_tmul]
+  rfl
+
+omit [FiniteDimensional 𝕜 B] [FiniteDimensional 𝕜 C] in
+theorem bra_map_bra (a : B) (b : C) :
+    TensorProduct.map (bra 𝕜 a).toLinearMap (bra 𝕜 b).toLinearMap =
+      (TensorProduct.lid 𝕜 _).symm.toLinearMap ∘ₗ
+        (bra 𝕜 (a ⊗ₜ[𝕜] b)).toLinearMap := by
+  rw [bra_tmul, ← LinearMap.comp_assoc]
+  simp only [LinearEquiv.comp_coe, LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap,
+    LinearMap.id_comp]
+
+omit [FiniteDimensional 𝕜 B] [FiniteDimensional 𝕜 C] in
+theorem ket_tmul (a : B) (b : C) :
+    (ket 𝕜 (a ⊗ₜ[𝕜] b)).toLinearMap =
+      TensorProduct.map (ket 𝕜 a).toLinearMap (ket 𝕜 b).toLinearMap ∘ₗ
+        (TensorProduct.lid 𝕜 _).symm.toLinearMap := by
+  ext
+  simp only [ContinuousLinearMap.coe_coe, ket_one_apply, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.lid_symm_apply,
+    TensorProduct.map_tmul]
+
+omit [FiniteDimensional 𝕜 B] [FiniteDimensional 𝕜 C] in
+theorem ket_map_ket (a : B) (b : C) :
+    TensorProduct.map (ket 𝕜 a).toLinearMap (ket 𝕜 b).toLinearMap =
+      (ket 𝕜 (a ⊗ₜ[𝕜] b)).toLinearMap ∘ₗ (TensorProduct.lid 𝕜 _).toLinearMap := by
+  rw [ket_tmul, LinearMap.comp_assoc]
+  simp only [LinearEquiv.comp_coe, LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap,
+    LinearMap.comp_id]
+
+end TensorRankOne
+
+theorem bra_comp_linearMap {𝕜 E₁ E₂ : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E₁] [InnerProductSpace 𝕜 E₁] [NormedAddCommGroup E₂]
+    [InnerProductSpace 𝕜 E₂] [FiniteDimensional 𝕜 E₁] [FiniteDimensional 𝕜 E₂]
+    (x : E₂) (f : E₁ →ₗ[𝕜] E₂) :
+    (bra 𝕜 x).toLinearMap.comp f = (bra 𝕜 (LinearMap.adjoint f x)).toLinearMap :=
+  letI := FiniteDimensional.complete 𝕜 E₁
+  letI := FiniteDimensional.complete 𝕜 E₂
+  calc
+    (bra 𝕜 x).toLinearMap ∘ₗ f =
+        ((bra 𝕜 x) ∘L LinearMap.toContinuousLinearMap f).toLinearMap := rfl
+    _ =
+        (bra 𝕜
+          (ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap f) x)).toLinearMap := by
+          rw [bra_comp_continuousLinearMap]
+    _ = (bra 𝕜 (LinearMap.adjoint f x)).toLinearMap := rfl
+
+theorem linearMap_comp_ket {𝕜 E₁ E₂ : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E₁] [InnerProductSpace 𝕜 E₁] [NormedAddCommGroup E₂]
+    [InnerProductSpace 𝕜 E₂] (x : E₁) (f : E₁ →ₗ[𝕜] E₂) :
+    f ∘ₗ (ket 𝕜 x).toLinearMap = (ket 𝕜 (f x)).toLinearMap := by
+  ext
+  simp only [LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply,
+    ket_apply_apply, one_smul]
+
+theorem mul_comp_lid_symm {R : Type*} [CommSemiring R] :
+    LinearMap.mul' R R ∘ₗ (TensorProduct.lid R R).symm.toLinearMap = LinearMap.id := by
+  aesop
+
+theorem schurMul.apply_bra (a b : B) :
+    (bra ℂ a) •ₛ (bra ℂ b) = (bra ℂ (a * b)).toLinearMap := by
+  rw [schurMul_apply_apply, bra_map_bra, LinearMap.comp_assoc, bra_comp_linearMap,
+    Coalgebra.comul_eq_mul_adjoint, LinearMap.adjoint_adjoint, LinearMap.mul'_apply,
+    ← LinearMap.comp_assoc, mul_comp_lid_symm]
+  rfl
+
+omit [FiniteDimensional ℂ B] in
+theorem schurMul.comp_apply_of {C : Type*}
+    [NormedAddCommGroupOfRing C] [InnerProductSpace ℂ C] [SMulCommClass ℂ C C]
+    [IsScalarTower ℂ C C] [FiniteDimensional ℂ C] (δ : ℂ)
+    (hAδ : Coalgebra.comul ∘ₗ LinearMap.mul' ℂ A = δ • LinearMap.id)
+    (a b : A →ₗ[ℂ] B) (c d : C →ₗ[ℂ] A) :
+    (a •ₛ b) ∘ₗ (c •ₛ d) = δ • ((a ∘ₗ c) •ₛ (b ∘ₗ d)) := by
+  calc
+    (a •ₛ b) ∘ₗ (c •ₛ d) =
+        (m _) ∘ₗ (a ⊗ₘ b) ∘ₗ (Coalgebra.comul ∘ₗ (m A)) ∘ₗ (c ⊗ₘ d) ∘ₗ
+          Coalgebra.comul := by
+          simp_rw [schurMul_apply_apply, LinearMap.comp_assoc]
+    _ = δ • (m _) ∘ₗ ((a ⊗ₘ b) ∘ₗ (c ⊗ₘ d)) ∘ₗ Coalgebra.comul := by
+          simp_rw [hAδ, LinearMap.smul_comp, LinearMap.comp_smul, LinearMap.id_comp,
+            LinearMap.comp_assoc]
+    _ = δ • (a ∘ₗ c) •ₛ (b ∘ₗ d) := by
+          rw [← TensorProduct.map_comp]
+          rfl
+
 theorem schurMul_one_one_right (x : A →ₗ[ℂ] B) :
     x •ₛ (rankOne ℂ (1 : B) (1 : A)).toLinearMap = x := by
   obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne x
@@ -200,6 +310,12 @@ theorem Psi.schurMul {A B : Type*} [starAlgebra A] [starAlgebra B]
   repeat rw [QuantumSet.Psi_toFun_apply]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, map_mul, star_mul]
   rfl
+
+theorem schurMul_assoc {A B : Type*} [starAlgebra A] [starAlgebra B]
+    [hA : QuantumSet A] [QuantumSet B] (f g h : A →ₗ[ℂ] B) :
+    (f •ₛ g) •ₛ h = f •ₛ (g •ₛ h) := by
+  apply_fun hA.Psi 0 0 using LinearEquiv.injective _
+  simp_rw [Psi.schurMul, mul_assoc]
 
 theorem comul_comp_nonUnitalAlgHom_adjoint (f : A →ₙₐ[ℂ] B) :
     Coalgebra.comul ∘ₗ LinearMap.adjoint (LinearMapClass.linearMap f) =

@@ -14,7 +14,8 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
 
 # Linear functionals
 
-This file contains results for linear functionals on the set of $n \times n$ matrices $M_n$ over $\mathbb{C}$.
+This file contains results for linear functionals on the set of $n \times n$ matrices $M_n$
+  over $\mathbb{C}$.
 
 ## Main results
 - `module.dual.apply`
@@ -33,7 +34,8 @@ section
 variable {R k : Type _} {s : k → Type _}
 
 open Matrix in
-lemma includeBlock_apply_mul [CommSemiring R] [DecidableEq k] [Π i, Fintype (s i)] {i j : k} (x : Matrix (s i) (s i) R)
+lemma includeBlock_apply_mul [CommSemiring R] [DecidableEq k] [Π i,
+  Fintype (s i)] {i j : k} (x : Matrix (s i) (s i) R)
   (y : Matrix (s j) (s j) R) (p q : s j) :
   (includeBlock x j * y) p q
     = if i = j then (includeBlock x j * y) p q else 0 :=
@@ -77,7 +79,8 @@ theorem Module.Dual.apply (φ : Module.Dual R (Matrix n n R)) (a : Matrix n n R)
   rw [← matrix_eq_sum_single a]
 
 /--
-we linear maps `φ_i : M_[n_i] →ₗ[R] R`, we define its direct sum as the linear map `(Π i, M_[n_i]) →ₗ[R] R`. -/
+we linear maps `φ_i : M_[n_i] →ₗ[R] R`, we define its direct sum as the linear map `(Π i, M_[n_i])
+  →ₗ[R] R`. -/
 @[simps]
 def Module.Dual.pi {k : Type _} [Fintype k] {s : k → Type _}
     (φ : ∀ i, Module.Dual R (Matrix (s i) (s i) R)) : Module.Dual R (PiMat R k s)
@@ -101,10 +104,12 @@ theorem Module.Dual.pi.apply {k : Type _} [Fintype k] {s : k → Type _} [∀ i,
   simp_rw [Module.Dual.pi_apply, Module.Dual.apply]
 
 lemma Module.Dual.eq_pi_of_pi {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
-  [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)]
+  [∀ i, Finite (s i)]
   (φ : Π i, Module.Dual R (Matrix (s i) (s i) R)) :
   φ = pi_of (pi φ) :=
   by
+  classical
+  letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   ext i y
   simp_rw [Module.Dual.pi_of_apply, pi_apply,
     Module.Dual.apply]
@@ -119,10 +124,12 @@ lemma Module.Dual.eq_pi_of_pi {k : Type _} [Fintype k] [DecidableEq k] {s : k �
     _ = trace (matrix (φ i) * y) := by simp only [includeBlock_apply_same]
 
 lemma Module.Dual.eq_pi_pi_of {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
-  [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)]
-  (φ : Module.Dual R (PiMat R k s) ) :
+  [∀ i, Finite (s i)]
+  (φ : Module.Dual R (PiMat R k s)) :
   φ = pi (pi_of φ) :=
   by
+  classical
+  letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   rw [LinearMap.ext_iff]
   intro x
   simp_rw [Module.Dual.pi_apply, Module.Dual.pi_of_apply, ← map_sum,
@@ -172,11 +179,14 @@ theorem Module.Dual.apply_eq_of (φ : Module.Dual R (Matrix n n R)) (x : Matrix 
   simp_rw [Module.Dual.apply, ← Matrix.ext_iff_trace] at h
   exact h.symm
 
+omit [DecidableEq n] in
 /--
-Any linear functional $f$ on $M_n$ is given by a unique matrix $Q \in M_n$ such that $f(x)=\operatorname{Tr}(Qx)$ for any $x \in M_n$. -/
+Any linear functional $f$ on $M_n$ is given by a unique matrix $Q \in M_n$ such that
+  $f(x)=\operatorname{Tr}(Qx)$ for any $x \in M_n$. -/
 theorem Module.Dual.eq_trace_unique (φ : Module.Dual R (Matrix n n R)) :
     ∃! Q : Matrix n n R, ∀ a : Matrix n n R, φ a = (Q * a).trace :=
   by
+  classical
   use φ.matrix
   simp_rw [Module.Dual.apply, forall_true_iff, true_and, ←
     Matrix.ext_iff_trace, eq_comm, imp_self, forall_true_iff]
@@ -190,10 +200,12 @@ Module.Dual.pi φ ∘ₗ isBlockDiagonalPiAlgEquiv.toLinearMap
 
 /-- `⨁_i φ_i ι_i (x_i) = φ_i (x_i)` -/
 theorem Module.Dual.pi.apply_single_block {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
-  [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)] (φ : Π i, Matrix (s i) (s i) R →ₗ[R] R)
+  [∀ i, Finite (s i)] (φ : Π i, Matrix (s i) (s i) R →ₗ[R] R)
   (x : Π i, Matrix (s i) (s i) R) (i : k) :
   (Module.Dual.pi φ) (includeBlock (x i)) = φ i (x i) :=
   by
+  classical
+  letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   simp_rw [Module.Dual.pi_apply, Module.Dual.apply]
   calc ∑ x_1 : k, trace (matrix (φ x_1) * includeBlock (x i) x_1)
       = ∑ x_1 : k, trace (if i = x_1 then matrix (φ x_1) * x x_1 else 0) :=
@@ -212,10 +224,12 @@ theorem Module.Dual.pi.apply_single_block {k : Type _} [Fintype k] [DecidableEq 
   rfl
 
 theorem Module.Dual.pi.apply_single_block' {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
-  [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)] (φ : Π i, Matrix (s i) (s i) R →ₗ[R] R)
+  [∀ i, Finite (s i)] (φ : Π i, Matrix (s i) (s i) R →ₗ[R] R)
   {i : k} (x : Matrix (s i) (s i) R) :
   (Module.Dual.pi φ) (includeBlock x) = φ i x :=
 by
+  classical
+  letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   let x' := includeBlock x
   have hx : includeBlock x = includeBlock (x' i) := by simp_rw [x', includeBlock_apply_same]
   rw [hx, apply_single_block]
@@ -231,38 +245,43 @@ def Module.Dual.IsPosMap {A : Type _} [NonUnitalSemiring A] [StarRing A] [Module
   ∀ a : A, 0 ≤ φ (star a * a)
 
 open scoped MatrixOrder
-lemma Matrix.nonneg_iff {k : Type*} [Fintype k]
-  [DecidableEq k] {x : Matrix k k ℂ} :
+lemma Matrix.nonneg_iff {k : Type*} [Fintype k] {x : Matrix k k ℂ} :
   0 ≤ x ↔ ∃ y : Matrix k k ℂ, x = star y * y :=
 by
+  classical
   rw [Matrix.nonneg_def]
   simpa [Matrix.star_eq_conjTranspose] using (Matrix.posSemidef_iff x)
-lemma PiMat.nonneg_iff {k : Type _} [Fintype k]
-  [DecidableEq k] {s : k → Type _} [Π i, Fintype (s i)] [Π i, DecidableEq (s i)]
+lemma PiMat.nonneg_iff {k : Type _} [Finite k]
+  {s : k → Type _} [Π i, Fintype (s i)]
   {x : PiMat ℂ k s} :
   0 ≤ x ↔ ∃ y : PiMat ℂ k s, x = star y * y :=
 by
+  classical
+  letI : Fintype k := Fintype.ofFinite k
   simp_rw [Pi.le_def, Pi.zero_apply, Pi.mul_def, Pi.star_apply, Matrix.nonneg_iff,
     funext_iff]
-  exact ⟨λ h => ⟨(λ i => (h i).choose), λ _ => (h _).choose_spec⟩,
-    λ h a => ⟨h.choose a, h.choose_spec _⟩⟩
+  exact ⟨fun h => ⟨(fun i => (h i).choose), fun _ => (h _).choose_spec⟩,
+    fun h a => ⟨h.choose a, h.choose_spec _⟩⟩
 
-lemma dual_isPosMap_of_linearMap_isPosMap {A : Type _} [NonUnitalSemiring A] [StarRing A] [Module 𝕜 A]
+lemma dual_isPosMap_of_linearMap_isPosMap {A :
+    Type _} [NonUnitalSemiring A] [StarRing A] [Module 𝕜 A]
   [PartialOrder A] [StarOrderedRing A] {φ : Module.Dual 𝕜 A} (h : LinearMap.IsPosMap φ) :
   φ.IsPosMap :=
-λ _ => h (star_mul_self_nonneg _)
+fun _ => h (star_mul_self_nonneg _)
 
-lemma Module.Dual.piIsPosMap_iff {k : Type _} [Fintype k]
-  [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)]
+lemma Module.Dual.piIsPosMap_iff {k : Type _} [Finite k]
+  [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)]
   (φ : Module.Dual 𝕜 (PiMat 𝕜 k s)) :
   φ.IsPosMap ↔ ∀ i, (pi_of φ i).IsPosMap :=
 by
+  classical
+  letI : Fintype k := Fintype.ofFinite k
   constructor
-  . intro h i x
+  · intro h i x
     specialize h (includeBlock x)
     simp_rw [includeBlock_conjTranspose, includeBlock_hMul_same] at h
     exact h
-  . intro h x
+  · intro h x
     simp_rw [IsPosMap, pi_of_apply] at h
     nth_rw 1 [← sum_includeBlock x]
     simp_rw [star_sum, Finset.sum_mul, includeBlock_conjTranspose,
@@ -270,10 +289,11 @@ by
     exact Finset.sum_nonneg (fun _ _ => h _ _)
 
 lemma Module.Dual.pi_isPosMap_iff {k : Type _} [Fintype k]
-  [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)]
+  {s : k → Type _} [∀ i, Fintype (s i)]
   (φ : Π i, Module.Dual 𝕜 (Matrix (s i) (s i) 𝕜)) :
   (pi φ).IsPosMap ↔ ∀ i, (φ i).IsPosMap :=
 by
+  classical
   rw [Module.Dual.piIsPosMap_iff]
   simp_rw [← eq_pi_of_pi]
 
@@ -283,7 +303,8 @@ def Module.Dual.IsUnital {A : Type _} [AddCommMonoid A] [Module R A] [One A] (φ
   φ (1 : A) = 1
 
 /-- A linear functional is called a state if it is positive and unital -/
-class Module.Dual.IsState {A : Type _} [Semiring A] [StarRing A] [Module 𝕜 A] (φ : Module.Dual 𝕜 A) :
+class Module.Dual.IsState {A : Type _} [Semiring A] [StarRing A] [Module 𝕜 A] (φ :
+    Module.Dual 𝕜 A) :
     Prop where
 toIsPosMap : φ.IsPosMap
 toIsUnital : φ.IsUnital
@@ -292,53 +313,61 @@ lemma Module.Dual.IsState_iff {A : Type _} [Semiring A] [StarRing A] [Module �
   (φ : Module.Dual 𝕜 A) : φ.IsState ↔ φ.IsPosMap ∧ φ.IsUnital :=
 ⟨fun h => ⟨h.toIsPosMap, h.toIsUnital⟩, fun h => ⟨h.1, h.2⟩⟩
 
+omit [DecidableEq n] in
 theorem Module.Dual.isPosMap_of_matrix (φ : Module.Dual 𝕜 (Matrix n n 𝕜)) :
     φ.IsPosMap ↔ ∀ a : Matrix n n 𝕜, a.PosSemidef → 0 ≤ φ a := by
   simp_rw [posSemidef_iff, exists_imp, Module.Dual.IsPosMap, forall_eq_apply_imp_iff,
     star_eq_conjTranspose]
 
 /--
-A linear functional $f$ on $M_n$ is said to be faithful if $f(x^*x)=0$ if and only if $x=0$ for any $x \in M_n$. -/
+A linear functional $f$ on $M_n$ is said to be faithful if $f(x^*x)=0$ if and only if $x=0$ for any
+  $x \in M_n$. -/
 def Module.Dual.IsFaithful {A : Type _} [NonUnitalSemiring A] [StarRing A] [Module 𝕜 A]
     (φ : Module.Dual 𝕜 A) : Prop :=
   ∀ a : A, φ (star a * a) = 0 ↔ a = 0
 
-lemma Matrix.includeBlock_eq_zero {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
-  [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)] {i : k}
+lemma Matrix.includeBlock_eq_zero {k : Type _} [Finite k] [DecidableEq k] {s : k → Type _}
+  [∀ i, Finite (s i)] {i : k}
   {x : Matrix (s i) (s i) R} :
   includeBlock x = 0 ↔ x = 0 :=
 by
+  classical
+  letI : Fintype k := Fintype.ofFinite k
+  letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   simp_rw [funext_iff, Pi.zero_apply, includeBlock_apply,
     dite_eq_right_iff, eq_mp_eq_cast]
-  exact ⟨λ h => (h i rfl), by rintro rfl a rfl; rfl⟩
+  exact ⟨fun h => (h i rfl), by rintro rfl a rfl; rfl⟩
 
-lemma Module.Dual.piIsFaithful_iff {k : Type _} [Fintype k]
-  [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)]
+lemma Module.Dual.piIsFaithful_iff {k : Type _} [Finite k]
+  [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)]
   {φ : Module.Dual 𝕜 (PiMat 𝕜 k s)} (hφ : φ.IsPosMap) :
   φ.IsFaithful ↔ ∀ i, (pi_of φ i).IsFaithful :=
 by
+  classical
+  letI : Fintype k := Fintype.ofFinite k
   constructor
-  . intro h i x
+  · intro h i x
     specialize h (includeBlock x)
     simp_rw [includeBlock_conjTranspose, includeBlock_hMul_same,
       includeBlock_eq_zero] at h
     exact h
-  . intro h x
+  · intro h x
     simp_rw [IsFaithful, pi_of_apply] at h
     nth_rw 1 [← sum_includeBlock x]
     simp_rw [star_sum, Finset.sum_mul, includeBlock_conjTranspose,
       includeBlock_hMul, map_sum]
-    refine ⟨λ h1 => ?_, λ h => by simp_rw [h, Pi.zero_apply, mul_zero, map_zero,
+    refine ⟨fun h1 => ?_, fun h => by simp_rw [h, Pi.zero_apply, mul_zero, map_zero,
       Finset.sum_const_zero]⟩
     ext1 i
     rw [Pi.zero_apply]
     rw [Finset.sum_eq_zero_iff_of_nonneg] at h1
-    simp only [Finset.mem_univ, forall_true_left, ← star_eq_conjTranspose, h] at h1
-    exact h1 i
-    . intro i hi
+    · simp only [Finset.mem_univ, forall_true_left, ← star_eq_conjTranspose, h] at h1
+      exact h1 i
+    · intro i hi
       rw [piIsPosMap_iff] at hφ
       exact hφ _ _
 
+omit [DecidableEq n] in
 theorem Module.Dual.isFaithful_of_matrix (φ : Module.Dual 𝕜 (Matrix n n 𝕜)) :
     φ.IsFaithful ↔ ∀ a : Matrix n n 𝕜, a.PosSemidef → (φ a = 0 ↔ a = 0) := by
   simp_rw [posSemidef_iff, exists_imp, Module.Dual.IsFaithful, forall_eq_apply_imp_iff,
@@ -358,25 +387,28 @@ theorem Module.Dual.isPosMap_iff_of_matrix (φ : Module.Dual ℂ (Matrix n n ℂ
       by
       intro y
       rw [vecMulVec_eq Unit, trace_mul_cycle', ← replicateCol_mulVec]
-      simp_rw [Matrix.trace_iff', replicateRow_mul_replicateCol_apply, Fintype.univ_punit, Finset.sum_const,
+      simp_rw [Matrix.trace_iff', replicateRow_mul_replicateCol_apply, Fintype.univ_punit,
+        Finset.sum_const,
         Finset.card_singleton, nsmul_eq_mul, Nat.cast_one, one_mul]
     simp_rw [PosSemidef.complex, thiseq]
     intro y
-    refine' hs _ _
-    exact vecMulVec_posSemidef _
+    exact hs (vecMulVec y (star y)) (vecMulVec_posSemidef _)
   · intro hy y
     rw [φ.apply, ← Matrix.mul_assoc]
     exact hy.trace_conjTranspose_hMul_self_nonneg _
 
 /--
-A linear functional $f$ is a state if and only if there exists a unique positive semi-definite matrix $Q\in M_n$ such that its trace equals $1$ and $f(x)=\operatorname{Tr}(Qx)$ for all $x\in M_n$. -/
+A linear functional $f$ is a state if and only if there exists a unique positive semi-definite
+  matrix $Q\in M_n$ such that its trace equals $1$ and $f(x)=\operatorname{Tr}(Qx)$ for all $x\in
+  M_n$. -/
 theorem Module.Dual.isState_iff_of_matrix (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsState ↔ φ.matrix.PosSemidef ∧ φ.matrix.trace = 1 := by
   simp_rw [Module.Dual.IsState_iff, Module.Dual.isPosMap_iff_of_matrix, Module.Dual.IsUnital,
     Module.Dual.apply, Matrix.mul_one]
 
 /--
-A positive linear functional $f$ is faithful if and only if there exists a positive definite matrix such that $f(x)=\operatorname{Tr}(Qx)$ for all $x\in M_n$. -/
+A positive linear functional $f$ is faithful if and only if there exists a positive definite matrix
+  such that $f(x)=\operatorname{Tr}(Qx)$ for all $x\in M_n$. -/
 theorem Module.Dual.IsPosMap.isFaithful_iff_of_matrix {φ : Module.Dual ℂ (Matrix n n ℂ)}
     (hs : φ.IsPosMap) : φ.IsFaithful ↔ φ.matrix.PosDef :=
   by
@@ -391,7 +423,8 @@ theorem Module.Dual.IsPosMap.isFaithful_iff_of_matrix {φ : Module.Dual ℂ (Mat
       have : star x ⬝ᵥ φ.matrix.mulVec x = (φ.matrix * vecMulVec x (star x)).trace :=
         by
         rw [vecMulVec_eq Unit, trace_mul_cycle', ← replicateCol_mulVec]
-        simp_rw [Matrix.trace_iff', replicateRow_mul_replicateCol_apply, Fintype.univ_punit, Finset.sum_const,
+        simp_rw [Matrix.trace_iff', replicateRow_mul_replicateCol_apply, Fintype.univ_punit,
+          Finset.sum_const,
           Finset.card_singleton, nsmul_eq_mul, Nat.cast_one, one_mul]
       rw [this]
       have this2 := HHH (vecMulVec x (star x)) (vecMulVec_posSemidef _)
@@ -403,11 +436,11 @@ theorem Module.Dual.IsPosMap.isFaithful_iff_of_matrix {φ : Module.Dual ℂ (Mat
       · rw [← Module.Dual.apply]
         exact this32
   · intro hQ a ha
-    refine' ⟨fun h => _, fun h => by rw [h, map_zero]⟩
-    obtain ⟨b, rfl⟩ := (posSemidef_iff _).mp ha
-    rw [Module.Dual.apply, ← Matrix.mul_assoc,
-      Nontracial.trace_conjTranspose_hMul_self_eq_zero hQ] at h
-    rw [h, Matrix.mul_zero]
+    exact ⟨fun h => by
+      obtain ⟨b, rfl⟩ := (posSemidef_iff _).mp ha
+      rw [Module.Dual.apply, ← Matrix.mul_assoc,
+        Nontracial.trace_conjTranspose_hMul_self_eq_zero hQ] at h
+      rw [h, Matrix.mul_zero], fun h => by rw [h, map_zero]⟩
 
 -- def Module.Dual.IsFaithfulPosMap {A : Type _} [NonUnitalSemiring A] [StarRing A] [Module 𝕜 A]
 --     (φ : Module.Dual 𝕜 A) : Prop :=
@@ -426,31 +459,43 @@ lemma Module.Dual.IsFaithfulPosMap_iff {A : Type _} [NonUnitalSemiring A] [StarR
 ⟨fun h => ⟨h.toIsPosMap, h.toIsFaithful⟩, fun h => ⟨h.1, h.2⟩⟩
 
 /--
-A linear functional $φ$ is a faithful and positive if and only if there exists a unique positive definite matrix $Q$ such that $φ(x)=\operatorname{Tr}(Qx)$ for all $x\in M_n$. -/
+A linear functional $φ$ is a faithful and positive if and only if there exists a unique positive
+  definite matrix $Q$ such that $φ(x)=\operatorname{Tr}(Qx)$ for all $x\in M_n$. -/
 theorem Module.Dual.isFaithfulPosMap_iff_of_matrix (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsFaithfulPosMap ↔ φ.matrix.PosDef :=
   by
-  refine' ⟨fun h => h.1.isFaithful_iff_of_matrix.mp h.2, _⟩
+  constructor
+  · intro h
+    exact h.1.isFaithful_iff_of_matrix.mp h.2
   intro hQ
-  simp_rw [Module.Dual.IsFaithfulPosMap_iff, Module.Dual.IsFaithful, Module.Dual.isPosMap_iff_of_matrix,
+  simp_rw [Module.Dual.IsFaithfulPosMap_iff, Module.Dual.IsFaithful,
+    Module.Dual.isPosMap_iff_of_matrix,
     hQ.posSemidef, true_and, Module.Dual.apply, star_eq_conjTranspose,
     ← Matrix.mul_assoc, Nontracial.trace_conjTranspose_hMul_self_eq_zero hQ,
     forall_const]
 
 /--
-A state is faithful $f$ if and only if there exists a unique positive definite matrix $Q\in M_n$ with trace equal to $1$ and $f(x)=\operatorname{Tr}(Qx)$ for all $x \in M_n$. -/
+A state is faithful $f$ if and only if there exists a unique positive definite matrix $Q\in M_n$
+  with trace equal to $1$ and $f(x)=\operatorname{Tr}(Qx)$ for all $x \in M_n$. -/
 theorem Module.Dual.IsState.isFaithful_iff_of_matrix {φ : Module.Dual ℂ (Matrix n n ℂ)}
     (hs : φ.IsState) : φ.IsFaithful ↔ φ.matrix.PosDef ∧ φ.matrix.trace = 1 :=
   by
   rw [hs.1.isFaithful_iff_of_matrix]
-  refine' ⟨fun hQ => ⟨hQ, _⟩, fun hQ => hQ.1⟩
-  · rw [Module.Dual.isState_iff_of_matrix] at hs
+  constructor
+  · intro hQ
+    constructor
+    · exact hQ
+    rw [Module.Dual.isState_iff_of_matrix] at hs
     exact hs.2
+  · intro hQ
+    exact hQ.1
 
 theorem Module.Dual.isFaithful_state_iff_of_matrix (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsState ∧ φ.IsFaithful ↔ φ.matrix.PosDef ∧ φ.matrix.trace = 1 :=
   by
-  refine' ⟨fun h => h.1.isFaithful_iff_of_matrix.mp h.2, _⟩
+  constructor
+  · intro h
+    exact h.1.isFaithful_iff_of_matrix.mp h.2
   intro hQ
   simp_rw [Module.Dual.IsFaithful, Module.Dual.isState_iff_of_matrix, hQ.2, hQ.1.posSemidef,
     true_and]
@@ -465,7 +510,8 @@ def Module.Dual.IsTracial {A : Type _} [NonUnitalSemiring A] [Module 𝕜 A] (φ
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /--
-A linear functional is tracial and positive if and only if there exists a non-negative real $α$ such that $f\colon x \mapsto \alpha \operatorname{Tr}(x)$. -/
+A linear functional is tracial and positive if and only if there exists a non-negative real $α$
+  such that $f\colon x \mapsto \alpha \operatorname{Tr}(x)$. -/
 theorem Module.Dual.isTracial_pos_map_iff_of_matrix (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsPosMap ∧ φ.IsTracial ↔ ∃ α : NNReal, φ.matrix = ((α : ℝ) : ℂ) • 1 :=
   by
@@ -480,13 +526,13 @@ theorem Module.Dual.isTracial_pos_map_iff_of_matrix (φ : Module.Dual ℂ (Matri
         Q p q =
             ∑ i, ∑ j, Q i j * ∑ k, (single q r 1) j k * (single r p 1) k i :=
           by
-          simp only [single, of_apply, boole_mul, ite_and, Finset.sum_ite_irrel,
-            Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, eq_self_iff_true, if_true,
+          simp only [single, of_apply, ite_and, Finset.sum_ite_irrel,
+            Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, if_true,
             mul_ite, MulZeroClass.mul_zero, mul_one]
         _ = ∑ i, ∑ j, Q i j * ∑ k, (single r p 1) j k * (single q r 1) k i :=
           by rw [h2]
         _ = ite (p = q) (Q r r) 0 := by
-          simp only [single, of_apply, boole_mul, ite_and, Finset.sum_ite_irrel,
+          simp only [single, of_apply, ite_and, Finset.sum_ite_irrel,
             Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, if_true, mul_ite,
             MulZeroClass.mul_zero, mul_one]
     by_cases h : IsEmpty n
@@ -503,7 +549,8 @@ theorem Module.Dual.isTracial_pos_map_iff_of_matrix (φ : Module.Dual ℂ (Matri
       by
       intro p
       rw [eq_comm]
-      simp_rw [RCLike.re_eq_complex_re, ← Complex.conj_eq_iff_re, ← RCLike.star_def, ← Matrix.star_apply,
+      simp_rw [RCLike.re_eq_complex_re, ← Complex.conj_eq_iff_re, ← RCLike.star_def,
+        ← Matrix.star_apply,
         star_eq_conjTranspose]
       rw [hQ.1.eq]
     have : 0 ≤ Q i i := by
@@ -518,10 +565,10 @@ theorem Module.Dual.isTracial_pos_map_iff_of_matrix (φ : Module.Dual ℂ (Matri
       exact this.2
     let α : NNReal := ⟨RCLike.re (Q i i), thisthis⟩
     have hα' : RCLike.re (Q i i) = α := rfl
-    refine' ⟨α, _⟩
-    · simp only [smul_eq_diagonal_mul, ← hα', Matrix.mul_one]
+    exact ⟨α, by
+      simp only [smul_eq_diagonal_mul, ← hα', Matrix.mul_one]
       rw [← this']
-      exact HH
+      exact HH⟩
   · rintro ⟨α, hα1⟩
     simp_rw [Module.Dual.IsPosMap, Module.Dual.IsTracial, Module.Dual.apply, hα1,
       smul_mul, one_mul, trace_smul, smul_eq_mul, star_eq_conjTranspose]
@@ -532,7 +579,8 @@ theorem Module.Dual.isTracial_pos_map_iff_of_matrix (φ : Module.Dual ℂ (Matri
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /--
-A linear functional is tracial and positive if and only if there exists a unique non-negative real $α$ such that $f\colon x \mapsto \alpha \operatorname{Tr}(x)$. -/
+A linear functional is tracial and positive if and only if there exists a unique non-negative real
+  $α$ such that $f\colon x \mapsto \alpha \operatorname{Tr}(x)$. -/
 theorem Module.Dual.isTracial_pos_map_iff'_of_matrix [Nonempty n]
     (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsPosMap ∧ φ.IsTracial ↔ ∃! α : NNReal, φ.matrix = ((α : ℝ) : ℂ) • 1 :=
@@ -548,13 +596,13 @@ theorem Module.Dual.isTracial_pos_map_iff'_of_matrix [Nonempty n]
         Q p q =
             ∑ i, ∑ j, Q i j * ∑ k, (single q r 1) j k * (single r p 1) k i :=
           by
-          simp only [single, of_apply, boole_mul, ite_and, Finset.sum_ite_irrel,
-            Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, eq_self_iff_true, if_true,
+          simp only [single, of_apply, ite_and, Finset.sum_ite_irrel,
+            Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, if_true,
             mul_ite, MulZeroClass.mul_zero, mul_one]
         _ = ∑ i, ∑ j, Q i j * ∑ k, (single r p 1) j k * (single q r 1) k i :=
           by rw [h2]
         _ = ite (p = q) (Q r r) 0 := by
-          simp only [single, of_apply, boole_mul, ite_and, Finset.sum_ite_irrel,
+          simp only [single, of_apply, ite_and, Finset.sum_ite_irrel,
             Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, if_true, mul_ite,
             MulZeroClass.mul_zero, mul_one]
     let i : n := Nonempty.some (by infer_instance)
@@ -566,7 +614,8 @@ theorem Module.Dual.isTracial_pos_map_iff'_of_matrix [Nonempty n]
       by
       intro p
       rw [eq_comm]
-      simp_rw [RCLike.re_eq_complex_re, ← Complex.conj_eq_iff_re, ← RCLike.star_def, ← Matrix.star_apply,
+      simp_rw [RCLike.re_eq_complex_re, ← Complex.conj_eq_iff_re, ← RCLike.star_def,
+        ← Matrix.star_apply,
         star_eq_conjTranspose]
       rw [hQ.1.eq]
     have : 0 ≤ Q i i := by
@@ -581,7 +630,8 @@ theorem Module.Dual.isTracial_pos_map_iff'_of_matrix [Nonempty n]
       exact this.2
     let α : NNReal := ⟨RCLike.re (Q i i), thisthis⟩
     have hα' : RCLike.re (Q i i) = α := rfl
-    refine' ⟨α, ⟨_, _⟩⟩
+    use α
+    constructor
     · simp only [smul_eq_diagonal_mul, ← hα', Matrix.mul_one]
       rw [← this']
       exact HH
@@ -601,7 +651,8 @@ theorem Module.Dual.isTracial_pos_map_iff'_of_matrix [Nonempty n]
       fun _ _ => by rw [trace_mul_comm]⟩
 
 /--
-A linear functional $f$ is tracial positive and faithful if and only if there exists a positive real number $\alpha$ such that $f\colon x\mapsto \alpha \operatorname{Tr}(x)$. -/
+A linear functional $f$ is tracial positive and faithful if and only if there exists a positive
+  real number $\alpha$ such that $f\colon x\mapsto \alpha \operatorname{Tr}(x)$. -/
 theorem Module.Dual.isTracial_faithful_pos_map_iff_of_matrix [Nonempty n]
     (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsFaithfulPosMap ∧ φ.IsTracial ↔
@@ -616,28 +667,34 @@ theorem Module.Dual.isTracial_faithful_pos_map_iff_of_matrix [Nonempty n]
       intro HH
       rw [Module.Dual.IsFaithful] at h1
       specialize h1 ((1 : Matrix n n ℂ)ᴴ * (1 : Matrix n n ℂ))
-      simp only [Matrix.conjTranspose_one, Matrix.one_mul, Matrix.mul_one, Module.Dual.apply,
+      simp only [Matrix.conjTranspose_one, Matrix.mul_one, Module.Dual.apply,
         star_eq_conjTranspose] at h1
       simp_rw [HH, NNReal.coe_zero, Complex.ofReal_zero, zero_smul] at hα
       rw [hα, trace_zero, eq_self_iff_true, true_iff] at h1
       simp only [one_ne_zero'] at h1
     let α' : { x : NNReal // 0 < x } := ⟨α, this⟩
     have : α = α' := rfl
-    refine' ⟨α', hα, fun y hy => _⟩
-    simp_rw [← Subtype.coe_inj] at hy ⊢
-    exact h _ hy
+    use α'
+    constructor
+    · exact hα
+    · intro y hy
+      simp_rw [← Subtype.coe_inj] at hy ⊢
+      exact h _ hy
   · rintro ⟨α, ⟨h1, _⟩⟩
     have : 0 < (α : NNReal) := Subtype.mem α
-    refine' ⟨_, ⟨α, h1, fun y hy => _⟩⟩
-    ·
-      simp_rw [Module.Dual.IsFaithful, Module.Dual.apply, h1, Matrix.smul_mul, Matrix.one_mul,
+    constructor
+    · simp_rw [Module.Dual.IsFaithful, Module.Dual.apply, h1, Matrix.smul_mul, Matrix.one_mul,
         trace_smul, smul_eq_zero, Complex.ofReal_eq_zero, NNReal.coe_eq_zero, ne_zero_of_lt this,
         false_or, star_eq_conjTranspose,
         trace_conjTranspose_hMul_self_eq_zero, forall_true_iff]
-    rw [h1, ← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at hy
-    simp only [one_ne_zero', or_false, RCLike.ofReal_inj, NNReal.coe_inj,
-      Complex.ofReal_inj, NNReal.coe_inj] at hy
-    exact hy.symm
+    · use α
+      constructor
+      · exact h1
+      · intro y hy
+        rw [h1, ← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at hy
+        simp only [one_ne_zero', or_false, NNReal.coe_inj,
+          Complex.ofReal_inj, NNReal.coe_inj] at hy
+        exact hy.symm
 
 -- lemma linear_map.is_tracial_state_iff [nonempty n] (φ : matrix n n ℂ →ₗ[ℂ] ℂ) :
 --   (φ.is_state ∧ φ.is_tracial) ↔ ∃ α : ℂ, φ.matrix = α • 1 ∧ α * (1 : matrix n n ℂ).trace = 1 :=
@@ -647,7 +704,7 @@ theorem Module.Dual.isTracial_faithful_pos_map_iff_of_matrix [Nonempty n]
 --     -- rintros ⟨⟨Q, ⟨hQ1, hQ2, hQ3⟩, h1⟩, h2⟩,
 --     simp_rw [linear_map.is_tracial, hQ3, matrix.trace, matrix.diag, mul_apply] at h2,
 --     have : ∀ p q r : n, Q p q = ite (p = q) (Q r r) 0 :=
---     λ p q r, calc Q p q = ∑ i j, Q i j
+--     fun p q r, calc Q p q = ∑ i j, Q i j
 --       * ∑ k, (single q r 1) j k * (single r p 1) k i :
 --     by { simp only [single, boole_mul, ite_and, finset.sum_ite_irrel,
 --       finset.sum_const_zero, finset.sum_ite_eq, finset.mem_univ, eq_self_iff_true, if_true,
@@ -680,7 +737,7 @@ theorem Module.Dual.isTracial_faithful_pos_map_iff_of_matrix [Nonempty n]
 --     { use α • 1,
 --       split,
 --       { simp only [matrix.smul_mul, trace_smul, smul_eq_mul, matrix.one_mul],
---         refine ⟨_, hα2, λ _, rfl⟩,
+--         refine ⟨_, hα2, fun _, rfl⟩,
 --         simp only [← diagonal_one, ← diagonal_smul, posSemidef.diagonal],
 --         intros i,
 --         simp_rw [pi.smul_apply, ← is_R_or_C.conj_eq_iff_re, star_ring_end_apply,
@@ -689,7 +746,8 @@ theorem Module.Dual.isTracial_faithful_pos_map_iff_of_matrix [Nonempty n]
 --         { rw [← hα2, trace_one, ← mul_div, div_self, mul_one],
 --           { simp only [ne.def, nat.cast_eq_zero],
 --             exact fintype.card_ne_zero, }, },
---         simp_rw [this, trace_one, star_div', star_one, star_nat_cast, eq_self_iff_true, and_true],
+--         simp_rw [this, trace_one, star_div', star_one, star_nat_cast, eq_self_iff_true,
+-- and_true],
 --         simp only [one_div, is_R_or_C.re_to_complex, complex.inv_re, complex.nat_cast_re],
 --         apply div_nonneg,
 --         { exact (nat.cast_nonneg _), },
@@ -708,29 +766,36 @@ theorem Module.Dual.isTracial_faithful_pos_map_iff_of_matrix [Nonempty n]
 --       rw [hα1, trace_mul_comm, ← hα1], }, },
 -- end
 theorem Matrix.ext_iff_trace' {R m n : Type _} [Semiring R] [StarRing R] [Fintype n] [Fintype m]
-    [DecidableEq n] [DecidableEq m] (A B : Matrix m n R) :
+    (A B : Matrix m n R) :
     (∀ x, (xᴴ * A).trace = (xᴴ * B).trace) ↔ A = B :=
   by
-  refine' ⟨fun h => _, fun h x => by rw [h]⟩
-  ext i j
-  specialize h (single i j (1 : R))
-  simp_rw [single_conjTranspose, star_one, Matrix.single_hMul_trace] at h
-  exact h
+  classical
+  constructor
+  · intro h
+    ext i j
+    specialize h (single i j (1 : R))
+    simp_rw [single_conjTranspose, star_one, Matrix.single_hMul_trace] at h
+    exact h
+  · intro h x
+    rw [h]
 
 theorem Module.Dual.isReal_iff {φ : Module.Dual ℂ (Matrix n n ℂ)} :
     LinearMap.IsReal φ ↔ φ.matrix.IsHermitian := by
   simp_rw [LinearMap.IsReal, Module.Dual.apply, trace_star, conjTranspose_mul,
     star_eq_conjTranspose, trace_mul_comm φ.matrix, Matrix.ext_iff_trace', IsHermitian, eq_comm]
 
+omit [DecidableEq n] in
 theorem Module.Dual.IsPosMap.isReal {φ : Module.Dual ℂ (Matrix n n ℂ)} (hφ : φ.IsPosMap) :
     LinearMap.IsReal φ := by
+  classical
   rw [Module.Dual.isPosMap_iff_of_matrix] at hφ
   rw [Module.Dual.isReal_iff]
   exact hφ.1
 
-theorem Module.Dual.pi.IsPosMap.isReal {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
-    [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)] {ψ : ∀ i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)}
+theorem Module.Dual.pi.IsPosMap.isReal {k : Type _} [Fintype k] {s : k → Type _}
+    [∀ i, Fintype (s i)] {ψ : ∀ i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)}
     (hψ : ∀ i, (ψ i).IsPosMap) : LinearMap.IsReal (Module.Dual.pi ψ) := by
+  classical
   simp_rw [LinearMap.IsReal, Module.Dual.pi_apply, star_sum, Pi.star_apply, (hψ _).isReal _,
     forall_true_iff]
 
@@ -742,11 +807,14 @@ def IsInner {H : Type _} [AddCommMonoid H] [Module 𝕜 H] (φ : H × H → 𝕜
         (∀ x y z : H, φ (x + y, z) = φ (x, z) + φ (y, z)) ∧
           ∀ (x y : H) (α : 𝕜), φ (α • x, y) = starRingEnd 𝕜 α * φ (x, y)
 
+omit [DecidableEq n] in
 /--
-A linear functional $f$ on $M_n$ is positive and faithful if and only if $(x,y)\mapsto f(x^*y)$ defines an inner product on $M_n$. -/
+A linear functional $f$ on $M_n$ is positive and faithful if and only if $(x,y)\mapsto f(x^*y)$
+  defines an inner product on $M_n$. -/
 theorem Module.Dual.isFaithfulPosMap_iff_isInner_of_matrix (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     φ.IsFaithfulPosMap ↔ IsInner fun xy : Matrix n n ℂ × Matrix n n ℂ => φ (xy.1ᴴ * xy.2) :=
   by
+  classical
   let ip := fun xy : Matrix n n ℂ × Matrix n n ℂ => φ (xy.1ᴴ * xy.2)
   have hip : ∀ x y, ip (x, y) = φ (xᴴ * y) := fun x y => rfl
   have Hip :
@@ -766,11 +834,12 @@ theorem Module.Dual.isFaithfulPosMap_iff_isInner_of_matrix (φ : Module.Dual ℂ
     simp only [@RCLike.nonneg_def' ℂ] at this
     exact ⟨fun _ _ => trivial, ⟨fun x => (this x).2, h.2⟩⟩
   · intro h
-    refine' ⟨_, h.2.2⟩
-    simp_rw [Module.Dual.IsPosMap, star_eq_conjTranspose, ← hip, @RCLike.nonneg_def' ℂ,
-      ← @RCLike.conj_eq_iff_re ℂ _ (ip (_,_)),
-      starRingEnd_apply, ← h.1, true_and]
-    exact h.2.1
+    constructor
+    · simp_rw [Module.Dual.IsPosMap, star_eq_conjTranspose, ← hip, @RCLike.nonneg_def' ℂ,
+        ← @RCLike.conj_eq_iff_re ℂ _ (ip (_,_)),
+        starRingEnd_apply, ← h.1, true_and]
+      exact h.2.1
+    · exact h.2.2
 
 theorem Module.Dual.isFaithfulPosMap_of_matrix_tfae (φ : Module.Dual ℂ (Matrix n n ℂ)) :
     List.TFAE
@@ -876,7 +945,9 @@ noncomputable def Module.Dual.PiInnerProductCore
       smul_left := fun x y r => by
         simp_rw [Pi.smul_apply, inner_smul_left, Finset.mul_sum] }
 
-/-- The normed additive group on a finite product induced by faithful positive matrix functionals. -/
+/--
+The normed additive group on a finite product induced by faithful positive matrix functionals.
+-/
 @[reducible]
 noncomputable def Module.Dual.PiNormedAddCommGroup
   {φ : Π i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)}
@@ -908,7 +979,8 @@ noncomputable def Module.Dual.PiNormedAddCommGroup
   --         exact ⟨inner_self_conj _, inner_self_nonneg⟩
   --     add_left := fun x y z => by
   --       simp_rw [inner, Pi.add_apply, inner_add_left, Finset.sum_add_distrib]
-  --     smul_left := fun x y r => by simp_rw [inner, Pi.smul_apply, inner_smul_left, Finset.mul_sum] }
+  --     smul_left := fun x y r => by simp_rw [inner, Pi.smul_apply, inner_smul_left,
+  -- Finset.mul_sum] }
 
 /-- The inner product space on a finite product induced by faithful positive matrix functionals. -/
 @[reducible]

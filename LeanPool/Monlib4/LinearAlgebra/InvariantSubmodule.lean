@@ -121,6 +121,18 @@ theorem isCompl_invariantUnder_iff_linear_proj_and_self_commute :
           rw [(linearProjOfIsCompl_eq_self_iff hUV _).mpr (SetLike.coe_mem (pᵤ x))]
         _ = (pᵤ (T x) : E) := (h x).symm
 
+/-- `U` is invariant under `T.symm` iff `U ⊆ T(U)`. -/
+theorem invariantUnder_symm_iff_le_map (T : E ≃ₗ[R] E) :
+    U.InvariantUnder (T.symm : E →ₗ[R] E) ↔ U ≤ U.map (T : E →ₗ[R] E) := by
+  constructor
+  · intro h x hx
+    exact Submodule.mem_map.mpr ⟨T.symm x, h hx, by simp⟩
+  · intro h x hx
+    rcases Submodule.mem_map.mp (h hx) with ⟨y, hy, hyx⟩
+    change T.symm x ∈ U
+    rw [← hyx]
+    simpa using hy
+
 theorem commutes_with_linear_proj_iff_linear_proj_eq [Invertible T] :
     Commute (U.subtype.comp pᵤ) T ↔ (⅟ T).comp ((U.subtype.comp pᵤ).comp T) = U.subtype.comp pᵤ :=
   by

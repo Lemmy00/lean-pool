@@ -12,6 +12,29 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
  # Some stuff on dites
 -/
 
+theorem ite_eq_ite_iff {α : Type _} (a b c : α) :
+    (∀ {p : Prop} [hp : Decidable p], @ite α p hp a c
+      = @ite α p hp b c) ↔ a = b :=
+  by
+  constructor
+  · intro h
+    exact h (p := True)
+  · intro h
+    simp [h]
+
+theorem ite_eq_ite_iff_of_pi {n α : Type _} [DecidableEq n] (a b c : n → α) :
+    (∀ i j : n, ite (i = j) (a i) (c i) = ite (i = j) (b i) (c i)) ↔ a = b :=
+  by
+  constructor
+  · intro h
+    funext i
+    specialize h i i
+    simpa using h
+  · intro h
+    rw [h]
+    intro i j
+    rfl
+
 
 -- theorem dite_add_dite {α : Type _} [Add α] (P : Prop) [Decidable P]
 --     (a b : P → α) (c d : ¬P → α) :

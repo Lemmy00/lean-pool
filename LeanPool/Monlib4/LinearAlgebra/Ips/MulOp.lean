@@ -25,6 +25,23 @@ open Module
 
 variable {R H : Type _} [Ring R] [AddCommGroup H] [Module R H] {ι : Type _}
 
+namespace Basis
+
+/-- Compatibility alias for the basis on a multiplicative opposite space. -/
+noncomputable abbrev mulOpposite (b : Module.Basis ι R H) :
+    Module.Basis ι R Hᵐᵒᵖ :=
+  Module.Basis.mulOpposite b
+
+theorem mulOpposite_apply (b : Module.Basis ι R H) (i : ι) :
+    b.mulOpposite i = MulOpposite.op (b i) :=
+  Module.Basis.mulOpposite_apply b i
+
+theorem mulOpposite_repr_eq (b : Module.Basis ι R H) :
+    b.mulOpposite.repr = (MulOpposite.opLinearEquiv R).symm.trans b.repr :=
+  Module.Basis.mulOpposite_repr_eq b
+
+end Basis
+
 theorem Basis.mulOpposite_repr_apply (b : Basis ι R H) (x : Hᵐᵒᵖ) :
     b.mulOpposite.repr x = b.repr (MulOpposite.unop x) :=
   (Basis.repr_unop_eq_mulOpposite_repr b x).symm
@@ -57,6 +74,12 @@ theorem Basis.orthonormal_iff_mulOpposite {𝕜 H : Type _} [RCLike 𝕜]
     [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] {ι : Type _} (b : Basis ι 𝕜 H) :
     Orthonormal 𝕜 b ↔ Orthonormal 𝕜 b.mulOpposite :=
   (Basis.mulOpposite_is_orthonormal_iff b).symm
+
+theorem Basis.mulOpposite_is_orthonormal_iff {𝕜 H : Type _} [RCLike 𝕜]
+    [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] {ι : Type _}
+    (b : Module.Basis ι 𝕜 H) :
+    Orthonormal 𝕜 b ↔ Orthonormal 𝕜 b.mulOpposite :=
+  (Module.Basis.mulOpposite_is_orthonormal_iff b).symm
 
 instance MulOpposite.starModule {R H : Type _} [Star R] [SMul R H] [Star H] [StarModule R H] :
     StarModule R Hᵐᵒᵖ

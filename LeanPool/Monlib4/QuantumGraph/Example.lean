@@ -13,7 +13,8 @@ import LeanPool.Monlib4.LinearAlgebra.QuantumSet.DeltaForm
 /-!
   # Basic examples on quantum adjacency matrices
 
-  This file contains elementary examples of quantum adjacency matrices, such as the complete graph and the trivial graph.
+  This file contains elementary examples of quantum adjacency matrices,
+    such as the complete graph and the trivial graph.
 -/
 
 
@@ -34,7 +35,8 @@ local notation "ℍ₂" => PiMat ℂ p₂ n₂
 -- local notation `⊗K` := matrix (n × n) (n × n) ℂ
 local notation "l(" x ")" => x →ₗ[ℂ] x
 
-variable {φ : Π i : p, Module.Dual ℂ (Matrix (n i) (n i) ℂ)} {ψ : Π i, Module.Dual ℂ (Matrix (n₂ i) (n₂ i) ℂ)}
+variable {φ : Π i : p, Module.Dual ℂ (Matrix (n i) (n i) ℂ)} {ψ : Π i,
+  Module.Dual ℂ (Matrix (n₂ i) (n₂ i) ℂ)}
 
 local notation "|" x "⟩⟨" y "|" => @rankOne ℂ _ _ _ _ _ _ _ x y
 
@@ -75,7 +77,7 @@ theorem Qam.completeGraph_eq {E₁ E₂ : Type _} [One E₁] [One E₂] [NormedA
     Qam.completeGraph E₁ E₂ = |(1 : E₁)⟩⟨(1 : E₂)| :=
   rfl
 
-variable {A B : Type*} [ha:starAlgebra A] [hb:starAlgebra B]
+variable {A B : Type*} [ha : starAlgebra A] [hb : starAlgebra B]
   [hA : QuantumSet A] [hB : QuantumSet B]
 
 theorem Qam.completeGraph_eq' :
@@ -103,7 +105,8 @@ lemma Qam.Nontracial.CompleteGraph.adjoint_eq {E₁ E₂ : Type _} [NormedAddCom
 by rw [completeGraph_eq, ContinuousLinearMap.linearMap_adjoint, rankOne_adjoint]; rfl
 
 theorem Qam.Nontracial.CompleteGraph.isSelfAdjoint {E : Type _} [One E] [NormedAddCommGroup E]
-    [InnerProductSpace ℂ E] [FiniteDimensional ℂ E] : _root_.IsSelfAdjoint (Qam.completeGraph E E) := by
+    [InnerProductSpace ℂ E] [FiniteDimensional ℂ E] :
+      _root_.IsSelfAdjoint (Qam.completeGraph E E) := by
   simp_rw [_root_.IsSelfAdjoint, Qam.completeGraph, LinearMap.star_eq_adjoint,
     ContinuousLinearMap.linearMap_adjoint, rankOne_adjoint]
 
@@ -132,7 +135,7 @@ noncomputable def Qam.trivialGraph (A : Type*) [starAlgebra A] [CoalgebraStruct 
   l(A) :=
 ⅟ (LinearMap.mul' ℂ A ∘ₗ Coalgebra.comul)
 
-variable {A : Type*} [ha:starAlgebra A] [hA : QuantumSet A]
+variable {A : Type*} [ha : starAlgebra A] [hA : QuantumSet A]
 
 open scoped ComplexOrder
 
@@ -158,7 +161,7 @@ theorem Qam.Nontracial.TrivialGraph.qam [hA2 : QuantumSetDeltaForm A] :
   simp_rw [TensorProduct.map_one, Module.End.one_eq_id, LinearMap.id_comp,
     hA2.mul_comp_comul_eq, smul_smul, mul_assoc]
   rw [inv_mul_cancel₀ _, mul_one, Module.End.one_eq_id]
-  . exact ne_of_gt hA2.delta_pos
+  · exact ne_of_gt hA2.delta_pos
 
 theorem Qam.Nontracial.TrivialGraph.qam.is_self_adjoint [hA2 : QuantumSetDeltaForm A] :
     LinearMap.adjoint (Qam.trivialGraph A) = Qam.trivialGraph A :=
@@ -215,9 +218,8 @@ theorem Qam.Nontracial.Complement'.qam
       (Qam.complement' x) •ₛ (Qam.complement' x) = Qam.complement' x :=
   by
   simp only [Qam.complement', _root_.map_sub, LinearMap.sub_apply,
-    Qam.refl_idempotent_completeGraph_left, Qam.refl_idempotent_completeGraph_right,
-    Qam.Nontracial.CompleteGraph.qam]
-  simp only [sub_right_inj, sub_eq_self]
+    Qam.refl_idempotent_completeGraph_left, Qam.refl_idempotent_completeGraph_right]
+  simp only [sub_eq_self]
   simp only [sub_eq_zero, @eq_comm _ x]
 
 theorem Qam.Nontracial.Complement'.qam.isReal
@@ -255,7 +257,7 @@ toRefl : x •ₛ 1 = 1
 
 lemma QamReflexive_iff (x : l(A)) :
     QamReflexive x ↔ x •ₛ x = x ∧ x •ₛ 1 = 1 :=
-⟨λ h => ⟨h.toQam, h.toRefl⟩, λ h => ⟨h.1, h.2⟩⟩
+⟨fun h => ⟨h.toQam, h.toRefl⟩, fun h => ⟨h.1, h.2⟩⟩
 
 /-- A quantum adjacency map that is idempotent and irreflexive. -/
 class QamIrreflexive (x : l(A)) : Prop where
@@ -266,7 +268,7 @@ toIrrefl : x •ₛ 1 = 0
 
 lemma QamIrreflexive_iff (x : l(A)) :
     QamIrreflexive x ↔ x •ₛ x = x ∧ x •ₛ 1 = 0 :=
-⟨λ h => ⟨h.toQam, h.toIrrefl⟩, λ h => ⟨h.1, h.2⟩⟩
+⟨fun h => ⟨h.toQam, h.toIrrefl⟩, fun h => ⟨h.1, h.2⟩⟩
 
 theorem Qam.complement'_is_irreflexive_iff
     (x : l(A)) : QamIrreflexive (Qam.complement' x) ↔ QamReflexive x :=
@@ -299,11 +301,12 @@ theorem Qam.complement''_is_irreflexive_iff [hA2 : QuantumSetDeltaForm A] {x : l
     simp_rw [Qam.complement'', map_sub, LinearMap.sub_apply, t2, sub_eq_zero]
   rw [t3]
   simp_rw [Qam.complement'', map_sub, LinearMap.sub_apply, t1, sub_sub]
-  constructor <;> rintro ⟨h1, h2⟩ <;> refine' ⟨_, h2⟩
+  constructor <;> rintro ⟨h1, h2⟩
   all_goals
-    simp only [Qam.trivialGraph_eq, _root_.map_smul, LinearMap.smul_apply, h2,
-      (schurMul_reflexive_of_isReal hx).mp h2, sub_self, add_zero, sub_left_inj] at h1 ⊢
-    exact h1
+    exact ⟨by
+      simp only [Qam.trivialGraph_eq, _root_.map_smul, LinearMap.smul_apply, h2,
+        (schurMul_reflexive_of_isReal hx).mp h2, sub_self, add_zero, sub_left_inj] at h1 ⊢
+      exact h1, h2⟩
 
 /-- Complement operation producing the irreflexive complement. -/
 noncomputable def Qam.irreflexiveComplement [QuantumSetDeltaForm A] (x : l(A)) :
@@ -372,8 +375,7 @@ theorem Qam.irreflexiveComplement_is_irreflexive_qam_iff_irreflexive_qam
   rw [Qam.irreflexiveComplement, sub_sub, ← Qam.complement'_eq,
     Qam.complement'_is_irreflexive_iff, ← Qam.complement''_is_irreflexive_iff,
     Qam.complement'', add_sub_cancel_left]
-  ·
-    rw [LinearMap.isReal_iff, LinearMap.real_add, x.isReal_iff.mp hx,
+  · rw [LinearMap.isReal_iff, LinearMap.real_add, x.isReal_iff.mp hx,
       (Qam.trivialGraph A).isReal_iff.mp Qam.Nontracial.trivialGraph.isReal]
 
 theorem Qam.reflexive_complment_is_reflexive_qam_iff_reflexive_qam

@@ -25,7 +25,8 @@ macro_rules
         letI := PiMat.isStarAlgebra (ψ := $ψ);
         letI := Module.Dual.pi.IsFaithfulPosMap.quantumSet (ψ := $ψ);
         letI := Module.Dual.PiNormedAddCommGroup (φ := $ψ);
-        letI := (Module.Dual.PiNormedAddCommGroup (φ := $ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace;
+        letI := (Module.Dual.PiNormedAddCommGroup (φ :=
+          $ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace;
         letI := (Module.Dual.PiNormedAddCommGroup (φ := $ψ)).toSeminormedAddCommGroup;
         letI := Module.Dual.pi.InnerProductSpace (φ := $ψ))
 
@@ -37,30 +38,34 @@ macro_rules
         letI := Matrix.isStarAlgebra (φ := $φ);
         letI := Module.Dual.IsFaithfulPosMap.quantumSet (φ := $φ);
         letI := Module.Dual.NormedAddCommGroup $φ;
-        letI := (Module.Dual.NormedAddCommGroup $φ).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace;
+        letI := (Module.Dual.NormedAddCommGroup
+          $φ).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace;
         letI := (Module.Dual.NormedAddCommGroup $φ).toSeminormedAddCommGroup;
         letI := Module.Dual.InnerProductSpace (φ := $φ))
 
 private noncomputable abbrev PiMatTensorTo (ι : Type*)
   (p : ι → Type*) [Fintype ι] [DecidableEq ι]
   [Π i, DecidableEq (p i)] [Π i, Fintype (p i)] :
-  (PiMat ℂ ι p ⊗[ℂ] PiMat ℂ ι p) ≃⋆ₐ[ℂ] (i : ι × ι) → (Matrix (p i.1) (p i.1) ℂ ⊗[ℂ] Matrix (p i.2) (p i.2) ℂ) :=
+  (PiMat ℂ ι p ⊗[ℂ] PiMat ℂ ι p) ≃⋆ₐ[ℂ] (i : ι × ι) →
+    (Matrix (p i.1) (p i.1) ℂ ⊗[ℂ] Matrix (p i.2) (p i.2) ℂ) :=
 StarAlgEquiv.ofAlgEquiv (directSumTensorAlgEquiv ℂ
     (fun i ↦ Matrix (p i) (p i) ℂ) (fun i ↦ Matrix (p i) (p i) ℂ))
-  (λ x => x.induction_on
+  (fun x => x.induction_on
     (by simp only [star_zero, map_zero])
-    (λ _ _ => by
+    (fun _ _ => by
       ext
       simp only [Pi.star_apply, TensorProduct.star_tmul,
         directSumTensorAlgEquiv_apply, directSumTensorToFun_apply])
-    (λ _ _ h1 h2 => by simp only [star_add, map_add, h1, h2]))
+    (fun _ _ h1 h2 => by simp only [star_add, map_add, h1, h2]))
 
-/-- Transpose each matrix block of a `PiMat` as a star-algebra equivalence to the opposite algebra. -/
+/--
+Transpose each matrix block of a `PiMat` as a star-algebra equivalence to the opposite algebra.
+-/
 @[simps]
 noncomputable def PiMat.transposeStarAlgEquiv
   (ι : Type*) (p : ι → Type*) [Π i, Fintype (p i)] :
     PiMat ℂ ι p ≃⋆ₐ[ℂ] (PiMat ℂ ι p)ᵐᵒᵖ where
-  toFun x := MulOpposite.op (λ i => (x i)ᵀ)
+  toFun x := MulOpposite.op (fun i => (x i)ᵀ)
   invFun x i := (MulOpposite.unop x i)ᵀ
   left_inv _ := rfl
   right_inv _ := rfl
@@ -81,16 +86,17 @@ StarAlgEquiv.ofAlgEquiv
 (AlgEquiv.ofLinearEquiv (Matrix.toEuclideanLin)
   (by
     exact Matrix.toLpLin_one (p := (2 : ENNReal)))
-  (λ x y => by
-    simp only [Matrix.toEuclideanLin_eq_toLin,
+  (fun x y => by
+    simp only [Matrix.toLpLin_eq_toLin,
       Matrix.toLin_mul (PiLp.basisFun 2 ℂ n) (PiLp.basisFun 2 ℂ n)]
     rfl))
-(λ _ => by
+(fun _ => by
   simp only [AlgEquiv.ofLinearEquiv_apply, Matrix.toEuclideanLin_eq_toLin_orthonormal,
     LinearMap.star_eq_adjoint, Matrix.star_eq_conjTranspose,
     Matrix.toLin_conjTranspose])
 theorem Matrix.toEuclideanStarAlgEquiv_coe {n : Type*} [Fintype n] [DecidableEq n] :
-  ⇑(Matrix.toEuclideanStarAlgEquiv : Matrix n n ℂ ≃⋆ₐ[ℂ] EuclideanSpace ℂ n →ₗ[ℂ] EuclideanSpace ℂ n) =
+  ⇑(Matrix.toEuclideanStarAlgEquiv :
+    Matrix n n ℂ ≃⋆ₐ[ℂ] EuclideanSpace ℂ n →ₗ[ℂ] EuclideanSpace ℂ n) =
     Matrix.toEuclideanLin := rfl
 
 /-- Tensor-product equivalence for direct products of matrix algebras. -/
@@ -104,14 +110,14 @@ noncomputable def PiMatTensorProductEquiv
       PiMat ℂ (ι₁ × ι₂) (fun i : ι₁ × ι₂ => p₁ i.1 × p₂ i.2) :=
 StarAlgEquiv.ofAlgEquiv
   ((directSumTensorAlgEquiv ℂ _ _).trans
-    (AlgEquiv.piCongrRight (λ i => tensorToKronecker)))
-  (λ x => by
+    (AlgEquiv.piCongrRight (fun i => tensorToKronecker)))
+  (fun x => by
     ext1
-    simp only [Pi.star_apply, TensorProduct.toKronecker_star]
+    simp only [Pi.star_apply]
     obtain ⟨S, rfl⟩ := TensorProduct.exists_finset x
     simp only [AlgEquiv.trans_apply, AlgEquiv.piCongrRight_apply, directSumTensorAlgEquiv_apply,
       tensorToKronecker_apply]
-    simp only [TensorProduct.star_tmul, directSumTensor_apply, map_sum, Finset.sum_apply, star_sum,
+    simp only [TensorProduct.star_tmul, map_sum, Finset.sum_apply, star_sum,
       directSumTensorToFun_apply, Pi.star_apply, TensorProduct.toKronecker_star])
 
 theorem PiMatTensorProductEquiv_tmul_apply
@@ -132,8 +138,8 @@ theorem PiMatTensorProductEquiv_tmul
   [Π i, Fintype (p₁ i)] [Π i, DecidableEq (p₁ i)]
   [Π i, Fintype (p₂ i)] [Π i, DecidableEq (p₂ i)]
   (x : PiMat ℂ ι₁ p₁) (y : PiMat ℂ ι₂ p₂) :
-    (PiMatTensorProductEquiv (x ⊗ₜ[ℂ] y)) = λ r : ι₁ × ι₂ => (x r.1 ⊗ₖ y r.2) := by
-  ext; simp only [PiMatTensorProductEquiv_tmul_apply, Matrix.kronecker_apply]; rfl
+    (PiMatTensorProductEquiv (x ⊗ₜ[ℂ] y)) = fun r : ι₁ × ι₂ => (x r.1 ⊗ₖ y r.2) := by
+  ext; simp only [PiMatTensorProductEquiv_tmul_apply]; rfl
 
 theorem PiMatTensorProductEquiv_tmul_apply'
   {ι₁ ι₂ : Type*} {p₁ : ι₁ → Type*} {p₂ : ι₂ → Type*}
@@ -145,10 +151,19 @@ theorem PiMatTensorProductEquiv_tmul_apply'
     (PiMatTensorProductEquiv (x ⊗ₜ[ℂ] y)) r (a, b) (c, d) = x r.1 a c * y r.2 b d :=
 PiMatTensorProductEquiv_tmul_apply _ _ _ _ _
 
+open scoped FiniteDimensional in
+/-- The forgetful equivalence from continuous endomorphisms to linear endomorphisms,
+as a star algebra equivalence. -/
+noncomputable def ContinuousLinearMap.toLinearMapStarAlgEquiv {𝕜 B : Type*} [RCLike 𝕜]
+  [NormedAddCommGroup B] [InnerProductSpace 𝕜 B] [FiniteDimensional 𝕜 B] [CompleteSpace B] :
+    (B →L[𝕜] B) ≃⋆ₐ[𝕜] (B →ₗ[𝕜] B) :=
+StarAlgEquiv.ofAlgEquiv ContinuousLinearMap.toLinearMapAlgEquiv
+  (fun _ => by simp only [ContinuousLinearMap.toLinearMapAlgEquiv_apply]; rfl)
+
 /-- Convert each block of a `PiMat` to a Euclidean-space linear map. -/
 noncomputable abbrev PiMat_toEuclideanLM :
   (PiMat ℂ ι p) ≃⋆ₐ[ℂ] (Π i, EuclideanSpace ℂ (p i) →ₗ[ℂ] EuclideanSpace ℂ (p i)) :=
-StarAlgEquiv.piCongrRight (λ _ => Matrix.toEuclideanStarAlgEquiv)
+StarAlgEquiv.piCongrRight (fun _ => Matrix.toEuclideanStarAlgEquiv)
 
 /-- Trace functional on a product of matrix blocks. -/
 @[simps!]
@@ -189,7 +204,7 @@ by
       (schurIdempotent_iff_Psi_isIdempotentElem (A := PiMat ℂ ι p)
         (B := PiMat ℂ ι p) f t r).mp hf.isIdempotentElem
   simp_rw [← LinearMap.isProj_iff_isIdempotentElem] at this
-  exact ⟨λ i => (this i).choose, λ i => (this i).choose_spec⟩
+  exact ⟨fun i => (this i).choose, fun i => (this i).choose_spec⟩
 
 
 /-- Submodules associated to the block components of a `PiMat` quantum graph. -/
@@ -237,13 +252,14 @@ by
   exact ∑ i : ι × ι, Module.finrank ℂ (hf.PiMat_submodule 0 (1 / 2) i)
 
 theorem PiMat.traceLinearMap_comp_piMatTensorProductEquiv_eq :
-  (PiMat.traceLinearMap : (PiMat ℂ (ι × ι) fun i ↦ p i.1 × p i.2) →ₗ[ℂ] ℂ) ∘ₗ PiMatTensorProductEquiv.toLinearMap
+  (PiMat.traceLinearMap : (PiMat ℂ (ι × ι) fun i ↦ p i.1 × p i.2) →ₗ[ℂ] ℂ) ∘ₗ
+    PiMatTensorProductEquiv.toLinearMap
     = LinearMap.mul' ℂ _ ∘ₗ (TensorProduct.map PiMat.traceLinearMap PiMat.traceLinearMap) :=
 by
   apply TensorProduct.ext'
   intro x y
   simp only [LinearMap.comp_apply, StarAlgEquiv.toLinearMap_apply,  PiMatTensorProductEquiv_tmul,
-    PiMat.traceLinearMap_apply, TensorProduct.map_tmul, LinearMap.mul'_apply,
+    TensorProduct.map_tmul, LinearMap.mul'_apply,
     AlgHom.toLinearMap_apply, Matrix.blockDiagonal'AlgHom_apply,
     Matrix.traceLinearMap_apply,
     Matrix.trace_blockDiagonal', Matrix.trace_kronecker,
@@ -251,7 +267,8 @@ by
   rw [Finset.sum_comm]
 
 lemma PiMat.transposeStarAlgEquiv_symm_is_tracePreserving (x : (PiMat ℂ ι p)ᵐᵒᵖ) :
-  PiMat.traceLinearMap ((PiMat.transposeStarAlgEquiv ι p).symm x) = PiMat.traceLinearMap (MulOpposite.unop x) :=
+  PiMat.traceLinearMap ((PiMat.transposeStarAlgEquiv ι p).symm x) =
+    PiMat.traceLinearMap (MulOpposite.unop x) :=
 rfl
 
 lemma PiMat.traceLinearMap_comp_transposeStarAlgEquiv_symm :
@@ -277,10 +294,9 @@ by
   ext i
   rw [← LinearMap.IsProj.trace (QuantumGraph.PiMat_submoduleIsProj hf 0 (1 / 2) i)]
   simp only [StarAlgEquiv.piCongrRight_apply,
-    StarAlgEquiv.trans_apply,
     Matrix.toEuclideanStarAlgEquiv_coe,
     PiMatTensorProductEquiv_apply, EuclideanSpace.trace_eq_matrix_trace',
-    Matrix.coe_toEuclideanCLM_eq_toEuclideanLin, LinearEquiv.symm_apply_apply]
+      LinearEquiv.symm_apply_apply]
 
 theorem Coalgebra.counit_mulOpposite {A : Type*}
   [Semiring A] [Algebra ℂ A] [CoalgebraStruct ℂ A] :
@@ -313,14 +329,16 @@ noncomputable instance TensorProduct.instCoalgebraStruct'
   comul :=
     AlgebraTensorModule.tensorTensorTensorComm R S R S A A B B ∘ₗ
       AlgebraTensorModule.map CoalgebraStruct.comul CoalgebraStruct.comul
-  counit := AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map CoalgebraStruct.counit CoalgebraStruct.counit
+  counit := AlgebraTensorModule.rid R S S ∘ₗ
+    AlgebraTensorModule.map CoalgebraStruct.counit CoalgebraStruct.counit
 
 lemma TensorProduct.instCoalgebraStruct'_counit
   {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
   [Algebra R S] [Module R A] [Module S A] [Module R B] [CoalgebraStruct R B]
   [CoalgebraStruct S A] [IsScalarTower R S A] :
   (TensorProduct.instCoalgebraStruct' : CoalgebraStruct S (A ⊗[R] B)).counit =
-    AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map CoalgebraStruct.counit CoalgebraStruct.counit :=
+    AlgebraTensorModule.rid R S S ∘ₗ
+      AlgebraTensorModule.map CoalgebraStruct.counit CoalgebraStruct.counit :=
 rfl
 
 -- attribute [local instance] TensorProduct.instCoalgebraStruct'
@@ -346,7 +364,8 @@ by
     PiMat.traceLinearMap_comp_piMatTensorProductEquiv_eq,
     StarAlgEquiv.lTensor_toLinearMap]
   rw [LinearMap.comp_assoc, LinearMap.map_comp_lTensor]
-  simp
+  simp only [one_div, QuantumSet.Psi_apply, LinearMap.coe_comp, Function.comp_apply,
+    LinearEquiv.coe_coe]
   congr 1
   ext; simp
 
@@ -366,8 +385,8 @@ by
   intro x y
   -- rw [TensorProduct.counit_def]
   simp only [TensorProduct.instCoalgebraStruct'_counit, LinearMap.coe_comp, Function.comp_apply,
-    TensorProduct.map_tmul, LinearMap.mul'_apply, Algebra.TensorProduct.one_def,
-    ContinuousLinearMap.coe_coe, innerSL_apply, TensorProduct.inner_tmul,
+    Algebra.TensorProduct.one_def,
+    ContinuousLinearMap.coe_coe, innerSL_apply_apply, TensorProduct.inner_tmul,
     Coalgebra.inner_eq_counit', Coalgebra.counit_mulOpposite_eq,
     MulOpposite.inner_eq, MulOpposite.unop_one,
     TensorProduct.AlgebraTensorModule.map_tmul]
@@ -393,26 +412,35 @@ rfl
 --   [FiniteDimensional ℂ A] :
 --   NormedAddCommGroupOfRing (A ⊗[ℂ] Aᵐᵒᵖ) where
 
+omit [DecidableEq ι] in
 private lemma Coalgebra.counit_piMat_eq_moduleDual_pi :
+  letI : DecidableEq ι := Classical.decEq ι
   withPiQuantum[φ]
     ∀ x : PiMat ℂ ι p,
       CoalgebraStruct.counit (R := ℂ) (A := PiMat ℂ ι p) x = Module.Dual.pi φ x := by
+  classical
   withPiQuantumCtx[φ]
   intro x
   rw [← congrFun (QuantumSet.inner_eq_counit' (B := PiMat ℂ ι p)) x]
   rw [Module.Dual.pi.IsFaithfulPosMap.inner_eq, star_one, one_mul]
 
+omit [DecidableEq ι] in
 private lemma Coalgebra.counit_self_tensor_mulOpposite_eq_bra_one_piMat :
+  letI : DecidableEq ι := Classical.decEq ι
   withPiQuantum[φ]
     CoalgebraStruct.counit (R:= ℂ) (A:= PiMat ℂ ι p ⊗[ℂ] (PiMat ℂ ι p)ᵐᵒᵖ) =
       ((bra ℂ) (1 : PiMat ℂ ι p ⊗[ℂ] (PiMat ℂ ι p)ᵐᵒᵖ)).toLinearMap :=
 by
+  classical
   withPiQuantumCtx[φ]
   apply TensorProduct.ext'
   intro x y
-  simp [Algebra.TensorProduct.one_def, TensorProduct.inner_tmul,
-    TensorProduct.instCoalgebraStruct'_counit, TensorProduct.AlgebraTensorModule.map_tmul,
-    counit_mulOpposite_eq, MulOpposite.inner_eq, mul_comm]
+  simp only [TensorProduct.instCoalgebraStruct'_counit, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.AlgebraTensorModule.map_tmul,
+    counit_mulOpposite_eq, TensorProduct.AlgebraTensorModule.rid_tmul, smul_eq_mul,
+    mul_comm, Algebra.TensorProduct.one_def, ContinuousLinearMap.toLinearMap_innerSL_apply,
+    innerₛₗ_apply_apply, TensorProduct.inner_tmul, MulOpposite.inner_eq,
+    MulOpposite.unop_one]
   have hx : Coalgebra.counit x = inner ℂ 1 x :=
     by
       rw [Coalgebra.counit_piMat_eq_moduleDual_pi (φ := φ)]
@@ -452,7 +480,8 @@ by
   withPiQuantumCtx[φ]
   intro f hf
   calc
-    QuantumGraph.dim_of_piMat_submodule hf = ∑ i : ι × ι, Fintype.card (p i.1) * Fintype.card (p i.2)
+    QuantumGraph.dim_of_piMat_submodule hf = ∑ i : ι × ι, Fintype.card (p i.1) *
+      Fintype.card (p i.2)
       ↔ ∑ i : ι × ι, Module.finrank ℂ ↥(hf.PiMat_submodule 0 (1 / 2) i)
         = ∑ i : ι × ι, Fintype.card (p i.1) * Fintype.card (p i.2) := by rfl
     _ ↔ ∀ i, Module.finrank ℂ ↥(hf.PiMat_submodule 0 (1 / 2) i)
@@ -461,10 +490,10 @@ by
         simp only [Nat.cast_sum]
         rw [eq_comm, ← sub_eq_zero, ← Finset.sum_sub_distrib]
         rw [Finset.sum_eq_zero_iff_of_nonneg]
-        simp_rw [sub_eq_zero, Nat.cast_inj, Finset.mem_univ, true_imp_iff,
-          ← Fintype.card_prod, ← finrank_euclideanSpace (𝕜 := ℂ),
-          @eq_comm _ _ (Module.finrank ℂ (hf.PiMat_submodule 0 (1/2) _))]
-        . simp only [Finset.mem_univ, sub_nonneg, true_implies, Nat.cast_le]
+        · simp_rw [sub_eq_zero, Nat.cast_inj, Finset.mem_univ, true_imp_iff,
+            ← Fintype.card_prod, ← finrank_euclideanSpace (𝕜 := ℂ),
+            @eq_comm _ _ (Module.finrank ℂ (hf.PiMat_submodule 0 (1/2) _))]
+        · simp only [Finset.mem_univ, sub_nonneg, true_implies, Nat.cast_le]
           intro i
           calc Module.finrank ℂ (↥(hf.PiMat_submodule 0 (1 / 2) i))
             ≤ Module.finrank ℂ (EuclideanSpace ℂ (p i.1 × p i.2)) :=
@@ -476,9 +505,9 @@ by
         by
           simp_rw [← Fintype.card_prod, ← finrank_euclideanSpace (𝕜 := ℂ)]
           constructor
-          . intro h i
+          · intro h i
             exact Submodule.eq_top_of_finrank_eq (h i)
-          . intro h i
+          · intro h i
             rw [h]
             simp only [finrank_top]
     _ ↔
@@ -509,11 +538,14 @@ by
   rw [QuantumGraph.dim_of_piMat_submodule_eq_rank_top_iff]
 
 open scoped InnerProductSpace
+omit [DecidableEq ι] in
 theorem Algebra.linearMap_adjoint_eq_dual :
+  letI : DecidableEq ι := Classical.decEq ι
   withPiQuantum[φ]
     LinearMap.adjoint (Algebra.linearMap ℂ (PiMat ℂ ι p))
       = Module.Dual.pi φ :=
 by
+  classical
   withPiQuantumCtx[φ]
   rw [← Module.Dual.pi.IsFaithfulPosMap.adjoint_eq, LinearMap.adjoint_adjoint]
 
@@ -538,7 +570,8 @@ by
     simpa [Module.Dual.IsUnital] using hφ₂
   simp_rw [ne_eq, this, one_smul, this]
   rw [← Nat.cast_one, Nat.cast_inj]
-  simp [Module.finrank_pi_fintype, Module.finrank_matrix, ← pow_two] at hB
+  simp only [Module.finrank_pi_fintype, Module.finrank_matrix, ← pow_two,
+    Module.finrank_self, mul_one] at hB
   have :=
     calc ∑ i : ι × ι, Fintype.card (p i.1) * Fintype.card (p i.2)
       = ∑ i : ι, ∑ j : ι, Fintype.card (p i) * Fintype.card (p j) :=
@@ -645,7 +678,7 @@ by
 theorem Matrix.dite_kronecker {α n m p q : Type*} [MulZeroClass α]
   (P : Prop) [Decidable P]
   (x₁ : P → Matrix n m α) (x₂ : Matrix p q α) :
-  (dite P (λ p => x₁ p) (λ _ => 0)) ⊗ₖ x₂ = dite P (λ p => x₁ p ⊗ₖ x₂) (λ _ => 0) :=
+  (dite P (fun p => x₁ p) (fun _ => 0)) ⊗ₖ x₂ = dite P (fun p => x₁ p ⊗ₖ x₂) (fun _ => 0) :=
 by
   split
   next h => simp_all only
@@ -662,7 +695,7 @@ by
 @[simp]
 theorem Matrix.kronecker_dite {α n m p q : Type*} [MulZeroClass α]
   (x₁ : Matrix n m α) (P : Prop) [Decidable P] (x₂ : P → Matrix p q α) :
-  x₁ ⊗ₖ (dite P (λ p => x₂ p) (λ _ => 0)) = dite P (λ p => x₁ ⊗ₖ x₂ p) (λ _ => 0) :=
+  x₁ ⊗ₖ (dite P (fun p => x₂ p) (fun _ => 0)) = dite P (fun p => x₁ ⊗ₖ x₂ p) (fun _ => 0) :=
 by
   split
   next h => simp_all only
@@ -674,14 +707,15 @@ theorem Matrix.vecMulVec_kronecker_vecMulVec {α n m p q : Type*} [CommSemiring 
     vecMulVec (reshape (vecMulVec x z)) (reshape (vecMulVec y w)) :=
 by
   ext
-  simp only [kroneckerMap_apply, zero_apply, vecMulVec_apply, reshape_apply]
+  simp only [kroneckerMap_apply, vecMulVec_apply, reshape_apply]
   ring_nf
 
 @[simp]
-theorem Matrix.vecMulVec_toEuclideanLin {n m : Type*} [Fintype n] [DecidableEq n]
+theorem Matrix.vecMulVec_toEuclideanLin {n m : Type*} [Fintype n]
   [Fintype m] [DecidableEq m] (x : EuclideanSpace ℂ n) (y : EuclideanSpace ℂ m) :
   toEuclideanLin (vecMulVec x y) = rankOne ℂ x (star y) :=
 by
+  classical
   apply_fun Matrix.toEuclideanLin.symm using LinearEquiv.injective _
   simp only [LinearEquiv.symm_apply_apply]
   convert
@@ -735,7 +769,8 @@ by
         (euclideanSpaceTensor' (R := ℂ) (y ⊗ₜ[ℂ] w))
         = rankOne ℂ xz yw := rfl
     _ = rankOne ℂ xz (star (star yw)) := by rw [hss]
-    _ = LinearMap.toContinuousLinearMap (Matrix.toEuclideanLin (Matrix.vecMulVec xz (star yw))) := by
+    _ = LinearMap.toContinuousLinearMap (Matrix.toEuclideanLin (Matrix.vecMulVec xz (star yw))) :=
+      by
       apply ContinuousLinearMap.ext
       intro v
       change (rankOne ℂ xz (star (star yw))) v =
@@ -779,11 +814,11 @@ noncomputable def EuclideanSpace.prod_choose {n m : Type*} [Fintype n] [Decidabl
   (n × m) → ((EuclideanSpace ℂ n) × EuclideanSpace ℂ m) :=
   let p₁ : Module.Basis n ℂ (EuclideanSpace ℂ n) := (EuclideanSpace.basisFun n ℂ).toBasis
   let p₂ : Module.Basis m ℂ (EuclideanSpace ℂ m) := (EuclideanSpace.basisFun m ℂ).toBasis
-  let a := λ i : n × m =>
+  let a := fun i : n × m =>
     (((p₁.tensorProduct p₂).repr ((euclideanSpaceTensor' (R := ℂ)).symm x)) i • p₁ i.1)
-  (λ (i : n × m) => (a i, p₂ i.2))
+  (fun (i : n × m) => (a i, p₂ i.2))
 
-theorem EuclideanSpace.sum_apply {n : Type*} [Fintype n] [DecidableEq n] {𝕜 : Type*} [RCLike 𝕜]
+theorem EuclideanSpace.sum_apply {n : Type*} {𝕜 : Type*} [RCLike 𝕜]
   {ι : Type*} (s : Finset ι)
   (x : ι → EuclideanSpace 𝕜 n) (j : n) :
   (∑ i ∈ s, x i) j = ∑ i ∈ s, (x i j) :=
@@ -808,7 +843,8 @@ theorem EuclideanSpace.prod_choose_spec {n m : Type*} [Fintype n] [DecidableEq n
   x = ∑ s : n × m, euclideanSpaceTensor' (R:=ℂ)
     (((EuclideanSpace.prod_choose x s).1) ⊗ₜ ((EuclideanSpace.prod_choose x s).2)) :=
 by
-  have := TensorProduct.of_basis_eq_span ((euclideanSpaceTensor' (R := ℂ)).symm x) (EuclideanSpace.basisFun n ℂ).toBasis (EuclideanSpace.basisFun m ℂ).toBasis
+  have := TensorProduct.of_basis_eq_span ((euclideanSpaceTensor' (R :=
+    ℂ)).symm x) (EuclideanSpace.basisFun n ℂ).toBasis (EuclideanSpace.basisFun m ℂ).toBasis
   apply_fun (euclideanSpaceTensor' (R := ℂ)).symm using LinearIsometryEquiv.injective _
   simp only [map_sum, LinearIsometryEquiv.symm_apply_apply]
   rw [this, ← Finset.sum_product']
@@ -816,11 +852,14 @@ by
   simp only [← TensorProduct.smul_tmul]
   let p₁ := (EuclideanSpace.basisFun n ℂ).toBasis
   let p₂ := (EuclideanSpace.basisFun m ℂ).toBasis
-  let a := λ i : n × m => (((p₁.tensorProduct p₂).repr ((euclideanSpaceTensor' (R := ℂ)).symm x)) i • p₁ i.1)
-  have ha : ∀ i, a i = (((p₁.tensorProduct p₂).repr ((euclideanSpaceTensor' (R := ℂ)).symm x)) i • p₁ i.1) := λ i => rfl
+  let a := fun i : n × m => (((p₁.tensorProduct p₂).repr ((euclideanSpaceTensor' (R :=
+    ℂ)).symm x)) i • p₁ i.1)
+  have ha : ∀ i, a i = (((p₁.tensorProduct p₂).repr ((euclideanSpaceTensor' (R :=
+    ℂ)).symm x)) i • p₁ i.1) := fun i => rfl
   simp only [p₁, p₂, ← ha]
   rfl
 
+omit [Fintype ι] in
 private theorem PiMat_eq_left_block_miss {a b c : ι} (h : a ≠ b)
     (x : Matrix (p a) (p a) ℂ) (y : Matrix (p c) (p c) ℂ) :
     LinearMap.toContinuousLinearMap (Matrix.toEuclideanLin
@@ -829,6 +868,7 @@ private theorem PiMat_eq_left_block_miss {a b c : ι} (h : a ≠ b)
   rw [Matrix.includeBlock_apply_ne_same _ h]
   simp [Matrix.kroneckerMap_zero_left]
 
+omit [Fintype ι] in
 private theorem PiMat_eq_right_block_miss {a b c : ι} (h : a ≠ c)
     (x : Matrix (p b) (p b) ℂ) (y : Matrix (p a) (p a) ℂ) :
     LinearMap.toContinuousLinearMap (Matrix.toEuclideanLin
@@ -860,6 +900,7 @@ private theorem PiMat_eq_left_block_miss_sum {b j c : ι} (h : j ≠ b)
   intro t2
   exact PiMat_eq_left_block_miss h _ _
 
+omit [Fintype ι] in
 private theorem PiMat_eq_right_block_miss_sum {b j c : ι} (h : j ≠ c)
     {β : Type*} [Fintype β]
     (X : β → p b → p j → p b → p j → Matrix (p b) (p b) ℂ)
@@ -891,7 +932,7 @@ theorem QuantumGraph.Real.PiMat_eq :
             (j : (Fin (Module.finrank ℂ (hA.PiMat_submodule i))))
               → (((p i.1) × (p i.2)) →
                 (((EuclideanSpace ℂ (p i.1)) × (EuclideanSpace ℂ (p i.2)))))
-          := λ i j => EuclideanSpace.prod_choose
+          := fun i j => EuclideanSpace.prod_choose
             (((hA.PiMat_orthonormalBasis i j : hA.PiMat_submodule i) :
               EuclideanSpace ℂ (p i.1 × p i.2)))
         A = ∑ i : ι × ι, ∑ j, ∑ s : (p i.1 × p i.2), ∑ l : (p i.1 × p i.2),
@@ -905,7 +946,7 @@ by
   intro A hA S
   have hS : ∀ (i : ι × ι) j, (hA.PiMat_orthonormalBasis i j)
       = ∑ t, euclideanSpaceTensor' (R:=ℂ) ((S i j t).1 ⊗ₜ[ℂ] (S i j t).2) :=
-    λ i j => EuclideanSpace.prod_choose_spec _
+    fun i j => EuclideanSpace.prod_choose_spec _
   apply_fun (QuantumSet.Psi 0 (1/2)) using LinearEquiv.injective _
   apply_fun
     (StarAlgEquiv.lTensor (PiMat ℂ ι p) (PiMat.transposeStarAlgEquiv ι p).symm).trans
@@ -918,16 +959,16 @@ by
   simp only [ContinuousLinearMap.coe_sum, map_sum,
     QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
     StarAlgEquiv.lTensor_tmul,
-    PiMat_toEuclideanLM, PiMatTensorProductEquiv_apply]
-  simp only [starAlgebra.modAut_zero, Matrix.conjTranspose_replicateCol, AlgEquiv.one_apply, one_div,
+    PiMat_toEuclideanLM]
+  simp only [starAlgebra.modAut_zero, AlgEquiv.one_apply, one_div,
     starAlgebra.modAut_star, Finset.sum_apply, StarAlgEquiv.piCongrRight_apply,
     PiMatTensorProductEquiv_apply, StarAlgEquiv.ofAlgEquiv_coe, AlgEquiv.ofLinearEquiv_apply,
     map_sum, directSumTensorToFun_apply,
     PiMat.transposeStarAlgEquiv_symm_apply,
     MulOpposite.unop_op]
-  simp only [TensorProduct.toKronecker_apply, Matrix.toEuclideanLin_apply']
+  simp only [TensorProduct.toKronecker_apply]
   simp only [QuantumSet.modAut_apply_modAut, add_neg_cancel, starAlgebra.modAut_zero]
-  simp only [Matrix.includeBlock_conjTranspose, Matrix.conj_conjTranspose, Matrix.transpose_apply]
+  simp only [Matrix.includeBlock_conjTranspose, Matrix.conj_conjTranspose]
   conv_lhs =>
     rw [Finset.sum_congr rfl (by intro j _; rw [hS i j])]
   conv_rhs =>
@@ -955,14 +996,13 @@ by
         intro t
         exact PiMat_eq_left_block_miss h₁ _ _)]
   simp only [AlgEquiv.one_apply, Matrix.includeBlock_apply_same]
-  simp only [ContinuousLinearMap.sum_apply, map_sum]
-  simp only [LinearMap.coeFn_sum, Finset.sum_apply, eq_mp_eq_cast, cast_eq,
-    Matrix.transpose_transpose, Matrix.vecMulVec_kronecker_vecMulVec,
-    Matrix.vecMulVec_toEuclideanLin, EuclideanSpaceTensor_apply_eq_reshape_vecMulVec]
+  simp only [map_sum]
+  simp only [LinearMap.coe_sum, Finset.sum_apply,
+    Matrix.transpose_transpose, Matrix.vecMulVec_kronecker_vecMulVec]
   congr 1
   ext1
   rw [Finset.sum_comm]
-  simp only [Finset.sum_product_univ, Finset.univ_product_univ,
+  simp only [Finset.sum_product_univ,
     rankOne_euclideanSpaceTensor_eq_toEuclideanLin_vecMulVec]
 
 noncomputable section deltaForm
@@ -990,10 +1030,13 @@ by
     _ = (x a).trace := Matrix.aut_mat_inner_trace_preserving _ _
 
 omit [Nonempty ι] [∀ (i : ι), Nontrivial (p i)] in
-theorem PiMat.modAut_trace_apply :
+omit [Fintype ι] [DecidableEq ι] in
+theorem PiMat.modAut_trace_apply [Finite ι] :
   withPiQuantum[φ]
     ∀ (r : ℝ) (x : PiMat ℂ ι p) (a : ι), (modAut r x a).trace = (x a).trace :=
 by
+  classical
+  letI := Fintype.ofFinite ι
   withPiQuantumCtx[φ]
   intro r x a
   exact PiMat.piAlgEquiv_trace_apply _ _ _
@@ -1022,7 +1065,7 @@ by
           simp only [one_div, eq_mp_eq_cast, cast_eq]
           simp only [← Matrix.trace_iff, Matrix.single_hMul_trace]
         next h =>
-          simp_all only [one_div, Matrix.includeBlock_apply, h, dif_neg]
+          simp_all only [one_div, Matrix.includeBlock_apply]
           simp only [↓reduceDIte, Matrix.zero_apply, Finset.sum_const_zero]
 
 open QuantumSet in
@@ -1047,11 +1090,11 @@ by
   simp only [Matrix.blockDiagonal'AlgHom_apply, Matrix.trace_blockDiagonal']
   simp only [PiMatTensorProductEquiv_tmul, Matrix.trace_kronecker,
     PiMat.transposeStarAlgEquiv_symm_apply, MulOpposite.unop_op]
-  simp only [Matrix.trace_transpose (R:=ℂ), Matrix.aut_mat_inner_trace_preserving,
+  simp only [Matrix.trace_transpose (R:=ℂ),
     PiMat.orthonormalBasis_trace, PiMat.modAut_trace_apply]
   simp only [Pi.star_apply, Matrix.star_eq_conjTranspose, Matrix.trace_conjTranspose,
     PiMat.orthonormalBasis_trace]
-  simp only [ite_mul, zero_mul, star_ite, star_zero, star_one, mul_ite, mul_zero]
+  simp only [ite_mul, zero_mul, star_ite, star_zero, mul_ite, mul_zero]
   simp only [Finset.sum_product_univ, Finset.sum_ite_eq, Finset.mem_univ, if_true]
   simp only [← Matrix.conjTranspose_apply, (Matrix.PosDef.rpow.isPosDef _ _).1.eq]
   calc
@@ -1067,7 +1110,8 @@ by
       ∑ x, ∑ x_1, ∑ x_2, (hφ x).matrixIsPosDef.rpow (-(1 / 2)) x_1 x_2
         * (hφ x).matrixIsPosDef.rpow (-(1 / 2)) x_2 x_1 := by simp only [mul_comm]
     _ = (QuantumSetDeltaForm.delta (PiMat ℂ ι p))⁻¹ *
-      ∑ x, ∑ x_1, ((hφ x).matrixIsPosDef.rpow (-(1 / 2)) * (hφ x).matrixIsPosDef.rpow (-(1 / 2))) x_1 x_1 := by simp only [← Matrix.mul_apply]
+      ∑ x, ∑ x_1, ((hφ x).matrixIsPosDef.rpow (-(1 / 2)) *
+        (hφ x).matrixIsPosDef.rpow (-(1 / 2))) x_1 x_1 := by simp only [← Matrix.mul_apply]
     _ = (QuantumSetDeltaForm.delta (PiMat ℂ ι p))⁻¹ *
         ∑ x, (φ x).matrix⁻¹.trace := by
       simp only [Matrix.PosDef.rpow_mul_rpow, Matrix.trace_iff]
@@ -1086,9 +1130,10 @@ end deltaForm
 
 theorem StarAlgEquiv.piCongrRight_symm {R ι : Type*} {A₁ A₂ : ι → Type*}
   [(i : ι) → Add (A₁ i)] [(i : ι) → Add (A₂ i)] [(i : ι) → Mul (A₁ i)] [(i : ι) → Mul (A₂ i)]
-  [(i : ι) → Star (A₁ i)] [(i : ι) → Star (A₂ i)] [(i : ι) → SMul R (A₁ i)] [(i : ι) → SMul R (A₂ i)]
+  [(i : ι) → Star (A₁ i)] [(i : ι) → Star (A₂ i)] [(i : ι) → SMul R (A₁ i)] [(i : ι) →
+    SMul R (A₂ i)]
   (e : (i : ι) → A₁ i ≃⋆ₐ[R] A₂ i) :
-  (StarAlgEquiv.piCongrRight e).symm = StarAlgEquiv.piCongrRight (λ i => (e i).symm) :=
+  (StarAlgEquiv.piCongrRight e).symm = StarAlgEquiv.piCongrRight (fun i => (e i).symm) :=
 rfl
 
 theorem Matrix.k {n : Type*} [Fintype n] [DecidableEq n]
@@ -1101,13 +1146,13 @@ theorem unitary.mul_inv_eq_iff {A : Type*} [Monoid A] [StarMul A] (U : ↥(unita
     (x : A) (y : A) : x * (U⁻¹ : unitary A) = y ↔ x = y * U :=
   by
     rw [unitary.inj_hMul (U : unitary A), mul_assoc]
-    rw [← unitary.star_eq_inv]
-    simp only [coe_star, SetLike.coe_mem, star_mul_self_of_mem, mul_one]
+    rw [← Unitary.star_eq_inv]
+    simp only [Unitary.coe_star, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one]
 
 /-- Blockwise inner automorphism of a `PiMat`. -/
 noncomputable abbrev piInnerAut (U : (i : ι) → Matrix.unitaryGroup (p i) ℂ) :
   PiMat ℂ ι p ≃⋆ₐ[ℂ] PiMat ℂ ι p :=
-(StarAlgEquiv.piCongrRight (λ i => Matrix.innerAutStarAlg (U i)))
+(StarAlgEquiv.piCongrRight (fun i => Matrix.innerAutStarAlg (U i)))
 
 omit hφ in
 theorem piInnerAut_apply_dualMatrix_iff' {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} :
@@ -1156,9 +1201,7 @@ by
   rw [piInnerAut_apply_dualMatrix_iff] at hU
   simp only [Module.Dual.pi.IsFaithfulPosMap.inner_eq' (ψ := φ),
     StarAlgEquiv.piCongrRight_apply (R := ℂ), StarAlgEquiv.piCongrRight_symm,
-    Matrix.innerAutStarAlg_apply, Matrix.innerAutStarAlg_symm_apply,
-    Matrix.star_eq_conjTranspose, Matrix.conjTranspose_mul,
-    Matrix.conjTranspose_conjTranspose]
+    Matrix.innerAutStarAlg_apply, Matrix.innerAutStarAlg_symm_apply, Matrix.conjTranspose_mul]
   apply Finset.sum_congr rfl
   intro i _
   rw [← Matrix.unitaryGroup.star_coe_eq_coe_star (U i)]
@@ -1203,7 +1246,8 @@ by
     exact (LinearMap.real_starAlgEquiv_conj_iff A (piInnerAut U)).mpr hA.isReal
 
 /-- A unitary matrix as a linear equivalence of Euclidean space. -/
-noncomputable abbrev Matrix.UnitaryGroup.toEuclideanLinearEquiv {n : Type*} [Fintype n] [DecidableEq n]
+noncomputable abbrev Matrix.UnitaryGroup.toEuclideanLinearEquiv {n :
+    Type*} [Fintype n] [DecidableEq n]
   (A : ↥(Matrix.unitaryGroup n ℂ)) :
     EuclideanSpace ℂ n ≃ₗ[ℂ] EuclideanSpace ℂ n :=
 (WithLp.linearEquiv 2 ℂ (n → ℂ)).trans
@@ -1216,7 +1260,8 @@ theorem Matrix.UnitaryGroup.toEuclideanLinearEquiv_apply {n : Type*} [Fintype n]
 rfl
 
 /-- A unitary matrix as a linear isometry equivalence of Euclidean space. -/
-noncomputable def Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv {n : Type*} [Fintype n] [DecidableEq n]
+noncomputable def Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv {n :
+    Type*} [Fintype n] [DecidableEq n]
   (A : ↥(Matrix.unitaryGroup n ℂ)) :
     EuclideanSpace ℂ n ≃ₗᵢ[ℂ] EuclideanSpace ℂ n where
   toLinearEquiv := Matrix.UnitaryGroup.toEuclideanLinearEquiv A
@@ -1238,49 +1283,37 @@ noncomputable def Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv {n : Type*}
         norm_eq_sqrt_re_inner (𝕜 := ℂ), dotProduct_eq_inner]
       rfl
 
-theorem Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_apply {n : Type*} [Fintype n] [DecidableEq n]
+theorem Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_apply {n :
+    Type*} [Fintype n] [DecidableEq n]
   (A : ↥(Matrix.unitaryGroup n ℂ)) (x : EuclideanSpace ℂ n) :
   (Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv A) x =
     WithLp.toLp 2 ((A : Matrix n n ℂ) *ᵥ x.ofLp) :=
 rfl
-theorem Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_symm_apply {n : Type*} [Fintype n] [DecidableEq n]
+theorem Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_symm_apply {n :
+    Type*} [Fintype n] [DecidableEq n]
   (A : ↥(Matrix.unitaryGroup n ℂ)) (x : EuclideanSpace ℂ n) :
   (Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv A).symm x =
     WithLp.toLp 2 (((A⁻¹ : unitaryGroup n ℂ) : Matrix n n ℂ) *ᵥ x.ofLp) :=
 rfl
-theorem Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_apply' {n : Type*} [Fintype n] [DecidableEq n]
+theorem Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_apply' {n :
+    Type*} [Fintype n] [DecidableEq n]
   (A : ↥(Matrix.unitaryGroup n ℂ)) (x : EuclideanSpace ℂ n) :
   (Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv A).symm x =
     WithLp.toLp 2 ((A : Matrix n n ℂ)ᴴ *ᵥ x.ofLp) :=
 rfl
 
-/-- Entrywise conjugate of a unitary matrix as a unitary. -/
-noncomputable def Matrix.unitaryGroup.conj {n : Type*} [Fintype n] [DecidableEq n]
-    (U : Matrix.unitaryGroup n ℂ) : Matrix.unitaryGroup n ℂ :=
-  ⟨(U : Matrix n n ℂ)ᴴᵀ, by
-    rw [Matrix.mem_unitaryGroup_iff]
-    calc (U : Matrix n n ℂ)ᴴᵀ * star ((U : Matrix n n ℂ)ᴴᵀ)
-        = ((U : Matrix n n ℂ) * star (U : Matrix n n ℂ))ᴴᵀ := by
-          rw [Matrix.conj_mul]
-          rfl
-      _ = 1 := by
-          rw [U.2.2]
-          simp [Matrix.conj_one]⟩
-
-theorem Matrix.unitaryGroup.conj_coe {n : Type*} [Fintype n] [DecidableEq n]
-    (U : Matrix.unitaryGroup n ℂ) :
-    (Matrix.unitaryGroup.conj U : Matrix n n ℂ) = (U : Matrix n n ℂ)ᴴᵀ :=
-  rfl
-
 /-- Tensor-product Euclidean isometry induced by a pair of blockwise unitaries. -/
-noncomputable abbrev unitaryTensorEuclidean (U : (i : ι) → Matrix.unitaryGroup (p i) ℂ) (i : ι × ι) :=
+noncomputable abbrev unitaryTensorEuclidean (U : (i : ι) → Matrix.unitaryGroup (p i) ℂ) (i :
+    ι × ι) :=
 (euclideanSpaceTensor'.symm.trans
-    ((LinearIsometryEquiv.TensorProduct.map (Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv (U i.1))
+    ((LinearIsometryEquiv.TensorProduct.map (Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv
+      (U i.1))
       (Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv (Matrix.unitaryGroup.conj (U i.2)))).trans
     euclideanSpaceTensor'))
 
 omit [Fintype ι] [DecidableEq ι] in
-theorem unitaryTensorEuclidean_apply {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} (i : ι × ι) (x : EuclideanSpace ℂ (p i.1)) (y : EuclideanSpace ℂ (p i.2)) :
+theorem unitaryTensorEuclidean_apply {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} (i :
+    ι × ι) (x : EuclideanSpace ℂ (p i.1)) (y : EuclideanSpace ℂ (p i.2)) :
   (unitaryTensorEuclidean U i) (euclideanSpaceTensor' (R := ℂ) (x ⊗ₜ y))
     = euclideanSpaceTensor' (R := ℂ)
       ((WithLp.toLp 2 ((U i.1 : Matrix _ _ ℂ) *ᵥ x.ofLp)) ⊗ₜ
@@ -1291,7 +1324,8 @@ by
   rfl
 
 omit [Fintype ι] [DecidableEq ι] in
-theorem unitaryTensorEuclidean_apply' {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} (i : ι × ι) (x : EuclideanSpace ℂ (p i.1 × p i.2)) :
+theorem unitaryTensorEuclidean_apply' {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} (i :
+    ι × ι) (x : EuclideanSpace ℂ (p i.1 × p i.2)) :
   (unitaryTensorEuclidean U i) x
     = ∑ j : p i.1 × p i.2, euclideanSpaceTensor' (R := ℂ)
       ((WithLp.toLp 2 ((U i.1 : Matrix _ _ ℂ) *ᵥ (x.prod_choose j).1.ofLp)) ⊗ₜ[ℂ]
@@ -1301,7 +1335,8 @@ by
   rw [← map_sum, ← EuclideanSpace.prod_choose_spec]
 
 omit [Fintype ι] [DecidableEq ι] in
-theorem unitaryTensorEuclidean_symm_apply {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} (i : ι × ι) (x : EuclideanSpace ℂ (p i.1)) (y : EuclideanSpace ℂ (p i.2)) :
+theorem unitaryTensorEuclidean_symm_apply {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} (i :
+    ι × ι) (x : EuclideanSpace ℂ (p i.1)) (y : EuclideanSpace ℂ (p i.2)) :
   (unitaryTensorEuclidean U i).symm (euclideanSpaceTensor' (R := ℂ) (x ⊗ₜ y))
     = euclideanSpaceTensor' (R := ℂ)
       ((WithLp.toLp 2 (((U i.1)ᴴ : Matrix _ _ ℂ) *ᵥ x.ofLp)) ⊗ₜ
@@ -1311,8 +1346,7 @@ by
     LinearIsometryEquiv.symm_apply_apply]
   simp only [LinearIsometryEquiv.piLpCongrRight_symm, LinearIsometryEquiv.symm_symm,
     LinearIsometryEquiv.TensorProduct.map_symm_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toLinearEquiv, EmbeddingLike.apply_eq_iff_eq,
-    directSumTensorToFun_apply]
+      EmbeddingLike.apply_eq_iff_eq]
   apply congrArg₂ (fun a b => a ⊗ₜ[ℂ] b)
   · exact Matrix.UnitaryGroup.toEuclideanLinearIsometryEquiv_apply' (U i.1) x
   · simpa [Matrix.unitaryGroup.conj_coe, Matrix.conj_conjTranspose] using
@@ -1343,12 +1377,11 @@ theorem Matrix.kronecker_mulVec_euclideanSpaceTensor' {n m : Type*} [Fintype n] 
       ((WithLp.toLp 2 (A *ᵥ x.ofLp)) ⊗ₜ (WithLp.toLp 2 (B *ᵥ y.ofLp)))) :=
 by
   ext a
-  simp only [Matrix.mulVec, dotProduct, kroneckerMap_apply, WithLp.equiv,
-    euclideanSpaceTensor'_apply]
-
+  simp only [Matrix.mulVec, dotProduct, kroneckerMap_apply, WithLp.equiv]
   calc
     ∑ x_1 : n × m,
-    A a.1 x_1.1 * B a.2 x_1.2 * (Equiv.refl (WithLp 2 (n × m → ℂ))) (euclideanSpaceTensor' (R:=ℂ) (x ⊗ₜ[ℂ] y)) x_1
+    A a.1 x_1.1 * B a.2 x_1.2 * (Equiv.refl (WithLp 2 (n × m →
+      ℂ))) (euclideanSpaceTensor' (R:=ℂ) (x ⊗ₜ[ℂ] y)) x_1
       = ∑ x_1, A a.1 x_1.1 * B a.2 x_1.2 * ((euclideanSpaceTensor' (R := ℂ) (x ⊗ₜ[ℂ] y)) x_1) := rfl
     _ = ∑ x_1 : n × m, A a.1 x_1.1 * B a.2 x_1.2 * (x x_1.1 * y x_1.2) := by
       simp only [euclideanSpaceTensor'_apply]
@@ -1365,7 +1398,7 @@ theorem StarAlgEquiv.piCongrRight_apply_includeBlock {ι : Type*}
   {p : ι → Type*} [∀ i, Fintype (p i)] [DecidableEq ι]
   (f : Π i, Matrix (p i) (p i) ℂ ≃⋆ₐ[ℂ] Matrix (p i) (p i) ℂ)
   (i : ι) (x : Matrix (p i) (p i) ℂ) :
-  (StarAlgEquiv.piCongrRight (λ a => f a)) (Matrix.includeBlock x)
+  (StarAlgEquiv.piCongrRight (fun a => f a)) (Matrix.includeBlock x)
     = Matrix.includeBlock ((f i) x) :=
 by
   ext
@@ -1376,7 +1409,7 @@ theorem Matrix.innerAutStarAlg_apply_vecMulVec {n 𝕜 : Type*} [Fintype n] [Fie
   [DecidableEq n] (U : ↥(Matrix.unitaryGroup n 𝕜)) (x y : n → 𝕜) :
   (Matrix.innerAutStarAlg U) (vecMulVec x y) = vecMulVec (U *ᵥ x) (Uᴴᵀ *ᵥ y) :=
 by
-  simp only [innerAutStarAlg_apply, unitary.coe_star, mul_vecMulVec, vecMulVec_mul,
+  simp only [innerAutStarAlg_apply, Unitary.coe_star, mul_vecMulVec, vecMulVec_mul,
     star_eq_conjTranspose]
   rw [← Matrix.mulVec_transpose]
   rfl
@@ -1385,8 +1418,8 @@ theorem Matrix.innerAutStarAlg_apply_vecMulVec_star {n 𝕜 : Type*} [Fintype n]
   (Matrix.innerAutStarAlg U) (vecMulVec x (star y))
     = vecMulVec (U *ᵥ x) (star (U *ᵥ y)) :=
 by
-  simp only [innerAutStarAlg_apply, unitary.coe_star, mul_vecMulVec, vecMulVec_mul,
-    star_eq_conjTranspose, star_mulVec, conj]
+  simp only [innerAutStarAlg_apply, Unitary.coe_star, mul_vecMulVec, vecMulVec_mul,
+    star_eq_conjTranspose, star_mulVec]
 theorem Matrix.innerAutStarAlg_apply_star_vecMulVec {n 𝕜 : Type*} [Fintype n] [Field 𝕜] [StarRing 𝕜]
   [DecidableEq n] (U : ↥(Matrix.unitaryGroup n 𝕜)) (x y : n → 𝕜) :
   (Matrix.innerAutStarAlg U) (vecMulVec (star x) y)
@@ -1421,11 +1454,14 @@ by
     Matrix.innerAut.map_pow]
   simp_rw [pow_two, Matrix.PosDef.rpow_mul_rpow, add_halves, Matrix.PosDef.rpow_one_eq_self]
 
-theorem PiMat.modAut :
+omit [Fintype ι] [DecidableEq ι] in
+theorem PiMat.modAut [Finite ι] :
   withPiQuantum[φ]
     ∀ (r : ℝ) (x : PiMat ℂ ι p) (i : ι),
       modAut r x i = sig (hφ i) r (x i) :=
 by
+  classical
+  letI := Fintype.ofFinite ι
   withPiQuantumCtx[φ]
   intro r x i
   rfl
@@ -1440,29 +1476,36 @@ by
   simp only [← Coalgebra.inner_eq_counit']
   rw [@Module.Dual.IsFaithfulPosMap.inner_eq, conjTranspose_one, one_mul]
 
+omit [DecidableEq ι] in
 theorem PiMat.counit_eq_dual :
+  letI : DecidableEq ι := Classical.decEq ι
   withPiQuantum[φ]
     (Coalgebra.counit (R := ℂ) (A := PiMat ℂ ι p)) = Module.Dual.pi φ :=
 by
+  classical
   withPiQuantumCtx[φ]
   apply LinearMap.ext
   intro x
   rw [← congrFun (QuantumSet.inner_eq_counit' (B := PiMat ℂ ι p)) x]
   rw [Module.Dual.pi.IsFaithfulPosMap.inner_eq, star_one, one_mul]
 
+omit [DecidableEq ι] in
 theorem modAut_eq_id_iff :
+  letI : DecidableEq ι := Classical.decEq ι
   withPiQuantum[φ]
     ∀ r : ℝ,
       (modAut r : PiMat ℂ ι p ≃ₐ[ℂ] PiMat ℂ ι p) = 1
         ↔ r = 0 ∨ Module.Dual.IsTracial
           (Coalgebra.counit (R := ℂ) (A := PiMat ℂ ι p)) :=
 by
+  classical
   withPiQuantumCtx[φ]
   intro r
   rw [PiMat.counit_eq_dual]
   calc (modAut r : PiMat ℂ ι p ≃ₐ[ℂ] PiMat ℂ ι p) = 1
       ↔ ∀ i, sig (hφ i) r = 1 := by
-        simp [AlgEquiv.ext_iff, funext_iff, PiMat.modAut]
+        simp only [AlgEquiv.ext_iff, AlgEquiv.one_apply, funext_iff, PiMat.modAut,
+          sig_apply]
         constructor
         · intro h i a
           simpa [Matrix.includeBlock_apply_same] using h (Matrix.includeBlock a) i
@@ -1474,10 +1517,11 @@ by
 theorem unitary.mul_inj {A : Type*} [Monoid A] [StarMul A] (U : ↥(unitary A)) (x y : A) :
   ↑U * x = ↑U * y ↔ x = y :=
 by
-  rw [← unitary.val_toUnits_apply]
-  exact (Units.mul_right_inj (toUnits U))
+  rw [← Unitary.val_toUnits_apply]
+  exact (Units.mul_right_inj (Unitary.toUnits U))
 
-theorem piInnerAut_modAut_commutes_of :
+omit [Fintype ι] [DecidableEq ι] in
+theorem piInnerAut_modAut_commutes_of [Finite ι] :
   withPiQuantum[φ]
     ∀ {U : (i : ι) → Matrix.unitaryGroup (p i) ℂ} {r : ℝ},
       (∀ i, (Matrix.innerAutStarAlg (U i)) ((hφ i).matrixIsPosDef.rpow r)
@@ -1488,7 +1532,12 @@ by
   simp only [Matrix.innerAutStarAlg_apply', unitary.mul_inv_eq_iff] at h
   intro x
   funext i
-  simp [piInnerAut, modAut, sig_apply]
+  classical
+  letI := Fintype.ofFinite ι
+  simp only [StarAlgEquiv.piCongrRight_apply, Unitary.conjStarAlgAut_apply]
+  rw [PiMat.modAut, PiMat.modAut]
+  simp only [piInnerAut, StarAlgEquiv.piCongrRight_apply, Unitary.conjStarAlgAut_apply,
+    sig_apply, neg_neg]
   let R := (hφ i).matrixIsPosDef.rpow r
   let Rn := (hφ i).matrixIsPosDef.rpow (-r)
   let Umat : Matrix (p i) (p i) ℂ := U i
@@ -1538,7 +1587,7 @@ theorem QuantumGraph.Real.PiMat_applyConjInnerAut :
             (j : (Fin (Module.finrank ℂ (hA.PiMat_submodule i)))) →
               (((p i.1) × (p i.2)) →
                 (((EuclideanSpace ℂ (p i.1)) × (EuclideanSpace ℂ (p i.2)))))
-            := λ i j => (hA.PiMat_orthonormalBasis i j : EuclideanSpace ℂ _).prod_choose
+            := fun i j => (hA.PiMat_orthonormalBasis i j : EuclideanSpace ℂ _).prod_choose
           (piInnerAut U).toLinearMap ∘ₗ A ∘ₗ LinearMap.adjoint (piInnerAut U).toLinearMap
             = ∑ i : ι × ι, ∑ j, ∑ s : (p i.1 × p i.2), ∑ l : (p i.1 × p i.2),
             rankOne ℂ (Matrix.includeBlock
@@ -1558,8 +1607,8 @@ by
     LinearMap.rankOne_comp', LinearMap.comp_rankOne, StarAlgEquiv.toLinearMap_apply, hU₂]
   repeat apply Finset.sum_congr rfl; intro _ _
   congr 2
-  . rw [StarAlgEquiv.piCongrRight_apply_includeBlock, Matrix.innerAutStarAlg_apply_vecMulVec_star]
-  . rw [StarAlgEquiv.piCongrRight_apply_includeBlock, Matrix.vecMulVec_conj, star_star,
+  · rw [StarAlgEquiv.piCongrRight_apply_includeBlock, Matrix.innerAutStarAlg_apply_vecMulVec_star]
+  · rw [StarAlgEquiv.piCongrRight_apply_includeBlock, Matrix.vecMulVec_conj, star_star,
     Matrix.innerAutStarAlg_apply_star_vecMulVec]
 
 open QuantumSet in
@@ -1581,25 +1630,25 @@ by
   simp_rw [QuantumGraph.Real.PiMat_submoduleOrthogonalProjection]
   rw [QuantumGraph.Real.PiMat_applyConjInnerAut hA hU]
   simp only [ContinuousLinearMap.coe_sum, map_sum, Psi_apply, Psi_toFun_apply,
-    Finset.sum_apply, StarAlgEquiv.lTensor_tmul, PiMatTensorProductEquiv_tmul,
-    TensorProduct.map_tmul, PiMat_toEuclideanLM, StarAlgEquiv.piCongrRight_apply]
+    Finset.sum_apply, StarAlgEquiv.lTensor_tmul, PiMatTensorProductEquiv_tmul, PiMat_toEuclideanLM,
+      StarAlgEquiv.piCongrRight_apply]
   simp only [LinearMap.sum_comp, LinearMap.comp_sum]
   simp only [modAut_apply_modAut, add_neg_cancel, starAlgebra.modAut_zero, AlgEquiv.one_apply,
     PiMat.transposeStarAlgEquiv_symm_apply, MulOpposite.unop_op]
   simp only [LinearMap.comp_rankOne, LinearMap.rankOne_comp, LinearIsometryEquiv.linearMap_adjoint,
     LinearIsometryEquiv.symm_symm]
   simp only [LinearIsometryEquiv.coe_toLinearEquiv, LinearEquiv.coe_toLinearMap,
-    LinearMap.coe_toContinuousLinearMap, unitaryTensorEuclidean_apply', EuclideanSpaceTensor_apply_eq_reshape_vecMulVec]
-  simp only [Matrix.reshape_aux_star, Matrix.includeBlock_apply, Matrix.dite_kronecker, Pi.star_apply,
-    star_dite, star_zero, apply_dite, Matrix.kronecker_dite, Matrix.transpose_zero,
+    LinearMap.coe_toContinuousLinearMap, unitaryTensorEuclidean_apply']
+  simp only [Matrix.includeBlock_apply, Matrix.dite_kronecker, Pi.star_apply, star_zero,
+    apply_dite, Matrix.transpose_zero,
     map_zero, Matrix.kronecker_zero]
   rw [Fintype.sum_eq_single i]
   · simp only [↓reduceDIte]
     simp only [
       eq_mp_eq_cast, cast_eq,
-      Matrix.star_eq_conjTranspose, Matrix.conj_conjTranspose, Matrix.transpose_conj_eq_conjTranspose,
+      Matrix.star_eq_conjTranspose, Matrix.conj_conjTranspose,
       Matrix.transpose_transpose, Matrix.vecMulVec_kronecker_vecMulVec,
-      Matrix.toEuclideanStarAlgEquiv_coe, Matrix.vecMulVec_toEuclideanLin]
+      Matrix.toEuclideanStarAlgEquiv_coe]
     congr
     ext
     simp only [rankOne_lm_sum_sum]
@@ -1633,7 +1682,8 @@ lemma LinearMap.proj_apply_includeBlock
     if h : j = i then by rw [← h]; exact x else 0 :=
 by simp [Matrix.includeBlock_apply]
 
-lemma _root_.PiMat.modAut_includeBlock :
+omit [Fintype ι] in
+lemma _root_.PiMat.modAut_includeBlock [Finite ι] :
   withPiQuantum[φ]
     ∀ (r : ℝ) (j : ι) (x : Matrix (p j) (p j) ℂ),
       (modAut r) (Matrix.includeBlock x)
@@ -1641,6 +1691,8 @@ lemma _root_.PiMat.modAut_includeBlock :
           Matrix.includeBlock
             ((modAut r : Matrix (p j) (p j) ℂ ≃ₐ[ℂ] Matrix (p j) (p j) ℂ) x)) :=
 by
+  classical
+  letI := Fintype.ofFinite ι
   withPiQuantumCtx[φ]
   intro r j x
   ext i
@@ -1649,7 +1701,8 @@ by
     simp [Matrix.includeBlock_apply_same, modAut, sig_apply]
   · simp [PiMat.modAut, Matrix.includeBlock_apply_ne_same _ h]
 
-lemma _root_.PiMat.modAut_proj :
+omit [Fintype ι] [DecidableEq ι] in
+lemma _root_.PiMat.modAut_proj [Finite ι] :
   withPiQuantum[φ]
     ∀ (r : ℝ) (j : ι) (x : PiMat ℂ ι p),
       (letI : starAlgebra (Matrix (p j) (p j) ℂ) := Matrix.isStarAlgebra (φ := φ j);
@@ -1657,6 +1710,8 @@ lemma _root_.PiMat.modAut_proj :
           (LinearMap.proj (R := ℂ) j x)))
         = LinearMap.proj (R := ℂ) j (modAut r x) :=
 by
+  classical
+  letI := Fintype.ofFinite ι
   withPiQuantumCtx[φ]
   intro r j x
   change sig (hφ j) r (x j) = modAut r x j
@@ -1677,7 +1732,8 @@ theorem QuantumGraph.Real.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_z
     letI : ∀ i, _root_.NormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
       fun i => Module.Dual.NormedAddCommGroup (φ i)
     letI : ∀ i, _root_.TopologicalSpace (Matrix (p i) (p i) ℂ) :=
-      fun i => (Module.Dual.NormedAddCommGroup (φ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+      fun i => (Module.Dual.NormedAddCommGroup (φ
+        i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
     letI : ∀ i, _root_.SeminormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
       fun i => (Module.Dual.NormedAddCommGroup (φ i)).toSeminormedAddCommGroup
     letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (p i) (p i) ℂ) :=
@@ -1699,7 +1755,8 @@ by
   letI : ∀ i, _root_.NormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
     fun i => Module.Dual.NormedAddCommGroup (φ i)
   letI : ∀ i, _root_.TopologicalSpace (Matrix (p i) (p i) ℂ) :=
-    fun i => (Module.Dual.NormedAddCommGroup (φ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    fun i => (Module.Dual.NormedAddCommGroup (φ
+      i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : ∀ i, _root_.SeminormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
     fun i => (Module.Dual.NormedAddCommGroup (φ i)).toSeminormedAddCommGroup
   letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (p i) (p i) ℂ) :=
@@ -1709,12 +1766,14 @@ by
     QuantumGraph.Real.PiMat_submoduleOrthogonalProjection]
   obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne A
   simp only [map_sum, Finset.sum_apply, QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
-    StarAlgEquiv.lTensor_tmul, PiMatTensorProductEquiv_tmul, PiMat_toEuclideanLM, StarAlgEquiv.piCongrRight_apply]
+    StarAlgEquiv.lTensor_tmul, PiMatTensorProductEquiv_tmul, PiMat_toEuclideanLM,
+      StarAlgEquiv.piCongrRight_apply]
   rw [← map_sum, LinearEquiv.map_eq_zero_iff,
     ← map_sum, StarAlgEquiv.map_eq_zero_iff]
   simp only [PiMat.transposeStarAlgEquiv_symm_apply, MulOpposite.unop_op]
   rw [← Function.Injective.eq_iff (QuantumSet.Psi 0 (1/2)).injective,
-    ← Function.Injective.eq_iff (AlgEquiv.lTensor _ (Matrix.transposeAlgEquiv _ _ _).symm).injective,
+    ← Function.Injective.eq_iff (AlgEquiv.lTensor _ (Matrix.transposeAlgEquiv _ _
+      _).symm).injective,
     ← Function.Injective.eq_iff tensorToKronecker.injective]
   simp only [LinearMap.sum_comp, LinearMap.comp_sum,
     LinearMap.rankOne_comp', LinearMap.comp_rankOne, map_sum,
@@ -1728,7 +1787,8 @@ theorem QuantumGraph.Real.PiMat_submodule_eq_top_iff_proj_comp_adjoint_proj_eq_r
     letI : ∀ i, _root_.NormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
       fun i => Module.Dual.NormedAddCommGroup (φ i)
     letI : ∀ i, _root_.TopologicalSpace (Matrix (p i) (p i) ℂ) :=
-      fun i => (Module.Dual.NormedAddCommGroup (φ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+      fun i => (Module.Dual.NormedAddCommGroup (φ
+        i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
     letI : ∀ i, _root_.SeminormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
       fun i => (Module.Dual.NormedAddCommGroup (φ i)).toSeminormedAddCommGroup
     letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (p i) (p i) ℂ) :=
@@ -1751,7 +1811,8 @@ by
   letI : ∀ i, _root_.NormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
     fun i => Module.Dual.NormedAddCommGroup (φ i)
   letI : ∀ i, _root_.TopologicalSpace (Matrix (p i) (p i) ℂ) :=
-    fun i => (Module.Dual.NormedAddCommGroup (φ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    fun i => (Module.Dual.NormedAddCommGroup (φ
+      i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : ∀ i, _root_.SeminormedAddCommGroup (Matrix (p i) (p i) ℂ) :=
     fun i => (Module.Dual.NormedAddCommGroup (φ i)).toSeminormedAddCommGroup
   letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (p i) (p i) ℂ) :=
@@ -1761,13 +1822,15 @@ by
     QuantumGraph.Real.PiMat_submoduleOrthogonalProjection]
   obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne A
   simp only [map_sum, Finset.sum_apply, QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
-    StarAlgEquiv.lTensor_tmul, PiMatTensorProductEquiv_tmul, PiMat_toEuclideanLM, StarAlgEquiv.piCongrRight_apply]
+    StarAlgEquiv.lTensor_tmul, PiMatTensorProductEquiv_tmul, PiMat_toEuclideanLM,
+      StarAlgEquiv.piCongrRight_apply]
   rw [← map_sum, ← ContinuousLinearMap.toLinearMapAlgEquiv_symm_apply,
     map_eq_one_iff _ (AlgEquiv.injective _),
     ← map_sum, map_eq_one_iff _ (StarAlgEquiv.injective _)]
   simp only [PiMat.transposeStarAlgEquiv_symm_apply, MulOpposite.unop_op]
   rw [← Function.Injective.eq_iff (QuantumSet.Psi 0 (1/2)).injective,
-    ← Function.Injective.eq_iff (AlgEquiv.lTensor _ (Matrix.transposeAlgEquiv _ _ _).symm).injective,
+    ← Function.Injective.eq_iff (AlgEquiv.lTensor _ (Matrix.transposeAlgEquiv _ _
+      _).symm).injective,
     ← Function.Injective.eq_iff tensorToKronecker.injective]
   simp only [LinearMap.sum_comp, LinearMap.comp_sum,
     LinearMap.rankOne_comp', LinearMap.comp_rankOne, map_sum,
@@ -1784,7 +1847,7 @@ theorem Matrix.trace_eq_linearMap_trace
     (Matrix.toEuclideanLin y) :=
 by
   rw [LinearMap.trace_eq_matrix_trace ℂ (PiLp.basisFun 2 ℂ n)]
-  simp only [Matrix.toEuclideanLin_eq_toLin, LinearMap.toMatrix_toLin]
+  simp only [Matrix.toLpLin_eq_toLin, LinearMap.toMatrix_toLin]
 
 lemma Matrix.trace_piMatTensorProductEquiv_apply_lTensor_transpose
   {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -1890,7 +1953,8 @@ noncomputable def
   EuclideanSpace ℂ (n × m) ≃ₗᵢ[ℂ] EuclideanSpace ℂ (m × n) :=
 (euclideanSpaceTensor'.symm.trans (TensorProduct.comm_linearIsometryEquiv ℂ _ _)).trans
   (euclideanSpaceTensor')
-lemma EuclideanSpace.tensor_comm_apply {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+lemma EuclideanSpace.tensor_comm_apply {n m :
+    Type*} [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
   (x : EuclideanSpace ℂ n) (y : EuclideanSpace ℂ m) :
   tensor_comm (euclideanSpaceTensor' (R := ℂ) (x ⊗ₜ[ℂ] y))
     = euclideanSpaceTensor' (R := ℂ) (y ⊗ₜ[ℂ] x) :=

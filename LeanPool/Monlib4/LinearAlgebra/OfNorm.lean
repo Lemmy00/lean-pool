@@ -399,6 +399,37 @@ theorem IsBilinearMapProd.eq_zero_add_self {𝕜 : Type _} [NormedField 𝕜] {E
     {f : E × F → G} (h : IsBilinearMapProd 𝕜 f)
     (xy : E × F) : f xy = f (xy.1, 0) + f xy := by simp_rw [h.zero_right, zero_add]
 
+/-- Compatibility alias for the curried linear map associated to a bilinear map. -/
+def IsBilinearMap.toLmLm {𝕜 : Type _} [CommSemiring 𝕜] {E : Type _}
+    [AddCommMonoid E] [Module 𝕜 E] {F : Type _} [AddCommMonoid F]
+    [Module 𝕜 F] {G : Type _} [AddCommMonoid G] [Module 𝕜 G]
+    {f : E → F → G} (hf : IsBilinearMap 𝕜 f) :
+    E →ₗ[𝕜] F →ₗ[𝕜] G :=
+  hf.toLinearMap
+
+theorem IsBilinearMap.zero_left {𝕜 : Type _} [CommSemiring 𝕜] {E : Type _}
+    [AddCommMonoid E] [Module 𝕜 E] {F : Type _} [AddCommMonoid F]
+    [Module 𝕜 F] {G : Type _} [AddCommMonoid G] [Module 𝕜 G]
+    {f : E → F → G} (h : IsBilinearMap 𝕜 f) (y : F) :
+    f 0 y = 0 := by
+  have hzero : h.toLinearMap 0 = 0 := h.toLinearMap.map_zero
+  exact congrFun (congrArg DFunLike.coe hzero) y
+
+theorem IsBilinearMap.zero_right {𝕜 : Type _} [CommSemiring 𝕜] {E : Type _}
+    [AddCommMonoid E] [Module 𝕜 E] {F : Type _} [AddCommMonoid F]
+    [Module 𝕜 F] {G : Type _} [AddCommMonoid G] [Module 𝕜 G]
+    {f : E → F → G} (h : IsBilinearMap 𝕜 f) (x : E) :
+    f x 0 = 0 :=
+  (h.toLinearMap x).map_zero
+
+theorem IsBilinearMap.eq_zero_add_self {𝕜 : Type _} [CommSemiring 𝕜]
+    {E : Type _} [AddCommMonoid E] [Module 𝕜 E] {F : Type _}
+    [AddCommMonoid F] [Module 𝕜 F] {G : Type _} [AddCommMonoid G]
+    [Module 𝕜 G] {f : E → F → G} (h : IsBilinearMap 𝕜 f)
+    (x : E) (y : F) :
+    f x y = f x 0 + f x y := by
+  rw [h.zero_right, zero_add]
+
 open scoped ComplexOrder
 
 theorem IsContinuousLinearMap.to_is_lm {𝕜 X Y : Type _} [NormedField 𝕜] [NormedAddCommGroup X]

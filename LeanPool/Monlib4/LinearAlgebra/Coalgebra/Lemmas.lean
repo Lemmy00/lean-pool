@@ -217,6 +217,13 @@ lemma lid_tensor_toLinearMap {A B : Type*} [AddCommMonoid A]
 by
   simpa [LinearEquiv.coe_trans] using
     congrArg LinearEquiv.toLinearMap (TensorProduct.lid_tensor (R := R) (M := A) (N := B))
+
+lemma lid_tensor {A B : Type*} [AddCommMonoid A]
+  [Module R A] [AddCommMonoid B] [Module R B] :
+  (τ (A ⊗[R] B)).toLinearMap
+    = rT _ (τ _).toLinearMap ∘ₗ (LinearEquiv.symm (ϰ _ _ _)).toLinearMap :=
+lid_tensor_toLinearMap
+
 lemma rTensor_comp_lTensor' {A B C D : Type*}
   [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
   [Module R A] [Module R B] [Module R C] [Module R D] (x : A →ₗ[R] B) (y : C →ₗ[R] D) :

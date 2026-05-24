@@ -159,7 +159,8 @@ theorem sig_apply_pos_def_matrix [hφ : Module.Dual.IsFaithfulPosMap φ] (t s : 
     hφ.sig t (hφ.matrixIsPosDef.rpow s) = hφ.matrixIsPosDef.rpow s := by
   simp_rw [Module.Dual.IsFaithfulPosMap.sig_apply, PosDef.rpow_mul_rpow, neg_add_cancel_comm]
 
-theorem sig_apply_pos_def_matrix' [hφ : Module.Dual.IsFaithfulPosMap φ] (t : ℝ) : hφ.sig t φ.matrix = φ.matrix :=
+theorem sig_apply_pos_def_matrix' [hφ : Module.Dual.IsFaithfulPosMap φ] (t : ℝ) :
+    hφ.sig t φ.matrix = φ.matrix :=
   by
   nth_rw 2 [← PosDef.rpow_one_eq_self hφ.matrixIsPosDef]
   rw [← sig_apply_pos_def_matrix t (1 : ℝ), PosDef.rpow_one_eq_self]
@@ -202,6 +203,8 @@ open scoped ComplexOrder
 
 open scoped Functional
 
+open scoped Classical in
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.inner_coord' [hψ : ∀ i, (ψ i).IsFaithfulPosMap] {i : k}
     (ij : s i × s i) (x : PiMat ℂ k s) :
     ⟪Module.Dual.pi.IsFaithfulPosMap.basis (fun i => (hψ i)) ⟨i, ij⟩, x⟫_ℂ =
@@ -212,10 +215,14 @@ theorem Module.Dual.pi.IsFaithfulPosMap.inner_coord' [hψ : ∀ i, (ψ i).IsFait
     Module.Dual.pi.IsFaithfulPosMap.includeBlock_left_inner,
     Module.Dual.IsFaithfulPosMap.inner_coord]
 
-theorem Module.Dual.pi.IsFaithfulPosMap.map_star (hψ : ∀ i, (ψ i).IsFaithfulPosMap) (x : PiMat ℂ k s) :
+open scoped Classical in
+omit [DecidableEq k] [(i : k) → DecidableEq (s i)] in
+theorem Module.Dual.pi.IsFaithfulPosMap.map_star (hψ : ∀ i,
+  (ψ i).IsFaithfulPosMap) (x : PiMat ℂ k s) :
     pi ψ (star x) = star (pi ψ x) :=
   pi.IsPosMap.isReal (fun i => (hψ i).1) x
 
+omit [DecidableEq k] in
 theorem Nontracial.Pi.unit_adjoint_eq [hψ : ∀ i, (ψ i).IsFaithfulPosMap] :
     withPiInner[ψ]
     (LinearMap.adjoint (Algebra.linearMap ℂ (PiMat ℂ k s) : ℂ →ₗ[ℂ] PiMat ℂ k s) = pi ψ) := by
@@ -233,17 +240,20 @@ noncomputable def Pi.PosDef.rpow {k : Type _} {s : k → Type _} [∀ i, Fintype
     [∀ i, DecidableEq (s i)] {a : PiMat ℂ k s} (ha : ∀ i, (a i).PosDef) (r : ℝ) :=
   fun i => (ha i).rpow r
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.PosDef.rpow_hMul_rpow {a : PiMat ℂ k s} (ha : ∀ i, (a i).PosDef) (r₁ r₂ : ℝ) :
     Pi.PosDef.rpow ha r₁ * Pi.PosDef.rpow ha r₂ = Pi.PosDef.rpow ha (r₁ + r₂) :=
   by
   ext1 i
   simp only [Pi.mul_apply, Pi.PosDef.rpow, PosDef.rpow_mul_rpow]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.PosDef.rpow_zero {a : PiMat ℂ k s} (ha : ∀ i, (a i).PosDef) : Pi.PosDef.rpow ha 0 = 1 :=
   by
   ext x i j
   simp only [Pi.PosDef.rpow, Matrix.PosDef.rpow_zero, Pi.one_apply]
 
+omit [DecidableEq k] in
 theorem basis_repr_apply' [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     (x : PiMat ℂ k s) (ijk : Σ i, s i × s i) :
     let hQ := Module.Dual.pi.IsFaithfulPosMap.matrixIsPosDef hψ
@@ -255,21 +265,24 @@ by
     ← Module.Dual.IsFaithfulPosMap.orthonormalBasis_apply]
   rw [Module.Dual.IsFaithfulPosMap.inner_coord]
 
+open scoped Classical in
 theorem Module.Dual.pi.IsFaithfulPosMap.includeBlock_right_inner {k : Type _} [Fintype k]
-    [DecidableEq k] {s : k → Type _} [∀ i : k, Fintype (s i)] [∀ i : k, DecidableEq (s i)]
+    [DecidableEq k] {s : k → Type _} [∀ i : k, Fintype (s i)]
     {ψ : ∀ i : k, Module.Dual ℂ (Matrix (s i) (s i) ℂ)} [hψ : ∀ i : k, (ψ i).IsFaithfulPosMap]
     {i : k} (y : ∀ j : k, Matrix (s j) (s j) ℂ) (x : Matrix (s i) (s i) ℂ) :
     withPiInner[ψ] (⟪y, includeBlock x⟫_ℂ = ⟪y i, x⟫_ℂ) := by
   letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
   letI : _root_.TopologicalSpace (PiMat ℂ k s) :=
-    (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    (Module.Dual.PiNormedAddCommGroup (φ :=
+      ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : _root_.SeminormedAddCommGroup (PiMat ℂ k s) :=
     (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toSeminormedAddCommGroup
   letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
   letI : ∀ i, _root_.NormedAddCommGroup (Matrix (s i) (s i) ℂ) :=
     fun i => Module.Dual.NormedAddCommGroup (ψ i)
   letI : ∀ i, _root_.TopologicalSpace (Matrix (s i) (s i) ℂ) :=
-    fun i => (Module.Dual.NormedAddCommGroup (ψ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    fun i => (Module.Dual.NormedAddCommGroup (ψ
+      i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : ∀ i, _root_.SeminormedAddCommGroup (Matrix (s i) (s i) ℂ) :=
     fun i => (Module.Dual.NormedAddCommGroup (ψ i)).toSeminormedAddCommGroup
   letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (s i) (s i) ℂ) :=
@@ -286,6 +299,8 @@ local notation "|" x "⟩⟨" y "|" =>
 variable {k₂ : Type _} [Fintype k₂] [DecidableEq k₂] {s₂ : k₂ → Type _} [∀ i, Fintype (s₂ i)]
   [∀ i, DecidableEq (s₂ i)] {ψ₂ : ∀ i, Module.Dual ℂ (Matrix (s₂ i) (s₂ i) ℂ)}
 
+open scoped Classical in
+omit [DecidableEq k₂] [(i : k) → DecidableEq (s i)] [(i : k₂) → DecidableEq (s₂ i)] in
 theorem pi_includeBlock_right_rankOne [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (a : PiMat ℂ k₂ s₂) {i : k}
@@ -302,6 +317,8 @@ theorem pi_includeBlock_right_rankOne [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     fun i => Module.Dual.InnerProductSpace (φ := ψ i)
   simp only [rankOne_apply, pi.IsFaithfulPosMap.includeBlock_left_inner, Pi.smul_apply]
 
+open scoped Classical in
+omit [DecidableEq k] [(i : k) → DecidableEq (s i)] [(i : k₂) → DecidableEq (s₂ i)] in
 theorem pi_includeBlock_left_rankOne [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap] (b : PiMat ℂ k s) {i : k₂}
     (a : Matrix (s₂ i) (s₂ i) ℂ) (c : PiMat ℂ k s) (j : k₂) :
@@ -317,7 +334,7 @@ theorem pi_includeBlock_left_rankOne [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     fun i => Module.Dual.NormedAddCommGroup (ψ₂ i)
   letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (s₂ i) (s₂ i) ℂ) :=
     fun i => Module.Dual.InnerProductSpace (φ := ψ₂ i)
-  simp only [rankOne_apply, pi.IsFaithfulPosMap.includeBlock_left_inner, Pi.smul_apply,
+  simp only [rankOne_apply, Pi.smul_apply,
     includeBlock_apply, smul_dite, smul_zero]
   rfl
 
@@ -330,11 +347,11 @@ noncomputable def Module.Dual.pi.IsFaithfulPosMap.sig (hψ : ∀ i, (ψ i).IsFai
     left_inv := fun x => by
       simp only [← mul_assoc, Pi.PosDef.rpow_hMul_rpow]
       simp only [mul_assoc, Pi.PosDef.rpow_hMul_rpow]
-      simp only [add_neg_self, Pi.PosDef.rpow_zero, one_mul, mul_one, neg_add_self]
+      simp only [add_neg_self, Pi.PosDef.rpow_zero, one_mul, mul_one]
     right_inv := fun x => by
       simp only [← mul_assoc, Pi.PosDef.rpow_hMul_rpow]
       simp only [mul_assoc, Pi.PosDef.rpow_hMul_rpow]
-      simp only [add_neg_self, Pi.PosDef.rpow_zero, one_mul, mul_one, neg_add_self]
+      simp only [Pi.PosDef.rpow_zero, one_mul, mul_one, neg_add_self]
     map_add' := fun x y => by simp only [mul_add, add_mul]
     map_mul' := fun x y => by
       simp_rw [mul_assoc]
@@ -348,6 +365,7 @@ noncomputable def Module.Dual.pi.IsFaithfulPosMap.sig (hψ : ∀ i, (ψ i).IsFai
         Pi.PosDef.rpow_hMul_rpow, neg_add_self, Pi.PosDef.rpow_zero]
         }
 
+omit [Fintype k] [DecidableEq k] in
 @[simp]
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_apply [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (z : ℝ)
     (x : PiMat ℂ k s) :
@@ -356,6 +374,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_apply [hψ : ∀ i, (ψ i).IsFaithfu
         Pi.PosDef.rpow (Module.Dual.pi.IsFaithfulPosMap.matrixIsPosDef hψ) z :=
   rfl
 
+omit [Fintype k] [DecidableEq k] in
 @[simp]
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_symm_apply [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     (z : ℝ) (x : PiMat ℂ k s) :
@@ -364,6 +383,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_symm_apply [hψ : ∀ i, (ψ i).IsFa
         Pi.PosDef.rpow (Module.Dual.pi.IsFaithfulPosMap.matrixIsPosDef hψ) (-z) :=
   rfl
 
+omit [Fintype k] [DecidableEq k] in
 @[simp]
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_symm_eq (hψ : ∀ i, (ψ i).IsFaithfulPosMap)
     (z : ℝ) :
@@ -373,26 +393,29 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_symm_eq (hψ : ∀ i, (ψ i).IsFaith
   simp only [Module.Dual.pi.IsFaithfulPosMap.sig_apply,
     Module.Dual.pi.IsFaithfulPosMap.sig_symm_apply, neg_neg]
 
+omit [Fintype k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_apply_single_block
     (hψ : ∀ i, (ψ i).IsFaithfulPosMap) (z : ℝ) {i : k} (x : ℍ_ i) :
     Module.Dual.pi.IsFaithfulPosMap.sig hψ z (includeBlock x) =
       includeBlock ((hψ i).sig z x) :=
   by
-  simp only [Module.Dual.pi.IsFaithfulPosMap.sig_apply, Module.Dual.IsFaithfulPosMap.sig_apply,
-    Pi.mul_apply]
+  simp only [Module.Dual.pi.IsFaithfulPosMap.sig_apply, Module.Dual.IsFaithfulPosMap.sig_apply]
   simp_rw [hMul_includeBlock, includeBlock_hMul, includeBlock_inj, Pi.PosDef.rpow]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_eq_pi_blocks (hψ : ∀ i, (ψ i).IsFaithfulPosMap)
     (z : ℝ) (x : PiMat ℂ k s) {i : k} :
     (Module.Dual.pi.IsFaithfulPosMap.sig hψ z x) i = (hψ i).sig z (x i) :=
   rfl
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.PosDef.rpow.isPosDef {a : PiMat ℂ k s} (ha : ∀ i, (a i).PosDef) (r : ℝ) :
     ∀ i, ((Pi.PosDef.rpow ha r) i).PosDef := by
   intro i
   simp only [Pi.PosDef.rpow]
   exact Matrix.PosDef.rpow.isPosDef _ _
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.PosDef.rpow.is_self_adjoint {a : PiMat ℂ k s} (ha : ∀ i, (a i).PosDef) (r : ℝ) :
     star (Pi.PosDef.rpow ha r) = Pi.PosDef.rpow ha r :=
   by
@@ -400,6 +423,7 @@ theorem Pi.PosDef.rpow.is_self_adjoint {a : PiMat ℂ k s} (ha : ∀ i, (a i).Po
   simp only [Pi.PosDef.rpow, star_apply, Pi.star_apply]
   exact (Matrix.PosDef.rpow.isPosDef (ha i) r).1.eq
 
+omit [Fintype k] [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_star (hψ : ∀ i, (ψ i).IsFaithfulPosMap) (z : ℝ)
     (x : PiMat ℂ k s) :
     star (Module.Dual.pi.IsFaithfulPosMap.sig hψ z x) =
@@ -408,20 +432,25 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_star (hψ : ∀ i, (ψ i).IsFaithful
   simp_rw [Module.Dual.pi.IsFaithfulPosMap.sig_apply, StarMul.star_mul,
     Pi.PosDef.rpow.is_self_adjoint, mul_assoc, neg_neg]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_apply_sig (hψ : ∀ i, (ψ i).IsFaithfulPosMap)
     (t r : ℝ) (x : PiMat ℂ k s) :
     Module.Dual.pi.IsFaithfulPosMap.sig hψ t (Module.Dual.pi.IsFaithfulPosMap.sig hψ r x) =
       Module.Dual.pi.IsFaithfulPosMap.sig hψ (t + r) x :=
   by
-  simp only [Module.Dual.pi.IsFaithfulPosMap.sig_apply, Pi.PosDef.rpow_hMul_rpow]
+  simp only [Module.Dual.pi.IsFaithfulPosMap.sig_apply]
   simp_rw [← mul_assoc, Pi.PosDef.rpow_hMul_rpow, mul_assoc, Pi.PosDef.rpow_hMul_rpow, neg_add,
     add_comm]
 
-theorem Module.Dual.pi.IsFaithfulPosMap.sig_zero (hψ : ∀ i, (ψ i).IsFaithfulPosMap) (x : PiMat ℂ k s) :
+omit [Fintype k] [DecidableEq k] in
+theorem Module.Dual.pi.IsFaithfulPosMap.sig_zero (hψ : ∀ i,
+  (ψ i).IsFaithfulPosMap) (x : PiMat ℂ k s) :
     Module.Dual.pi.IsFaithfulPosMap.sig hψ 0 x = x := by
   simp only [Module.Dual.pi.IsFaithfulPosMap.sig_apply, Pi.PosDef.rpow_zero, one_mul, mul_one,
     neg_zero]
 
+open scoped Classical in
+omit [DecidableEq k₂] in
 theorem Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_apply'' [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (f : (PiMat ℂ k s) →ₗ[ℂ] PiMat ℂ k₂ s₂) (r : Σ r, s₂ r × s₂ r) (l : Σ r, s r × s r) :
@@ -440,7 +469,10 @@ theorem Module.Dual.pi.IsFaithfulPosMap.toMatrix_apply'' [hψ : ∀ i, (ψ i).Is
         r.1 r.2.1 r.2.2 :=
 toMatrixLinEquiv_apply'' _ _ _
 
-theorem Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_symm_apply' [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
+open scoped Classical in
+omit [DecidableEq k₂] in
+theorem Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_symm_apply' [hψ : ∀ i,
+  (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (x : Matrix (Σ i, s₂ i × s₂ i) (Σ i, s i × s i) ℂ) :
     withPiInner[ψ] (withPiInner[ψ₂]
@@ -460,7 +492,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_symm_apply' [hψ : ∀ 
     pi.IsFaithfulPosMap.basis_apply, ← Module.Dual.IsFaithfulPosMap.basis_apply',
     Finset.sum_sigma_univ]
   simp only [LinearMap.sum_apply, LinearMap.smul_apply, ContinuousLinearMap.coe_coe, rankOne_apply,
-    Finset.sum_apply, Pi.smul_apply, Matrix.sum_apply,
+    Finset.sum_apply, Pi.smul_apply,
     pi.IsFaithfulPosMap.includeBlock_left_inner, Finset.sum_product_univ, Finset.sum_smul,
     smul_smul]
 
@@ -497,17 +529,19 @@ theorem Module.Dual.pi.IsFaithfulPosMap.toMatrix_eq_orthonormalBasis_toMatrix
 lemma _root_.Matrix.toLin_apply_rankOne {𝕜 H₁ H₂ : Type*} [RCLike 𝕜]
   [_root_.NormedAddCommGroup H₁] [_root_.NormedAddCommGroup H₂] [_root_.InnerProductSpace 𝕜 H₁]
   [_root_.InnerProductSpace 𝕜 H₂] {ι₁ ι₂ : Type*} [Fintype ι₁] [DecidableEq ι₁] [Fintype ι₂]
-  [DecidableEq ι₂]
   (b₁ : OrthonormalBasis ι₁ 𝕜 H₁) (b₂ : OrthonormalBasis ι₂ 𝕜 H₂) (x : Matrix ι₂ ι₁ 𝕜) :
   Matrix.toLin b₁.toBasis b₂.toBasis x =
     ∑ i, ∑ j, x i j • (rankOne 𝕜 (b₂ i) (b₁ j)).toLinearMap :=
 by
+  classical
   ext1
   simp_rw [toLin_apply, mulVec, dotProduct, OrthonormalBasis.coe_toBasis_repr_apply,
     OrthonormalBasis.repr_apply_apply, LinearMap.sum_apply, LinearMap.smul_apply,
     ContinuousLinearMap.coe_coe, rankOne_apply, smul_smul, Finset.sum_smul]
   rfl
 
+open scoped Classical in
+omit [DecidableEq k] in
 @[simp]
 lemma Module.Dual.pi.IsFaithfulPosMap.orthonormalBasis_eq_toBasis
   (hψ : ∀ i, (ψ i).IsFaithfulPosMap) :
@@ -524,6 +558,8 @@ by
   simp_rw [OrthonormalBasis.coe_toBasis, pi.IsFaithfulPosMap.orthonormalBasis_apply,
     pi.IsFaithfulPosMap.basis_apply]
 
+open scoped Classical in
+omit [DecidableEq k₂] in
 theorem Module.Dual.pi.IsFaithfulPosMap.linearMap_eq [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (x : (PiMat ℂ k s) →ₗ[ℂ] PiMat ℂ k₂ s₂) :
@@ -572,7 +608,9 @@ noncomputable def Module.Dual.pi.IsFaithfulPosMap.psiToFun' (hψ : ∀ i, (ψ i)
     simp_rw [_root_.map_smul, Matrix.smul_apply, smul_eq_mul, ← smul_smul, ← Finset.smul_sum,
       RingHom.id_apply]
 
-theorem Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_rankOne_apply [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
+omit [DecidableEq k₂] in
+theorem Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_rankOne_apply [hψ : ∀ i,
+  (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (x : PiMat ℂ k₂ s₂) (y : PiMat ℂ k s) :
     withPiInner[ψ] (withPiInner[ψ₂]
@@ -596,7 +634,8 @@ by
   letI : ∀ i, _root_.InnerProductSpace ℂ (Matrix (s₂ i) (s₂ i) ℂ) :=
     fun i => Module.Dual.InnerProductSpace (φ := ψ₂ i)
   ext
-  simp_rw [pi.IsFaithfulPosMap.toMatrixLinEquiv_apply', ContinuousLinearMap.coe_coe, _root_.rankOne_apply,
+  simp_rw [pi.IsFaithfulPosMap.toMatrixLinEquiv_apply', ContinuousLinearMap.coe_coe,
+    _root_.rankOne_apply,
     Pi.smul_apply, Matrix.smul_mul, Matrix.smul_apply,
     Module.Dual.pi.IsFaithfulPosMap.includeBlock_right_inner, ← inner_conj_symm (y _),
     Module.Dual.IsFaithfulPosMap.inner_coord', smul_eq_mul, mul_comm, starRingEnd_apply,
@@ -614,12 +653,14 @@ theorem Pi.IsFaithfulPosMap.ToMatrix.rankOne_apply [hψ : ∀ i, (ψ i).IsFaithf
         i.2 j.2 :=
 Module.Dual.pi.IsFaithfulPosMap.toMatrixLinEquiv_rankOne_apply _ _
 
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.basis_repr_apply_apply
     [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (a : PiMat ℂ k s) (x : Σ i, s i × s i) :
     (Module.Dual.pi.IsFaithfulPosMap.basis hψ).repr a x =
       ((hψ x.1).basis.repr (a x.fst)) x.snd :=
   rfl
 
+omit [DecidableEq k₂] in
 theorem Module.Dual.pi.IsFaithfulPosMap.psiToFun'_apply [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (t r : ℝ) (b : PiMat ℂ k s) (a : PiMat ℂ k₂ s₂) :
@@ -684,12 +725,14 @@ def Pi.transposeAlgEquiv (p : Type _) (n : p → Type _)
       transpose_one]
     rfl
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.transposeAlgEquiv_symm_op_apply (A : PiMat ℂ k s) :
     (Pi.transposeAlgEquiv k s).symm (MulOpposite.op A) = fun i => (A i)ᵀ :=
   rfl
 
 private noncomputable def f₂_equiv :
-    (PiMat ℂ k s) ⊗[ℂ] (PiMat ℂ k s) ≃ₐ[ℂ] (Π i : k × k, Matrix (s i.1) (s i.1) ℂ ⊗[ℂ] Matrix (s i.2) (s i.2) ℂ) :=
+    (PiMat ℂ k s) ⊗[ℂ] (PiMat ℂ k s) ≃ₐ[ℂ] (Π i : k × k,
+      Matrix (s i.1) (s i.1) ℂ ⊗[ℂ] Matrix (s i.2) (s i.2) ℂ) :=
   by
   let this :=
     @directSumTensorAlgEquiv ℂ _ _ _ _ _ _ _ (fun i => Matrix (s i) (s i) ℂ)
@@ -713,7 +756,8 @@ private def f₄_equiv :
 
 /-- The tensor-product equivalence used to pass from block products to block-diagonal matrices. -/
 noncomputable def tensorProductMulOpEquiv :
-    ((PiMat ℂ k s) ⊗[ℂ] (PiMat ℂ k s)ᵐᵒᵖ) ≃ₐ[ℂ] (Π i : k × k, Matrix (s i.1 × s i.2) (s i.1 × s i.2) ℂ) :=
+    ((PiMat ℂ k s) ⊗[ℂ] (PiMat ℂ k s)ᵐᵒᵖ) ≃ₐ[ℂ] (Π i : k × k,
+      Matrix (s i.1 × s i.2) (s i.1 × s i.2) ℂ) :=
   (AlgEquiv.TensorProduct.map (1 : PiMat ℂ k s ≃ₐ[ℂ] PiMat ℂ k s)
         (Pi.transposeAlgEquiv k s : PiMat ℂ k s ≃ₐ[ℂ] (PiMat ℂ k s)ᵐᵒᵖ).symm).trans
     (f₂_equiv.trans f₃_equiv)
@@ -740,6 +784,7 @@ noncomputable def Module.Dual.pi.IsFaithfulPosMap.psiInvFun'
     simp_rw [LinearEquiv.map_smul, Finsupp.smul_apply, smul_eq_mul, ← smul_smul, ← Finset.smul_sum,
       RingHom.id_apply]
 
+omit [DecidableEq k] [DecidableEq k₂] in
 theorem Module.Dual.pi.IsFaithfulPosMap.psiInvFun'_apply [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (t r : ℝ) (x : PiMat ℂ k s) (y : (PiMat ℂ k₂ s₂)ᵐᵒᵖ) :
@@ -758,10 +803,12 @@ theorem Module.Dual.pi.IsFaithfulPosMap.psiInvFun'_apply [hψ : ∀ i, (ψ i).Is
   --   infer_instance
   simp_rw [Module.Dual.pi.IsFaithfulPosMap.psiInvFun', LinearMap.coe_mk,
     AddHom.coe_mk,
-    Basis.tensorProduct_repr_tmul_apply, smul_eq_mul, mul_comm, ← rankOne_lm_smul_smul, ← rankOne_lm_sum_sum, ←
+    Basis.tensorProduct_repr_tmul_apply, smul_eq_mul, mul_comm, ← rankOne_lm_smul_smul,
+      ← rankOne_lm_sum_sum, ←
     _root_.map_smul, ← star_smul, Basis.mulOpposite_repr_apply, ← map_sum, ← star_sum,
     Basis.sum_repr]
 
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.Psi_left_inv [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (t r : ℝ) (x : PiMat ℂ k s) (y : PiMat ℂ k₂ s₂) :
@@ -780,6 +827,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.Psi_left_inv [hψ : ∀ i, (ψ i).IsFait
     Module.Dual.pi.IsFaithfulPosMap.sig_apply_sig, neg_add_self,
     Module.Dual.pi.IsFaithfulPosMap.sig_zero]
 
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.Psi_right_inv [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   [hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap]
     (t r : ℝ) (x : PiMat ℂ k s) (y : (PiMat ℂ k₂ s₂)ᵐᵒᵖ) :
@@ -797,7 +845,8 @@ theorem Module.Dual.pi.IsFaithfulPosMap.Psi_right_inv [hψ : ∀ i, (ψ i).IsFai
   simp_rw [LinearEquiv.coe_coe, Module.Dual.pi.IsFaithfulPosMap.sig_apply_sig, add_neg_self,
     Module.Dual.pi.IsFaithfulPosMap.sig_zero, star_star, op_apply, MulOpposite.op_unop]
 
-/-- Linear equivalence between linear maps and tensor products for faithful positive block functionals. -/
+/-- Linear equivalence between linear maps and tensor products for faithful positive block
+  functionals. -/
 @[simps]
 noncomputable def Module.Dual.pi.IsFaithfulPosMap.psi (hψ : ∀ i, (ψ i).IsFaithfulPosMap)
   (hψ₂ : ∀ i, (ψ₂ i).IsFaithfulPosMap)
@@ -809,14 +858,16 @@ noncomputable def Module.Dual.pi.IsFaithfulPosMap.psi (hψ : ∀ i, (ψ i).IsFai
       letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
       letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
       letI : _root_.NormedAddCommGroup (PiMat ℂ k₂ s₂) := Module.Dual.PiNormedAddCommGroup (φ := ψ₂)
-      letI : _root_.InnerProductSpace ℂ (PiMat ℂ k₂ s₂) := Module.Dual.pi.InnerProductSpace (φ := ψ₂)
+      letI : _root_.InnerProductSpace ℂ (PiMat ℂ k₂ s₂) := Module.Dual.pi.InnerProductSpace (φ :=
+        ψ₂)
       obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne x
       simp only [map_sum, Module.Dual.pi.IsFaithfulPosMap.Psi_left_inv]
     right_inv := fun x => by
       letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
       letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
       letI : _root_.NormedAddCommGroup (PiMat ℂ k₂ s₂) := Module.Dual.PiNormedAddCommGroup (φ := ψ₂)
-      letI : _root_.InnerProductSpace ℂ (PiMat ℂ k₂ s₂) := Module.Dual.pi.InnerProductSpace (φ := ψ₂)
+      letI : _root_.InnerProductSpace ℂ (PiMat ℂ k₂ s₂) := Module.Dual.pi.InnerProductSpace (φ :=
+        ψ₂)
       obtain ⟨α, β, rfl⟩ := x.eq_span
       simp only [Module.Dual.pi.IsFaithfulPosMap.Psi_right_inv, map_sum]
     map_add' := fun x y => by simp_rw [map_add]
@@ -824,6 +875,7 @@ noncomputable def Module.Dual.pi.IsFaithfulPosMap.psi (hψ : ∀ i, (ψ i).IsFai
       simp_rw [_root_.map_smul]
       rfl }
 
+omit [DecidableEq k] in
 theorem Pi.inner_symm [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (x y : PiMat ℂ k s) :
     withPiInner[ψ]
     (⟪x, y⟫_ℂ = ⟪Module.Dual.pi.IsFaithfulPosMap.sig hψ (-1) (star y), star x⟫_ℂ) :=
@@ -838,10 +890,12 @@ theorem Pi.inner_symm [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (x y : PiMat ℂ k 
     Nontracial.inner_symm (x _)]
   rfl
 
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_adjoint [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     {t : ℝ} :
     withPiInner[ψ]
-    LinearMap.adjoint (Module.Dual.pi.IsFaithfulPosMap.sig hψ t : PiMat ℂ k s ≃ₐ[ℂ] PiMat ℂ k s).toLinearMap =
+    LinearMap.adjoint (Module.Dual.pi.IsFaithfulPosMap.sig hψ t :
+      PiMat ℂ k s ≃ₐ[ℂ] PiMat ℂ k s).toLinearMap =
       (Module.Dual.pi.IsFaithfulPosMap.sig hψ t).toLinearMap :=
   by
   letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
@@ -857,6 +911,8 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_adjoint [hψ : ∀ i, (ψ i).IsFaith
     Module.Dual.pi.IsFaithfulPosMap.sig_eq_pi_blocks, ← AlgEquiv.toLinearMap_apply, ←
     LinearMap.adjoint_inner_left, Module.Dual.IsFaithfulPosMap.sig_adjoint]
 
+open scoped Classical in
+omit [DecidableEq n] in
 theorem Module.Dual.IsFaithfulPosMap.norm_eq {ψ : Module.Dual ℂ (Matrix n n ℂ)}
     [hψ : ψ.IsFaithfulPosMap] (x : Matrix n n ℂ) :
     withMatrixInner[ψ] (‖x‖ = Real.sqrt (RCLike.re (ψ (xᴴ * x)))) :=
@@ -865,12 +921,15 @@ theorem Module.Dual.IsFaithfulPosMap.norm_eq {ψ : Module.Dual ℂ (Matrix n n �
   letI : _root_.InnerProductSpace ℂ (Matrix n n ℂ) := Module.Dual.InnerProductSpace (φ := ψ)
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), ← Module.Dual.IsFaithfulPosMap.inner_eq]
 
+open scoped Classical in
+omit [DecidableEq k] [(i : k) → DecidableEq (s i)] in
 theorem Module.Dual.pi.IsFaithfulPosMap.norm_eq {ψ : ∀ i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)}
     [hψ : Π i, (ψ i).IsFaithfulPosMap] (x : Π i, Matrix (s i) (s i) ℂ) :
     withPiInner[ψ] (‖x‖ = Real.sqrt (RCLike.re (pi ψ (star x * x)))) := by
   letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
   letI : _root_.TopologicalSpace (PiMat ℂ k s) :=
-    (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    (Module.Dual.PiNormedAddCommGroup (φ :=
+      ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : _root_.SeminormedAddCommGroup (PiMat ℂ k s) :=
     (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toSeminormedAddCommGroup
   letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
@@ -886,7 +945,8 @@ theorem Module.Dual.pi.IsFaithfulPosMap.norm_eq {ψ : ∀ i, Module.Dual ℂ (Ma
 
 -- instance Pi.matrix.is_starModule : StarModule ℂ PiMat ℂ k s := by infer_instance
 
--- instance Pi.matrix.is_topologicalAddGroup : TopologicalAddGroup (∀ i : k, Matrix (s i) (s i) ℂ) :=
+-- instance Pi.matrix.is_topologicalAddGroup : TopologicalAddGroup (∀ i : k, Matrix (s i) (s i) ℂ)
+-- :=
 --   by
 --   apply @Pi.topologicalAddGroup _ _ _ _ _
   -- intro b
@@ -894,7 +954,9 @@ theorem Module.Dual.pi.IsFaithfulPosMap.norm_eq {ψ : ∀ i, Module.Dual ℂ (Ma
 
 -- instance Pi.matrix.continuousSMul : ContinuousSMul ℂ PiMat ℂ k s := by infer_instance
 
-theorem Pi.rankOneLm_real_apply {k₂ : Type*} [Fintype k₂] [DecidableEq k₂]
+open scoped Classical in
+omit [DecidableEq k] [(i : k) → DecidableEq (s i)] in
+theorem Pi.rankOneLm_real_apply {k₂ : Type*} [Fintype k₂]
   {s₂ : k₂ → Type*} [Π i, Fintype (s₂ i)] [Π i, DecidableEq (s₂ i)]
   {φ : Π i, Module.Dual ℂ (Matrix (s₂ i) (s₂ i) ℂ)}
   [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
@@ -906,13 +968,15 @@ theorem Pi.rankOneLm_real_apply {k₂ : Type*} [Fintype k₂] [DecidableEq k₂]
   by
   letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
   letI : _root_.TopologicalSpace (PiMat ℂ k s) :=
-    (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    (Module.Dual.PiNormedAddCommGroup (φ :=
+      ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : _root_.SeminormedAddCommGroup (PiMat ℂ k s) :=
     (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toSeminormedAddCommGroup
   letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
   letI : _root_.NormedAddCommGroup (PiMat ℂ k₂ s₂) := Module.Dual.PiNormedAddCommGroup (φ := φ)
   letI : _root_.TopologicalSpace (PiMat ℂ k₂ s₂) :=
-    (Module.Dual.PiNormedAddCommGroup (φ := φ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    (Module.Dual.PiNormedAddCommGroup (φ :=
+      φ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : _root_.SeminormedAddCommGroup (PiMat ℂ k₂ s₂) :=
     (Module.Dual.PiNormedAddCommGroup (φ := φ)).toSeminormedAddCommGroup
   letI : _root_.InnerProductSpace ℂ (PiMat ℂ k₂ s₂) := Module.Dual.pi.InnerProductSpace (φ := φ)
@@ -924,16 +988,21 @@ theorem Pi.rankOneLm_real_apply {k₂ : Type*} [Fintype k₂] [DecidableEq k₂]
   rw [star_star] at this
   rw [← this, inner_conj_symm]
 
-theorem Pi.PosDef.rpow_one_eq_self {Q : PiMat ℂ k s} (hQ : ∀ i, (Q i).PosDef) : Pi.PosDef.rpow hQ 1 = Q :=
+omit [Fintype k] [DecidableEq k] in
+theorem Pi.PosDef.rpow_one_eq_self {Q : PiMat ℂ k s} (hQ : ∀ i,
+  (Q i).PosDef) : Pi.PosDef.rpow hQ 1 = Q :=
   by
   ext i
   simp only [Pi.PosDef.rpow, Matrix.PosDef.rpow_one_eq_self]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.PosDef.rpow_neg_one_eq_inv_self {Q : PiMat ℂ k s} (hQ : ∀ i, (Q i).PosDef) :
     Pi.PosDef.rpow hQ (-1) = Q⁻¹ := by
   ext i
   simp_rw [Pi.PosDef.rpow, Matrix.PosDef.rpow_neg_one_eq_inv_self (hQ _), Pi.inv_apply]
 
+open scoped Classical in
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.inner_left_conj'
     {ψ : ∀ i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)} [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     (a b c : PiMat ℂ k s) :
@@ -942,7 +1011,8 @@ theorem Module.Dual.pi.IsFaithfulPosMap.inner_left_conj'
         ⟪a * Module.Dual.pi.IsFaithfulPosMap.sig hψ (-1) (star c), b⟫_ℂ) := by
   letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
   letI : _root_.TopologicalSpace (PiMat ℂ k s) :=
-    (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    (Module.Dual.PiNormedAddCommGroup (φ :=
+      ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : _root_.SeminormedAddCommGroup (PiMat ℂ k s) :=
     (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toSeminormedAddCommGroup
   letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
@@ -950,6 +1020,8 @@ theorem Module.Dual.pi.IsFaithfulPosMap.inner_left_conj'
     Pi.PosDef.rpow_neg_one_eq_inv_self, ← Module.Dual.pi.matrixBlock_apply, ←
     Module.Dual.pi.IsFaithfulPosMap.inner_left_conj]
 
+open scoped Classical in
+omit [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.inner_right_conj'
     {ψ : ∀ i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)} [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     (a b c : PiMat ℂ k s) :
@@ -958,12 +1030,14 @@ theorem Module.Dual.pi.IsFaithfulPosMap.inner_right_conj'
         ⟪a, b * Module.Dual.pi.IsFaithfulPosMap.sig hψ (-1) (star c)⟫_ℂ) := by
   letI : _root_.NormedAddCommGroup (PiMat ℂ k s) := Module.Dual.PiNormedAddCommGroup (φ := ψ)
   letI : _root_.TopologicalSpace (PiMat ℂ k s) :=
-    (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+    (Module.Dual.PiNormedAddCommGroup (φ :=
+      ψ)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
   letI : _root_.SeminormedAddCommGroup (PiMat ℂ k s) :=
     (Module.Dual.PiNormedAddCommGroup (φ := ψ)).toSeminormedAddCommGroup
   letI : _root_.InnerProductSpace ℂ (PiMat ℂ k s) := Module.Dual.pi.InnerProductSpace (φ := ψ)
   rw [← inner_conj_symm, Module.Dual.pi.IsFaithfulPosMap.inner_left_conj', inner_conj_symm]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Moudle.Dual.Pi.IsFaithfulPosMap.sig_trans_sig [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     (x y : ℝ) :
     (Module.Dual.pi.IsFaithfulPosMap.sig hψ y).trans (Module.Dual.pi.IsFaithfulPosMap.sig hψ x) =
@@ -972,6 +1046,7 @@ theorem Moudle.Dual.Pi.IsFaithfulPosMap.sig_trans_sig [hψ : ∀ i, (ψ i).IsFai
   ext1
   simp_rw [AlgEquiv.trans_apply, Module.Dual.pi.IsFaithfulPosMap.sig_apply_sig]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_comp_sig [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     (x y : ℝ) :
     (Module.Dual.pi.IsFaithfulPosMap.sig hψ x).toLinearMap.comp
@@ -983,6 +1058,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_comp_sig [hψ : ∀ i, (ψ i).IsFait
   simp_rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
     Module.Dual.pi.IsFaithfulPosMap.sig_apply_sig]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.sig_zero' [hψ : ∀ i, (ψ i).IsFaithfulPosMap] :
     Module.Dual.pi.IsFaithfulPosMap.sig hψ 0 = 1 :=
   by
@@ -991,6 +1067,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.sig_zero' [hψ : ∀ i, (ψ i).IsFaithfu
   rw [Module.Dual.pi.IsFaithfulPosMap.sig_zero]
   rfl
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.comp_sig_eq_iff
   {A : Type*} [AddCommMonoid A] [Module ℂ A]
   [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
@@ -1005,6 +1082,7 @@ theorem Pi.comp_sig_eq_iff
   all_goals
     rw [Module.Dual.pi.IsFaithfulPosMap.sig_zero', AlgEquiv.one_toLinearMap, LinearMap.comp_one]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Pi.sig_comp_eq_iff {A : Type*} [AddCommMonoid A] [Module ℂ A]
   [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (t : ℝ) (f g : A →ₗ[ℂ] PiMat ℂ k s) :
     (Module.Dual.pi.IsFaithfulPosMap.sig hψ t).toLinearMap ∘ₗ f = g ↔
@@ -1017,7 +1095,9 @@ theorem Pi.sig_comp_eq_iff {A : Type*} [AddCommMonoid A] [Module ℂ A]
   all_goals
     rw [Module.Dual.pi.IsFaithfulPosMap.sig_zero', AlgEquiv.one_toLinearMap, LinearMap.one_comp]
 
-theorem LinearMap.pi.adjoint_real_eq {k₂ : Type*} [Fintype k₂] [DecidableEq k₂]
+open scoped Classical in
+omit [DecidableEq k] in
+theorem LinearMap.pi.adjoint_real_eq {k₂ : Type*} [Fintype k₂]
   {s₂ : k₂ → Type*} [Π i, Fintype (s₂ i)] [Π i, DecidableEq (s₂ i)]
   {φ : Π i, Module.Dual ℂ (Matrix (s₂ i) (s₂ i) ℂ)}
   {ψ : ∀ i, Module.Dual ℂ (Matrix (s i) (s i) ℂ)}
@@ -1052,6 +1132,7 @@ theorem LinearMap.pi.adjoint_real_eq {k₂ : Type*} [Fintype k₂] [DecidableEq 
     LinearMap.adjoint_inner_left (Module.Dual.pi.IsFaithfulPosMap.sig hψ 1).toLinearMap,
     Module.Dual.pi.IsFaithfulPosMap.sig_adjoint]
 
+omit [Fintype k] [DecidableEq k] in
 theorem Module.Dual.pi.IsFaithfulPosMap.basis.apply_cast_eq_mp
     [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
     {i j : k} (h : i = j) (p : s i × s i) :
@@ -1059,6 +1140,7 @@ theorem Module.Dual.pi.IsFaithfulPosMap.basis.apply_cast_eq_mp
       (hψ j).basis (by rw [← h]; exact p) :=
   by aesop
 
+omit [Fintype k] [(i : k) → Fintype (s i)] [(i : k) → DecidableEq (s i)] in
 lemma Matrix.includeBlock_apply' (x : PiMat ℂ k s) (i j : k) :
   (includeBlock (x i)) j = ite (i = j) (x j) 0 :=
 by simp [includeBlock_apply]; aesop
@@ -1080,17 +1162,21 @@ theorem pi_lmul_toMatrix [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (x : PiMat ℂ k
     zero_mul, Matrix.mul_assoc, PosDef.rpow_mul_rpow, neg_add_self,
     PosDef.rpow_zero, Matrix.mul_one, Matrix.single_eq]
   split_ifs with h hh hhh
-  . simp only [mul_apply, mul_ite, mul_zero, ite_mul, zero_mul,
-      Finset.sum_ite_eq, Finset.mem_univ, if_true, mul_one, ← h, ite_and, hh]
-    split_ifs with hhhh; rfl; rw [eq_comm] at hhh; contradiction
-  . rw [eq_comm] at h
-    simp [h, hh, hhh, ite_and, mul_apply]
+  · simp only [mul_apply, mul_ite, mul_zero,
+      Finset.sum_ite_eq, Finset.mem_univ, if_true, mul_one, ite_and]
+    split_ifs with hhhh
+    · rfl
+    · rw [eq_comm] at hhh
+      contradiction
+  · rw [eq_comm] at h
+    simp only [eq_mpr_eq_cast, mul_apply, mul_ite, mul_one, mul_zero, ite_and,
+      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, ite_eq_right_iff]
     intro ha
     rw [eq_comm] at ha
     contradiction
-  . rw [eq_comm] at h; contradiction
-  . rfl
-  . rfl
+  · rw [eq_comm] at h; contradiction
+  · rfl
+  · rfl
 
 example [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (x : PiMat ℂ k s) :
     (Module.Dual.pi.IsFaithfulPosMap.toMatrix hψ (lmul x) :
@@ -1115,23 +1201,30 @@ theorem pi_rmul_toMatrix [hψ : ∀ i, (ψ i).IsFaithfulPosMap] (x : PiMat ℂ k
     zero_mul, Matrix.mul_assoc, ← Matrix.mul_assoc (PosDef.rpow _ (- (1 / 2))),
     ← Module.Dual.IsFaithfulPosMap.sig_apply, Matrix.single_eq, Matrix.transpose_apply]
   split_ifs with h hh hhh
-  . simp only [mul_apply, mul_ite, mul_zero, ite_mul, zero_mul,
-      Finset.sum_ite_eq, Finset.mem_univ, if_true, mul_one, ← h, ite_and, hh, one_mul,
+  · simp only [mul_apply, ite_mul, zero_mul,
+      Finset.sum_ite_eq, Finset.mem_univ, if_true, ite_and, one_mul,
       Finset.sum_ite_irrel, Finset.sum_const_zero]
-    split_ifs with hhhh; rfl; rw [eq_comm] at hhh; contradiction
-  . rw [eq_comm] at h
-    simp [h, hh, hhh, ite_and, mul_apply]
+    split_ifs with hhhh
+    · rfl
+    · rw [eq_comm] at hhh
+      contradiction
+  · rw [eq_comm] at h
+    simp only [eq_mpr_eq_cast, one_div, sig_apply, mul_apply, ite_mul, one_mul,
+      zero_mul, ite_and, Finset.sum_ite_irrel, Finset.sum_ite_eq, Finset.mem_univ,
+      ↓reduceIte, Finset.sum_const_zero, ite_eq_right_iff]
     intro ha
     rw [eq_comm] at ha
     contradiction
-  . rw [eq_comm] at h; contradiction
-  . rfl
-  . rfl
+  · rw [eq_comm] at h; contradiction
+  · rfl
+  · rfl
 
+omit [Fintype k] [DecidableEq k] in
 theorem unitary.coe_pi (U : ∀ i, unitaryGroup (s i) ℂ) :
     (unitary.pi U : PiMat ℂ k s) = fun i => (U i : Matrix (s i) (s i) ℂ) :=
   rfl
 
+omit [Fintype k] [DecidableEq k] in
 theorem unitary.coe_pi_apply (U : ∀ i, unitaryGroup (s i) ℂ) (i : k) :
     ((fun i => (U i : Matrix (s i) (s i) ℂ)) : PiMat ℂ k s) i = U i :=
   rfl
@@ -1150,8 +1243,7 @@ theorem pi_inner_aut_toMatrix
         (rmul (star (fun i => (U i : Matrix (s i) (s i) ℂ) : PiMat ℂ k s))) :=
     by
     ext x i
-    simp [Module.End.mul_apply, lmul_apply, rmul_apply,
-      unitary.innerAutStarAlg_apply, mul_assoc]
+    simp [Module.End.mul_apply, lmul_apply, rmul_apply, mul_assoc]
   rw [this, _root_.map_mul, pi_lmul_toMatrix, pi_rmul_toMatrix, ← blockDiagonal'_mul]
   simp_rw [← mul_kronecker_mul, Matrix.mul_one, Matrix.one_mul, Pi.star_apply,
     star_eq_conjTranspose, blockDiagonal'_inj]

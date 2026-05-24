@@ -121,7 +121,8 @@ theorem isReal_and_idempotent_iff_psi_orthogonal_projection
 
 end Qam
 
-/-- Linear equivalence from block-diagonal matrix coordinates to the tensor product of block-diagonal matrices. -/
+/-- Linear equivalence from block-diagonal matrix coordinates to the tensor product of
+  block-diagonal matrices. -/
 noncomputable def blockDiag'KroneckerEquiv {φ : ∀ i, Module.Dual ℂ (ℍ_ i)}
     (hφ : ∀ i, (φ i).IsFaithfulPosMap) :
     Matrix (Σ i, n i × n i) (Σ i, n i × n i) ℂ ≃ₗ[ℂ]
@@ -137,7 +138,8 @@ noncomputable def blockDiag'KroneckerEquiv {φ : ∀ i, Module.Dual ℂ (ℍ_ i)
 theorem Matrix.conj_conjTranspose' {R n₁ n₂ : Type _} [InvolutiveStar R] (A : Matrix n₁ n₂ R) :
     (Aᴴᵀ)ᴴ = Aᵀ := by rw [← conj_conjTranspose A]
 
--- Porting the inherited block-diagonal matrix calculation needs more heartbeats after Mathlib changes.
+-- Porting the inherited block-diagonal matrix calculation needs more heartbeats after Mathlib
+-- changes.
 theorem toMatrix_mulLeft_mulRight_adjoint {φ : ∀ i, Module.Dual ℂ (Matrix (n i) (n i) ℂ)}
     (hφ : ∀ i, (φ i).IsFaithfulPosMap) (x y : ∀ i, ℍ_ i) :
     letI : ∀ i, (φ i).IsFaithfulPosMap := hφ
@@ -182,16 +184,16 @@ def Pi.LinearMap.apply {ι₁ ι₂ : Type _} {E₁ : ι₁ → Type _} [Decidab
     where
   toFun x :=
     { toFun := fun a => (x ((LinearMap.single ℂ E₁ i : E₁ i →ₗ[ℂ] ∀ b, E₁ b) a)) j
-      map_add' := fun a b => by simp only [LinearMap.add_apply, map_add, Pi.add_apply]
+      map_add' := fun a b => by simp only [map_add, Pi.add_apply]
       map_smul' := fun c a => by
-        simp only [LinearMap.smul_apply, LinearMap.map_smul, Pi.smul_apply, RingHom.id_apply] }
+        simp only [LinearMap.map_smul, Pi.smul_apply, RingHom.id_apply] }
   map_add' x y := by
     ext a
     simp only [LinearMap.add_apply, Pi.add_apply, LinearMap.coe_mk]
     rfl
   map_smul' c x := by
     ext a
-    simp only [LinearMap.smul_apply, Pi.smul_apply, LinearMap.map_smul, RingHom.id_apply,
+    simp only [LinearMap.smul_apply, Pi.smul_apply, RingHom.id_apply,
       LinearMap.coe_mk]
     rfl
 
@@ -201,7 +203,8 @@ theorem rankOne_psi_transpose_to_lin {n : Type _} [DecidableEq n] [Fintype n]
     withMatrixQuantum[φ]
     (hφ.toMatrix.symm
         (TensorProduct.toKronecker
-          ((TensorProduct.map (1 : l(Matrix n n ℂ)) (AlgEquiv.toLinearMap (transposeAlgEquiv n ℂ ℂ).symm))
+          ((TensorProduct.map (1 :
+            l(Matrix n n ℂ)) (AlgEquiv.toLinearMap (transposeAlgEquiv n ℂ ℂ).symm))
             ((hφ.psi (ψ := φ) 0 (1 / 2)) |x⟩⟨y|))) =
       LinearMap.mulLeft ℂ x * (LinearMap.adjoint (LinearMap.mulRight ℂ y) : l(Matrix n n ℂ))) :=
   by
@@ -232,27 +235,29 @@ private theorem matrix.stdBasisMatrix.transpose' {R n p : Type _} [DecidableEq n
 --   -- { x : matrix (Σ i, n i × n i) (Σ i, n i × n i) ℂ // x.is_blockDiagonal }
 --   matrix (Σ i, n i × n i) (Σ i, n i × n i) ℂ
 --     ≃ₐ[ℂ]
---   { x : matrix (Σ i : p × p, n i.1 × n i.2) (Σ i : p × p, n i.1 × n i.2) ℂ // x.is_blockDiagonal }
---   -- {x : (matrix (Σ i, n i) (Σ i, n i) ℂ) ⊗[ℂ] (matrix (Σ i, n i) (Σ i, n i) ℂ) // x.is_blockDiagonal}
+--   { x : matrix (Σ i : p × p, n i.1 × n i.2) (Σ i : p × p, n i.1 × n i.2) ℂ // x.is_blockDiagonal
+-- }
+--   -- {x : (matrix (Σ i, n i) (Σ i, n i) ℂ) ⊗[ℂ] (matrix (Σ i, n i) (Σ i, n i) ℂ) //
+-- x.is_blockDiagonal}
 --   -- {x : matrix (Σ i, n i) (Σ i, n i) ℂ // x.is_blockDiagonal} :=
 --   -- (Π i, matrix (n i) (n i) ℂ) ⊗[ℂ] (Π i, matrix (n i) (n i) ℂ)
 --   :=
--- { to_fun := λ x, by {  },
+-- { to_fun := fun x, by {  },
 --   -- dite (a.1.1 = b.1.1)
---   -- (λ h1,
+--   -- (fun h1,
 --   --   dite (a.1.1 = a.2.1 ∧ b.1.1 = b.2.1) (
---   --   λ h : a.1.1 = a.2.1 ∧ b.1.1 = b.2.1,
+--   --   fun h : a.1.1 = a.2.1 ∧ b.1.1 = b.2.1,
 --   --   let a' : n a.1.1 := by rw [h.1]; exact a.2.2 in
 --   --   let b' : n b.1.1 := by rw [h.2]; exact b.2.2 in
 --   --   x (⟨a.1.1, a.1.2, a'⟩) (⟨b.1.1, b.1.2, b'⟩))
---   -- (λ h, 0),
---   inv_fun := λ x a b, x (⟨a.1, a.2.1⟩, ⟨a.1, a.2.2⟩) (⟨b.1, b.2.1⟩, ⟨b.1, b.2.2⟩),
---   left_inv := λ x, by
+--   -- (fun h, 0),
+--   inv_fun := fun x a b, x (⟨a.1, a.2.1⟩, ⟨a.1, a.2.2⟩) (⟨b.1, b.2.1⟩, ⟨b.1, b.2.2⟩),
+--   left_inv := fun x, by
 --   { ext1,
 --     simp only [],
 --     split_ifs,
 --     tidy, },
---   right_inv := λ x, by
+--   right_inv := fun x, by
 --   { ext1,
 --     simp only [],
 --     split_ifs,
@@ -288,12 +293,11 @@ theorem rankOne_toMatrix_transpose_psi_symm [hφ : φ.IsFaithfulPosMap]
           (star (hφ.orthonormalBasis.repr y).ofLp) from
     (Matrix.vecMulVec_eq (Fin 1) (hφ.orthonormalBasis.repr x).ofLp
       (star (hφ.orthonormalBasis.repr y).ofLp)).symm]
-  rw [kmul_representation
+  rw [Matrix.kmul_representation
     (vecMulVec (hφ.orthonormalBasis.repr x).ofLp (star (hφ.orthonormalBasis.repr y).ofLp))]
   simp only [map_sum, _root_.map_smul, kroneckerToTensorProduct_apply,
     TensorProduct.map_tmul, QuantumSet.Psi_symm_apply, QuantumSet.Psi_invFun_apply,
-    vecMulVec_apply, neg_zero, starAlgebra.modAut_zero, transposeAlgEquiv_apply,
-    MulOpposite.unop_op, AlgEquiv.one_apply]
+    vecMulVec_apply, neg_zero, starAlgebra.modAut_zero, AlgEquiv.one_apply]
   simp_rw [AlgEquiv.toLinearMap_apply, transposeAlgEquiv_apply, MulOpposite.unop_op,
     Module.End.one_apply, ← rankOne_lm_smul_smul, Pi.star_apply, star_star,
     matrix.stdBasisMatrix.transpose', star_eq_conjTranspose, Matrix.single_conjTranspose,
@@ -346,7 +350,8 @@ theorem rankOne_toMatrix_transpose_psi_symm [hφ : φ.IsFaithfulPosMap]
   ring_nf
 
 -- @[instance]
--- private def hmm {H : Type _} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [FiniteDimensional ℂ H]
+-- private def hmm {H : Type _} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [FiniteDimensional ℂ
+-- H]
 --     (U : Submodule ℂ H) : CompleteSpace U :=
 --   FiniteDimensional.complete ℂ U
 
@@ -454,8 +459,8 @@ theorem toMatrix''_map_star [hφ : φ.IsFaithfulPosMap] (x : l(ℍ)) :
   by
   withMatrixQuantumCtx[φ]
   ext
-  simp only [Module.Dual.IsFaithfulPosMap.toMatrix, LinearMap.toMatrixAlgEquiv_apply, Pi.star_apply,
-    star_apply, star_eq_conjTranspose, conjTranspose_apply, LinearMap.star_eq_adjoint,
+  simp only [Module.Dual.IsFaithfulPosMap.toMatrix, LinearMap.toMatrixAlgEquiv_apply,
+    star_apply,
     LinearMap.adjoint_inner_right, RCLike.star_def, inner_conj_symm,
     Module.Dual.IsFaithfulPosMap.basis_repr_apply]
 
@@ -596,7 +601,7 @@ by
 
 /-- Quantum adjacency maps that are both Schur-idempotent and real. -/
 @[class]
-structure RealQam (hφ : φ.IsFaithfulPosMap) (A : l(ℍ)) : Prop :=
+structure RealQam (hφ : φ.IsFaithfulPosMap) (A : l(ℍ)) : Prop where
 /-- The Schur idempotence condition. -/
 toIdempotent : Qam.reflIdempotent hφ A A = A
 /-- The realness condition. -/
@@ -604,9 +609,10 @@ toIsReal : LinearMap.IsReal A
 
 lemma RealQam_iff [hφ : φ.IsFaithfulPosMap] {A : l(ℍ)} :
   RealQam hφ A ↔ Qam.reflIdempotent hφ A A = A ∧ LinearMap.IsReal A :=
-⟨λ h => ⟨h.toIdempotent, h.toIsReal⟩, λ h => ⟨h.1, h.2⟩⟩
+⟨fun h => ⟨h.toIdempotent, h.toIsReal⟩, fun h => ⟨h.1, h.2⟩⟩
 
-theorem RealQam.add_iff [hφ : φ.IsFaithfulPosMap] {A B : ℍ →ₗ[ℂ] ℍ} (hA : RealQam hφ A) (hB : RealQam hφ B) :
+theorem RealQam.add_iff [hφ : φ.IsFaithfulPosMap] {A B : ℍ →ₗ[ℂ] ℍ} (hA : RealQam hφ A) (hB :
+    RealQam hφ B) :
     RealQam hφ (A + B) ↔ Qam.reflIdempotent hφ A B + Qam.reflIdempotent hφ B A = 0 :=
   by
   simp only [RealQam_iff] at hA hB ⊢
@@ -621,13 +627,16 @@ theorem RealQam.zero [hφ : φ.IsFaithfulPosMap] : RealQam hφ (0 : l(ℍ)) :=
   intro
   simp only [LinearMap.zero_apply, star_zero]
 
-@[instance]
-noncomputable def RealQam.hasZero [hφ : φ.IsFaithfulPosMap] : Zero { x // RealQam hφ x } where zero := ⟨0, RealQam.zero⟩
+@[reducible, instance]
+noncomputable def RealQam.hasZero [hφ : φ.IsFaithfulPosMap] :
+    Zero { x // RealQam hφ x } where zero := ⟨0, RealQam.zero⟩
 
-theorem Qam.reflIdempotent_zero [hφ : φ.IsFaithfulPosMap] (a : l(ℍ)) : Qam.reflIdempotent hφ a 0 = 0 :=
+theorem Qam.reflIdempotent_zero [hφ : φ.IsFaithfulPosMap] (a : l(ℍ)) : Qam.reflIdempotent hφ a 0 =
+  0 :=
   map_zero _
 
-theorem Qam.zero_reflIdempotent [hφ : φ.IsFaithfulPosMap] (a : l(ℍ)) : Qam.reflIdempotent hφ 0 a = 0 := by
+theorem Qam.zero_reflIdempotent [hφ : φ.IsFaithfulPosMap] (a : l(ℍ)) : Qam.reflIdempotent hφ 0 a =
+  0 := by
   simp_rw [LinearMap.map_zero, LinearMap.zero_apply]
 
 /-- Number of edges of a real QAM, computed as the rank of its associated submodule. -/
@@ -637,7 +646,8 @@ noncomputable def RealQam.edges [hφ : φ.IsFaithfulPosMap] {x : l(ℍ)} (hx : R
 
 /-- Edge-count function on the subtype of real QAMs. -/
 @[reducible]
-noncomputable def RealQam.edges' [hφ : φ.IsFaithfulPosMap] : { x : ℍ →ₗ[ℂ] ℍ // RealQam hφ x } → ℕ := fun x =>
+noncomputable def RealQam.edges' [hφ : φ.IsFaithfulPosMap] : { x :
+    ℍ →ₗ[ℂ] ℍ // RealQam hφ x } → ℕ := fun x =>
   FiniteDimensional.finrank ℂ
     (Qam.submoduleOfIdempotentAndReal (Set.mem_setOf.mp (Subtype.mem x)).1
       (Set.mem_setOf.mp (Subtype.mem x)).2)
@@ -688,7 +698,7 @@ theorem RealQam.edges_eq [hφ : φ.IsFaithfulPosMap] {A : l(ℍ)} (hA : RealQam 
           (Qam.onbOfIdempotentAndReal hA1 hA2 x) := rfl
       _ = 1 := by
         rw [← OrthonormalBasis.repr_apply_apply, OrthonormalBasis.repr_self,
-          EuclideanSpace.single_apply]
+          PiLp.single_apply]
         simp_rw [if_true]
   simp_rw [trace_sum, ← Matrix.mul_assoc, this, Finset.sum_const, Finset.card_fin,
     Nat.smul_one_eq_cast]
@@ -706,7 +716,8 @@ theorem Qam.completeGraph_edges [hφ : φ.IsFaithfulPosMap] :
     FiniteDimensional.finrank ℂ (⊤ : Submodule ℂ ℍ)) :=
 by
   withProjectionMatrixCoalgebraQuantumCtx[φ]
-  have this : (RealQam.edges completeGraphRealQam : ℂ) = (Qam.completeGraph ℍ ℍ φ.matrix⁻¹).trace := RealQam.edges_eq _
+  have this : (RealQam.edges completeGraphRealQam : ℂ) =
+    (Qam.completeGraph ℍ ℍ φ.matrix⁻¹).trace := RealQam.edges_eq _
   haveI ig := hφ.matrixIsPosDef.invertible
   simp_rw [Qam.completeGraph, ContinuousLinearMap.coe_coe, rankOne_apply,
     Module.Dual.IsFaithfulPosMap.inner_eq', conjTranspose_one, Matrix.mul_one,
@@ -741,40 +752,44 @@ by
   rw [inv_mul_cancel₀ hδ] at this
   exact_mod_cast this
 
-theorem RealQam.edges_eq_zero_iff [hφ : φ.IsFaithfulPosMap] {A : l(ℍ)} (hA : RealQam hφ A) : hA.edges = 0 ↔ A = 0 :=
+theorem RealQam.edges_eq_zero_iff [hφ : φ.IsFaithfulPosMap] {A : l(ℍ)} (hA : RealQam hφ A) :
+    hA.edges = 0 ↔ A = 0 :=
   by
   have : ∀ α β : ℕ, α = β ↔ (α : ℂ) = (β : ℂ) :=
     by
     intro α β
     simp only [Nat.cast_inj]
-  refine'
-    ⟨fun h => _, fun h => by
-      rw [this, RealQam.edges_eq, h, LinearMap.zero_apply, trace_zero]; norm_cast⟩
-  rw [RealQam.edges] at h
-  have h' := h
-  simp only [Submodule.finrank_eq_zero] at h
-  rw [Qam.IdempotentAndReal.eq hA.1 hA.2]
-  let u := Qam.onbOfIdempotentAndReal hA.1 hA.2
-  apply Finset.sum_eq_zero
-  intro i _
-  rw [finrank_zero_iff_forall_zero.mp h' (u i)]
-  norm_cast
-  simp_rw [Matrix.zero_mul, LinearMap.mulLeft_zero_eq_zero, MulZeroClass.zero_mul]
+  constructor
+  · intro h
+    rw [RealQam.edges] at h
+    have h' := h
+    simp only [Submodule.finrank_eq_zero] at h
+    rw [Qam.IdempotentAndReal.eq hA.1 hA.2]
+    let u := Qam.onbOfIdempotentAndReal hA.1 hA.2
+    apply Finset.sum_eq_zero
+    intro i _
+    rw [finrank_zero_iff_forall_zero.mp h' (u i)]
+    norm_cast
+    simp_rw [Matrix.zero_mul, LinearMap.mulLeft_zero_eq_zero, MulZeroClass.zero_mul]
+  · intro h
+    rw [this, RealQam.edges_eq, h, LinearMap.zero_apply, trace_zero]
+    norm_cast
 
 theorem psi_apply_complete_graph [hφ : φ.IsFaithfulPosMap] {t s : ℝ} :
     withMatrixQuantum[φ]
     (hφ.psi (ψ := φ) t s |(1 : ℍ)⟩⟨(1 : ℍ)| = 1) :=
   by
   withMatrixQuantumCtx[φ]
-  simp only [Module.Dual.IsFaithfulPosMap.psi, LinearEquiv.coe_mk,
-    QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply, _root_.map_one, conjTranspose_one]
+  simp only [Module.Dual.IsFaithfulPosMap.psi,
+    QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply, _root_.map_one]
   simp [star_one, MulOpposite.op_one, Algebra.TensorProduct.one_def]
 
 lemma AlgEquiv.TensorProduct.map_toLinearMap' {R S T U V : Type _} [CommSemiring R]
   [Semiring S] [Semiring T] [Semiring U] [Semiring V]
   [Algebra R S] [Algebra R T] [Algebra R U] [Algebra R V]
   (f : S ≃ₐ[R] T) (g : U ≃ₐ[R] V) :
-  (AlgEquiv.TensorProduct.map f g).toLinearMap = _root_.TensorProduct.map f.toLinearMap g.toLinearMap :=
+  (AlgEquiv.TensorProduct.map f g).toLinearMap =
+    _root_.TensorProduct.map f.toLinearMap g.toLinearMap :=
 rfl
 
 lemma AlgEquiv.toLinearMap_one {R S : Type _} [CommSemiring R] [Semiring S] [Algebra R S] :
@@ -787,36 +802,39 @@ theorem RealQam.edges_eq_dim_iff [hφ : φ.IsFaithfulPosMap] {A : l(ℍ)} (hA : 
       A = |(1 : ℍ)⟩⟨(1 : ℍ)|) :=
   by
   withMatrixQuantumCtx[φ]
-  refine'
-    ⟨fun h => _, fun h => by
-      rw [← @Qam.completeGraph_edges p _ _ φ]
-      simp_rw [← @Nat.cast_inj ℂ, RealQam.edges_eq, h]; rfl⟩
-  rw [RealQam.edges] at h
-  simp only [finrank_top] at h
-  let U := Qam.submoduleOfIdempotentAndReal hA.1 hA.2
-  have hU : U = (⊤ : Submodule ℂ ℍ) := Submodule.eq_top_of_finrank_eq h
-  rw [← Function.Injective.eq_iff (LinearEquiv.injective (hφ.psi (ψ := φ) 0 (1 / 2))),
-    psi_apply_complete_graph]
-  have t1 := Qam.orthogonalProjection'_eq hA.1 hA.2
-  have : Qam.fdOrthogonalProjection (φ := φ) U = 1 :=
-    by
-    rw [hU]
-    unfold Qam.fdOrthogonalProjection
-    change ((orthogonalProjection' (⊤ : Submodule ℂ ℍ) : L(ℍ)) : l(ℍ)) = 1
-    rw [orthogonalProjection_of_top]
+  constructor
+  · intro h
+    rw [RealQam.edges] at h
+    simp only [finrank_top] at h
+    let U := Qam.submoduleOfIdempotentAndReal hA.1 hA.2
+    have hU : U = (⊤ : Submodule ℂ ℍ) := Submodule.eq_top_of_finrank_eq h
+    rw [← Function.Injective.eq_iff (LinearEquiv.injective (hφ.psi (ψ := φ) 0 (1 / 2))),
+      psi_apply_complete_graph]
+    have t1 := Qam.orthogonalProjection'_eq hA.1 hA.2
+    have : Qam.fdOrthogonalProjection (φ := φ) U = 1 :=
+      by
+      rw [hU]
+      unfold Qam.fdOrthogonalProjection
+      change ((orthogonalProjection' (⊤ : Submodule ℂ ℍ) : L(ℍ)) : l(ℍ)) = 1
+      rw [orthogonalProjection_of_top]
+      rfl
+    change Qam.fdOrthogonalProjection (φ := φ) U =
+      hφ.toMatrix.symm
+        (TensorProduct.toKronecker
+          ((TensorProduct.map id (transposeAlgEquiv p ℂ ℂ).symm.toLinearMap)
+            ((hφ.psi (ψ := φ) 0 (1 / 2)) A))) at t1
+    rw [this] at t1
+    have this' := (AlgEquiv.eq_apply_iff_symm_eq _).mpr t1.symm
+    simp_rw [_root_.map_one, ← tensorToKronecker_apply, MulEquivClass.map_eq_one_iff] at this'
+    have this'' := AlgEquiv.TensorProduct.map_toLinearMap (1 :
+      ℍ ≃ₐ[ℂ] ℍ) (transposeAlgEquiv p ℂ ℂ).symm
+    rw [AlgEquiv.toLinearMap_one] at this''
+    rw [← this'', AlgEquiv.toLinearMap_apply, MulEquivClass.map_eq_one_iff] at this'
+    exact this'
+  · intro h
+    rw [← @Qam.completeGraph_edges p _ _ φ]
+    simp_rw [← @Nat.cast_inj ℂ, RealQam.edges_eq, h]
     rfl
-  change Qam.fdOrthogonalProjection (φ := φ) U =
-    hφ.toMatrix.symm
-      (TensorProduct.toKronecker
-        ((TensorProduct.map id (transposeAlgEquiv p ℂ ℂ).symm.toLinearMap)
-          ((hφ.psi (ψ := φ) 0 (1 / 2)) A))) at t1
-  rw [this] at t1
-  have this' := (AlgEquiv.eq_apply_iff_symm_eq _).mpr t1.symm
-  simp_rw [_root_.map_one, ← tensorToKronecker_apply, MulEquivClass.map_eq_one_iff] at this'
-  have this'' := AlgEquiv.TensorProduct.map_toLinearMap (1 : ℍ ≃ₐ[ℂ] ℍ) (transposeAlgEquiv p ℂ ℂ).symm
-  rw [AlgEquiv.toLinearMap_one] at this''
-  rw [← this'', AlgEquiv.toLinearMap_apply, MulEquivClass.map_eq_one_iff] at this'
-  exact this'
 
 -- The dimension-one projection extraction uses finite-dimensional basis instance synthesis.
 private theorem orthogonal_projection_of_dim_one {𝕜 E : Type _} [RCLike 𝕜] [NormedAddCommGroup E]
@@ -836,8 +854,8 @@ private theorem orthogonal_projection_of_dim_one {𝕜 E : Type _} [RCLike 𝕜]
     rw [@norm_eq_sqrt_re_inner 𝕜, Real.sqrt_eq_one]
     simp_rw [← Submodule.coe_inner, orthonormal_iff_ite.mp u.orthonormal, if_true,
       RCLike.one_re]
-  refine' ⟨⟨u 0, hcc⟩, _⟩
-  simp only [Subtype.coe_mk, this, RCLike.ofReal_one, one_div_one, one_smul, one_pow]
+  use ⟨u 0, hcc⟩
+  simp only [this, RCLike.ofReal_one, one_div_one, one_smul, one_pow]
 
 lemma Complex.ofReal'_eq_isROrC_ofReal (a : ℝ) :
   (a : ℂ) = RCLike.ofReal a :=
@@ -871,7 +889,8 @@ theorem RealQam.edges_eq_one_iff [hφ : φ.IsFaithfulPosMap] {A : l(ℍ)} (hA : 
       ← LinearMap.map_smul, ← _root_.map_smul,
       ← ContinuousLinearMap.coe_smul,
       Complex.ofReal'_eq_isROrC_ofReal, ← hu]
-    simp_rw [LinearEquiv.eq_symm_apply, ← oneMapTranspose_symm_eq, StarAlgEquiv.eq_apply_iff_symm_eq,
+    simp_rw [LinearEquiv.eq_symm_apply, ← oneMapTranspose_symm_eq,
+      StarAlgEquiv.eq_apply_iff_symm_eq,
       StarAlgEquiv.symm_symm, AlgEquiv.eq_apply_iff_symm_eq, oneMapTranspose_eq]
     rw [← t1]
     unfold Qam.fdOrthogonalProjection

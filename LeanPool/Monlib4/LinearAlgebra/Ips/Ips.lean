@@ -333,6 +333,12 @@ theorem LinearMap.IsStarNormal.eigenvec_in_eigenspace_iff_eigenvec_in_adjoint_co
 
 end IsStarNormal
 
+lemma ContinuousLinearMap.ker_to_linearMap_ker {W : Type _} [NormedAddCommGroup W]
+    [InnerProductSpace 𝕜 W] (T : V →L[𝕜] W) :
+    ∀ x, x ∈ LinearMap.ker (T : V →ₗ[𝕜] W) ↔ T x = 0 := by
+  intro x
+  rfl
+
 /-- $T$ is injective if and only if $T^*$ is surjective. -/
 theorem ContinuousLinearMap.adjoint_injective_iff_surjective {W : Type _} [NormedAddCommGroup W]
     [InnerProductSpace 𝕜 W] [CompleteSpace W] [CompleteSpace V] (T : V →L[𝕜] W)

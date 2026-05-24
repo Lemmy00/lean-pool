@@ -80,7 +80,9 @@ theorem selfAdjointDecomposition_right_isSelfAdjoint
   (a : B) :
     IsSelfAdjoint (aR a) :=
 by
-  simp [selfAdjointDecomposition_right, isSelfAdjoint_iff, star_smul, smul_smul]
+  simp only [selfAdjointDecomposition_right, RCLike.I_to_complex, one_div, smul_smul,
+    isSelfAdjoint_iff, star_smul, star_mul', RCLike.star_def, Complex.conj_I,
+    star_inv₀, star_ofNat, neg_mul, star_sub, star_star, neg_smul]
   rw [← neg_sub, ← neg_smul, neg_smul_neg]
 
 theorem selfAdjointDecomposition
@@ -102,7 +104,7 @@ def ContinuousLinearMap.toLinearMapAlgEquiv
   {𝕜 B : Type*} [RCLike 𝕜] [NormedAddCommGroup B]
   [InnerProductSpace 𝕜 B] [FiniteDimensional 𝕜 B] :
   (B →L[𝕜] B) ≃ₐ[𝕜] (B →ₗ[𝕜] B) :=
-AlgEquiv.ofLinearEquiv LinearMap.toContinuousLinearMap.symm rfl (λ _ _ => rfl)
+AlgEquiv.ofLinearEquiv LinearMap.toContinuousLinearMap.symm rfl (fun _ _ => rfl)
 
 lemma ContinuousLinearMap.toLinearMapAlgEquiv_apply
   {𝕜 B : Type*} [RCLike 𝕜] [NormedAddCommGroup B]
@@ -145,8 +147,8 @@ by rw [nonneg_iff_isPositive]; exact isPositive_iff_exists_adjoint_hMul_self _
 -- def ContinuousLinearMap.StarOrderedRing :
 --   _root_.StarOrderedRing (B →L[ℂ] B) :=
 -- StarOrderedRing.of_nonneg_iff'
---   (λ hxy z => by simp_rw [le_def, add_sub_add_left_eq_sub]; exact hxy)
---   (λ x => by
+--   (fun hxy z => by simp_rw [le_def, add_sub_add_left_eq_sub]; exact hxy)
+--   (fun x => by
 --     rw [nonneg_iff_isPositive]
 --     exact ContinuousLinearMap.isPositive_iff_exists_adjoint_hMul_self _)
 -- attribute [local instance] ContinuousLinearMap.StarOrderedRing
@@ -206,7 +208,8 @@ rfl
 theorem Matrix.orthogonalProjection_trace {U : Submodule ℂ (EuclideanSpace ℂ n)} :
   (Matrix.orthogonalProjection U).trace = Module.finrank ℂ U :=
 by
-  rw [orthogonalProjection, Matrix.coe_toEuclideanCLM_symm_eq_toEuclideanLin_symm, ← EuclideanSpace.trace_eq_matrix_trace']
+  rw [orthogonalProjection, Matrix.coe_toEuclideanCLM_symm_eq_toEuclideanLin_symm,
+    ← EuclideanSpace.trace_eq_matrix_trace']
   exact _root_.orthogonalProjection_trace _
 
 theorem PiMat.orthogonalProjection_trace {k : Type*} {n : k → Type*} [Fintype k] [DecidableEq k]
@@ -236,7 +239,7 @@ lemma Matrix.orthogonalProjection_ortho_eq {U : Submodule ℂ (EuclideanSpace �
   Matrix.orthogonalProjection Uᗮ = 1 - Matrix.orthogonalProjection U :=
 by
   apply_fun Matrix.toEuclideanCLM (𝕜 := ℂ)
-  simp only [_root_.map_mul, map_sub, _root_.map_one]
+  simp only [map_sub, _root_.map_one]
   simp only [Matrix.CLM_apply_orthogonalProjection]
   exact orthogonalProjection.orthogonal_complement_eq U
 
@@ -276,6 +279,7 @@ by
   simp only [Matrix.CLM_apply_orthogonalProjection]
   exact orthogonalProjection_ker_comp_eq_of_comp_eq_zero h
 
+omit [Fintype n] [DecidableEq n] in
 theorem Matrix.nonneg_def {x : Matrix n n ℂ} :
   0 ≤ x ↔ x.PosSemidef :=
 by rw [le_iff, sub_zero]
@@ -286,7 +290,7 @@ noncomputable def Matrix.IsHermitian.sqSqrt {x : Matrix n n ℂ}
   (hx : x.IsHermitian) :
   Matrix n n ℂ :=
 innerAut (hx.eigenvectorUnitary)
-  (Matrix.diagonal (RCLike.ofReal ∘ (λ i => √ ((hx.eigenvalues i) ^ 2 : ℝ))))
+  (Matrix.diagonal (RCLike.ofReal ∘ (fun i => √ ((hx.eigenvalues i) ^ 2 : ℝ))))
 
 lemma Matrix.IsHermitian.sqSqrt_eq {x : Matrix n n ℂ} (hx : x.IsHermitian) :
   hx.sqSqrt = innerAut (hx.eigenvectorUnitary)
@@ -303,7 +307,8 @@ by
   rw [Function.comp_apply, Pi.zero_apply, RCLike.ofReal_nonneg, Pi.abs_apply]
   exact abs_nonneg _
 
-/-- the square of the positive square root of a Hermitian matrix is equal to the square of the matrix -/
+/-- the square of the positive square root of a Hermitian matrix is equal to the square of the
+  matrix -/
 lemma Matrix.IsHermitian.sqSqrt_sq {x : Matrix n n ℂ} (hx : x.IsHermitian) :
   hx.sqSqrt ^ 2 = x ^ 2 :=
 by
@@ -372,7 +377,7 @@ by
     smul_add, smul_sub, add_mul, mul_sub]
   simp only [one_div, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
   simp_rw [← pow_two, hx.out.commute_sqSqrt.eq]
-  simp only [sub_add_sub_cancel, sqSqrt_sq, hx.out.eq, ← pow_two]
+  simp only [sub_add_sub_cancel, sqSqrt_sq]
   simp only [sub_self]
 lemma Matrix.IsHermitian.posSemidefDecomposition_right_mul_left (x : Matrix n n ℂ)
   [hx : Fact x.IsHermitian] :
@@ -396,7 +401,7 @@ theorem Matrix.IsHermitian.posSemidefDecomposition_posSemidef_left_right
   {x : Matrix n n ℂ} (hx : Fact x.IsHermitian) :
   x₊.PosSemidef ∧ x₋.PosSemidef  :=
 by
-  have h := λ (a b : Matrix n n ℂ) (ha : 0 ≤ a) (hb : 0 ≤ b)
+  have h := fun (a b : Matrix n n ℂ) (ha : 0 ≤ a) (hb : 0 ≤ b)
     => Matrix.posSemidef_iff_commute ha hb
   simp only [sub_zero, Matrix.nonneg_def] at h
   have h₂ := auxaux_2 (IsHermitian.posSemidefDecomposition_left_mul_right x)
@@ -444,16 +449,18 @@ by
     rw [conjTranspose_mul, (IsHermitian.sqSqrt_isPosSemidef _).1.eq,
       Matrix.orthogonalProjection_isPosSemidef.1.eq]
   constructor
-  . rw [h₆', ← h _ _ (IsHermitian.sqSqrt_isPosSemidef _)
+  · rw [h₆', ← h _ _ (IsHermitian.sqSqrt_isPosSemidef _)
       orthogonalProjection_isPosSemidef, Commute, SemiconjBy, ← h₆, ← h₆']
-  . rw [h₄', ← h _ _ (IsHermitian.sqSqrt_isPosSemidef _)
+  · rw [h₄', ← h _ _ (IsHermitian.sqSqrt_isPosSemidef _)
       orthogonalProjection_isPosSemidef, Commute, SemiconjBy, h₄, ← h₄']
 
 open scoped Matrix
+omit [DecidableEq n] in
 theorem Matrix.IsHermitian.posSemidefDecomposition'
   {x : Matrix n n ℂ} (hx : x.IsHermitian) :
   ∃ a b, x = aᴴ * a - bᴴ * b :=
 by
+  classical
   let hx := Fact.mk hx
   simp_rw [posSemidefDecomposition_eq]
   obtain ⟨α, hα⟩ := (Matrix.posSemidef_iff (x₊)).mp
@@ -464,22 +471,22 @@ by
   rw [hα, hβ]
 
 theorem PiMat.IsSelfAdjoint.posSemidefDecomposition {k : Type*} {n : k → Type*}
-  [Π i, Fintype (n i)] [Π i, DecidableEq (n i)]
+  [Π i, Fintype (n i)]
   {x : PiMat ℂ k n} (hx : IsSelfAdjoint x) :
   ∃ a b, x = star a * a - star b * b :=
 by
-  have : ∀ i, (x i).IsHermitian := λ i =>
+  have : ∀ i, (x i).IsHermitian := fun i =>
   by
     rw [IsSelfAdjoint, funext_iff] at hx
     simp_rw [Pi.star_apply, Matrix.star_eq_conjTranspose] at hx
     exact hx i
-  have := λ i => Matrix.IsHermitian.posSemidefDecomposition' (this i)
+  have := fun i => Matrix.IsHermitian.posSemidefDecomposition' (this i)
   let a : PiMat ℂ k n :=
-  λ i => (this i).choose
+  fun i => (this i).choose
   let b : PiMat ℂ k n :=
-  λ i => (this i).choose_spec.choose
+  fun i => (this i).choose_spec.choose
   have hab : ∀ i, x i = star (a i) * (a i) - star (b i) * (b i) :=
-  λ i => (this i).choose_spec.choose_spec
+  fun i => (this i).choose_spec.choose_spec
   use a, b
   ext1
   simp only [Pi.sub_apply, Pi.mul_apply, Pi.star_apply, hab]
@@ -507,7 +514,7 @@ by
     _ = LinearMap.toContinuousLinearMap (star (e.toMatrix.symm a)) * a' -
       LinearMap.toContinuousLinearMap (star (e.toMatrix.symm b)) * b' := ?_
     _ = star a' * a' - star b' * b' := rfl
-  . rw [hab, ← toLinearMapAlgEquiv_symm_apply, map_sub, map_mul]
+  · rw [hab, ← toLinearMapAlgEquiv_symm_apply, map_sub, map_mul]
     rfl
 
 universe u
@@ -562,13 +569,17 @@ by
   apply_fun hφ.φ
   simp_rw [h, map_sub, map_mul, map_star, StarAlgEquiv.apply_symm_apply]
 
+omit [Fintype n] [DecidableEq n] in
 /-- if a map preserves positivity, then it is star-preserving -/
 theorem Matrix.isReal_of_isPosMap
+  [Finite n]
   {K : Type*}
   [Ring K] [StarRing K] [PartialOrder K] [Algebra ℂ K] [StarOrderedRing K] [StarModule ℂ K]
   {φ : Matrix n n ℂ →ₗ[ℂ] K} (hφ : LinearMap.IsPosMap φ) :
   LinearMap.IsReal φ :=
 by
+  classical
+  letI := Fintype.ofFinite n
   intro x
   rw [selfAdjointDecomposition x]
   let L := aL x
@@ -604,8 +615,8 @@ theorem LinearMap.isPosMap_iff_star_mul_self_nonneg {A K : Type*}
   {F : Type*} [FunLike F A K] {f : F} :
   LinearMap.IsPosMap f ↔ ∀ a : A, 0 ≤ f (star a * a) :=
 by
-  refine ⟨λ h a => h (star_mul_self_nonneg _), λ h a => ?_⟩
-  . rw [hA]
+  refine ⟨fun h a => h (star_mul_self_nonneg _), fun h a => ?_⟩
+  · rw [hA]
     rintro ⟨b, rfl⟩
     exact h _
 
@@ -624,7 +635,7 @@ by
   simp_rw [IsPosMap, hA, hB]
   simp only [forall_exists_index, forall_eq_apply_imp_iff, map_mul,
     map_star]
-  refine ⟨λ h _ => h _, λ h x => ?_⟩
+  refine ⟨fun h _ => h _, fun h x => ?_⟩
   simpa using h (EquivLike.inv ψ x)
 
 theorem LinearMap.isReal_iff_comp_starEquiv
@@ -635,8 +646,11 @@ theorem LinearMap.isReal_iff_comp_starEquiv
   LinearMap.IsReal φ ↔ ∀ x, φ (ψ (star x)) = star (φ (ψ x)) :=
 by
   simp_rw [map_star]
-  refine' ⟨λ h _ => h _, λ h x => _⟩
-  simpa using h (EquivLike.inv ψ x)
+  constructor
+  · intro h _
+    exact h _
+  · intro h x
+    simpa using h (EquivLike.inv ψ x)
 
 /-- if a map preserves positivity, then it is star-preserving -/
 theorem isReal_of_isPosMap
@@ -718,7 +732,7 @@ theorem NonUnitalAlgHom.isPosMap_iff_isReal_of_nonUnitalStarAlgEquiv_piMat
   LinearMap.IsPosMap f ↔ LinearMap.IsReal f :=
 by
   have : LinearMap.IsPosMap f ↔ LinearMap.IsPosMap (f : A →ₗ[ℂ] K) := by rfl
-  refine ⟨λ h => isReal_of_isPosMap_of_starAlgEquiv_piMat hφ (this.mp h), λ h => ?_⟩
+  refine ⟨fun h => isReal_of_isPosMap_of_starAlgEquiv_piMat hφ (this.mp h), fun h => ?_⟩
   let f' : A →⋆ₙₐ[ℂ] K := NonUnitalStarAlgHom.mk f h
   exact starMulHom_isPosMap hA f'
 
@@ -727,10 +741,10 @@ theorem Matrix.innerAut.map_zpow {n : Type*} [Fintype n] [DecidableEq n]
   (Matrix.innerAut U) x ^ z = (Matrix.innerAut U) (x ^ z) :=
 by
   induction z using Int.induction_on
-  . exact map_pow U x 0
-  . rename_i i _
+  · exact map_pow U x 0
+  · rename_i i _
     exact map_pow U x (↑i + 1)
-  . rename_i i _
+  · rename_i i _
     calc (innerAut U x ^ (-(i:ℤ)-1))
       = (innerAut U x ^ (i + 1))⁻¹ :=
         by rw [← Matrix.zpow_neg_natCast, neg_sub_left, add_comm]; rfl
@@ -757,10 +771,10 @@ theorem Matrix.diagonal_zpow
   (Matrix.diagonal x) ^ z = Matrix.diagonal (x ^ z) :=
 by
   induction z using Int.induction_on
-  . simp only [zpow_zero]; rfl
-  . norm_cast
+  · simp only [zpow_zero]; rfl
+  · norm_cast
     exact diagonal_pow x _
-  . rename_i i _
+  · rename_i i _
     rw [neg_sub_left, add_comm]
     calc diagonal x ^ (-((i : ℤ)+1)) = (diagonal x ^ (-((i + 1 : ℕ) : ℤ))) := rfl
       _ = (diagonal x ^ (i + 1))⁻¹ := by rw [Matrix.zpow_neg_natCast]
@@ -844,7 +858,7 @@ theorem selfAdjointDecomposition_ext_iff
   [Module ℂ B] [StarModule ℂ B] (a b : B) :
     a = b ↔ aL a = aL b ∧ aR a = aR b :=
 by
-  refine ⟨λ h => by simp [h], λ h => ?_⟩
+  refine ⟨fun h => by simp [h], fun h => ?_⟩
   rw [selfAdjointDecomposition a, h.1, h.2]
   exact Eq.symm (selfAdjointDecomposition b)
 
@@ -975,32 +989,34 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal
   (p : V →L[ℂ] V) (hp : IsIdempotentElem p) [CompleteSpace V] :
     IsSelfAdjoint p ↔ IsStarNormal p :=
 by
-  refine' ⟨λ h => by rw [isStarNormal_iff, h], λ h => _⟩
-  have h : IsStarNormal (1 - p) :=
-  by
-  { simp only [isStarNormal_iff, commute_iff_eq, star_sub, star_one,
-      mul_sub, sub_mul, mul_one, one_mul]
-    simp only [sub_eq_add_neg, add_assoc, neg_add, neg_neg]
-    rw [(isStarNormal_iff _).mp h]
-    rw [← add_assoc, add_add_add_comm, add_assoc] }
-  have := (ContinuousLinearMap.IsStarNormal.norm_eq_adjoint _).mp h
-  have :=
-    calc p = Star.star p * p ↔ ∀ x, ‖(p - (Star.star p * p)) x‖ = 0 :=
-        by
+  constructor
+  · intro h
+    rw [isStarNormal_iff, h]
+  · intro h
+    have h : IsStarNormal (1 - p) :=
+    by
+    { simp only [isStarNormal_iff, commute_iff_eq, star_sub, star_one,
+        mul_sub, sub_mul, mul_one, one_mul]
+      simp only [sub_eq_add_neg, add_assoc, neg_add, neg_neg]
+      rw [(isStarNormal_iff _).mp h]
+      rw [← add_assoc, add_add_add_comm, add_assoc] }
+    have := (ContinuousLinearMap.IsStarNormal.norm_eq_adjoint _).mp h
+    have :=
+      calc
+        p = Star.star p * p ↔ ∀ x, ‖(p - (Star.star p * p)) x‖ = 0 := by
           simp only [norm_eq_zero, ContinuousLinearMap.sub_apply, sub_eq_zero]
           rw [@ContinuousLinearMap.ext_iff]
-      _ ↔ ∀ x, ‖(ContinuousLinearMap.adjoint (1 - p)) (p x)‖ = 0 :=
-        by
+        _ ↔ ∀ x, ‖(ContinuousLinearMap.adjoint (1 - p)) (p x)‖ = 0 := by
           simp only [← ContinuousLinearMap.star_eq_adjoint, star_sub, star_one,
             ContinuousLinearMap.sub_apply, ContinuousLinearMap.mul_apply]
           rfl
-      _ ↔ ∀ x, ‖(1 - p) (p x)‖ = 0 := by simp only [this]
-      _ ↔ ∀ x, ‖(p - p * p) x‖ = 0 := by simp
-      _ ↔ p - p * p = 0 := by
-        simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, ContinuousLinearMap.zero_apply]
-      _ ↔ IsIdempotentElem p := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
-  rw [this.mpr hp]
-  exact IsSelfAdjoint.star_mul_self _
+        _ ↔ ∀ x, ‖(1 - p) (p x)‖ = 0 := by simp only [this]
+        _ ↔ ∀ x, ‖(p - p * p) x‖ = 0 := by simp
+        _ ↔ p - p * p = 0 := by
+          simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, ContinuousLinearMap.zero_apply]
+        _ ↔ IsIdempotentElem p := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
+    rw [this.mpr hp]
+    exact IsSelfAdjoint.star_mul_self _
 
 open scoped InnerProductSpace
 theorem LinearMap.IsPositive'.add_ker_eq_inf_ker
@@ -1010,7 +1026,7 @@ theorem LinearMap.IsPositive'.add_ker_eq_inf_ker
 by
   ext x
   simp only [LinearMap.mem_ker, LinearMap.add_apply, Submodule.mem_inf]
-  refine' ⟨λ h => ?_, λ h => by rw [h.1, h.2, add_zero]⟩
+  refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, add_zero]⟩
   rw [eq_comm, ← sub_eq_iff_eq_add, eq_comm, zero_sub] at h
   rw [h, neg_eq_zero, and_self]
   have : ⟪x, S x⟫_𝕜 = 0 := le_antisymm
@@ -1041,17 +1057,17 @@ by
           simp_rw [complex_decomposition_mul_decomposition, mul_neg, sub_neg_eq_add,
             sub_eq_add_neg]
       _ = ((aL a) ^ 2 + (aR a) ^ 2) + Complex.I • (aR a * aL a - aL a * aR a) :=
-        by simp only [pow_two, smul_sub, add_sub_assoc]
+        by simp only [pow_two, smul_sub]
   rw [Unitary.mem_iff]
   constructor
-  . intro h
+  · intro h
     have : Commute (aL a) (aR a) :=
     by rw [← isStarNormal_iff_selfAdjointDecomposition_commute, isStarNormal_iff, commute_iff_eq,
       h.1, h.2]
     simp_rw [isStarNormal_iff_selfAdjointDecomposition_commute, this, true_and]
     rw [this1, this, sub_self, smul_zero, add_zero] at h
     exact h.2
-  . rintro ⟨h1, h2⟩
+  · rintro ⟨h1, h2⟩
     rw [(isStarNormal_iff _).mp h1, and_self, this1, h2, add_comm]
     apply add_eq_of_eq_sub
     rw [sub_self, smul_eq_zero, sub_eq_zero]
@@ -1069,30 +1085,32 @@ theorem LinearMap.exists_scalar_isometry_iff_preserves_ortho_of_ne_zero
   ∀ x y, ⟪x, y⟫_𝕜 = 0 → ⟪T x, T y⟫_𝕜 = 0 :=
 by
   haveI : Nontrivial V := Module.nontrivial_of_finrank_pos hV
-  refine' ⟨λ ⟨α, h⟩ x y hxy => _, λ h => _⟩
-  . have : ⟪T x, T y⟫_𝕜 = 0 ↔ ⟪((α : 𝕜) • T) x, ((α : 𝕜) • T) y⟫_𝕜 = 0 :=
+  constructor
+  · rintro ⟨α, h⟩ x y hxy
+    have : ⟪T x, T y⟫_𝕜 = 0 ↔ ⟪((α : 𝕜) • T) x, ((α : 𝕜) • T) y⟫_𝕜 = 0 :=
       by
         simp_rw [LinearMap.smul_apply, inner_smul_right, inner_smul_left,
           ← mul_assoc, RCLike.mul_conj, mul_eq_zero, sq_eq_zero_iff,
           RCLike.ofReal_eq_zero, norm_eq_zero]
         simp only [Units.ne_zero, false_or]
     rw [this, (isometry_iff_inner _).mp h, hxy]
-  . haveI : FiniteDimensional 𝕜 V := Module.finite_of_finrank_pos hV
+  · intro h
+    haveI : FiniteDimensional 𝕜 V := Module.finite_of_finrank_pos hV
     let e := stdOrthonormalBasis 𝕜 V
     have : ∀ i j, ⟪e i + e j, e i - e j⟫_𝕜 = 0 :=
-    λ i j => by
+    fun i j => by
       simp only [inner_add_left, inner_sub_right,
         orthonormal_iff_ite.mp (e.orthonormal)]
       simp only [↓reduceIte, eq_comm]
       ring
     have h' : ∀ i j, ⟪T (e i), T (e j)⟫_𝕜 =
         if i = j then ((‖T (e i)‖ ^ 2) : 𝕜) else 0 :=
-    λ i j => by
+    fun i j => by
       split_ifs with h'
-      . simp only [h', inner_self_eq_norm_sq_to_K]
-      . apply h
+      · simp only [h', inner_self_eq_norm_sq_to_K]
+      · apply h
         simp only [orthonormal_iff_ite.mp (e.orthonormal), h', reduceIte]
-    have this' := λ i j => h _ _ (this i j)
+    have this' := fun i j => h _ _ (this i j)
     simp only [map_add, map_sub, inner_add_left, inner_sub_right, h',
       reduceIte, add_ite, ite_add, eq_comm, ite_sub_ite] at this'
     simp only [sub_self, add_zero, zero_add] at this'
@@ -1100,14 +1118,14 @@ by
     let α : ℝ := ‖T (e ⟨0, hV⟩)‖
     simp only [← RCLike.ofReal_pow, RCLike.ofReal_inj,
       sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)] at this'
-    have hα : ∀ i, α = ‖T (e i)‖ := λ i => by
+    have hα : ∀ i, α = ‖T (e i)‖ := fun i => by
       by_cases hi : i = ⟨0, hV⟩
-      . rw [hi]
-      . specialize this' ⟨0, hV⟩ i
+      · rw [hi]
+      · specialize this' ⟨0, hV⟩ i
         simp only [hi, eq_comm, false_or, not_false_iff, true_and] at this'
         simp only [α, this']
     have : ∀ x, ‖T x‖ = α * ‖x‖ :=
-    λ x => by
+    fun x => by
       simp_rw [hα ⟨0, hV⟩]
       rw [← sq_eq_sq₀ (norm_nonneg _) (mul_nonneg (norm_nonneg _) (norm_nonneg _)),
         ← RCLike.ofReal_inj (K := 𝕜), RCLike.ofReal_pow,
@@ -1122,25 +1140,27 @@ by
       simp_rw [← Finset.sum_mul, mul_comm]
     have hα' : α = 0 ↔ T = 0 :=
     by
-      refine' ⟨λ h => _, λ h => _⟩
-      . simp_rw [h, zero_mul, norm_eq_zero] at this
+      constructor
+      · intro h
+        simp_rw [h, zero_mul, norm_eq_zero] at this
         ext x
         simp only [LinearMap.zero_apply, this]
-      . simp only [h, LinearMap.zero_apply, norm_zero, @eq_comm _ (0 : ℝ),
+      · intro h
+        simp only [h, LinearMap.zero_apply, norm_zero, @eq_comm _ (0 : ℝ),
           mul_eq_zero, norm_eq_zero] at this
         obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := by exact exists_ne 0
         specialize this x
         simp only [hx, or_false] at this
         exact this
     simp only [hT, iff_false, ← ne_eq] at hα'
-    have hα'' : (α : 𝕜) ≠ 0 := by simp only [ne_eq, algebraMap.lift_map_eq_zero_iff, hα',
+    have hα'' : (α : 𝕜) ≠ 0 := by simp only [ne_eq, algebraMap.coe_eq_zero_iff, hα',
       not_false_iff]
     use ((Units.mk0 α hα'')⁻¹ : 𝕜ˣ)
     rw [isometry_iff_norm]
     intro x
-    simp only [LinearMap.smul_apply, norm_smul, this, norm_inv]
+    simp only [LinearMap.smul_apply, norm_smul, this]
     simp only [Units.val_inv_eq_inv_val, Units.val_mk0, norm_inv, RCLike.norm_ofReal]
-    simp only [RCLike.norm_ofReal, abs_of_nonneg (norm_nonneg _),
+    simp only [abs_of_nonneg (norm_nonneg _),
       ← hα, α, ← mul_assoc, inv_mul_cancel₀ hα', one_mul]
 
 theorem LinearMap.exists_scalar_isometry_iff_preserves_ortho
@@ -1152,23 +1172,26 @@ theorem LinearMap.exists_scalar_isometry_iff_preserves_ortho
   ↔
   ∀ x y, ⟪x, y⟫_𝕜 = 0 → ⟪T x, T y⟫_𝕜 = 0 :=
 by
-  refine' ⟨λ ⟨α, S, h⟩ x y hxy => _, λ h => _⟩
-  . simp only [h, LinearMap.smul_apply, inner_smul_left, inner_smul_right,
+  constructor
+  · rintro ⟨α, S, h⟩ x y hxy
+    simp only [h, LinearMap.smul_apply, inner_smul_left, inner_smul_right,
       LinearIsometry.coe_toLinearMap, LinearIsometry.inner_map_map, hxy, mul_zero]
-  . by_cases hT : T = 0
-    . rw [hT]
+  · intro h
+    by_cases hT : T = 0
+    · rw [hT]
       use 0, 1
       simp only [zero_smul]
-    . by_cases hV : Module.rank 𝕜 V = 0
-      . rw [rank_zero_iff_forall_zero] at hV
-        simp only [LinearMap.ext_iff, smul_apply, LinearIsometry.coe_toLinearMap,
+    · by_cases hV : Module.rank 𝕜 V = 0
+      · rw [rank_zero_iff_forall_zero] at hV
+        simp only [LinearMap.ext_iff,
           hV, implies_true, exists_true_iff_nonempty]
         use 0, 0
-        simp only [zero_apply, norm_zero, hV, implies_true]
-      . simp only [← pos_iff_ne_zero] at hV
+        simp only [norm_zero, hV, implies_true]
+      · simp only [← pos_iff_ne_zero] at hV
         rw [rank_pos_iff_nontrivial] at hV
         have : 0 < Module.finrank 𝕜 V := Module.finrank_pos
-        obtain ⟨α, hα⟩ := (LinearMap.exists_scalar_isometry_iff_preserves_ortho_of_ne_zero this hT).mpr h
+        obtain ⟨α, hα⟩ :=
+          (LinearMap.exists_scalar_isometry_iff_preserves_ortho_of_ne_zero this hT).mpr h
         use (α⁻¹ : 𝕜ˣ), ⟨((α : 𝕜) • T), (isometry_iff_norm _).mp hα⟩
         simp only [Units.val_inv_eq_inv_val, ne_eq, Units.ne_zero, not_false_eq_true,
           inv_smul_smul₀]

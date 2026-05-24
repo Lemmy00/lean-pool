@@ -6,7 +6,12 @@ Authors: Monica Omar
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.Matrix.Spectrum
+import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.Analysis.RCLike.Basic
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Conj
+import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
 
 /-!
 # Matrix basics
@@ -87,6 +92,73 @@ theorem kronecker_trace {R n : Type _} [CommSemiring R] [Fintype n]
   simp_rw [Matrix.trace, Matrix.diag, Matrix.kroneckerMap, Finset.sum_mul_sum,
     Matrix.of_apply, Fintype.sum_prod_type]
 
+theorem _root_.Matrix.kronecker.trace {R n : Type _} [CommSemiring R] [Fintype n]
+    (A B : Matrix n n R) :
+    (A ⊗ₖ B).trace = A.trace * B.trace :=
+  kronecker_trace A B
+
+/-- The unitary eigenvector matrix associated to a Hermitian matrix. -/
+noncomputable abbrev _root_.Matrix.IsHermitian.eigenvectorMatrix {n 𝕜 : Type*} [RCLike 𝕜]
+    [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    Matrix n n 𝕜 :=
+  hA.eigenvectorUnitary
+
+lemma _root_.Matrix.IsHermitian.eigenvectorUnitary_coe_eq_eigenvectorMatrix {n 𝕜 : Type*} [RCLike 𝕜]
+    [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    hA.eigenvectorMatrix = hA.eigenvectorUnitary :=
+  rfl
+
+lemma _root_.Matrix.IsHermitian.eigenvalues_eq' {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n]
+    [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) (i : n) :
+    hA.eigenvalues i =
+      RCLike.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorMatrixᵀ i) := by
+  simpa [IsHermitian.eigenvectorMatrix, Matrix.IsHermitian.eigenvectorUnitary_transpose_apply] using
+    hA.eigenvalues_eq i
+
+lemma _root_.Matrix.IsHermitian.eigenvectorMatrix_conjTranspose {n 𝕜 : Type*} [RCLike 𝕜]
+    [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    hA.eigenvectorMatrixᴴ = (hA.eigenvectorUnitary : Matrix n n 𝕜)ᴴ :=
+  rfl
+
+theorem _root_.Matrix.IsHermitian.eigenvectorMatrix_mul_conjTranspose {n 𝕜 : Type*} [RCLike 𝕜]
+    [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    hA.eigenvectorMatrix * hA.eigenvectorMatrixᴴ = 1 := by
+  rw [IsHermitian.eigenvectorMatrix, ← star_eq_conjTranspose]
+  exact (SetLike.coe_mem hA.eigenvectorUnitary).2
+
+theorem _root_.Matrix.IsHermitian.trace_eq {𝕜 n : Type _} [RCLike 𝕜] [Fintype n] [DecidableEq n]
+    {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    A.trace = ∑ i : n, hA.eigenvalues i := by
+  simpa using hA.trace_eq_sum_eigenvalues
+
+theorem _root_.LinearMap.IsSymmetric.eigenvalue_mem_spectrum {𝕜 n : Type _} [RCLike 𝕜]
+    [Fintype n] {E : Type _} [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E] {A : E →ₗ[𝕜] E}
+    (hn : Module.finrank 𝕜 E = Fintype.card n) (hA : A.IsSymmetric)
+    (i : Fin (Fintype.card n)) :
+    (hA.eigenvalues hn i : 𝕜) ∈ spectrum 𝕜 A := by
+  rw [← Module.End.hasEigenvalue_iff_mem_spectrum]
+  exact hA.hasEigenvalue_eigenvalues hn i
+
+theorem _root_.Matrix.IsHermitian.eigenvalues_hasEigenvalue {𝕜 n : Type _} [RCLike 𝕜] [Fintype n]
+    [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.IsHermitian) (i : n) :
+    Module.End.HasEigenvalue (toEuclideanLin M) (hM.eigenvalues i) := by
+  simp_rw [Matrix.IsHermitian.eigenvalues, Matrix.IsHermitian.eigenvalues₀]
+  exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _
+
+theorem _root_.Matrix.IsHermitian.hasEigenvector_eigenvectorBasis
+    {𝕜 n : Type _} [RCLike 𝕜] [Fintype n]
+    [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.IsHermitian) (i : n) :
+    Module.End.HasEigenvector (toEuclideanLin M) (hM.eigenvalues i) (hM.eigenvectorBasis i) := by
+  simp_rw [Matrix.IsHermitian.eigenvectorBasis, Matrix.IsHermitian.eigenvalues,
+    Matrix.IsHermitian.eigenvalues₀, OrthonormalBasis.reindex_apply]
+  exact LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis _ _ _
+
+theorem _root_.Matrix.IsHermitian.apply_eigenvectorBasis {𝕜 n : Type _} [RCLike 𝕜] [Fintype n]
+    [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.IsHermitian) (i : n) :
+    M.mulVec (hM.eigenvectorBasis i) = hM.eigenvalues i • hM.eigenvectorBasis i := by
+  simpa using hM.mulVec_eigenvectorBasis i
+
 /-- Expand a square matrix indexed by a product as a sum of Kronecker products of matrix units. -/
 theorem kmul_representation {R n₁ n₂ : Type _} [Fintype n₁] [Fintype n₂]
     [DecidableEq n₁] [DecidableEq n₂] [Semiring R]
@@ -109,18 +181,61 @@ theorem kronecker_star {R n : Type _} [CommSemiring R] [StarRing R] (x y : Matri
     star (x ⊗ₖ y) = star x ⊗ₖ star y :=
   Matrix.kronecker_conjTranspose _ _
 
+theorem _root_.Matrix.kronecker.star {R n : Type _} [CommSemiring R] [StarRing R]
+    (x y : Matrix n n R) :
+    star (x ⊗ₖ y) = star x ⊗ₖ star y :=
+  kronecker_star x y
+
 theorem kronecker_transpose {R n : Type _} [CommSemiring R] (x y : Matrix n n R) :
     (x ⊗ₖ y)ᵀ = xᵀ ⊗ₖ yᵀ := by
   simp_rw [← Matrix.ext_iff]
   intro i j
   simp only [Matrix.transpose_apply, Matrix.kroneckerMap, of_apply]
 
+theorem _root_.Matrix.kronecker.transpose {R n : Type _} [CommSemiring R] (x y : Matrix n n R) :
+    (x ⊗ₖ y)ᵀ = xᵀ ⊗ₖ yᵀ :=
+  kronecker_transpose x y
+
 theorem kronecker_conj {R n : Type _} [CommSemiring R] [StarRing R] (x y : Matrix n n R) :
     (x ⊗ₖ y)ᴴᵀ = xᴴᵀ ⊗ₖ yᴴᵀ := by
   rw [Matrix.conj, Matrix.kronecker_conjTranspose, Matrix.kronecker_transpose]
   rfl
 
+theorem _root_.Matrix.kronecker.conj {R n : Type _} [CommSemiring R] [StarRing R]
+    (x y : Matrix n n R) :
+    (x ⊗ₖ y)ᴴᵀ = xᴴᵀ ⊗ₖ yᴴᵀ :=
+  kronecker_conj x y
+
+theorem _root_.Matrix.unitaryGroup.coe_mk {n 𝕜 : Type _} [RCLike 𝕜] [Fintype n] [DecidableEq n]
+    (x : Matrix n n 𝕜) (hx : x ∈ Matrix.unitaryGroup n 𝕜) :
+    ⇑(⟨x, hx⟩ : Matrix.unitaryGroup n 𝕜) = x :=
+  rfl
+
 end Matrix
+
+open scoped BigOperators InnerProductSpace Kronecker
+
+theorem kmul_representation {R n₁ n₂ : Type _} [Fintype n₁] [Fintype n₂] [DecidableEq n₁]
+    [DecidableEq n₂] [Semiring R] (x : Matrix (n₁ × n₂) (n₁ × n₂) R) :
+    x =
+      ∑ i : n₁, ∑ j : n₁, ∑ k : n₂, ∑ l : n₂,
+        x (i, k) (j, l) • Matrix.single i j (1 : R) ⊗ₖ Matrix.single k l (1 : R) :=
+  Matrix.kmul_representation x
+
+noncomputable instance EuclideanSpace.instInnerPi {n 𝕜 : Type _} [RCLike 𝕜] [Fintype n] :
+    Inner 𝕜 (n → 𝕜) :=
+  { inner := fun x y =>
+      ⟪(EuclideanSpace.equiv n 𝕜).symm x, (EuclideanSpace.equiv n 𝕜).symm y⟫_𝕜 }
+
+theorem EuclideanSpace.inner_eq {n 𝕜 : Type _} [RCLike 𝕜] [Fintype n] {x y : n → 𝕜} :
+    inner 𝕜 x y = star (x : n → 𝕜) ⬝ᵥ (y : n → 𝕜) := by
+  change (∑ i, y i * star (x i)) = ∑ i, star (x i) * y i
+  exact Finset.sum_congr rfl fun i _ => mul_comm (y i) (star (x i))
+
+theorem EuclideanSpace.rankOne_of_orthonormalBasis_eq_one {n 𝕜 : Type _} [RCLike 𝕜]
+    [Fintype n] (h : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n)) :
+    ∑ i : n, rankOne 𝕜 (h i) (h i) = 1 := by
+  simpa using rankOne.sum_orthonormalBasis_eq_id h
 
 open scoped Matrix
 

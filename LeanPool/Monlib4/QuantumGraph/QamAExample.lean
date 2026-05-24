@@ -16,7 +16,8 @@ section
 
 # Examples of single-edged quantum graph
 
-This file contains examples of single-edged quantum graphs over `M₂(ℂ)`. The main result is that all single-edged quantum graphs over `M₂(ℂ)` are isomorphic each other.
+This file contains examples of single-edged quantum graphs over `M₂(ℂ)`. The main result is
+  that all single-edged quantum graphs over `M₂(ℂ)` are isomorphic each other.
 
 -/
 
@@ -101,7 +102,8 @@ private theorem aux.ug :
     ContinuousLinearMap.coe_sum, ContinuousLinearMap.coe_smul,
     LinearMap.sum_apply, LinearMap.smul_apply, LinearMap.coe_mk, ContinuousLinearMap.coe_coe,
     rankOne_apply, Module.Dual.IsFaithfulPosMap.inner_coord', ←
-    PosDef_one_rpow_eq_trace_matrix_rpow, posDefOne_rpow, Matrix.mul_one, AddHom.coe_mk, Matrix.smul_stdBasisMatrix,
+    PosDef_one_rpow_eq_trace_matrix_rpow, posDefOne_rpow, Matrix.mul_one, AddHom.coe_mk,
+      Matrix.smul_stdBasisMatrix,
     smul_eq_mul, Module.Dual.IsFaithfulPosMap.basis_apply,
     ← PosDef_one_rpow_eq_trace_matrix_rpow,
     posDefOne_rpow,
@@ -176,7 +178,7 @@ theorem StarAlgEquiv.symm_comp_self {R U V : Type _} [CommSemiring R] [Semiring 
     f.symm.toAlgEquiv.toLinearMap.comp f.toAlgEquiv.toLinearMap = 1 := by
   simp only [LinearMap.ext_iff, LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
     StarAlgEquiv.coe_toAlgEquiv, StarAlgEquiv.symm_apply_apply, Module.End.one_apply,
-    eq_self_iff_true, forall_true_iff]
+      forall_true_iff]
 
 theorem Qam.iso_preserves_ir_reflexive [Nontrivial n] {φ : Module.Dual ℂ ℍ}
     [hφ : φ.IsFaithfulPosMap] {x y : ℍ →ₗ[ℂ] ℍ} (hxhy : @Qam.Iso n _ _ φ x y)
@@ -190,7 +192,8 @@ theorem Qam.iso_preserves_ir_reflexive [Nontrivial n] {φ : Module.Dual ℂ ℍ}
   letI : Coalgebra ℂ ℍ := Coalgebra.ofFiniteDimensionalHilbertAlgebra
   obtain ⟨f, hf, h⟩ := hxhy
   rw [StarAlgEquiv.comp_eq_iff, LinearMap.comp_assoc] at hf
-  have := List.TFAE.out (@Module.Dual.IsFaithfulPosMap.starAlgEquiv_is_isometry_tFAE n _ _ φ _ _ f) 0 4
+  have := List.TFAE.out (@Module.Dual.IsFaithfulPosMap.starAlgEquiv_is_isometry_tFAE n _ _ φ _
+    _ f) 0 4
   have hisometry : StarAlgEquiv.IsIsometry f := by
     change Isometry f
     rw [isometry_iff_norm]
@@ -209,7 +212,7 @@ theorem Qam.iso_preserves_ir_reflexive [Nontrivial n] {φ : Module.Dual ℂ ℍ}
     simp [conjugateMap, LinearMap.comp_apply]
   have hconj_zero : conjugateMap 0 = 0 := by
     ext z
-    simp [conjugateMap, LinearMap.comp_apply]
+    simp [conjugateMap]
   have hconj_const : conjugateMap (ite ir_reflexive 1 0) = ite ir_reflexive 1 0 := by
     by_cases hir : ir_reflexive <;> simp [hir, hconj_one, hconj_zero]
   have hschur :
@@ -339,10 +342,10 @@ theorem spectra_fin_two_ext {α : Type _} (α₁ α₂ β₁ β₂ : α) :
   simp_rw [Multiset.insert_eq_cons, Multiset.cons_eq_cons, Multiset.singleton_inj,
     Multiset.singleton_eq_cons_iff, ne_eq, h', false_and_iff, false_or_iff, not_false_iff,
     true_and_iff]
-  simp only [exists_eq_right_right, and_true_iff, and_congr_right_iff, eq_comm]
+  simp only [exists_eq_right_right, and_true_iff, eq_comm]
   simp_rw [and_comm]
 
-@[instance]
+@[reducible, instance]
 def Multiset.hasSmul {α : Type _} [SMul ℂ α] : SMul ℂ (Multiset α)
     where smul a s := s.map ((· • ·) a)
 
@@ -350,6 +353,7 @@ theorem Multiset.smul_fin_two {α : Type _} [SMul ℂ α] (a b : α) (c : ℂ) :
     (c • ({a, b} : Multiset α) : Multiset α) = {c • a, c • b} :=
   rfl
 
+omit [Fintype n] [DecidableEq n] in
 theorem IsAlmostHermitian.smul_eq {x : Matrix n n ℂ} (hx : x.IsAlmostHermitian) (c : ℂ) :
     (hx.smul c).scalar • (hx.smul c).matrix = c • x := by rw [← (hx.smul c).eq_smul_matrix]
 
@@ -357,7 +361,7 @@ theorem spectra_fin_two_ext_of_traceless {α₁ α₂ β₁ β₂ : ℂ} (hα₂
     (h₁ : α₁ = -α₂) (h₂ : β₁ = -β₂) : ∃ c : ℂˣ, ({α₁, α₂} : Multiset ℂ) = (c : ℂ) • {β₁, β₂} :=
   by
   simp_rw [h₁, h₂, Multiset.smul_fin_two, smul_neg]
-  refine' ⟨Units.mk0 (α₂ * β₂⁻¹) (mul_ne_zero hα₂ (inv_ne_zero hβ₂)), _⟩
+  use Units.mk0 (α₂ * β₂⁻¹) (mul_ne_zero hα₂ (inv_ne_zero hβ₂))
   simp_rw [Units.val_mk0, smul_eq_mul, mul_assoc, inv_mul_cancel₀ hβ₂, mul_one]
 
 theorem Matrix.IsAlmostHermitian.trace {x : Matrix n n ℂ} (hx : x.IsAlmostHermitian) :
@@ -394,7 +398,8 @@ theorem Matrix.IsAlmostHermitian.spectral_theorem' {x : Matrix n n ℂ} (hx : x.
   by rw [← Matrix.IsHermitian.spectral_theorem'', ← hx.eq_smul_matrix]
 
 theorem Matrix.IsAlmostHermitian.eigenvalues_eq {x : Matrix n n ℂ} (hx : x.IsAlmostHermitian) :
-    hx.eigenvalues = hx.scalar • ((@RCLike.ofReal ℂ _) ∘ hx.matrix_isHermitian.eigenvalues : n → ℂ) :=
+    hx.eigenvalues = hx.scalar • ((@RCLike.ofReal ℂ _) ∘ hx.matrix_isHermitian.eigenvalues :
+      n → ℂ) :=
   rfl
 
 theorem Matrix.IsAlmostHermitian.spectral_theorem {x : Matrix n n ℂ} (hx : x.IsAlmostHermitian) :
@@ -429,12 +434,13 @@ private theorem matrix.is_almost_hermitian.eigenvalues_eq_zero_iff_aux
   rw [← hx.eigenvalues_eq_zero_iff, funext_iff]
   simp_rw [Fin.forall_fin_two, Pi.zero_apply]
 
+omit [Fintype n] in
 theorem Matrix.diagonal_eq_zero_iff {x : n → ℂ} : diagonal x = 0 ↔ x = 0 := by
   simp_rw [← diagonal_zero, diagonal_eq_diagonal_iff, funext_iff, Pi.zero_apply]
 
 theorem Matrix.unitaryGroup.star_mul_cancel_right {U₁ U₂ : unitaryGroup n ℂ} :
   U₁ * star U₂ * U₂ = U₁ :=
-by simp only [mul_assoc, unitary.star_mul_self, mul_one]
+by simp only [mul_assoc, Unitary.star_mul_self, mul_one]
 
 theorem qamA.finTwoIso (x y : { x : Matrix (Fin 2) (Fin 2) ℂ // x ≠ 0 })
     : withMatrixQuantum[(traceModuleDual : Module.Dual ℂ (Matrix (Fin 2) (Fin 2) ℂ))]
@@ -458,20 +464,21 @@ theorem qamA.finTwoIso (x y : { x : Matrix (Fin 2) (Fin 2) ℂ // x ≠ 0 })
   rw [exists_comm]
   obtain ⟨Hx, _⟩ := (qamA.is_self_adjoint_iff x).mp hx1
   obtain ⟨Hy, _⟩ := (qamA.is_self_adjoint_iff y).mp hy1
-  simp_rw [qamA.is_irreflexive_iff, Hx.trace, Hy.trace, Fin.sum_univ_two, add_eq_zero_iff_eq_neg] at hx2 hy2
+  simp_rw [qamA.is_irreflexive_iff, Hx.trace, Hy.trace, Fin.sum_univ_two,
+    add_eq_zero_iff_eq_neg] at hx2 hy2
   rw [Matrix.IsAlmostHermitian.spectral_theorem Hx, Matrix.IsAlmostHermitian.spectral_theorem Hy]
   have HX : diagonal Hx.eigenvalues = of ![![-Hx.eigenvalues 1, 0], ![0, Hx.eigenvalues 1]] :=
     by
     rw [← hx2, ← Matrix.ext_iff]
-    simp only [Fin.forall_fin_two, diagonal_apply, of_apply, eq_self_iff_true, if_true, one_ne_zero,
+    simp only [Fin.forall_fin_two, diagonal_apply, of_apply, if_true, one_ne_zero,
       if_false, zero_ne_one, if_false]
-    simp only [cons_val_zero, eq_self_iff_true, cons_val_one, head_cons, and_self_iff]
+    simp only [cons_val_zero, cons_val_one, and_self_iff]
   have HY : diagonal Hy.eigenvalues = of ![![-Hy.eigenvalues 1, 0], ![0, Hy.eigenvalues 1]] :=
     by
     rw [← hy2, ← Matrix.ext_iff]
-    simp only [Fin.forall_fin_two, diagonal_apply, of_apply, eq_self_iff_true, if_true, one_ne_zero,
+    simp only [Fin.forall_fin_two, diagonal_apply, of_apply, if_true, one_ne_zero,
       if_false, zero_ne_one, if_false]
-    simp only [cons_val_zero, eq_self_iff_true, cons_val_one, head_cons, and_self_iff]
+    simp only [cons_val_zero, cons_val_one, and_self_iff]
   simp_rw [HY, HX, innerAut_apply_innerAut]
   have hx₁ : Hx.eigenvalues 1 ≠ 0 := by
     intro hx₁
@@ -479,8 +486,8 @@ theorem qamA.finTwoIso (x y : { x : Matrix (Fin 2) (Fin 2) ℂ // x ≠ 0 })
       by
       rw [HX, hx₁, neg_zero, ← Matrix.ext_iff]
       simp_rw [Fin.forall_fin_two]
-      simp only [of_apply, Pi.zero_apply]
-      simp only [cons_val_zero, cons_val_one, head_cons, and_self_iff]
+      simp only [of_apply]
+      simp only [cons_val_zero, cons_val_one]
       aesop
     rw [Matrix.diagonal_eq_zero_iff, Matrix.IsAlmostHermitian.eigenvalues_eq_zero_iff] at this
     exact (Subtype.mem x) this
@@ -490,20 +497,20 @@ theorem qamA.finTwoIso (x y : { x : Matrix (Fin 2) (Fin 2) ℂ // x ≠ 0 })
       by
       rw [HY, hy₁, neg_zero, ← Matrix.ext_iff]
       simp_rw [Fin.forall_fin_two]
-      simp only [of_apply, Pi.zero_apply]
-      simp only [cons_val_zero, cons_val_one, head_cons, and_self_iff]
+      simp only [of_apply]
+      simp only [cons_val_zero, cons_val_one]
       aesop
     rw [Matrix.diagonal_eq_zero_iff, Matrix.IsAlmostHermitian.eigenvalues_eq_zero_iff] at this
     exact (Subtype.mem y) this
-  refine'
-    ⟨Units.mk0 (Hx.eigenvalues 1 * (Hy.eigenvalues 1)⁻¹) (mul_ne_zero hx₁ (inv_ne_zero hy₁)), _⟩
+  use Units.mk0 (Hx.eigenvalues 1 * (Hy.eigenvalues 1)⁻¹) (mul_ne_zero hx₁ (inv_ne_zero hy₁))
   use Hx.eigenvectorUnitary * star Hy.eigenvectorUnitary
-  -- use ⟨Hx.eigenvectorMatrix, Hx.eigenvectorMatrix_mem_unitaryGroup⟩ * star (⟨Hy.eigenvectorMatrix, Hy.eigenvectorMatrix_mem_unitaryGroup⟩ : unitaryGroup (Fin 2) ℂ)
+  -- use ⟨Hx.eigenvectorMatrix, Hx.eigenvectorMatrix_mem_unitaryGroup⟩ * star
+  -- (⟨Hy.eigenvectorMatrix, Hy.eigenvectorMatrix_mem_unitaryGroup⟩ : unitaryGroup (Fin 2) ℂ)
   have :
     (Hx.eigenvalues 1 * (Hy.eigenvalues 1)⁻¹) • diagonal Hy.eigenvalues = diagonal Hx.eigenvalues :=
     by
     rw [HX, HY]
-    simp only [smul_of, smul_cons, Algebra.id.smul_eq_mul, mul_neg, MulZeroClass.mul_zero,
+    simp only [smul_of, smul_cons, smul_eq_mul, mul_neg, MulZeroClass.mul_zero,
       smul_empty, EmbeddingLike.apply_eq_iff_eq]
     simp only [inv_mul_cancel_right₀ hy₁]
   simp_rw [Matrix.unitaryGroup.star_mul_cancel_right, Units.val_mk0,

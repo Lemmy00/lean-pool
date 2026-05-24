@@ -76,7 +76,7 @@ by
 /-- Matrix transpose as a star-algebra equivalence to the opposite algebra. -/
 noncomputable abbrev Matrix.transposeStarAlgEquiv (ι : Type*) [Fintype ι] [DecidableEq ι] :
   Matrix ι ι ℂ ≃⋆ₐ[ℂ] (Matrix ι ι ℂ)ᵐᵒᵖ :=
-StarAlgEquiv.ofAlgEquiv (transposeAlgEquiv ι ℂ ℂ) (λ _ => rfl)
+StarAlgEquiv.ofAlgEquiv (transposeAlgEquiv ι ℂ ℂ) (fun _ => rfl)
 theorem Matrix.transposeStarAlgEquiv_apply {ι : Type*} [Fintype ι] [DecidableEq ι]
   (x : Matrix ι ι ℂ) :
   Matrix.transposeStarAlgEquiv ι x = MulOpposite.op (xᵀ) :=
@@ -105,7 +105,7 @@ by
         vecMulVec (onb.repr x).ofLp (star (onb.repr y).ofLp) from
     (Matrix.vecMulVec_eq (Fin 1) (onb.repr x).ofLp
       (star (onb.repr y).ofLp)).symm]
-  rw [kmul_representation (vecMulVec _ _)]
+  rw [Matrix.kmul_representation (vecMulVec _ _)]
   simp only [map_sum, _root_.map_smul, kroneckerToTensor, tensorToKronecker_symm_apply,
     kroneckerToTensorProduct_apply, StarAlgEquiv.coe_toAlgEquiv,
     StarAlgEquiv.lTensor_tmul, QuantumSet.Psi_symm_apply,
@@ -211,7 +211,7 @@ rfl
 theorem QuantumGraph.Real.matrix_eq_of_orthonormalBasis
   : withMatrixCoalgebraQuantum[φ]
     ∀ {A : Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ}, (hA : QuantumGraph.Real _ A) →
-    ∀ {ι : Type*} [DecidableEq ι] [Fintype ι],
+    ∀ {ι : Type*} [Fintype ι],
     (u : OrthonormalBasis ι ℂ (hA.matrix_submodule (φ := φ))) →
     A = ∑ i,
       lmul (R := ℂ) ((((u i : hA.matrix_submodule (φ := φ)) : Matrix n n ℂ) * φ.matrix)) *
@@ -220,7 +220,7 @@ theorem QuantumGraph.Real.matrix_eq_of_orthonormalBasis
             (φ.matrix * ((u i : hA.matrix_submodule (φ := φ)) : Matrix n n ℂ)))) :=
 by
   withMatrixCoalgebraQuantumCtx[φ]
-  intro A hA ι _ _ u
+  intro A hA ι _ u
   simp_rw [← QuantumSet.Psi_symm_transpose_kroneckerToTensor_toMatrix_rankOne]
   rw [← map_sum]
   rw [← map_sum (StarAlgEquiv.lTensor (Matrix n n ℂ) (transposeStarAlgEquiv n))]
@@ -230,7 +230,7 @@ by
   rw [← OrthonormalBasis.orthogonalProjection'_eq_sum_rankOne u]
   rw [hA.matrix_orthogonalProjection_eq]
   simp only [ContinuousLinearMap.toLinearMapAlgEquiv_symm_apply]
-  simp only [tensorToKronecker_apply, LinearMap.coe_toContinuousLinearMap,
+  simp only [LinearMap.coe_toContinuousLinearMap,
     StarAlgEquiv.apply_symm_apply, kroneckerToTensor, tensorToKronecker]
   simp only [AlgEquiv.symm_mk, AlgEquiv.coe_mk, Equiv.coe_fn_mk,
     TensorProduct.toKronecker_to_tensorProduct, ← StarAlgEquiv.lTensor_symm,
@@ -283,7 +283,7 @@ by
   let u : OrthonormalBasis (Fin 1) 𝕜 U := by
     rw [← hU]; exact stdOrthonormalBasis 𝕜 U
   rw [u.orthogonalProjection'_eq_sum_rankOne, Fin.sum_univ_one]
-  refine' ⟨⟨u 0, u.norm_eq_one _⟩, rfl⟩
+  refine ⟨⟨u 0, u.norm_eq_one _⟩, rfl⟩
 
 theorem QuantumSet.Psi_apply_matrix_one {n : Type*} [DecidableEq n] [Fintype n]
   {φ : Module.Dual ℂ (Matrix n n ℂ)} [hφ : φ.IsFaithfulPosMap] :
@@ -305,7 +305,8 @@ by
     rankOne_toMatrix_of_onb,
     ]
   simp_rw [StarAlgEquiv.coe_toAlgEquiv, StarAlgEquiv.eq_apply_iff_symm_eq,
-    AlgEquiv.eq_apply_iff_symm_eq, map_sum, StarAlgEquiv.lTensor_symm_tmul, kroneckerToTensor_symm_apply,
+    AlgEquiv.eq_apply_iff_symm_eq, map_sum, StarAlgEquiv.lTensor_symm_tmul,
+      kroneckerToTensor_symm_apply,
     TensorProduct.toKronecker_apply, transposeStarAlgEquiv_symm_apply,
     MulOpposite.unop_op, starAlgebra.modAut_zero, AlgEquiv.one_apply,
     conjTranspose_replicateCol]
@@ -340,7 +341,7 @@ by
   rw [Module.Dual.IsFaithfulPosMap.inner_coord_onb,
     Module.Dual.IsFaithfulPosMap.inner_coord_onb (hφ := hφ),
     ← PosDef.rpow_neg_one_eq_inv_self hφ.matrixIsPosDef]
-  simp only [PosDef.rpow_mul_rpow, mul_assoc, mul_comm, mul_left_comm]
+  simp only [PosDef.rpow_mul_rpow, mul_comm]
   ring_nf
   rw [← conjTranspose_apply, (PosDef.rpow.isPosDef _ _).1.eq]
 
@@ -450,16 +451,17 @@ by
   rw [rankOne.eq_zero_iff, sub_eq_zero]
   simp only [Invertible.ne_zero, or_false, ← trace_conjTranspose]
   constructor
-  . intro h
+  · intro h
     rw [← h]
-    let α := Units.mk0 (((x : Matrix n n ℂ)ᴴ).trace) ?_
+    have htrace : ((x : Matrix n n ℂ)ᴴ).trace ≠ 0 := by
+      intro hx
+      rw [hx, zero_smul, eq_comm] at h
+      simp only [Invertible.ne_zero] at h
+    let α := Units.mk0 (((x : Matrix n n ℂ)ᴴ).trace) htrace
     have hα : α = ((x : Matrix n n ℂ)ᴴ).trace := rfl
     use α⁻¹
     simp only [← hα, smul_smul, Units.inv_mul, one_smul]
-    . intro hx
-      rw [hx, zero_smul, eq_comm] at h
-      simp only [Invertible.ne_zero] at h
-  . intro ⟨α, hα⟩
+  · intro ⟨α, hα⟩
     simp_rw [hα, conjTranspose_smul, trace_smul, hφ.matrixIsPosDef.inv.1.eq,
       smul_smul, smul_eq_mul]
     rw [mul_rotate _ _ (α : ℂ), mul_assoc _ _ (star (α : ℂ)), Complex.star_def,
@@ -520,7 +522,7 @@ by
           ((QuantumSet.Psi 0 (1 / 2)) A))))).trace) =
     (QuantumGraph.NumOfEdges A : ℂ)
   rw [StarAlgEquiv.apply_symm_apply]
-  simp only [tensorToKronecker_apply, QuantumSet.n]
+  simp only [tensorToKronecker_apply]
   rw [← Matrix.traceLinearMap_apply _ ℂ, ← LinearMap.comp_apply]
   change (Matrix.traceLinearMap (n × n) ℂ ℂ ∘ₗ TensorProduct.toKronecker)
       ((StarAlgEquiv.lTensor (Matrix n n ℂ) (transposeStarAlgEquiv n).symm)
@@ -554,8 +556,8 @@ theorem Matrix.traceLinearMap_dualMatrix_eq
   -- φ.matrix = 1 :=
   Module.Dual.matrix (Matrix.traceLinearMap n ℂ ℂ) = 1 :=
 by
-  refine Eq.symm (Module.Dual.apply_eq_of _ 1 (λ _ => ?_))
-  simp only [← counit_eq_dual, one_mul]
+  refine Eq.symm (Module.Dual.apply_eq_of _ 1 (fun _ => ?_))
+  simp only [one_mul]
   rfl
 
 theorem QuantumGraph.Real.of_norm_one_matrix_eq_of_norm_one_matrix_iff
@@ -568,16 +570,14 @@ by
   simp only [of_norm_one_matrix]
   simp only [← @QuantumSet.Psi_symm_transpose_kroneckerToTensor_toMatrix_rankOne,
     (LinearEquiv.injective _).eq_iff,
-    (StarAlgEquiv.injective _).eq_iff, (AlgEquiv.injective _).eq_iff,
-    (StarAlgEquiv.injective onb.toMatrix).eq_iff]
+    (StarAlgEquiv.injective _).eq_iff, (AlgEquiv.injective _).eq_iff]
   constructor
-  . simp_rw [ContinuousLinearMap.coe_inj];
+  · simp_rw [ContinuousLinearMap.coe_inj];
     exact colinear_of_rankOne_self_eq_rankOne_self _ _
-  . rintro ⟨α, hα⟩
+  · rintro ⟨α, hα⟩
     have := x.property
     simp only [hα, norm_smul, y.property, mul_one] at this
-    simp only [hα, _root_.map_smul, map_smulₛₗ, RingHom.id_apply,
-      ContinuousLinearMap.smul_apply,
+    simp only [hα, _root_.map_smul, map_smulₛₗ,
       LinearMap.smul_apply, ContinuousLinearMap.coe_smul]
     rw [smul_smul, RCLike.conj_mul, this, RCLike.ofReal_one, one_pow, one_smul]
 
@@ -613,8 +613,7 @@ by
     rw [of_norm_one_matrix_is_reflexive_iff (φ := φ) u'] at hA₂
     obtain ⟨α, hα⟩ := hA₂
     simp only [u'] at *
-    let α' : ℂˣ := Units.mk0 ‖φ.matrix⁻¹‖ (by simp only [inv_ne_zero,
-      ne_eq, Complex.ofReal_eq_zero,
+    let α' : ℂˣ := Units.mk0 ‖φ.matrix⁻¹‖ (by simp only [ne_eq, Complex.ofReal_eq_zero,
       norm_eq_zero, Invertible.ne_zero, not_false_eq_true])
     have hα' : α' = (‖φ.matrix⁻¹‖ : ℂ) := rfl
     use α * α'
@@ -777,7 +776,7 @@ by
 noncomputable def PiMat_finTwo_same_swapStarAlgEquiv {n : Type*} [Fintype n] [DecidableEq n] :
   PiMat ℂ (Fin 2) (PiFinTwo_same n) ≃⋆ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n) :=
 StarAlgEquiv.ofAlgEquiv (PiMat_finTwo_same_swapAlgEquiv (n := n))
-(λ x => by
+(fun x => by
   rw [Pi.eq_sum_single_proj ℂ x]
   simp only [Fin.sum_univ_two, Fin.isValue, star_add, map_add, ← Pi.single_star,
     PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_one,
@@ -789,7 +788,7 @@ lemma PiMat_finTwo_same_swapStarAlgEquiv_apply {n : Type*} [Fintype n] [Decidabl
     Pi.single (0 : Fin 2) (x 1) + Pi.single (1 : Fin 2) (x 0) :=
 by
   nth_rw 1 [Pi.eq_sum_single_proj ℂ x]
-  simp only [Fin.sum_univ_two, Fin.isValue, star_add, map_add, ← Pi.single_star,
+  simp only [Fin.sum_univ_two, Fin.isValue, map_add,
     PiMat_finTwo_same_swapStarAlgEquiv, StarAlgEquiv.ofAlgEquiv_coe,
     PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_one,
     PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero, add_comm]
@@ -883,15 +882,16 @@ by
   intro hc A hA hA₂ hA₃ hA₄
   rw [← QuantumGraph.dim_of_piMat_submodule_eq_numOfEdges_of_trace_counit hc hA.toQuantumGraph,
     Nat.cast_eq_one] at hA₄
-  obtain ⟨i, hi, hf⟩ := hA.exists_unique_includeMap_of_adjoint_and_dim_ofPiMat_submodule_eq_one hA₂ hA₄
+  obtain ⟨i, hi, hf⟩ :=
+    hA.exists_unique_includeMap_of_adjoint_and_dim_ofPiMat_submodule_eq_one hA₂ hA₄
   let p : (j : Fin 2) → PiMat ℂ (Fin 2) (PiFinTwo_same n) →ₗ[ℂ]
       Mat ℂ (PiFinTwo_same n j) := fun j => LinearMap.proj j
   have hp : ∀ j, p j = LinearMap.proj j := fun j => rfl
   have : ∀ j, p j ∘ₗ LinearMap.adjoint (p j) = 1 :=
-  λ j => by
+  fun j => by
     simp only [LinearMap.proj_adjoint, p, Module.End.one_eq_id, LinearMap.proj_comp_single_same]
   have this' : ∀ j, (p j ∘ₗ A ∘ₗ LinearMap.adjoint (p j)) •ₛ 1 = 1 :=
-  λ j => by
+  fun j => by
     calc (p j ∘ₗ A ∘ₗ LinearMap.adjoint (p j)) •ₛ 1
           = (p j ∘ₗ A ∘ₗ LinearMap.adjoint (p j) ∘ₗ 1) •ₛ (p j ∘ₗ 1 ∘ₗ LinearMap.adjoint (p j)) :=
             by simp only [LinearMap.one_comp, LinearMap.comp_one, this]
@@ -925,7 +925,7 @@ by
             LinearMap.one_comp]
           congr
           rw [Module.End.one_eq_id, ← LinearMap.sum_single_comp_proj]
-          simp only [p, LinearMap.proj_adjoint, map_sum]
+          simp only [LinearMap.proj_adjoint]
     _ = (LinearMap.adjoint (p i) ∘ₗ (p i) ∘ₗ A ∘ₗ LinearMap.adjoint (p i) ∘ₗ (p i))
         •ₛ (LinearMap.adjoint (p i) ∘ₗ 1 ∘ₗ p i)
         + ∑ j ∈ Finset.univ \ {i},
@@ -936,15 +936,15 @@ by
             Finset.sum_sdiff_eq_sub, Finset.sum_singleton, add_sub_cancel,]
     _ = LinearMap.adjoint (p i) ∘ₗ p i :=
         by
-          simp only [map_add, LinearMap.add_apply, p, schurMul_proj_adjoint_comp]
+          simp only [p, schurMul_proj_adjoint_comp]
           simp only [← LinearMap.comp_assoc, schurMul_comp_proj]
           simp only [LinearMap.comp_assoc, ← hp, this']
           simp only [LinearMap.one_comp, add_eq_left]
           apply Finset.sum_eq_zero
           simp only [Finset.mem_sdiff, Finset.mem_univ, Finset.mem_singleton, true_and]
-          push_neg
+          push Not
           intro j hj
-          rw [schurMul_proj_adjoint_comp_of_ne_eq_zero (hφ := λ _ => hφ) hj.symm]
+          rw [schurMul_proj_adjoint_comp_of_ne_eq_zero (hφ := fun _ => hφ) hj.symm]
   simp only [Finset.subset_univ, Finset.sum_sdiff_eq_sub, Fin.sum_univ_two, Fin.isValue,
     Finset.sum_singleton, add_sub_cancel, LinearMap.ext_iff, LinearMap.add_apply,
     LinearMap.comp_apply, LinearMap.proj_apply, LinearMap.proj_adjoint_apply, funext_iff,
@@ -953,14 +953,14 @@ by
   specialize this 1 (if i = 0 then 1 else 0)
   rcases hii with (hii | hii)
   <;> rw [hii] at this
-  <;> simp only [add_eq_left, add_eq_right, includeBlock_apply,
-      LinearMap.single_apply, dite_eq_right_iff] at this
+  <;> simp only [add_eq_left, add_eq_right, includeBlock_apply, dite_eq_right_iff] at this
   <;> simp only [Fin.isValue, ↓reduceIte, ↓dreduceIte, Pi.one_apply, eq_mp_eq_cast, cast_eq,
-    one_ne_zero, imp_false, not_true_eq_false, p] at this
+    one_ne_zero, imp_false, not_true_eq_false] at this
 
 -- theorem QuantumGraph.Real.piMatFinTwo_same_isSelfAdjoint_reflexive_and_numOfEdges_eq_one_equiv
 --   [Nontrivial n]
---   (hc : Coalgebra.counit (R := ℂ) (A := PiMat ℂ (Fin 2) (PiFinTwo_same n)) = PiMat.traceLinearMap)
+--   (hc : Coalgebra.counit (R := ℂ) (A := PiMat ℂ (Fin 2) (PiFinTwo_same n)) =
+-- PiMat.traceLinearMap)
 --   {A B : PiMat ℂ (Fin 2) (PiFinTwo_same n) →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n)}
 --   (hA : QuantumGraph.Real _ A) (hA₂ : LinearMap.adjoint A = A) (hA₃ : A •ₛ 1 = 1)
 --   (hA₄ : QuantumGraph.NumOfEdges A = 1)

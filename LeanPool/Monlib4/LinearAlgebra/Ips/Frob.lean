@@ -28,12 +28,13 @@ open Matrix
 
 -- def linear_map.is_faithful_pos_map.tensor_pow (x : ℕ) :
 --   ⨂[ℂ]^x (matrix n n ℂ) →ₗ[ℂ] ℂ :=
--- { to_fun := λ a, by { simp only [tensor_algebra] } }
+-- { to_fun := fun a, by { simp only [tensor_algebra] } }
 /-- Tensor product of two matrix-valued module dual functionals. -/
 noncomputable def Module.Dual.tensorMul {n p : Type _} (φ₁ : Module.Dual ℂ (Matrix n n ℂ))
     (φ₂ : Module.Dual ℂ (Matrix p p ℂ)) : Module.Dual ℂ (Matrix n n ℂ ⊗[ℂ] Matrix p p ℂ) :=
   (TensorProduct.lid ℂ ℂ : ℂ ⊗[ℂ] ℂ →ₗ[ℂ] ℂ) ∘ₗ TensorProduct.map φ₁ φ₂
 
+omit [Fintype n] [Fintype p] [DecidableEq n] [DecidableEq p] in
 theorem Module.Dual.tensorMul_apply (φ₁ : Module.Dual ℂ (Matrix n n ℂ))
     (φ₂ : Module.Dual ℂ (Matrix p p ℂ)) (x : Matrix n n ℂ) (y : Matrix p p ℂ) :
     (φ₁.tensorMul φ₂) (x ⊗ₜ[ℂ] y) = φ₁ x * φ₂ y :=
@@ -89,7 +90,8 @@ theorem Module.Dual.IsFaithfulPosMap.tensorMul {φ₁ : Module.Dual ℂ (Matrix 
 attribute [instance] Module.Dual.IsFaithfulPosMap.tensorMul
 
 theorem Matrix.kroneckerToTensorProduct_adjoint [hφ : φ.IsFaithfulPosMap]
-    [hψ : ψ.IsFaithfulPosMap] :-- = @linear_map.adjoint ℂ (matrix (n × p) (n × p) ℂ) (matrix n n ℂ ⊗[ℂ] matrix p p ℂ) _
+    [hψ : ψ.IsFaithfulPosMap] :-- =
+      -- @linear_map.adjoint ℂ (matrix (n × p) (n × p) ℂ) (matrix n n ℂ ⊗[ℂ] matrix p p ℂ) _
       --   (nacg_th hφ hψ) (nacg_tt hφ hψ) (ips_th hφ hψ) (ips_tt hφ hψ) _ _
       letI : _root_.NormedAddCommGroup (Matrix n n ℂ) := Module.Dual.NormedAddCommGroup φ
       letI : _root_.SeminormedAddCommGroup (Matrix n n ℂ) :=
@@ -130,7 +132,7 @@ theorem Matrix.kroneckerToTensorProduct_adjoint [hφ : φ.IsFaithfulPosMap]
   intro x y
   apply @ext_inner_left ℂ _ _
   intro a
-  rw [TensorProduct.toKronecker_apply, LinearMap.adjoint_inner_right, kmul_representation a]
+  rw [TensorProduct.toKronecker_apply, LinearMap.adjoint_inner_right, Matrix.kmul_representation a]
   simp_rw [map_sum, _root_.map_smul, sum_inner, inner_smul_left]
   apply Finset.sum_congr rfl
   intros x_1 _
@@ -162,7 +164,8 @@ theorem Matrix.kroneckerToTensorProduct_adjoint [hφ : φ.IsFaithfulPosMap]
       by
         rw [Module.Dual.IsFaithfulPosMap.inner_eq' _
           ((stdBasisMatrix x_1 x_2 (1 : ℂ)) ⊗ₖ (stdBasisMatrix x_3 x_4 (1 : ℂ))) (x ⊗ₖ y),
-          Module.Dual.tensorMul_matrix, kronecker_conjTranspose, ← mul_kronecker_mul, ← mul_kronecker_mul, trace_kronecker,
+          Module.Dual.tensorMul_matrix, kronecker_conjTranspose, ← mul_kronecker_mul,
+            ← mul_kronecker_mul, trace_kronecker,
           Module.Dual.IsFaithfulPosMap.inner_eq', Module.Dual.IsFaithfulPosMap.inner_eq']
 
 theorem TensorProduct.toKronecker_adjoint [hφ : φ.IsFaithfulPosMap]
@@ -251,7 +254,8 @@ noncomputable def Pi.module.Dual.isNormedAddCommGroupOfRing
 -- set_option synthInstance.checkSynthOrder false in
 -- scoped[Functional] attribute [instance] Module.Dual.isNormedAddCommGroupOfStarRing
 
--- theorem Module.Dual.inner_eq_counit (φ : Module.Dual ℂ (Matrix n n ℂ)) [hφ : φ.IsFaithfulPosMap] (x y : ℍ) :
+-- theorem Module.Dual.inner_eq_counit (φ : Module.Dual ℂ (Matrix n n ℂ)) [hφ : φ.IsFaithfulPosMap]
+-- (x y : ℍ) :
 --   ⟪x, y⟫_ℂ = Coalgebra.counit (star x * y) :=
 -- by
 --   simp_rw [Coalgebra.counit, Module.Dual.IsFaithfulPosMap.inner_eq,
@@ -294,28 +298,33 @@ noncomputable def matrixDirectSumFromTo
       Matrix (s j) (s j) ℂ :=
   @directSumFromTo ℂ _ k _ (fun a => Matrix (s a) (s a) ℂ) _ (fun _ => Matrix.module) i j
 
+omit [Fintype k] [(i : k) → Fintype (s i)] [(i : k) → DecidableEq (s i)] in
 theorem matrixDirectSumFromTo_same (i : k) :
     (matrixDirectSumFromTo i i : Matrix (s i) (s i) ℂ →ₗ[ℂ] _) = 1 :=
   directSumFromTo_apply_same _
 
 -- set_option maxHeartbeats 0 in
 -- set_option synthInstance.maxHeartbeats 0 in
+open scoped Classical in
+omit [Fintype k] [(i : k) → DecidableEq (s i)] in
 theorem LinearMap.pi_mul'_apply_includeBlock' {i j : k} :
+    letI : ∀ i, DecidableEq (s i) := fun i => Classical.decEq (s i)
     (LinearMap.mul' ℂ (PiMat ℂ k s)) ∘ₗ
-        (TensorProduct.map (includeBlock : (ℍ_ i) →ₗ[ℂ] (PiMat ℂ k s)) (includeBlock : (ℍ_ j) →ₗ[ℂ] (PiMat ℂ k s))) =
+        (TensorProduct.map (includeBlock : (ℍ_ i) →ₗ[ℂ] (PiMat ℂ k s)) (includeBlock :
+          (ℍ_ j) →ₗ[ℂ] (PiMat ℂ k s))) =
       if i = j then
         (includeBlock : (ℍ_ j) →ₗ[ℂ] (PiMat ℂ k s)) ∘ₗ
           (LinearMap.mul' ℂ (ℍ_ j)) ∘ₗ
             (TensorProduct.map (matrixDirectSumFromTo i j) (1 : (ℍ_ j) →ₗ[ℂ] ℍ_ j))
       else 0 :=
   by
+  classical
   rw [TensorProduct.ext_iff']
   intro x y
   rw [funext_iff]
   intro a
-  simp only [LinearMap.comp_apply, dite_apply, TensorProduct.map_tmul, LinearMap.mul'_apply,
-    includeBlock_hMul_same, Finset.sum_apply, includeBlock_apply, Finset.sum_dite_eq',
-    Finset.mem_univ, if_true, Pi.mul_apply, dite_hMul, hMul_dite, MulZeroClass.mul_zero,
+  simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearMap.mul'_apply,
+    includeBlock_apply, Pi.mul_apply, dite_hMul, hMul_dite, MulZeroClass.mul_zero,
     MulZeroClass.zero_mul, ite_apply_lm, LinearMap.zero_apply, ite_apply, Pi.zero_apply,
     Module.End.one_apply]
   by_cases h : j = a
@@ -324,7 +333,8 @@ theorem LinearMap.pi_mul'_apply_includeBlock' {i j : k} :
     split_ifs <;> aesop
   · simp [h]
 
-/-- Linear equivalence splitting the tensor product of matrix-block products into block tensor products. -/
+/-- Linear equivalence splitting the tensor product of matrix-block products into block tensor
+  products. -/
 noncomputable def directSumTensorMatrix :
     ((PiMat ℂ k s) ⊗[ℂ] PiMat ℂ k s) ≃ₗ[ℂ]
       Π i : k × k, (ℍ_ i.1) ⊗[ℂ] ℍ_ i.2 :=
@@ -342,7 +352,7 @@ rfl
 -- by
 --   apply Coalgebra.lTensor_mul_comp_rTensor_mul_adjoint_of
 --   let σ : ℍ ≃ₐ[ℂ] ℍ := (hφ.sig (-1 : ℝ))
---   refine ⟨σ, λ _ _ _ => ?_⟩
+--   refine ⟨σ, fun _ _ _ => ?_⟩
 --   simp only [σ, hφ.sig_apply', neg_neg, Matrix.PosDef.rpow_one_eq_self,
 --     Matrix.PosDef.rpow_neg_one_eq_inv_self, star_eq_conjTranspose, hφ.inner_right_conj]
 
@@ -364,8 +374,10 @@ rfl
 -- set_option synthInstance.checkSynthOrder false in
 -- attribute [local instance] Matrix.Coalgebra
 -- theorem LinearMap.mul'_coassoc [hφ : φ.IsFaithfulPosMap] :
---     rTensor ℍ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) ∘ₗ LinearMap.adjoint (LinearMap.mul' ℂ ℍ) =
---       υ⁻¹ ∘ₗ lTensor ℍ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) ∘ₗ LinearMap.adjoint (LinearMap.mul' ℂ ℍ) :=
+--     rTensor ℍ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) ∘ₗ LinearMap.adjoint (LinearMap.mul' ℂ ℍ)
+-- =
+--       υ⁻¹ ∘ₗ lTensor ℍ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) ∘ₗ LinearMap.adjoint
+-- (LinearMap.mul' ℂ ℍ) :=
 -- by simp_rw [← Coalgebra.comul_eq_mul_adjoint, Coalgebra.coassoc_symm.symm]
 
 -- end
@@ -382,12 +394,14 @@ rfl
 -- set_option synthInstance.maxHeartbeats 0 in
 -- private theorem linear_map.id_map_mul'_comp_unit_eq [hφ : φ.IsFaithfulPosMap] :
 --     ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ ((LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) ∘ₗ η))
---       = ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ))) ∘ₗ ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ η) :=
+--       = ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ))) ∘ₗ ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ η)
+-- :=
 --   by rw [← TensorProduct.map_comp, LinearMap.comp_one]
 
 -- (m ⊗ id)υ⁻¹(id ⊗ m⋆η)κ⁻¹τ⁻¹ = m⋆
 -- theorem LinearMap.mul'_adjoint_eq' [hφ : φ.IsFaithfulPosMap] :
---     (LinearMap.mul' ℂ ℍ ⊗ₘ id) ∘ₗ υ⁻¹ ∘ₗ (id ⊗ₘ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ∘ₗ η)) ∘ₗ (TensorProduct.rid ℂ ℍ).symm =
+--     (LinearMap.mul' ℂ ℍ ⊗ₘ id) ∘ₗ υ⁻¹ ∘ₗ (id ⊗ₘ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ∘ₗ η))
+-- ∘ₗ (TensorProduct.rid ℂ ℍ).symm =
 --       (LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) :=
 --   by
 --   rw [linear_map.id_map_mul'_comp_unit_eq]
@@ -400,12 +414,14 @@ rfl
 --     LinearEquiv.refl_toLinearMap, LinearMap.comp_id]
 
 -- private theorem linear_map.mul'_comp_unit_map_id_eq [hφ : φ.IsFaithfulPosMap] :
---     ((LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ∘ₗ η) ⊗ₘ id) = (LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ⊗ₘ id) ∘ₗ η ⊗ₘ id :=
+--     ((LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ∘ₗ η) ⊗ₘ id) = (LinearMap.adjoint (LinearMap.mul' ℂ
+-- ℍ) ⊗ₘ id) ∘ₗ η ⊗ₘ id :=
 --   by rw [← TensorProduct.map_comp, LinearMap.comp_one]
 
 -- (id ⊗ m)υ(m∗η ⊗ id) τ⁻¹ = m⋆
 -- theorem LinearMap.mul'_adjoint_eq'' [hφ : φ.IsFaithfulPosMap] :
---     (id ⊗ₘ LinearMap.mul' ℂ ℍ) ∘ₗ υ ∘ₗ ((LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ∘ₗ η) ⊗ₘ id) ∘ₗ τ⁻¹ =
+--     (id ⊗ₘ LinearMap.mul' ℂ ℍ) ∘ₗ υ ∘ₗ ((LinearMap.adjoint (LinearMap.mul' ℂ ℍ) ∘ₗ η) ⊗ₘ id) ∘ₗ
+-- τ⁻¹ =
 --       LinearMap.adjoint (LinearMap.mul' ℂ ℍ) :=
 --   by
 --   rw [linear_map.mul'_comp_unit_map_id_eq]

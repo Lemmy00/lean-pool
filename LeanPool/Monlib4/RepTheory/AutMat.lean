@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.Matrix.Trace
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Basic
@@ -266,6 +267,38 @@ alias AlgEquiv.apply_matrix_trace := aut_mat_inner_trace_preserving
 
 end Matrix
 
+theorem automorphism_matrix_inner [Field R] [DecidableEq n] [Nonempty n]
+    (f : (Mₙ n) ≃ₐ[R] Mₙ n) :
+    ∃ T : Mₙ n,
+      (∀ a : Mₙ n, f a * T = T * a) ∧
+        Function.Bijective (Matrix.toLin' T) :=
+  Matrix.automorphism_matrix_inner f
+
+theorem automorphism_matrix_inner'' [DecidableEq n] [Nonempty n]
+    (f : (M n) ≃ₐ[𝕜] M n) :
+    ∃ T : (n → 𝕜) ≃ₗ[𝕜] n → 𝕜,
+      ∀ a : M n,
+        f a = LinearMap.toMatrix' T * a * LinearMap.toMatrix' T.symm :=
+  Matrix.automorphism_matrix_inner'' f
+
+theorem aut_mat_inner [DecidableEq n] (f : (M n) ≃ₐ[𝕜] M n) :
+    ∃ T : (n → 𝕜) ≃ₗ[𝕜] n → 𝕜,
+      f =
+        @Matrix.Algebra.autInner 𝕜 (M n) _ _ _
+          (LinearMap.toMatrix' (T : (n → 𝕜) →ₗ[𝕜] n → 𝕜))
+          T.toInvertibleMatrix :=
+  Matrix.aut_mat_inner f
+
+theorem aut_mat_inner' [DecidableEq n] (f : (M n) ≃ₐ[𝕜] M n) :
+    ∃ T : GL n 𝕜,
+      f = @Matrix.Algebra.autInner 𝕜 (M n) _ _ _ (T : M n) (Units.invertible T) :=
+  Matrix.aut_mat_inner' f
+
+theorem aut_mat_inner_trace_preserving [DecidableEq n]
+    (f : (M n) ≃ₐ[𝕜] M n) (x : M n) :
+    (f x).trace = x.trace :=
+  Matrix.aut_mat_inner_trace_preserving f x
+
 namespace Algebra
 
 /-- Root-name compatibility wrapper for upstream monlib4 inner automorphisms. -/
@@ -409,6 +442,12 @@ theorem LinearEquiv.nonempty_of_equiv {K R S T : Type*} [Ring K]
   simp only [LinearEquiv.nonempty_equiv_iff_lift_rank_eq,
     ← Module.finrank_eq_rank, Cardinal.lift_natCast, Nat.cast_inj] at this ⊢
   rw [this]
+
+/-- A dependent product of matrix blocks indexed by an ordered block type. -/
+def OrderedPiMat (R k : Type*) (t n : k → Type*)
+    (h : ∀ i j : k, Nonempty (n i ≃ n j) ↔ i = j) :=
+  let _ := h
+  Π i : k, Π _ : t i, Mat R (n i)
 
 instance Prod.invertible_fst {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
     {a : R₁ × R₂} [ha : Invertible a] :
@@ -586,6 +625,19 @@ theorem Matrix.commutes_with_all_iff_of_ne_zero [DecidableEq n] [Nonempty n]
   rw [hα, ← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at hy
   simp_rw [matrix.one_ne_zero, or_false] at hy
   simp_rw [Units.mk0, hy, Units.mk_val]
+
+theorem Algebra.autInner_eq_autInner_iff [DecidableEq n] (x y : Matrix n n 𝕜)
+    [Invertible x] [Invertible y] :
+    (Algebra.autInner x : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜) = Algebra.autInner y ↔
+      ∃ α : 𝕜, y = α • x := by
+  have :
+      (∃ α : 𝕜, y = α • x) ↔ ∃ α : 𝕜, ⅟ x * y = α • 1 := by
+    simp_rw [Matrix.invOf_eq_nonsing_inv, Matrix.inv_mul_eq_iff_eq_mul_of_invertible,
+      Matrix.mul_smul, Matrix.mul_one]
+  simp_rw [this, AlgEquiv.ext_iff, Algebra.autInner_apply,
+    ← Matrix.commutes_with_all_iff, Commute, SemiconjBy, Matrix.invOf_eq_nonsing_inv,
+    ← Matrix.mul_inv_eq_iff_eq_mul_of_invertible, Matrix.mul_assoc,
+    ← Matrix.inv_mul_eq_iff_eq_mul_of_invertible, Matrix.inv_inv_of_invertible]
 
 theorem Matrix.one_ne_zero_iff {𝕜 n : Type*} [DecidableEq n]
     [Zero 𝕜] [One 𝕜] [NeZero (1 : 𝕜)] :

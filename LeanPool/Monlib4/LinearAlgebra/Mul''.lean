@@ -128,7 +128,7 @@ theorem Matrix.KroneckerProduct.ext_iff {R P n₁ n₂ : Type _} [Finite n₁] [
   refine ⟨fun h x y => by rw [h], fun h => ?_⟩
   rw [LinearMap.ext_iff]
   intro x
-  rw [kmul_representation x]
+  rw [Matrix.kmul_representation x]
   simp_rw [map_sum, _root_.map_smul, h _ _]
 
 private def mul_map_aux (𝕜 X : Type _) [RCLike 𝕜] [NormedAddCommGroupOfRing X] [NormedSpace 𝕜 X]

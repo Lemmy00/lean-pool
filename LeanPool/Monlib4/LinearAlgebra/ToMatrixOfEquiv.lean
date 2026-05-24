@@ -75,6 +75,13 @@ theorem OrthonormalBasis.toMatrix_symm_apply {n E : Type _} [Fintype n] [Decidab
       ∑ i, ∑ j, x i j • (InnerProductSpace.rankOne 𝕜 (b i) (b j)).toLinearMap :=
   rfl
 
+theorem OrthonormalBasis.toMatrix_symm_apply' {n E : Type _} [Fintype n] [DecidableEq n]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+    (b : OrthonormalBasis n 𝕜 E) (x : Matrix n n 𝕜) :
+    b.toMatrix.symm x =
+      ∑ i, ∑ j, x i j • (InnerProductSpace.rankOne 𝕜 (b i) (b j)).toLinearMap :=
+  OrthonormalBasis.toMatrix_symm_apply b x
+
 theorem orthonormalBasis_toMatrix_eq_basis_toMatrix {n E : Type _} [Fintype n]
     [DecidableEq n] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [FiniteDimensional 𝕜 E] (b : OrthonormalBasis n 𝕜 E) :
@@ -136,6 +143,16 @@ theorem LinearEquiv.one_apply {R E : Type _} [CommSemiring R] [AddCommMonoid E]
     (1 : E ≃ₗ[R] E) x = x :=
   rfl
 
+theorem OrthonormalBasis.std_toMatrix {n : Type _} [Fintype n] [DecidableEq n] :
+    (((EuclideanSpace.orthonormalBasis n 𝕜).toMatrix).symm).toLinearEquiv
+      = Matrix.toEuclideanLin :=
+  by
+  change ((EuclideanSpace.orthonormalBasis n 𝕜).toMatrix.toAlgEquiv.symm).toLinearEquiv
+    = Matrix.toEuclideanLin
+  rw [← orthonormalBasis_toMatrix_eq_basis_toMatrix]
+  rw [Matrix.toEuclideanLin_eq_toLin_orthonormal]
+  rfl
+
 namespace LinearEquiv
 
 /-- Conjugate endomorphism algebras along a linear equivalence. -/
@@ -158,6 +175,28 @@ variable {R I J : Type _} [Fintype I] [Fintype J] [CommSemiring R]
 open scoped BigOperators
 open Matrix Module.End
 
+theorem Matrix.stdBasis_repr_eq_reshape {R I J : Type _} [Fintype I] [Finite J]
+    [CommSemiring R] :
+    (Matrix.stdBasis R I J).equivFun = Matrix.reshape :=
+  by
+  classical
+  ext x ij
+  rw [Module.Basis.equivFun_apply]
+  exact (Matrix.stdBasis R I J).repr_apply_eq Matrix.reshape
+    (by intro x y; ext ij; simp [Matrix.reshape_apply])
+    (by intro c x; ext ij; simp [Matrix.reshape_apply])
+    (by
+      intro i
+      ext j
+      simp only [Finsupp.single_apply]
+      calc Matrix.reshape (Matrix.stdBasis R I J i) j =
+          Matrix.reshape (Matrix.single i.1 i.2 (1 : R)) j := by
+            rw [Matrix.stdBasis_eq_single]
+        _ = Matrix.single i.1 i.2 (1 : R) j.1 j.2 := rfl
+        _ = if i = j then 1 else 0 := by
+          simp_rw [Matrix.single, Matrix.of_apply, ← Prod.eq_iff_fst_eq_snd_eq])
+    x ij
+
 namespace LinearMap
 
 open scoped Matrix BigOperators
@@ -167,6 +206,13 @@ theorem toMatrix_stdBasis_stdBasis {K L : Type _} [Fintype K] [Finite L]
     toMatrix (Matrix.stdBasis R I J) (Matrix.stdBasis R K L) x =
       LinearMap.toMatrix' (Matrix.reshape.toLinearMap ∘ₗ
         x ∘ₗ Matrix.reshape.symm.toLinearMap) :=
+  rfl
+
+theorem toLin_stdBasis_stdBasis {K L : Type _} [Fintype K] [Finite L]
+    (x : Matrix (K × L) (I × J) R) :
+    (toLin (Matrix.stdBasis R I J) (Matrix.stdBasis R K L)) x =
+      (Matrix.reshape : Matrix K L R ≃ₗ[R] _).symm.toLinearMap ∘ₗ
+        toLin' x ∘ₗ (Matrix.reshape : Matrix I J R ≃ₗ[R] _).toLinearMap :=
   rfl
 
 /-- Identify endomorphisms of a matrix space with matrices on the reshaped index type. -/

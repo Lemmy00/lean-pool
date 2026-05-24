@@ -16,7 +16,8 @@ macro_rules
         letI := fun i => Matrix.isStarAlgebra (φ := $ψ i)
         letI := fun i => Module.Dual.IsFaithfulPosMap.quantumSet (φ := $ψ i)
         letI := fun i => Module.Dual.NormedAddCommGroup ($ψ i)
-        letI := fun i => (Module.Dual.NormedAddCommGroup ($ψ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+        letI := fun i => (Module.Dual.NormedAddCommGroup ($ψ
+          i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
         letI := fun i => (Module.Dual.NormedAddCommGroup ($ψ i)).toSeminormedAddCommGroup
         letI := fun i => Module.Dual.InnerProductSpace (φ := $ψ i)
         $p)
@@ -30,7 +31,8 @@ macro_rules
         letI := fun i => Matrix.isStarAlgebra (φ := $ψ i);
         letI := fun i => Module.Dual.IsFaithfulPosMap.quantumSet (φ := $ψ i);
         letI := fun i => Module.Dual.NormedAddCommGroup ($ψ i);
-        letI := fun i => (Module.Dual.NormedAddCommGroup ($ψ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace;
+        letI := fun i => (Module.Dual.NormedAddCommGroup ($ψ
+          i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace;
         letI := fun i => (Module.Dual.NormedAddCommGroup ($ψ i)).toSeminormedAddCommGroup;
         letI := fun i => Module.Dual.InnerProductSpace (φ := $ψ i))
 
@@ -50,7 +52,8 @@ macro_rules
         withPiBlockQuantumCtx[$ψ];
         letI := PiMat.finiteDimensionalHilbertCoalgebraStruct (φ := $ψ))
 
-/-- The algebra equivalence between a two-block product of matrix algebras and the matching `PiMat`. -/
+/-- The algebra equivalence between a two-block product of matrix algebras and the matching
+  `PiMat`. -/
 def MatProd_algEquiv_PiMat (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)] :
   (Matrix (n' 0) (n' 0) ℂ × Matrix (n' 1) (n' 1) ℂ)
     ≃ₐ[ℂ]
@@ -60,17 +63,22 @@ matrixPiFinTwo_algEquiv_prod.symm
 /-- Swap the two types in a `Fin 2`-indexed family. -/
 abbrev PiFinTwo.swap (n' : Fin 2 → Type*) :
   Fin 2 → Type _ :=
-λ i => if i = 0 then (n' 1) else (n' 0)
+fun i => if i = 0 then (n' 1) else (n' 0)
 
 instance {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] :
   Π i, Fintype ((PiFinTwo.swap n') i) :=
-λ i => by simp [PiFinTwo.swap]; split_ifs <;> infer_instance
+fun i => by
+  unfold PiFinTwo.swap
+  split_ifs <;> infer_instance
 instance {n' : Fin 2 → Type*} [Π i, DecidableEq (n' i)] :
   Π i, DecidableEq ((PiFinTwo.swap n') i) :=
-λ i => by simp [PiFinTwo.swap]; split_ifs <;> infer_instance
+fun i => by
+  unfold PiFinTwo.swap
+  split_ifs <;> infer_instance
 
 /-- The swapped product-to-`PiMat` equivalence for two matrix blocks. -/
-def MatProd_algEquiv_PiMat_swap (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)] :
+def MatProd_algEquiv_PiMat_swap (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i,
+  DecidableEq (n' i)] :
   (Matrix (n' 1) (n' 1) ℂ × Matrix (n' 0) (n' 0) ℂ)
     ≃ₐ[ℂ]
   PiMat ℂ (Fin 2) (PiFinTwo.swap n') :=
@@ -93,7 +101,8 @@ def Prod.swap_algEquiv
 def PiMat_finTwo_swapAlgEquiv
   {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)] :
     PiMat ℂ (Fin 2) n' ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo.swap n') :=
-(MatProd_algEquiv_PiMat n').symm.trans ((Prod.swap_algEquiv _ _).trans (MatProd_algEquiv_PiMat_swap n'))
+(MatProd_algEquiv_PiMat n').symm.trans ((Prod.swap_algEquiv _ _).trans
+  (MatProd_algEquiv_PiMat_swap n'))
 
 /-- The constant `Fin 2`-indexed family with value `n`. -/
 abbrev PiFinTwo_same (n : Type*) :
@@ -102,12 +111,13 @@ fun i => let _ := i; n
 
 instance {n : Type*} [Fintype n] :
   Π i, Fintype ((PiFinTwo_same n) i) :=
-λ i => by infer_instance
+fun i => by infer_instance
 instance {n : Type*} [DecidableEq n] :
   Π i, DecidableEq ((PiFinTwo_same n) i) :=
-λ i => by infer_instance
+fun i => by infer_instance
 
-theorem PiMat_finTwo_swapAlgEquiv_apply {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)]
+theorem PiMat_finTwo_swapAlgEquiv_apply {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] [Π i,
+  DecidableEq (n' i)]
   (x : Matrix (n' 0) (n' 0) ℂ) (y : Matrix (n' 1) (n' 1) ℂ) :
   PiMat_finTwo_swapAlgEquiv (MatProd_algEquiv_PiMat n' (x, y))
     = MatProd_algEquiv_PiMat _ (y, x) :=
@@ -121,7 +131,8 @@ by ext; simp only [ite_self, Fin.isValue]
 def PiMat_finTwo_same_swapAlgEquiv
   {n : Type*} [Fintype n] [DecidableEq n] :
     PiMat ℂ (Fin 2) (PiFinTwo_same n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n) :=
-(MatProd_algEquiv_PiMat (PiFinTwo_same n)).symm.trans ((Prod.swap_algEquiv _ _).trans (MatProd_algEquiv_PiMat (PiFinTwo_same n)))
+(MatProd_algEquiv_PiMat (PiFinTwo_same n)).symm.trans ((Prod.swap_algEquiv _ _).trans
+  (MatProd_algEquiv_PiMat (PiFinTwo_same n)))
 
 
 theorem PiMat_finTwo_same_swapAlgEquiv_apply {n : Type*} [Fintype n] [DecidableEq n]
@@ -144,6 +155,7 @@ by
   exact ⟨U, hU, V, hV, rfl⟩
 
 /-- Invertibility is preserved by the product-to-`PiMat` equivalence in the same-block case. -/
+@[reducible]
 def MatProd_algEquiv_PiMat_same_invertible_of {U : Matrix n n ℂ × Matrix n n ℂ}
   (hU : Invertible U) :
   Invertible ((MatProd_algEquiv_PiMat (PiFinTwo_same n)) U) :=
@@ -161,7 +173,8 @@ by
   obtain ⟨U, hU, rfl⟩ := hf
   use ((MatProd_algEquiv_PiMat _) U), MatProd_algEquiv_PiMat_same_invertible_of hU
   ext1
-  simp [MatProd_algEquiv_PiMat, Algebra.autInner_apply]
+  simp only [Fin.isValue, MatProd_algEquiv_PiMat, symm_symm, trans_apply,
+    matrixPiFinTwo_algEquiv_prod_apply, Algebra.autInner_apply, map_mul]
   congr
   simp only [PiMat.ext_iff, Fin.forall_fin_two]
   trivial
@@ -176,30 +189,32 @@ theorem AlgEquiv.PiMat_finTwo_same
 by
   let f' := ((MatProd_algEquiv_PiMat _).trans f).trans (MatProd_algEquiv_PiMat _).symm
   rcases (AlgEquiv.matrix_prod_aut' f') with (⟨f₁, f₂, hf⟩ | ⟨g₁, g₂, hg⟩)
-  . left
+  · left
     obtain ⟨U, hf₁⟩ := Matrix.aut_mat_inner' f₁
     obtain ⟨V, hf₂⟩ := Matrix.aut_mat_inner' f₂
     have hf₁' : f₁.IsInner := ⟨U, _, hf₁⟩
     have hf₂' : f₂.IsInner := ⟨V, _, hf₂⟩
-    have hf' := AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prod_map_inner_of hf₁' hf₂')
-    simp [← hf] at hf'
+    have hf' :=
+      AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prod_map_inner_of hf₁' hf₂')
+    simp only [Fin.isValue, ← hf] at hf'
     have :
       (MatProd_algEquiv_PiMat _).symm.trans
       (f'.trans (MatProd_algEquiv_PiMat _)) = f :=
     by ext1; simp [f']
     rw [this] at hf'
     exact hf'
-  . right
+  · right
     obtain ⟨U, hg₁⟩ := Matrix.aut_mat_inner' g₁
     obtain ⟨V, hg₂⟩ := Matrix.aut_mat_inner' g₂
     have hg₁' : g₁.IsInner := ⟨U, _, hg₁⟩
     have hg₂' : g₂.IsInner := ⟨V, _, hg₂⟩
-    have hg' := AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prod_map_inner_of hg₁' hg₂')
+    have hg' :=
+      AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prod_map_inner_of hg₁' hg₂')
     use (MatProd_algEquiv_PiMat (PiFinTwo_same n)).symm.trans
       ((g₁.prod_map g₂).trans (MatProd_algEquiv_PiMat (PiFinTwo_same n))), hg'
     rw [funext_iff] at hg
     simp only [Fin.isValue, AlgEquiv.coe_trans, Function.comp_apply,
-      AlgEquiv.prod_map_apply, Prod.swap, Prod.swap_prod_mk, Prod.map_apply, f',
+      AlgEquiv.prod_map_apply, Prod.swap, Prod.map_apply, f',
       AlgEquiv.symm_apply_eq] at hg
     ext1 x
     specialize hg ((MatProd_algEquiv_PiMat _).symm x)
@@ -222,8 +237,10 @@ by
     Matrix.trace_blockDiagonal']
   apply Finset.sum_congr rfl
   intro i _
+  change Matrix.trace (y i) =
+      LinearMap.trace ℂ (EuclideanSpace ℂ (p i.1 × p i.2)) (Matrix.toLpLin 2 2 (y i))
   rw [LinearMap.trace_eq_matrix_trace ℂ (PiLp.basisFun 2 ℂ (p i.1 × p i.2)),
-    Matrix.toEuclideanLin_eq_toLin, LinearMap.toMatrix_toLin]
+    Matrix.toLpLin_eq_toLin, LinearMap.toMatrix_toLin]
 
 variable {φ : (i : ι) → Module.Dual ℂ (Matrix (p i) (p i) ℂ)}
   [hφ : ∀ (i : ι), (φ i).IsFaithfulPosMap]
@@ -256,49 +273,63 @@ variable
     (PiMat ℂ (Fin 2) (PiFinTwo_same n) →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n))}
   (hA : withPiBlockCoalgebraQuantum[ψ] QuantumGraph.Real _ A)
 
+omit [(i : ι) → DecidableEq (p i)] in
 theorem LinearMap.proj_adjoint_apply
-  : withPiBlockQuantum[φ]
+  : letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
     ∀ (i : ι) (x : Matrix (p i) (p i) ℂ),
       (LinearMap.adjoint (LinearMap.proj (R := ℂ) i)) x
         = Matrix.includeBlock x :=
 by
+  classical
   withPiBlockQuantumCtx[φ]
   intro i x
   apply ext_inner_left ℂ
   intro y
-  simp [LinearMap.adjoint_inner_right]
+  simp only [LinearMap.adjoint_inner_right, coe_proj, Function.eval]
   rw [Module.Dual.pi.IsFaithfulPosMap.includeBlock_right_inner]
 
+omit [(i : ι) → DecidableEq (p i)] in
 theorem LinearMap.proj_adjoint
-  : withPiBlockQuantum[φ]
+  : letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
     ∀ (i : ι),
       LinearMap.adjoint (LinearMap.proj (R := ℂ) i)
         = LinearMap.single ℂ (fun r => Mat ℂ (p r)) i :=
 by
+  classical
   withPiBlockQuantumCtx[φ]
   intro i
   ext1
   rw [LinearMap.proj_adjoint_apply]
   rfl
 
+omit [(i : ι) → DecidableEq (p i)] in
 theorem LinearMap.single_adjoint
-  : withPiBlockQuantum[φ]
+  : letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
     ∀ (i : ι),
       LinearMap.adjoint (LinearMap.single ℂ (fun r => Mat ℂ (p r)) i)
         = LinearMap.proj (R := ℂ) i :=
 by
+  classical
   withPiBlockQuantumCtx[φ]
   intro i
   rw [← proj_adjoint, adjoint_adjoint]
 
+open scoped Classical in
+omit [DecidableEq ι] [(i : ι) → DecidableEq (p i)] in
 theorem LinearMap.eq_sum_conj_adjoint_proj_comp_proj
-  : withPiBlockQuantum[φ]
+  : letI : DecidableEq ι := Classical.decEq ι
+    letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
     ∀ (A : PiMat ℂ ι p →ₗ[ℂ] PiMat ℂ ι p),
       A = ∑ i : ι × ι,
         LinearMap.adjoint (LinearMap.proj i.1)
           ∘ₗ (LinearMap.proj i.1 ∘ₗ A ∘ₗ LinearMap.adjoint (LinearMap.proj i.2))
           ∘ₗ LinearMap.proj i.2 :=
 by
+  classical
   withPiBlockQuantumCtx[φ]
   intro A
   simp_rw [LinearMap.proj_adjoint, Finset.sum_product_univ,
@@ -308,8 +339,8 @@ by
 private lemma
   QuantumGraph.Real.PiFinTwo_same_exists_proj_conj_add_of_piMat_submodule_eq_bot
   : withPiBlockCoalgebraQuantum[ψ]
-    ∀ (h₂ : hA.PiMat_submodule ((1 : Fin 2), (0 : Fin 2)) = ⊥)
-      (h₃ : hA.PiMat_submodule ((0 : Fin 2), (1 : Fin 2)) = ⊥),
+    ∀ (_ : hA.PiMat_submodule ((1 : Fin 2), (0 : Fin 2)) = ⊥)
+      (_ : hA.PiMat_submodule ((0 : Fin 2), (1 : Fin 2)) = ⊥),
   -- ∃ (f₁ f₂ : Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ),
     (LinearMap.adjoint
         (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2))
@@ -326,19 +357,19 @@ private lemma
 by
   withPiBlockCoalgebraQuantumCtx[ψ]
   intro h₂ h₃
-  simp only [Prod.fst_zero, Fin.isValue, Prod.snd_zero,
+  simp only [Fin.isValue,
     QuantumGraph.Real.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero] at h₂ h₃
   simp_all only [PiFinTwo_same]
   nth_rw 3 [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hψ) A]
   simp only [Finset.sum_product_univ, Fin.sum_univ_two,
-    Fin.isValue, Prod.mk_zero_zero, Prod.mk_one_one,
+    Fin.isValue,
     h₂, h₃, LinearMap.zero_comp, LinearMap.comp_zero, zero_add, add_zero]
 
-private lemma
+lemma
   QuantumGraph.Real.piFinTwo_same_piMat_submodule_eq_bot_of_adjoint_and_dim_eq_one
   : withPiBlockCoalgebraQuantum[ψ]
-    ∀ (hA₂ : LinearMap.adjoint A = A)
-      (hd : hA.toQuantumGraph.dim_of_piMat_submodule = 1),
+    ∀ (_ : LinearMap.adjoint A = A)
+      (_ : hA.toQuantumGraph.dim_of_piMat_submodule = 1),
     hA.PiMat_submodule ((1 : Fin 2), (0 : Fin 2)) = ⊥
     ∧ ((Module.finrank ℂ (hA.PiMat_submodule 0) = 1
       ∧ hA.PiMat_submodule 1 = ⊥)
@@ -352,36 +383,38 @@ by
     Finset.sum_product_univ, Fin.sum_univ_two,
     Fin.isValue, Prod.mk_zero_zero, Prod.mk_one_one] at hd
   simp only [Fin.isValue, Nat.add_eq_one_iff, AddLeftCancelMonoid.add_eq_zero,
-    Submodule.finrank_eq_zero, Prod.fst_zero, Prod.snd_zero, Prod.fst_one, Prod.snd_one] at hd
+    Submodule.finrank_eq_zero] at hd
   simp only [Fin.isValue, hA.PiMat_submodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (0, 1),
     Prod.swap_prod_mk] at hd
   rcases hd with (h | h)
-  . obtain ⟨h₁, (h₂ | h₂)⟩ := h
-    . exact ⟨h₂.1, Or.inr ⟨h₁.1, h₂.2⟩⟩
-    . rw [h₁.2] at h₂
+  · obtain ⟨h₁, (h₂ | h₂)⟩ := h
+    · exact ⟨h₂.1, Or.inr ⟨h₁.1, h₂.2⟩⟩
+    · rw [h₁.2] at h₂
       simp only [finrank_bot, zero_ne_one, false_and] at h₂
-  . obtain ⟨(h₁ | h₁), h₂⟩ := h
-    . rw [hA.PiMat_submodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (1, 0),
+  · obtain ⟨(h₁ | h₁), h₂⟩ := h
+    · rw [hA.PiMat_submodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (1, 0),
         Prod.swap_prod_mk] at h₂
       rw [h₂.1, finrank_bot] at h₁
       simp only [zero_ne_one, and_false] at h₁
-    . exact ⟨h₁.2, Or.inl ⟨h₁.1, h₂.2⟩⟩
+    · exact ⟨h₁.2, Or.inl ⟨h₁.1, h₂.2⟩⟩
 
 lemma Pi.nat_eq_zero_of_sum_eq_one_and_unique_one
-  {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ι → ℕ}
+  {ι : Type*} [Fintype ι] {f : ι → ℕ}
   (h : ∑ i, f i = 1) {i : ι} (hd : f i = 1)
   {j : ι} (hj : j ≠ i) : f j = 0 :=
 by
+  classical
   rw [Finset.sum_eq_add_sum_diff_singleton_of_mem (Finset.mem_univ i), hd] at h
   simp only [add_eq_left, Finset.sum_eq_zero_iff, Finset.mem_sdiff, Finset.mem_univ,
     Finset.mem_singleton, true_and] at h
   exact h _ hj
 
 theorem Finset.sum_nat_eq_one_iff_exists_unique_eq_one
-  {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ι → ℕ}
+  {ι : Type*} [Fintype ι] {f : ι → ℕ}
   (h : ∑ i, f i = 1) :
   (∃! i : ι, f i = 1) :=
 by
+  classical
   have this1 : ∀ i : ι, f i ≤ 1 :=
   by
     intro i
@@ -399,11 +432,11 @@ by
   have : ∃! i, 1 ≤ f i :=
   by
     apply existsUnique_of_exists_of_unique
-    . by_contra!
+    · by_contra!
       simp only [Nat.lt_one_iff] at this
       simp only [this, Finset.sum_const_zero] at h
       norm_num at h
-    . intro y₁ y₂ hy hd
+    · intro y₁ y₂ hy hd
       by_contra!
       have :=
       calc
@@ -443,11 +476,11 @@ by
     Submodule.finrank_eq_zero,
     QuantumGraph.Real.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero]
   constructor
-  . intro h
+  · intro h
     rw [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hφ) A]
     simp only [h _ (Finset.mem_univ _), LinearMap.comp_zero, LinearMap.zero_comp,
       Finset.sum_const_zero]
-  . rintro rfl
+  · rintro rfl
     simp only [LinearMap.zero_comp, LinearMap.comp_zero,
       Finset.mem_univ, imp_self, implies_true]
 
@@ -500,8 +533,8 @@ by
     rw [Finset.sum_eq_add_sum_diff_singleton_of_mem (Finset.mem_univ i)]
     simp only [this, add_zero]
     rw [this₃.1]
-  refine ⟨i.1, hAA.symm, λ j hj => ?_⟩
-  . by_contra!
+  refine ⟨i.1, hAA.symm, fun j hj => ?_⟩
+  · by_contra!
     specialize this₁ (j, j)
     simp only [Finset.mem_sdiff, Finset.mem_univ, Finset.mem_singleton, true_and,
       Prod.ext_iff, this₃.1, and_self] at this₁
@@ -516,8 +549,8 @@ by
 
 theorem QuantumGraph.Real.piFinTwo_same_exists_matrix_map_eq_map_of_adjoint_and_dim_eq_one
   : withPiBlockCoalgebraQuantum[ψ]
-    ∀ (hA₂ : LinearMap.adjoint A = A)
-      (hd : hA.toQuantumGraph.dim_of_piMat_submodule = 1),
+    ∀ (_ : LinearMap.adjoint A = A)
+      (_ : hA.toQuantumGraph.dim_of_piMat_submodule = 1),
   -- (∃ f : Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ,
   LinearMap.adjoint (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2))
     ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2)
@@ -548,8 +581,8 @@ by
   <;>
   simp only [h.1, h.2, LinearMap.comp_zero, LinearMap.zero_comp,
     add_zero, zero_add, LinearMap.comp_assoc] at hf
-  exact Or.inl hf
-  exact Or.inr hf
+  · exact Or.inl hf
+  · exact Or.inr hf
   -- exact Or.inl ⟨_, hf⟩
   -- exact Or.inr ⟨_, hf⟩
 
@@ -586,7 +619,7 @@ def NonUnitalAlgHom.single (R : Type*) {ι : Type*} [CommSemiring R]
     φ i →ₙₐ[R] (Π i, φ i) where
   toFun x := LinearMap.single R φ i x
   map_add' _ _ := by simp [Pi.single_add]
-  map_smul' _ _ := by simp [Pi.single_smul]
+  map_smul' _ _ := by simp []
   map_mul' _ _ := by simp [Pi.single_mul]
   map_zero' := by simp [Pi.single_zero]
 
@@ -619,7 +652,7 @@ by
   · simp [LinearMap.single_apply, Pi.single_eq_of_ne h]
 
 theorem LinearMap.proj_isReal
-  {R ι : Type*} [DecidableEq ι] [Semiring R] {φ : ι → Type*}
+  {R ι : Type*} [Semiring R] {φ : ι → Type*}
   [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
   [(i : ι) → StarAddMonoid (φ i)] (i : ι) :
   LinearMap.IsReal (LinearMap.proj (R := R) (φ := φ) i) :=
@@ -636,21 +669,23 @@ by
 
 theorem LinearMap.comp_proj_inj
   {R ι B : Type*} [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)]
-  [AddCommMonoid B] [Module R B] [(i : ι) → Module R (φ i)] [DecidableEq ι] (i : ι)
+  [AddCommMonoid B] [Module R B] [(i : ι) → Module R (φ i)] (i : ι)
   (f g : φ i →ₗ[R] B) :
   f ∘ₗ LinearMap.proj (R := R) i = g ∘ₗ LinearMap.proj (R := R) i ↔ f = g :=
 by
+  classical
   simp only [LinearMap.ext_iff, LinearMap.comp_apply,
     LinearMap.proj_apply]
-  refine ⟨λ h x => ?_, λ h _ => h _⟩
+  refine ⟨fun h x => ?_, fun h _ => h _⟩
   simpa only [Pi.single_eq_same] using h (Pi.single i x)
 
 theorem LinearMap.proj_comp_inj
   {R ι B : Type*} [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)]
-  [AddCommMonoid B] [Module R B] [(i : ι) → Module R (φ i)] [DecidableEq ι]
+  [AddCommMonoid B] [Module R B] [(i : ι) → Module R (φ i)]
   (f g : B →ₗ[R] Π r, φ r) :
   (∀ i, LinearMap.proj (R := R) i ∘ₗ f = LinearMap.proj (R := R) i ∘ₗ g) ↔ f = g :=
 by
+  classical
   simp only [LinearMap.ext_iff, LinearMap.comp_apply,
     LinearMap.proj_apply, funext_iff]
   rw [forall_comm]
@@ -672,21 +707,27 @@ by
   simp only [QuantumGraph.real_iff, LinearMap.isReal_iff,
     LinearMap.real_comp]
   simp only [LinearMap.proj_adjoint,
-    LinearMap.real_of_isReal (LinearMap.single_isReal (R := ℂ) (ι := ι) (φ := λ r => Mat ℂ (p r)) _),
+    LinearMap.real_of_isReal (LinearMap.single_isReal (R := ℂ) (ι := ι) (φ := fun r =>
+      Mat ℂ (p r)) _),
     LinearMap.real_of_isReal (LinearMap.proj_isReal (R := ℂ) (ι := ι)
-      (φ := λ r => Mat ℂ (p r)) _), LinearMap.real_of_isReal hf.2, and_true]
+      (φ := fun r => Mat ℂ (p r)) _), LinearMap.real_of_isReal hf.2, and_true]
   rw [← LinearMap.proj_adjoint,
     ← AlgHom.proj_toLinearMap]
   simp_rw [QuantumSet.schurMul_algHom_comp_algHom_adjoint, hf.1]
 
+open scoped Classical in
+omit [DecidableEq ι] [(i : ι) → DecidableEq (p i)] in
 lemma schurMul_proj_adjoint_comp
   {B : Type*} [starAlgebra B] [QuantumSet B]
-  : withPiBlockQuantum[φ]
+  : letI : DecidableEq ι := Classical.decEq ι
+    letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
     ∀ (i : ι) (f g : B →ₗ[ℂ] Mat ℂ (p i)),
       (LinearMap.adjoint (LinearMap.proj i) ∘ₗ f) •ₛ (LinearMap.adjoint (LinearMap.proj i) ∘ₗ g)
         = LinearMap.adjoint (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i)
           ∘ₗ (f •ₛ g) :=
 by
+  classical
   withPiBlockQuantumCtx[φ]
   intro i f g
   simp only [LinearMap.proj_adjoint, ← NonUnitalAlgHom.single_toLinearMap,
@@ -695,14 +736,20 @@ by
   congr 2
   exact Eq.symm (nonUnitalAlgHom_comp_mul (NonUnitalAlgHom.single ℂ (fun r ↦ Mat ℂ (p r)) i))
 
+open scoped Classical in
+omit [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (p i)] in
 lemma schurMul_proj_comp
-  {B : Type*} [starAlgebra B] [QuantumSet B]
-  : withPiBlockQuantum[φ]
+  {B : Type*} [starAlgebra B] [QuantumSet B] [Finite ι]
+  : letI : DecidableEq ι := Classical.decEq ι
+    letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
     ∀ (f g : B →ₗ[ℂ] PiMat ℂ ι p) (i : ι),
       ((LinearMap.proj i) ∘ₗ f) •ₛ ((LinearMap.proj i) ∘ₗ g)
         = (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i)
           ∘ₗ (f •ₛ g) :=
 by
+  classical
+  letI := Fintype.ofFinite ι
   withPiBlockQuantumCtx[φ]
   intro f g i
   simp only [schurMul_apply_apply, TensorProduct.map_comp]
@@ -716,7 +763,8 @@ lemma schurMul_comp_proj
   : withPiBlockCoalgebraQuantum[φ]
     ∀ (i : ι),
       withMatrixQuantum[φ i]
-        letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A := Mat ℂ (p i))).toCoalgebraStruct
+        letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A :=
+          Mat ℂ (p i))).toCoalgebraStruct
         ∀ (f g : Mat ℂ (p i) →ₗ[ℂ] B),
           ((f ∘ₗ (LinearMap.proj i)) •ₛ (g ∘ₗ (LinearMap.proj i)))
             = (f •ₛ g) ∘ₗ (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i) :=
@@ -724,11 +772,11 @@ by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro i
   withMatrixQuantumCtx[φ i]
-  letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A := Mat ℂ (p i))).toCoalgebraStruct
+  letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A :=
+    Mat ℂ (p i))).toCoalgebraStruct
   intro f g
   simp only [schurMul_apply_apply, TensorProduct.map_comp]
   simp only [← LinearMap.comp_assoc]
-  congr 1
   have hcomul :
       TensorProduct.map
           (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i)
@@ -775,18 +823,19 @@ lemma schurMul_comp_proj_adjoint
   : withPiBlockCoalgebraQuantum[φ]
     ∀ (f g : PiMat ℂ ι p →ₗ[ℂ] B) (i : ι),
       withMatrixQuantum[φ i]
-        letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A := Mat ℂ (p i))).toCoalgebraStruct
+        letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A :=
+          Mat ℂ (p i))).toCoalgebraStruct
         (f ∘ₗ LinearMap.adjoint (LinearMap.proj i)) •ₛ (g ∘ₗ LinearMap.adjoint (LinearMap.proj i))
           = (f •ₛ g) ∘ₗ LinearMap.adjoint (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i) :=
 by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro f g i
   withMatrixQuantumCtx[φ i]
-  letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A := Mat ℂ (p i))).toCoalgebraStruct
+  letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A :=
+    Mat ℂ (p i))).toCoalgebraStruct
   simp only [LinearMap.proj_adjoint, ← NonUnitalAlgHom.single_toLinearMap,
     schurMul_apply_apply, TensorProduct.map_comp]
   simp only [← LinearMap.comp_assoc]
-  congr 1
   have hcomul :
       TensorProduct.map
           (LinearMapClass.linearMap (NonUnitalAlgHom.single ℂ (fun r => Mat ℂ (p r)) i))
@@ -817,7 +866,7 @@ by
           LinearMap.mul' ℂ (PiMat ℂ ι p) := by
       exact LinearMap.adjoint_adjoint (LinearMap.mul' ℂ (PiMat ℂ ι p))
     rw [hsingle]
-    simp only [hadjMat, hadjPi]
+    simp only [hadjPi]
     rw [← AlgHom.proj_toLinearMap]
     exact TensorProduct.map_mul'_commute_iff.mpr fun x => congrFun rfl
   calc
@@ -846,7 +895,8 @@ theorem QuantumGraph.isReal_iff_conj_proj_adjoint_isReal
   : withPiBlockCoalgebraQuantum[φ]
     ∀ (i : ι),
       withMatrixQuantum[φ i]
-        letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A := Mat ℂ (p i))).toCoalgebraStruct
+        letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A :=
+          Mat ℂ (p i))).toCoalgebraStruct
         ∀ (f : Mat ℂ (p i) →ₗ[ℂ] Mat ℂ (p i)),
           QuantumGraph.Real _ f
             ↔
@@ -856,7 +906,8 @@ by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro i
   withMatrixQuantumCtx[φ i]
-  letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A := Mat ℂ (p i))).toCoalgebraStruct
+  letI := (Coalgebra.ofFiniteDimensionalHilbertAlgebra (R := ℂ) (A :=
+    Mat ℂ (p i))).toCoalgebraStruct
   intro f
   simp only [QuantumGraph.real_iff, LinearMap.isReal_iff, LinearMap.real_comp]
   simp only [← LinearMap.comp_assoc]
@@ -883,22 +934,24 @@ by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro f hf i
   constructor
-  .
-    rw [schurMul_proj_adjoint_comp (hφ := hφ), schurMul_proj_comp (hφ := hφ)]
+  · rw [schurMul_proj_adjoint_comp (hφ := hφ), schurMul_proj_comp (hφ := hφ)]
     simp only [← LinearMap.comp_assoc]
     rw [schurMul_comp_proj, schurMul_comp_proj_adjoint]
     simp only [LinearMap.comp_assoc, hf.1]
-  .
-    simp only [LinearMap.isReal_iff, LinearMap.real_comp,
+  · simp only [LinearMap.isReal_iff, LinearMap.real_comp,
       LinearMap.proj_adjoint, LinearMap.real_of_isReal
-        (LinearMap.single_isReal (R := ℂ) (φ := λ r => Mat ℂ (p r)) _),
-      LinearMap.real_of_isReal (LinearMap.proj_isReal (R := ℂ) (φ := λ r => Mat ℂ (p r)) _),
+        (LinearMap.single_isReal (R := ℂ) (φ := fun r => Mat ℂ (p r)) _),
+      LinearMap.real_of_isReal (LinearMap.proj_isReal (R := ℂ) (φ := fun r => Mat ℂ (p r)) _),
       LinearMap.real_of_isReal hf.2]
 
+open scoped Classical in
+omit [DecidableEq ι] [(i : ι) → DecidableEq (p i)] in
 theorem schurMul_proj_adjoint_comp_of_ne_eq_zero
   {B : Type*} [starAlgebra B] [QuantumSet B]
-  : withPiBlockQuantum[φ]
-    ∀ {i j : ι} (hij : i ≠ j)
+  : letI : DecidableEq ι := Classical.decEq ι
+    letI : ∀ i, DecidableEq (p i) := fun i => Classical.decEq (p i)
+    withPiBlockQuantum[φ]
+    ∀ {i j : ι} (_ : i ≠ j)
       (f : B →ₗ[ℂ] Mat ℂ (p i))
       (g : B →ₗ[ℂ] Mat ℂ (p j)),
       (LinearMap.adjoint (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i)
@@ -908,6 +961,7 @@ theorem schurMul_proj_adjoint_comp_of_ne_eq_zero
         ∘ₗ g)
       = 0 :=
 by
+  classical
   withPiBlockQuantumCtx[φ]
   intro i j hij f g
   simp only [schurMul_apply_apply, TensorProduct.map_comp, ← LinearMap.comp_assoc]
@@ -927,7 +981,7 @@ by
 theorem schurMul_comp_proj_of_ne_eq_zero
   {B : Type*} [starAlgebra B] [QuantumSet B]
   : withPiBlockCoalgebraQuantum[φ]
-    ∀ {i j : ι} (hij : i ≠ j)
+    ∀ {i j : ι} (_ : i ≠ j)
       (f : Mat ℂ (p i) →ₗ[ℂ] B)
       (g : Mat ℂ (p j) →ₗ[ℂ] B),
       (f ∘ₗ LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) i)
@@ -945,8 +999,8 @@ by
           (LinearMap.proj (R := ℂ) (φ := fun r => Mat ℂ (p r)) j) ∘ₗ
         Coalgebra.comul = 0 := by
     apply_fun LinearMap.adjoint using LinearEquiv.injective _
-    simp only [map_zero, Coalgebra.comul_eq_mul_adjoint,
-      LinearMap.adjoint_comp, LinearMap.adjoint_adjoint, TensorProduct.map_adjoint]
+    simp only [map_zero,
+      LinearMap.adjoint_comp, TensorProduct.map_adjoint]
     rw [LinearMap.proj_adjoint, LinearMap.proj_adjoint,
       ← NonUnitalAlgHom.single_toLinearMap, ← NonUnitalAlgHom.single_toLinearMap]
     have hadj :
@@ -1001,7 +1055,7 @@ by
   intro f
   refine ⟨fun h i => h.proj_adjoint_comp_proj_conj_isRealQuantumGraph i, fun h => ?_⟩
   constructor
-  . rw [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hφ) f]
+  · rw [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hφ) f]
     simp only [map_sum, LinearMap.sum_apply]
     congr
     ext1 i
@@ -1012,10 +1066,10 @@ by
     simp only [Finset.mem_sdiff, Finset.mem_univ, Finset.mem_singleton, true_and] at hj
     rw [Prod.eq_iff_fst_eq_snd_eq, not_and_or] at hj
     rcases hj with (h | h)
-    . rw [schurMul_proj_adjoint_comp_of_ne_eq_zero h]
-    . simp only [← LinearMap.comp_assoc]
+    · rw [schurMul_proj_adjoint_comp_of_ne_eq_zero h]
+    · simp only [← LinearMap.comp_assoc]
       rw [schurMul_comp_proj_of_ne_eq_zero h]
-  . simp only [LinearMap.isReal_iff]
+  · simp only [LinearMap.isReal_iff]
     rw [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hφ) f]
     simp only [LinearMap.real_sum,
       LinearMap.comp_assoc, LinearMap.real_of_isReal (h _).2]
@@ -1044,7 +1098,8 @@ theorem
 by simp [PiMat_finTwo_same_swapAlgEquiv]
 
 theorem PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero (x : Matrix n n ℂ) :
-  PiMat_finTwo_same_swapAlgEquiv (Pi.single 0 x) = (Pi.single 1 x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+  PiMat_finTwo_same_swapAlgEquiv (Pi.single 0 x) =
+    (Pi.single 1 x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
 by
   simp only [Pi.single_zero_piFinTwo_same_apply,
     PiMat_finTwo_same_swapAlgEquiv_apply, Pi.single_one_piFinTwo_same_apply]
@@ -1058,13 +1113,15 @@ by
   exact PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero
 
 theorem PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_one (x : Matrix n n ℂ) :
-  PiMat_finTwo_same_swapAlgEquiv (Pi.single 1 x) = (Pi.single 0 x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+  PiMat_finTwo_same_swapAlgEquiv (Pi.single 1 x) =
+    (Pi.single 0 x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
 by
   rw [← PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero,
     PiMat_finTwo_same_swap_swap]
 
 theorem PiMat_finTwo_same_swapAlgEquiv_comp_linearMapSingle_one :
-  PiMat_finTwo_same_swapAlgEquiv.toLinearMap ∘ₗ (LinearMap.single ℂ _ 1) = (LinearMap.single ℂ _ 0 : _ →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+  PiMat_finTwo_same_swapAlgEquiv.toLinearMap ∘ₗ (LinearMap.single ℂ _ 1) =
+    (LinearMap.single ℂ _ 0 : _ →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
 by
   simp only [LinearMap.ext_iff, LinearMap.comp_apply,
     LinearMap.single_apply]
@@ -1081,8 +1138,8 @@ by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro f hf i
   constructor
-  . rw [schurMul_proj_comp (hφ := hφ), schurMul_comp_proj_adjoint (hφ := hφ), hf.1]
-  . rw [LinearMap.isReal_iff]
+  · rw [schurMul_proj_comp (hφ := hφ), schurMul_comp_proj_adjoint (hφ := hφ), hf.1]
+  · rw [LinearMap.isReal_iff]
     simp_rw [LinearMap.real_comp, LinearMap.real_of_isReal hf.2, LinearMap.proj_adjoint,
-    LinearMap.real_of_isReal (LinearMap.proj_isReal (φ := λ r => Mat ℂ (p r)) _),
-    LinearMap.real_of_isReal (LinearMap.single_isReal (φ := λ r => Mat ℂ (p r)) _)]
+    LinearMap.real_of_isReal (LinearMap.proj_isReal (φ := fun r => Mat ℂ (p r)) _),
+    LinearMap.real_of_isReal (LinearMap.single_isReal (φ := fun r => Mat ℂ (p r)) _)]

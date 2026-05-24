@@ -34,8 +34,8 @@ alias QuantumSet.modAut_star := starAlgebra.modAut_star
 alias QuantumSet.modAut_zero := starAlgebra.modAut_zero
 
 theorem Psi_apply_linearMap_comp_linearMap_of_commute_modAut {A B C D : Type*}
-  [ha:starAlgebra A] [hb:starAlgebra B]
-  [hc:starAlgebra C] [hd:starAlgebra D]
+  [ha : starAlgebra A] [hb : starAlgebra B]
+  [hc : starAlgebra C] [hd : starAlgebra D]
   [hA : QuantumSet A] [hB : QuantumSet B]
   [hC : QuantumSet C] [hD : QuantumSet D]
   {f : A →ₗ[ℂ] B} {g : D →ₗ[ℂ] C}
@@ -50,15 +50,15 @@ by
   simp_rw [LinearMap.adjoint_comp, ← LinearMap.star_eq_adjoint,
     isSelfAdjoint_iff.mp (QuantumSet.modAut_isSelfAdjoint _)] at hg
   have : ∀ a b, QuantumSet.Psi t r (f ∘ₗ (rankOne ℂ a b).toLinearMap ∘ₗ g)
-    = (f ⊗ₘ ((symmMap ℂ _ _).symm g).op) (QuantumSet.Psi t r (rankOne ℂ a b).toLinearMap) := λ _ _ => by
+    = (f ⊗ₘ ((symmMap ℂ _ _).symm g).op) (QuantumSet.Psi t r (rankOne ℂ a b).toLinearMap) :=
+      fun _ _ => by
     simp_rw [LinearMap.ext_iff, LinearMap.comp_apply, AlgEquiv.toLinearMap_apply] at hf hg
     simp only [symmMap_symm_apply,
       QuantumSet.Psi_apply, LinearMap.rankOne_comp, LinearMap.comp_rankOne,
       QuantumSet.Psi_toFun_apply, TensorProduct.map_tmul,
       QuantumSet.modAut_star, LinearMap.real_apply,
-      LinearMap.op_apply, MulOpposite.unop_star,
-      MulOpposite.unop_op, neg_neg, star_star,
-      ← MulOpposite.op_star, ← hf, ← hg, QuantumSet.modAut_star]
+      LinearMap.op_apply,
+      MulOpposite.unop_op, neg_neg, star_star, ← hf, ← hg, QuantumSet.modAut_star]
   obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne x
   simp only [LinearMap.comp_sum, LinearMap.sum_comp, map_sum, this]
 
@@ -71,8 +71,8 @@ by
   simp only [symmMap_symm_apply, LinearMap.adjoint_comp, LinearMap.real_comp]
 
 theorem linearMap_map_Psi_of_commute_modAut {A B C D : Type*}
-  [ha:starAlgebra A] [hb:starAlgebra B]
-  [hc:starAlgebra C] [hd:starAlgebra D]
+  [ha : starAlgebra A] [hb : starAlgebra B]
+  [hc : starAlgebra C] [hd : starAlgebra D]
   [hA : QuantumSet A] [hB : QuantumSet B]
   [hC : QuantumSet C] [hD : QuantumSet D]
   {f : A →ₗ[ℂ] B} {g : Cᵐᵒᵖ →ₗ[ℂ] Dᵐᵒᵖ}
@@ -84,8 +84,8 @@ theorem linearMap_map_Psi_of_commute_modAut {A B C D : Type*}
 by
   rw [Psi_apply_linearMap_comp_linearMap_of_commute_modAut,
     LinearEquiv.symm_apply_apply, LinearMap.unop_op]
-  . exact hf
-  . apply_fun (symmMap ℂ _ _).symm using LinearEquiv.injective _
+  · exact hf
+  · apply_fun (symmMap ℂ _ _).symm using LinearEquiv.injective _
     simp_rw [symmMap_symm_comp, LinearEquiv.symm_apply_apply,
       symmMap_symm_apply, ← LinearMap.star_eq_adjoint,
       isSelfAdjoint_iff.mp (QuantumSet.modAut_isSelfAdjoint _),
@@ -96,12 +96,12 @@ by
 @[simp]
 theorem LinearMap.op_real {K E F : Type*}
   [AddCommMonoid E] [StarAddMonoid E] [AddCommMonoid F] [StarAddMonoid F]
-  [Semiring K] [Module K E] [Module K F] [InvolutiveStar K] [StarModule K E]  [StarModule K F]
+  [Semiring K] [Module K E] [Module K F] [InvolutiveStar K] [StarModule K E] [StarModule K F]
   (φ : E →ₗ[K] F) :
   φ.op.real = φ.real.op :=
 rfl
 
-lemma modAut_map_comp_Psi {A B : Type*} [ha:starAlgebra A] [hb:starAlgebra B]
+lemma modAut_map_comp_Psi {A B : Type*} [ha : starAlgebra A] [hb : starAlgebra B]
     [hA : QuantumSet A] [hB : QuantumSet B] (t₁ r₁ t₂ r₂ : ℝ) :
   ((hb.modAut t₁).toLinearMap ⊗ₘ ((ha.modAut r₁).op.toLinearMap)) ∘ₗ (hA.Psi t₂ r₂).toLinearMap
     = (hA.Psi (t₁ + t₂) (-r₁ + r₂)).toLinearMap :=
@@ -112,15 +112,16 @@ by
   rw [linearMap_map_Psi_of_commute_modAut, AlgEquiv.op_toLinearMap,
     LinearMap.op_unop, symmMap_apply, LinearMap.rankOne_comp',
     LinearMap.comp_rankOne]
-  simp_rw [AlgEquiv.toLinearMap_apply, QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
-    QuantumSet.modAut_real, AlgEquiv.toLinearMap_apply, QuantumSet.modAut_apply_modAut, add_comm]
-  all_goals
-    ext
+  · simp_rw [AlgEquiv.toLinearMap_apply, QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
+      QuantumSet.modAut_real, AlgEquiv.toLinearMap_apply, QuantumSet.modAut_apply_modAut, add_comm]
+  · ext
+    simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
+      QuantumSet.modAut_apply_modAut, add_comm]
+  · ext
     simp only [AlgEquiv.op_toLinearMap, LinearMap.op_unop,
       LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
       QuantumSet.modAut_apply_modAut, add_comm]
-
-lemma lTensor_modAut_comp_Psi {A B : Type*} [ha:starAlgebra A] [hb:starAlgebra B]
+lemma lTensor_modAut_comp_Psi {A B : Type*} [ha : starAlgebra A] [hb : starAlgebra B]
     [hA : QuantumSet A] [hB : QuantumSet B] (t₂ r₁ r₂ : ℝ) :
   (LinearMap.lTensor B (ha.modAut r₁).op.toLinearMap)
     ∘ₗ (hA.Psi t₂ r₂).toLinearMap
@@ -129,7 +130,7 @@ by
   nth_rw 2 [← zero_add t₂]
   rw [← modAut_map_comp_Psi, QuantumSet.modAut_zero]
   rfl
-lemma rTensor_modAut_comp_Psi {A B : Type*} [ha:starAlgebra A] [hb:starAlgebra B]
+lemma rTensor_modAut_comp_Psi {A B : Type*} [ha : starAlgebra A] [hb : starAlgebra B]
     [hA : QuantumSet A] [hB : QuantumSet B] (t₁ t₂ r₂ : ℝ) :
   (LinearMap.rTensor Aᵐᵒᵖ (hb.modAut t₁).toLinearMap)
     ∘ₗ (hA.Psi t₂ r₂).toLinearMap
@@ -140,17 +141,17 @@ by
   rfl
 
 open scoped TensorProduct
-variable {A B : Type*} [ha:starAlgebra A] [hb:starAlgebra B]
+variable {A B : Type*} [ha : starAlgebra A] [hb : starAlgebra B]
     [hA : QuantumSet A] [hB : QuantumSet B]
 
 private noncomputable def rmulMapLmul_apply_Upsilon_apply_aux :
     (A →ₗ[ℂ] B) →ₗ[ℂ] ((A ⊗[ℂ] B) →ₗ[ℂ] (A ⊗[ℂ] B)) where
   toFun x :=
-  { toFun := λ y => Upsilon (x •ₛ Upsilon.symm y)
-    map_add' := λ _ _ => by simp only [LinearEquiv.trans_symm, map_add, LinearEquiv.trans_apply,
+  { toFun := fun y => Upsilon (x •ₛ Upsilon.symm y)
+    map_add' := fun _ _ => by simp only [LinearEquiv.trans_symm, map_add, LinearEquiv.trans_apply,
       LinearEquiv.TensorProduct.map_symm_apply, LinearEquiv.symm_symm, QuantumSet.Psi_symm_apply,
       schurMul_apply_apply, QuantumSet.Psi_apply, LinearEquiv.TensorProduct.map_apply]
-    map_smul' := λ _ _ => by simp only [LinearEquiv.trans_symm, LinearMapClass.map_smul,
+    map_smul' := fun _ _ => by simp only [LinearEquiv.trans_symm, LinearMapClass.map_smul,
       LinearEquiv.trans_apply, LinearEquiv.TensorProduct.map_symm_apply, LinearEquiv.symm_symm,
       QuantumSet.Psi_symm_apply, schurMul_apply_apply, QuantumSet.Psi_apply,
       LinearEquiv.TensorProduct.map_apply, RingHom.id_apply] }
@@ -186,7 +187,8 @@ by
 
 theorem QuantumSet.comm_op_modAut_map_comul_one_eq_Psi (r : ℝ) (f : A →ₗ[ℂ] B) :
   (TensorProduct.comm _ _ _)
-  ((TensorProduct.map ((op ℂ).toLinearMap ∘ₗ (modAut r).toLinearMap) f) (Coalgebra.comul 1)) = Psi 0 (k A + 1 - r) f :=
+  ((TensorProduct.map ((op ℂ).toLinearMap ∘ₗ (modAut r).toLinearMap) f) (Coalgebra.comul 1)) =
+    Psi 0 (k A + 1 - r) f :=
 by
   calc (TensorProduct.comm ℂ Aᵐᵒᵖ B)
         ((TensorProduct.map
@@ -204,19 +206,21 @@ by
       (tenSwap ℂ
       (Psi 0 (k A + 1 - r) f))) := ?_
     _ = Psi 0 (k A + 1 - r) f := ?_
-  . rw [← tenSwap_lTensor_comul_one_eq_Psi, tenSwap_apply_tenSwap]
+  · rw [← tenSwap_lTensor_comul_one_eq_Psi, tenSwap_apply_tenSwap]
     simp_rw [LinearMap.lTensor, TensorProduct.map_apply_map_apply]
-    simp only [LinearMap.comp_id, EmbeddingLike.apply_eq_iff_eq, ← LinearMap.comp_assoc,
+    simp only [LinearMap.comp_id, ← LinearMap.comp_assoc,
       unop_comp_op, LinearMap.one_comp]
-  . congr 1
+  · congr 1
     simp_rw [AlgEquiv.op_toLinearMap, tenSwap_apply_lTensor,
       ← LinearMap.comp_apply,
       ← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply,
       ← LinearMap.comp_assoc, LinearMap.map_comp_rTensor]
-  . simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply,
+  · simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply,
       lTensor_modAut_comp_Psi]
     ring_nf
-  . suffices ∀ x, (TensorProduct.comm ℂ Aᵐᵒᵖ B) (((op ℂ).toLinearMap ⊗ₘ (unop ℂ).toLinearMap) (tenSwap ℂ x)) = x by
+  · suffices ∀ x,
+    (TensorProduct.comm ℂ Aᵐᵒᵖ B) (((op ℂ).toLinearMap ⊗ₘ (unop ℂ).toLinearMap) (tenSwap ℂ x))
+    = x by
       rw [this]
     intro x
     simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply]
@@ -248,7 +252,7 @@ rfl
 
 alias QuantumSet.modAut_trans := starAlgebra.modAut_trans
 
-variable {A B : Type*} [ha:starAlgebra A] [hb:starAlgebra B]
+variable {A B : Type*} [ha : starAlgebra A] [hb : starAlgebra B]
     [hA : QuantumSet A] [hB : QuantumSet B]
 lemma isReal_iff_Psi (f : A →ₗ[ℂ] B) (t r : ℝ) :
   LinearMap.IsReal f ↔ star (hA.Psi t r f) = hA.Psi (-t) ((2 * hA.k) + 1 - r) f :=
@@ -261,8 +265,7 @@ by
   simp_rw [← AlgEquiv.TensorProduct.map_toLinearMap, AlgEquiv.toLinearMap_apply,
     AlgEquiv.TensorProduct.map_map_toLinearMap, AlgEquiv.op_trans,
     QuantumSet.modAut_trans]
-  simp only [add_neg_cancel, QuantumSet.modAut_zero, sub_add_sub_cancel, sub_self,
-    AlgEquiv.op_one, AlgEquiv.TensorProduct.map_one, AlgEquiv.one_apply]
+  simp only [add_neg_cancel, QuantumSet.modAut_zero]
   simp only [← LinearEquiv.coe_toLinearMap, ← AlgEquiv.toLinearMap_apply,
     ← LinearMap.comp_apply, AlgEquiv.TensorProduct.map_toLinearMap, modAut_map_comp_Psi,
     two_mul, neg_add, neg_sub, sub_add]
@@ -306,7 +309,7 @@ by
       rmul_adjoint, QuantumSet.modAut_star, QuantumSet.modAut_apply_modAut,
       lmul_adjoint,]
     ring_nf
-    simp only [neg_add_rev, neg_sub, sub_neg_eq_add, star_star, LinearEquiv.coe_coe, unop_apply,
+    simp only [star_star, LinearEquiv.coe_coe, unop_apply,
       MulOpposite.unop_op, starAlgebra.modAut_zero, AlgEquiv.one_apply, op_apply,
       MulOpposite.op_star, MulOpposite.unop_star, gns₁, gns₂, neg_zero]
   obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne f
@@ -339,7 +342,9 @@ by
         congr 1
         nth_rw 1 [← LinearMap.real_one]
         exact real_Upsilon_toBimodule gns gns
-  _ = ∑ i, LinearMap.adjoint (TensorProduct.map (LinearMap.adjoint (rmul (onb i))) (lmul (onb i))) (a ⊗ₜ b) :=
+  _ = ∑ i,
+    LinearMap.adjoint (TensorProduct.map (LinearMap.adjoint (rmul (onb i))) (lmul (onb i))) (a
+    ⊗ₜ b) :=
       by
         rw [← LinearMap.sum_apply]
         congr 1
@@ -384,7 +389,8 @@ noncomputable def starAlgebra.mulOpposite {A : Type*} [starAlgebra A] :
 attribute [local instance] starAlgebra.mulOpposite
 /-- The inner-product algebra structure transported to the opposite algebra. -/
 @[reducible]
-noncomputable def InnerProductAlgebra.mulOpposite {A : Type*} [starAlgebra A] [InnerProductAlgebra A] :
+noncomputable def InnerProductAlgebra.mulOpposite {A :
+    Type*} [starAlgebra A] [InnerProductAlgebra A] :
     InnerProductAlgebra (Aᵐᵒᵖ) where
   norm_smul_le c x := by
     change ‖MulOpposite.op (c • x.unop)‖ ≤ ‖c‖ * ‖x.unop‖
@@ -407,10 +413,10 @@ noncomputable def InnerProductAlgebra.mulOpposite {A : Type*} [starAlgebra A] [I
     exact InnerProductAlgebra.smul_left x.unop y.unop r
 attribute [local instance] InnerProductAlgebra.mulOpposite
 noncomputable instance QuantumSet.mulOpposite {A : Type*} [starAlgebra A] [QuantumSet A]
-  [kms : Fact (k A = - (1 / 2))] :
+  [kms : Fact (k A = -(1 / 2))] :
     QuantumSet Aᵐᵒᵖ where
   modAut_isSymmetric r x y := by
-    simp only [MulOpposite.inner_eq, AlgEquiv.op_apply_apply, MulOpposite.unop_op]
+    simp only [MulOpposite.inner_eq]
     exact QuantumSet.modAut_isSymmetric (-r) x.unop y.unop
   k := k A
   inner_star_left _ _ _ := by
@@ -430,11 +436,13 @@ noncomputable instance QuantumSet.mulOpposite {A : Type*} [starAlgebra A] [Quant
   n_isDecidableEq := n_isDecidableEq
   onb := onb.mulOpposite
 attribute [local instance] QuantumSet.mulOpposite
-noncomputable instance CoalgebraStruct.mulOpposite {A : Type*} [Semiring A] [Algebra ℂ A] [CoalgebraStruct ℂ A] :
+noncomputable instance CoalgebraStruct.mulOpposite {A :
+    Type*} [Semiring A] [Algebra ℂ A] [CoalgebraStruct ℂ A] :
     CoalgebraStruct ℂ Aᵐᵒᵖ where
   comul := (Algebra.TensorProduct.opAlgEquiv ℂ ℂ A A).symm.toLinearMap ∘ₗ Coalgebra.comul.op
   counit := (MulOpposite.opLinearEquiv ℂ).symm.toLinearMap ∘ₗ Coalgebra.counit.op
-theorem Coalgebra.counit_mulOpposite_eq {A : Type*} [Semiring A] [Algebra ℂ A] [CoalgebraStruct ℂ A] (a : Aᵐᵒᵖ) :
+theorem Coalgebra.counit_mulOpposite_eq {A :
+    Type*} [Semiring A] [Algebra ℂ A] [CoalgebraStruct ℂ A] (a : Aᵐᵒᵖ) :
   (Coalgebra.counit (R := ℂ) (A := Aᵐᵒᵖ)) a = Coalgebra.counit a.unop :=
 rfl
 
@@ -442,7 +450,7 @@ theorem QuantumSet.counit_isFaithful {A : Type*} [starAlgebra A] [QuantumSet A] 
   Module.Dual.IsFaithful (Coalgebra.counit (R := ℂ) (A := A)) :=
 by
   intro x
-  simp [← QuantumSet.inner_eq_counit']
+  simp only [← QuantumSet.inner_eq_counit']
   rw [← inner_conj_symm, QuantumSet.inner_star_left, star_star, mul_one, ← add_halves (- k A),
     ← modAut_apply_modAut, ← modAut_isSymmetric, inner_conj_symm, inner_self_eq_zero,
     map_eq_zero_iff _ (AlgEquiv.injective _)]
@@ -476,15 +484,16 @@ theorem Module.Dual.op_isFaithful_iff {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalS
 by
   simp only [Module.Dual.IsFaithful, Module.Dual.op_apply, MulOpposite.unop_mul,
     MulOpposite.unop_star]
-  refine ⟨λ h a => ?_, λ h a => ?_⟩
-  . simpa [star_star, MulOpposite.unop_eq_zero_iff] using h (star a.unop)
-  . simpa [star_star, MulOpposite.op_eq_zero_iff] using h (star (MulOpposite.op a))
+  refine ⟨fun h a => ?_, fun h a => ?_⟩
+  · simpa [star_star, MulOpposite.unop_eq_zero_iff] using h (star a.unop)
+  · simpa [star_star, MulOpposite.op_eq_zero_iff] using h (star (MulOpposite.op a))
 
 theorem QuantumSet.counit_op_isFaithful {A : Type*} [starAlgebra A] [QuantumSet A] :
   Module.Dual.IsFaithful (Coalgebra.counit (R := ℂ) (A := Aᵐᵒᵖ)) :=
 (Module.Dual.op_isFaithful_iff _).mp QuantumSet.counit_isFaithful
 
-noncomputable instance QuantumSet.tensorOp_self {A : Type*} [starAlgebra A] [QuantumSet A] [kms : Fact (k A = - (1 / 2))] :
+noncomputable instance QuantumSet.tensorOp_self {A :
+    Type*} [starAlgebra A] [QuantumSet A] [kms : Fact (k A = -(1 / 2))] :
   QuantumSet (A ⊗[ℂ] Aᵐᵒᵖ) :=
 QuantumSet.tensorProduct (h := Fact.mk rfl)
 
@@ -527,7 +536,7 @@ by
   simp_rw [map_sum, TensorProduct.map_tmul, LinearMap.mul'_apply]
   nth_rw 2 [← star_star a]
   simp_rw [← star_mul, h2 _]
-  exact Finset.sum_nonneg (λ _ _ => mul_star_self_nonneg _)
+  exact Finset.sum_nonneg (fun _ _ => mul_star_self_nonneg _)
 
 theorem schurIdempotent.isSchurProjection_iff_isPosMap
   [PartialOrder A] [PartialOrder B]
@@ -535,8 +544,8 @@ theorem schurIdempotent.isSchurProjection_iff_isPosMap
   (h₁ : ∀ ⦃a : A⦄, 0 ≤ a ↔ ∃ (b : A), a = star b * b)
   (hh : isEquivToPiMat A) {f : A →ₗ[ℂ] B} (hf : f •ₛ f = f) :
   schurProjection f ↔ LinearMap.IsPosMap f :=
-⟨λ h => h.isPosMap h₁,
- λ h => ⟨hf, isReal_of_isPosMap_of_starAlgEquiv_piMat hh h⟩⟩
+⟨fun h => h.isPosMap h₁,
+ fun h => ⟨hf, isReal_of_isPosMap_of_starAlgEquiv_piMat hh h⟩⟩
 
 /-- A quantum graph is a Schur-idempotent endomorphism of a quantum set. -/
 class QuantumGraph (A : Type*) [starAlgebra A] [hA : QuantumSet A] [CoalgebraStruct ℂ A]
@@ -547,7 +556,7 @@ class QuantumGraph (A : Type*) [starAlgebra A] [hA : QuantumSet A] [CoalgebraStr
 theorem quantumGraph_iff {A : Type*} [starAlgebra A] [QuantumSet A] [CoalgebraStruct ℂ A]
     {f : A →ₗ[ℂ] A} :
   QuantumGraph A f ↔ f •ₛ f = f :=
-⟨λ ⟨h⟩ => h, λ h => ⟨h⟩⟩
+⟨fun ⟨h⟩ => h, fun h => ⟨h⟩⟩
 
 /-- Predicate asserting that a quantum graph is real. -/
 class QuantumGraph.IsReal {A : Type*} [starAlgebra A] [hA : QuantumSet A] [CoalgebraStruct ℂ A]
@@ -566,12 +575,12 @@ class QuantumGraph.Real (A : Type*) [starAlgebra A] [hA : QuantumSet A] [Coalgeb
 theorem QuantumGraph.real_iff {A : Type*} [starAlgebra A] [QuantumSet A] [CoalgebraStruct ℂ A]
     {f : A →ₗ[ℂ] A} :
   QuantumGraph.Real A f ↔ f •ₛ f = f ∧ LinearMap.IsReal f :=
-⟨λ h => ⟨h.1, h.2⟩, λ h => ⟨h.1, h.2⟩⟩
+⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 
 theorem quantumGraphReal_iff_schurProjection {f : A →ₗ[ℂ] A} :
   QuantumGraph.Real A f ↔ schurProjection f :=
-⟨λ h => ⟨h.isIdempotentElem, h.isReal⟩,
- λ h => ⟨h.isIdempotentElem, h.isReal⟩⟩
+⟨fun h => ⟨h.isIdempotentElem, h.isReal⟩,
+ fun h => ⟨h.isIdempotentElem, h.isReal⟩⟩
 
 theorem QuantumGraph.Real.toQuantumGraph {f : A →ₗ[ℂ] A} (h : QuantumGraph.Real A f) :
   QuantumGraph A f :=
@@ -583,7 +592,7 @@ theorem quantumGraphReal_iff_Psi_isIdempotentElem_and_isSelfAdjoint {f : A →�
     IsSelfAdjoint (hA.Psi 0 (hA.k + 1/2) f)) :=
 by
   rw [← schurIdempotent_iff_Psi_isIdempotentElem, ← isReal_iff_Psi_isSelfAdjoint]
-  exact ⟨λ h => ⟨h.1, h.2⟩, λ h => ⟨h.1, h.2⟩⟩
+  exact ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 
 theorem schurMul_Upsilon_toBimodule {f g : A →ₗ[ℂ] B} :
   (Upsilon (f •ₛ g)).toIsBimoduleMap.1
@@ -617,7 +626,7 @@ by
     ← real_Upsilon_toBimodule gns gns]
   simp_rw [Subtype.val_inj, (LinearEquiv.injective _).eq_iff,
     ← LinearMap.isReal_iff]
-  exact ⟨λ h => ⟨h.1, h.2⟩, λ h => ⟨h.1, h.2⟩⟩
+  exact ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 
 section
 
@@ -638,14 +647,14 @@ theorem QuantumGraph.Real_conj_starAlgEquiv
   QuantumGraph.Real _ (f.toLinearMap ∘ₗ x ∘ₗ (LinearMap.adjoint f.toLinearMap)) :=
 by
   constructor
-  . rw [← StarAlgEquiv.toAlgEquiv_toAlgHom_toLinearMap,
+  · rw [← StarAlgEquiv.toAlgEquiv_toAlgHom_toLinearMap,
       QuantumSet.schurMul_algHom_comp_algHom_adjoint, hx.1]
-  . suffices LinearMap.adjoint f.toLinearMap = f.symm.toLinearMap from ?_
-    . simp_rw [this]
+  · suffices LinearMap.adjoint f.toLinearMap = f.symm.toLinearMap from ?_
+    · simp_rw [this]
       change LinearMap.IsReal
         (f.toAlgEquiv.toLinearMap ∘ₗ x ∘ₗ f.symm.toAlgEquiv.toLinearMap)
       exact (LinearMap.real_starAlgEquiv_conj_iff x f).mpr hx.isReal
-    . exact QuantumSet.starAlgEquiv_isometry_iff_adjoint_eq_symm.mp hf
+    · exact QuantumSet.starAlgEquiv_isometry_iff_adjoint_eq_symm.mp hf
 
 theorem Submodule.eq_iff_orthogonalProjection_eq
   {E : Type u_1} [NormedAddCommGroup E] [InnerProductSpace ℂ E] {U : Submodule ℂ E}
@@ -661,7 +670,8 @@ by
   rw [← Submodule.adjoint_subtypeL]
   rfl
 
-theorem Submodule.map_orthogonalProjection_self {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+theorem Submodule.map_orthogonalProjection_self {E :
+    Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
     [FiniteDimensional ℂ E] {U : Submodule ℂ E} :
   Submodule.map (orthogonalProjection U).toLinearMap U = ⊤ :=
 by
@@ -670,7 +680,8 @@ by
   use x
   simp only [SetLike.coe_mem, orthogonalProjection_mem_subspace_eq_self, and_self]
 
-theorem orthogonalProjection_submoduleMap {E E' : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+theorem orthogonalProjection_submoduleMap {E E' :
+    Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
   [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
   {U : Submodule ℂ E}
   [FiniteDimensional ℂ E] [FiniteDimensional ℂ E'] (f : E ≃ₗᵢ[ℂ] E') :
@@ -682,7 +693,8 @@ by
   ext x
   exact Submodule.starProjection_map_apply f U x
 
-theorem orthogonalProjection_submoduleMap_isometry {E E' : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+theorem orthogonalProjection_submoduleMap_isometry {E E' :
+    Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
   [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
   {U : Submodule ℂ E}
   [FiniteDimensional ℂ E] [FiniteDimensional ℂ E']
@@ -695,7 +707,7 @@ by
   let f' : E ≃ₗᵢ[ℂ] E' := ⟨f, (isometry_iff_norm _).mp hf⟩
   simpa using orthogonalProjection_submoduleMap f'
 
- instance
+instance
    StarAlgEquivClass.instLinearMapClass
   {R A B : Type*} [Semiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Mul A] [Mul B] [Module R A] [Module R B] [Star A] [Star B]
@@ -723,7 +735,8 @@ by
       ∘ₗ (orthogonalProjection' U).toLinearMap
       ∘ₗ f.toLinearEquiv.symm.toLinearMap := orthogonalProjection_submoduleMap_isometry hf'
 
-theorem orthogonalProjection_submoduleMap' {E E' : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+theorem orthogonalProjection_submoduleMap' {E E' :
+    Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
   [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
   {U : Submodule ℂ E}
   [FiniteDimensional ℂ E] [FiniteDimensional ℂ E'] (f : E' ≃ₗᵢ[ℂ] E) :
@@ -789,19 +802,18 @@ theorem OrthonormalBasis.tensorProduct_toBasis {𝕜 E F : Type*}
   [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
   [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
-  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁]
-  [DecidableEq ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
+  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂]
+  (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
   (b₁.tensorProduct b₂).toBasis = b₁.toBasis.tensorProduct b₂.toBasis :=
 by aesop
 
 theorem TensorProduct.of_orthonormalBasis_eq_span
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] (x : TensorProduct 𝕜 E F)
-  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁]
-  [DecidableEq ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
+  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
   (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
-  letI := FiniteDimensional.of_fintype_basis b₁.toBasis
-  letI := FiniteDimensional.of_fintype_basis b₂.toBasis
+  letI := Module.Basis.finiteDimensional_of_finite b₁.toBasis
+  letI := Module.Basis.finiteDimensional_of_finite b₂.toBasis
   x = ∑ i : ι₁, ∑ j : ι₂, ((b₁.tensorProduct b₂).repr x) (i, j) • b₁ i ⊗ₜ[𝕜] b₂ j :=
 by
   nth_rw 1 [TensorProduct.of_basis_eq_span x b₁.toBasis b₂.toBasis]
@@ -813,19 +825,18 @@ noncomputable def TensorProduct.of_orthonormalBasis_prod
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] (x : TensorProduct 𝕜 E F)
   {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
   (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
-  letI := FiniteDimensional.of_fintype_basis b₁.toBasis
-  letI := FiniteDimensional.of_fintype_basis b₂.toBasis
+  letI := Module.Basis.finiteDimensional_of_finite b₁.toBasis
+  letI := Module.Basis.finiteDimensional_of_finite b₂.toBasis
   (ι₁ × ι₂) → (E × F) :=
-letI := FiniteDimensional.of_fintype_basis b₁.toBasis
-letI := FiniteDimensional.of_fintype_basis b₂.toBasis
-λ (i,j) => ((((b₁.tensorProduct b₂).repr x) (i,j)) • b₁ i, b₂ j)
+letI := Module.Basis.finiteDimensional_of_finite b₁.toBasis
+letI := Module.Basis.finiteDimensional_of_finite b₂.toBasis
+fun (i,j) => ((((b₁.tensorProduct b₂).repr x) (i,j)) • b₁ i, b₂ j)
 
 @[simp]
 theorem TensorProduct.of_othonormalBasis_prod_eq
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] (x : E ⊗[𝕜] F)
-  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁]
-  [DecidableEq ι₂]
+  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂]
   (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
   ∑ i : ι₁ × ι₂,
     (x.of_orthonormalBasis_prod b₁ b₂ i).1 ⊗ₜ[𝕜] (x.of_orthonormalBasis_prod b₁ b₂ i).2
@@ -838,8 +849,7 @@ by
 theorem TensorProduct.of_othonormalBasis_prod_eq'
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] (x : E ⊗[𝕜] F)
-  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁]
-  [DecidableEq ι₂]
+  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂]
   (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
   ∑ i : ι₁ × ι₂,
     (x.of_orthonormalBasis_prod b₁ b₂ i).1 ⊗ₜ[𝕜] b₂ i.2
@@ -855,8 +865,8 @@ theorem
     (hf : QuantumGraph.Real A f) (gns : hA.k = 0) :
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   let b := hA.onb
-  let a := λ (x : A ⊗[ℂ] A) =>
-    λ i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
+  let a := fun (x : A ⊗[ℂ] A) =>
+    fun i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
   f = ∑ i, ∑ j, ⟪(u i : A ⊗[ℂ] A), 1⟫_ℂ
     • rankOne ℂ (b j.2) (modAut (-1) (star (a (u i : A ⊗[ℂ] A) j))) :=
 by
@@ -880,8 +890,8 @@ theorem
     (hf : QuantumGraph.Real A f) (gns : hA.k = 0) :
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   let b := hA.onb
-  let a := λ (x : A ⊗[ℂ] A) =>
-    λ i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
+  let a := fun (x : A ⊗[ℂ] A) =>
+    fun i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
   f = ∑ i, ∑ j, ⟪1, (u i : A ⊗[ℂ] A)⟫_ℂ
     • rankOne ℂ (star (b j.2)) (a (u i : A ⊗[ℂ] A) j) :=
 by
@@ -903,18 +913,17 @@ noncomputable def TensorProduct.of_orthonormalBasis_prod₁_lm
   (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
     (E ⊗[𝕜] F) →ₗ[𝕜] ((ι₁ × ι₂) → E) :=
 by
-  letI := FiniteDimensional.of_fintype_basis b₁.toBasis
-  letI := FiniteDimensional.of_fintype_basis b₂.toBasis
+  letI := Module.Basis.finiteDimensional_of_finite b₁.toBasis
+  letI := Module.Basis.finiteDimensional_of_finite b₂.toBasis
   exact
-  { toFun := λ x i => (x.of_orthonormalBasis_prod b₁ b₂ i).1
-    map_add' := λ _ _ => by simp [of_orthonormalBasis_prod, add_smul]; rfl
-    map_smul' := λ _ _ => by ext; simp [of_orthonormalBasis_prod, smul_smul] }
+  { toFun := fun x i => (x.of_orthonormalBasis_prod b₁ b₂ i).1
+    map_add' := fun _ _ => by simp [of_orthonormalBasis_prod, add_smul]; rfl
+    map_smul' := fun _ _ => by ext; simp [of_orthonormalBasis_prod, smul_smul] }
 
 lemma TensorProduct.of_orthonormalBasis_prod₁_lm_eq
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁]
-  [DecidableEq ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
+  {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
   (b₂ : OrthonormalBasis ι₂ 𝕜 F) (x : E ⊗[𝕜] F) (i : ι₁ × ι₂) :
   (TensorProduct.of_orthonormalBasis_prod₁_lm b₁ b₂) x i
     = (TensorProduct.of_orthonormalBasis_prod x b₁ b₂ i).1 :=
@@ -924,7 +933,7 @@ theorem
   QuantumGraph.Real.upsilon_eq'' {f : A →ₗ[ℂ] A}
     (hf : QuantumGraph.Real A f) (gns : hA.k = 0) :
   let P := orthogonalProjection' (upsilonSubmodule gns hf);
-  let a := λ x i => (TensorProduct.of_orthonormalBasis_prod x onb onb i).1
+  let a := fun x i => (TensorProduct.of_orthonormalBasis_prod x onb onb i).1
   f = ∑ j : n A × n A, rankOne ℂ (star (onb j.2)) (a (P 1 : A ⊗[ℂ] A) j) :=
 by
   intro P a
@@ -1015,8 +1024,8 @@ theorem
   {φ : A ≃⋆ₐ[ℂ] B} (hφ : Isometry φ) :
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   let b := hA.onb
-  let a := λ (x : A ⊗[ℂ] A) =>
-    λ i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
+  let a := fun (x : A ⊗[ℂ] A) =>
+    fun i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
   φ.toLinearMap ∘ₗ f ∘ₗ LinearMap.adjoint φ.toLinearMap
     = ∑ i, ∑ j, ∑ p,
       (⟪φ (a (u i : A ⊗[ℂ] A) p), 1⟫_ℂ
@@ -1062,20 +1071,20 @@ by
   simp only [LinearEquiv.trans_apply]
   rw [Psi_apply_linearMap_comp_linearMap_of_commute_modAut,
     ← TensorProduct.map_comm]
-  simp only [← LinearEquiv.coe_toLinearMap]
-  rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
-  symm
-  rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
-  congr
-  rw [TensorProduct.ext_iff']
-  intro _ _
-  simp only [LinearEquiv.coe_coe, LinearEquiv.coe_lTensor, LinearMap.map_comp_lTensor,
-    LinearMap.coe_comp, Function.comp_apply, LinearEquiv.TensorProduct.map_apply,
-    TensorProduct.map_tmul, unop_apply, op_apply, MulOpposite.coe_opLinearEquiv_symm,
-    MulOpposite.unop_op, symmMap_symm_apply, LinearMap.op_apply, LinearMap.real_apply,
-    MulOpposite.op_star, MulOpposite.unop_star, LinearMap.lTensor_tmul]
-  . simp only [starAlgebra.modAut_zero, AlgEquiv.one_toLinearMap]; rfl
-  . rw [hcd] at h; exact h
+  · simp only [← LinearEquiv.coe_toLinearMap]
+    rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
+    symm
+    rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
+    congr
+    rw [TensorProduct.ext_iff']
+    intro _ _
+    simp only [LinearEquiv.coe_coe, LinearEquiv.coe_lTensor, LinearMap.map_comp_lTensor,
+      LinearMap.coe_comp, Function.comp_apply, LinearEquiv.TensorProduct.map_apply,
+      TensorProduct.map_tmul, unop_apply, op_apply, MulOpposite.coe_opLinearEquiv_symm,
+      MulOpposite.unop_op, symmMap_symm_apply, LinearMap.op_apply, LinearMap.real_apply,
+      MulOpposite.op_star, MulOpposite.unop_star, LinearMap.lTensor_tmul]
+  · simp only [starAlgebra.modAut_zero, AlgEquiv.one_toLinearMap]; rfl
+  · rw [hcd] at h; exact h
 
 theorem TensorProduct.toIsBimoduleMap_comp
   {R H₁ H₂ H₃ H₄ : Type*} [CommSemiring R]
@@ -1089,10 +1098,11 @@ theorem TensorProduct.toIsBimoduleMap_comp
       ∘ₗ (TensorProduct.toIsBimoduleMap x).1
       ∘ₗ (AlgEquiv.TensorProduct.map f.symm g.symm).toLinearMap :=
 by
-  refine' x.induction_on _ _ _
-  . simp only [map_zero, ZeroMemClass.coe_zero, AlgEquiv.TensorProduct.map_toLinearMap,
+  induction x using TensorProduct.induction_on with
+  | zero =>
+    simp only [map_zero, ZeroMemClass.coe_zero, AlgEquiv.TensorProduct.map_toLinearMap,
     LinearMap.zero_comp, LinearMap.comp_zero]
-  . intro _ _
+  | tmul _ _ =>
     rw [TensorProduct.toIsBimoduleMap_apply_coe, AlgEquiv.TensorProduct.map_tmul, rmulMapLmul_apply]
     rw [TensorProduct.ext_iff']
     intro _ _
@@ -1101,7 +1111,7 @@ by
     simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, AlgEquiv.TensorProduct.map_tmul,
       toIsBimoduleMap_apply_coe, rmulMapLmul_apply, map_tmul]
     rfl
-  . intro _ _ h1 h2
+  | add _ _ h1 h2 =>
     simp only [_root_.map_add, LinearMap.IsBimoduleMaps.coe_add, h1, h2,
       LinearMap.add_comp, LinearMap.comp_add]
 
@@ -1119,19 +1129,19 @@ by
     orthogonalProjection_submoduleMap_isometry_starAlgEquiv
       (StarAlgEquiv.tensorProduct_map_isometry_of hφ hφ)]
   rw [upsilonOrthogonalProjection, upsilonOrthogonalProjection]
-  simp only [LinearMap.coe_toContinuousLinearMap, ← TensorProduct.toIsBimoduleMap_symm_apply,
-    LinearEquiv.symm_apply_apply]
+  simp only [LinearMap.coe_toContinuousLinearMap]
   rw [Upsilon_apply_comp]
-  rw [symmMap_symm_apply, LinearMap.adjoint_adjoint, (LinearMap.isReal_iff _).mp (StarAlgEquiv.isReal _)]
-  calc (TensorProduct.toIsBimoduleMap ((φ.toLinearMap ⊗ₘ φ.toLinearMap) (Upsilon f))).1
-      = (TensorProduct.toIsBimoduleMap ((AlgEquiv.TensorProduct.map φ.toAlgEquiv
-        φ.toAlgEquiv) (Upsilon f))).1 := rfl
-    _ = (AlgEquiv.TensorProduct.map φ.toAlgEquiv φ.toAlgEquiv).toLinearMap
-      ∘ₗ (TensorProduct.toIsBimoduleMap (Upsilon f)).1
-      ∘ₗ (AlgEquiv.TensorProduct.map φ.toAlgEquiv.symm φ.toAlgEquiv.symm).toLinearMap :=
-         TensorProduct.toIsBimoduleMap_comp
-  . simp only [gns, gns₂]
-  . have := QuantumSet.starAlgEquiv_commutes_with_modAut_of_isometry' hφ
+  · rw [symmMap_symm_apply, LinearMap.adjoint_adjoint,
+      (LinearMap.isReal_iff _).mp (StarAlgEquiv.isReal _)]
+    calc (TensorProduct.toIsBimoduleMap ((φ.toLinearMap ⊗ₘ φ.toLinearMap) (Upsilon f))).1
+        = (TensorProduct.toIsBimoduleMap ((AlgEquiv.TensorProduct.map φ.toAlgEquiv
+          φ.toAlgEquiv) (Upsilon f))).1 := rfl
+      _ = (AlgEquiv.TensorProduct.map φ.toAlgEquiv φ.toAlgEquiv).toLinearMap
+        ∘ₗ (TensorProduct.toIsBimoduleMap (Upsilon f)).1
+        ∘ₗ (AlgEquiv.TensorProduct.map φ.toAlgEquiv.symm φ.toAlgEquiv.symm).toLinearMap :=
+           TensorProduct.toIsBimoduleMap_comp
+  · simp only [gns, gns₂]
+  · have := QuantumSet.starAlgEquiv_commutes_with_modAut_of_isometry' hφ
     simp only [gns, gns₂, zero_add, mul_zero] at this ⊢
     apply_fun LinearMap.adjoint using LinearEquiv.injective _
     simp only [LinearMap.adjoint_comp, LinearMap.adjoint_adjoint, QuantumSet.modAut_adjoint]

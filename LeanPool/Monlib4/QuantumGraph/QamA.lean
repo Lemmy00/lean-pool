@@ -118,13 +118,14 @@ theorem qamA.toMatrix [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ // x ≠ 0 }) :
           norm_num
   rw [Matrix.conj, ← this, ← _root_.map_mul]
 
-@[instance, reducible]
+@[reducible, instance]
 private noncomputable def has_smul.units_matrix_ne_zero : SMul ℂˣ { x : Matrix n n ℂ // x ≠ 0 }
     where smul α x :=
     (⟨((α : ℂ) • x.1 : Matrix n n ℂ),
         smul_ne_zero (Units.ne_zero α) (Set.mem_setOf.mp (Subtype.mem x))⟩ :
       { x : Matrix n n ℂ // x ≠ 0 })
 
+omit [Fintype n] [DecidableEq n] in
 private theorem has_smul.units_matrix_ne_zero_coe (x : { x : Matrix n n ℂ // x ≠ 0 }) (α : ℂˣ) :
     (α • x : { x : Matrix n n ℂ // x ≠ 0 }).1 = (α : ℂ) • x.1 :=
   rfl
@@ -132,7 +133,8 @@ private theorem has_smul.units_matrix_ne_zero_coe (x : { x : Matrix n n ℂ // x
 open Matrix
 
 /-- given a non-zero matrix $x$, we always get $A(x)$ is non-zero -/
-theorem qamA.ne_zero [hφ : φ.IsFaithfulPosMap] (x : { x : Matrix n n ℂ // x ≠ 0 }) : qamA hφ x ≠ 0 :=
+theorem qamA.ne_zero [hφ : φ.IsFaithfulPosMap] (x : { x : Matrix n n ℂ // x ≠ 0 }) :
+    qamA hφ x ≠ 0 :=
   by
   withMatrixQuantumCtx[φ]
   have hx := x.property
@@ -144,7 +146,8 @@ theorem qamA.ne_zero [hφ : φ.IsFaithfulPosMap] (x : { x : Matrix n n ℂ // x 
 
 /-- Given any non-zero matrix $x$ and non-zero $\alpha\in\mathbb{C}$ we have
   $$A(\alpha x)=A(x),$$
-  in other words, it is not injective. However, it `is_almost_injective` (see `qam_A.is_almost_injective`). -/
+  in other words, it is not injective. However, it `is_almost_injective` (see
+    `qam_A.is_almost_injective`). -/
 theorem qamA.smul [hφ : φ.IsFaithfulPosMap] (x : { x : Matrix n n ℂ // x ≠ 0 }) (α : ℂˣ) :
     qamA hφ (α • x) = qamA hφ x :=
   by
@@ -182,7 +185,7 @@ theorem qamA.is_idempotent [hφ : φ.IsFaithfulPosMap] (x : { x : Matrix n n ℂ
         (‖x.1‖ ^ 2 : ℂ) • ((rankOne ℂ x.1 x.1 : L(ℍ)) : l(ℍ)) :=
     by
     ext y i j
-    simp [Module.End.mul_apply, rankOne_apply, inner_self_eq_norm_sq_to_K, smul_smul]
+    simp [Module.End.mul_apply, inner_self_eq_norm_sq_to_K]
     ring
   rw [hrank]
   simp_rw [_root_.map_smul, smul_smul, mul_assoc]
@@ -297,7 +300,7 @@ theorem one_map_transpose_psi_eq [hφ : φ.IsFaithfulPosMap] (A : l(ℍ)) :
         (TensorProduct.map A (1 : l(ℍ))) (kroneckerToTensorProduct x) :=
     by
     intro x
-    rw [kmul_representation x]
+    rw [Matrix.kmul_representation x]
     simp_rw [map_sum, _root_.map_smul, oneMapTranspose_symm_eq,
       kroneckerToTensorProduct_apply, TensorProduct.map_tmul, Module.End.one_apply,
       AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
@@ -331,7 +334,8 @@ private theorem qam_A_is_sa_iff_aux [hφ : φ.IsFaithfulPosMap] (x : ℍ) :
   withMatrixQuantumCtx[φ]
   calc
     (|φ.matrix * x⟩⟨φ.matrix * x| : l(ℍ)) =
-        LinearMap.mulLeft ℂ φ.matrix ∘ₗ (|x⟩⟨x| : l(ℍ)) ∘ₗ LinearMap.adjoint (LinearMap.mulLeft ℂ φ.matrix) :=
+        LinearMap.mulLeft ℂ φ.matrix ∘ₗ (|x⟩⟨x| : l(ℍ)) ∘ₗ
+          LinearMap.adjoint (LinearMap.mulLeft ℂ φ.matrix) :=
       by
       simp only [LinearMap.comp_rankOne, LinearMap.rankOne_comp', LinearMap.mulLeft_apply]
     _ = LinearMap.mulLeft ℂ φ.matrix ∘ₗ (|x⟩⟨x| : l(ℍ)) ∘ₗ LinearMap.mulLeft ℂ φ.matrix := by
@@ -389,8 +393,7 @@ private theorem qam_A_is_sa_iff_aux4 [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ 
         smul_mul_assoc]
     _ = ((1 / inner ℂ x.1ᴴ x.1ᴴ) • φ.matrix⁻¹) *
         (inner ℂ x.1 x.1ᴴ • x.1 * φ.matrix) := by
-      simp only [Matrix.mul_smul, Matrix.smul_mul, smul_smul, Matrix.mul_assoc,
-        mul_comm (1 / _ : ℂ), mul_one_div]
+      simp only [Matrix.mul_smul, Matrix.smul_mul, smul_smul, Matrix.mul_assoc, mul_one_div]
     _ = ((1 / inner ℂ x.1ᴴ x.1ᴴ) • φ.matrix⁻¹) *
         (inner ℂ x.1ᴴ x.1ᴴ • φ.matrix * x.1ᴴ) := by
       simp_rw [smul_mul_assoc, ← h]
@@ -465,21 +468,17 @@ private theorem qam_A_is_sa_iff_aux5 [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ 
           LinearMap.mulRight ℂ φ.matrix ∘ₗ (|x.1⟩⟨x.1| : l(ℍ)) :=
       ?_
     _ = (|x.1⟩⟨x.1| : l(ℍ)) := ?_
-  ·
-    rw [symmMap_rankOne_apply, LinearMap.comp_rankOne, AlgEquiv.toLinearMap_apply]
+  · rw [symmMap_rankOne_apply, LinearMap.comp_rankOne, AlgEquiv.toLinearMap_apply]
     rw [show k ℍ = 0 by rfl]
     simp_rw [star_eq_conjTranspose]
     rw [show (modAut (-(2 * (0 : ℝ)) - 1) x.1ᴴ) =
         hφ.sig (-(2 * (0 : ℝ)) - 1) x.1ᴴ by rfl]
     ring_nf
-  ·
-    simp_rw [sig_eq_lmul_rmul, neg_neg, PosDef.rpow_one_eq_self, PosDef.rpow_neg_one_eq_inv_self,
+  · simp_rw [sig_eq_lmul_rmul, neg_neg, PosDef.rpow_one_eq_self, PosDef.rpow_neg_one_eq_inv_self,
       LinearMap.comp_assoc]
-  ·
-    simp_rw [← Module.End.mul_eq_comp, ← mul_assoc, (LinearMap.commute_mulLeft_right _ _).eq,
+  · simp_rw [← Module.End.mul_eq_comp, ← mul_assoc, (LinearMap.commute_mulLeft_right _ _).eq,
       mul_assoc, Module.End.mul_eq_comp, h]
-  ·
-    rw [← LinearMap.comp_assoc, ← LinearMap.mulRight_mul, mul_inv_of_invertible,
+  · rw [← LinearMap.comp_assoc, ← LinearMap.mulRight_mul, mul_inv_of_invertible,
       LinearMap.mulRight_one, LinearMap.id_comp]
 
 theorem sig_comp_eq_iff_eq_sig_inv_comp [hφ : φ.IsFaithfulPosMap] (r : ℝ) (a b : l(ℍ)) :
@@ -492,7 +491,8 @@ theorem sig_comp_eq_iff_eq_sig_inv_comp [hφ : φ.IsFaithfulPosMap] (r : ℝ) (a
   · simp_rw [h, AlgEquiv.toLinearMap_apply, hφ.sig_apply_sig, add_neg_cancel,
       hφ.sig_zero, AlgEquiv.one_apply]
 
-theorem sig_eq_iff_eq_sig_inv [hφ : φ.IsFaithfulPosMap] (r : ℝ) (a b : ℍ) : hφ.sig r a = b ↔ a = hφ.sig (-r) b := by
+theorem sig_eq_iff_eq_sig_inv [hφ : φ.IsFaithfulPosMap] (r : ℝ) (a b : ℍ) : hφ.sig r a = b ↔ a =
+  hφ.sig (-r) b := by
   constructor <;> rintro rfl <;>
     simp only [hφ.sig_apply_sig, neg_add_cancel, add_neg_cancel, hφ.sig_zero,
       AlgEquiv.one_apply]
@@ -502,8 +502,7 @@ theorem comp_sig_eq_iff_eq_comp_sig_inv [hφ : φ.IsFaithfulPosMap] (r : ℝ) (a
   by
   simp_rw [LinearMap.ext_iff, LinearMap.comp_apply]
   constructor <;> intro h x
-  ·
-    simp only [← h, AlgEquiv.toLinearMap_apply, hφ.sig_apply_sig, add_neg_cancel,
+  · simp only [← h, AlgEquiv.toLinearMap_apply, hφ.sig_apply_sig, add_neg_cancel,
       hφ.sig_zero, AlgEquiv.one_apply]
   · simp only [h, hφ.sig_apply_sig, neg_add_cancel, hφ.sig_zero, AlgEquiv.toLinearMap_apply,
       AlgEquiv.one_apply]
@@ -549,14 +548,14 @@ private theorem qam_A_is_sa_iff_aux3_aux6 [hφ : φ.IsFaithfulPosMap] (x : ℍ) 
   have hsqrt_star :
       ((Real.sqrt ((α : NNReal) : ℝ) : ℂ) • x) =
         (star (Real.sqrt ((α : NNReal) : ℝ) : ℂ)) • x := by
-    simp [Complex.star_def, Complex.conj_ofReal]
+    simp [Complex.conj_ofReal]
   calc
     rankOne ℂ ((Real.sqrt ((α : NNReal) : ℝ) : ℂ) • x)
         ((Real.sqrt ((α : NNReal) : ℝ) : ℂ) • x) =
           ((Real.sqrt ((α : NNReal) : ℝ) : ℂ) *
               (Real.sqrt ((α : NNReal) : ℝ) : ℂ)) • rankOne ℂ x x := by
       rw [hsqrt_star, rankOne_smul_smul]
-      simp [Complex.star_def, Complex.conj_ofReal]
+      simp [Complex.conj_ofReal]
     _ = ((((α : NNReal) : ℝ) : ℂ) * 1) • rankOne ℂ x x := by
       rw [show (Real.sqrt ((α : NNReal) : ℝ) : ℂ) *
           (Real.sqrt ((α : NNReal) : ℝ) : ℂ) =
@@ -615,7 +614,8 @@ private theorem qam_A_is_sa_iff_aux4_aux6 [hφ : φ.IsFaithfulPosMap] (x' : { x 
     _ = hφ.sig 1 x := ?_
   rw [smul_smul, one_div, inv_mul_cancel₀ (inner_self_ne_zero.mpr hx), one_smul]
 
-theorem sig_eq_self_iff_commute [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig 1 x = x ↔ Commute φ.matrix x :=
+theorem sig_eq_self_iff_commute [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig 1 x = x ↔
+  Commute φ.matrix x :=
   by
   simp_rw [hφ.sig_apply, Commute, SemiconjBy, PosDef.rpow_one_eq_self,
     PosDef.rpow_neg_one_eq_inv_self]
@@ -625,6 +625,7 @@ theorem sig_eq_self_iff_commute [hφ : φ.IsFaithfulPosMap] (x : ℍ) : hφ.sig 
     rw [Matrix.mul_assoc, mul_inv_cancel_left_of_invertible]
   · rw [Matrix.mul_assoc, ← h, ← Matrix.mul_assoc, inv_mul_of_invertible, Matrix.one_mul]
 
+omit [Fintype n] [DecidableEq n] in
 private theorem qam_A_is_sa_iff_aux7 (x : { x : ℍ // x ≠ 0 }) (α : NNRealˣ) (β : ℂˣ)
     (hx : x.1 = (star (β : ℂ) * (Real.sqrt ((α : NNReal) : ℝ) : ℂ)) • x.1ᴴ)
     (hx2 : x.1 = ((β⁻¹ : ℂ) * (((Real.sqrt ((α : NNReal) : ℝ))⁻¹ : ℝ) : ℂ)) • x.1ᴴ) :
@@ -640,9 +641,9 @@ private theorem qam_A_is_sa_iff_aux7 (x : { x : ℍ // x ≠ 0 }) (α : NNRealˣ
     Complex.normSq_eq_conj_mul_self, Complex.normSq_eq_norm_sq, ←
     Complex.ofReal_mul, ← Real.sqrt_mul hi, Real.sqrt_mul_self hi, ← Complex.ofReal_mul,
     Complex.ofReal_eq_one] at this
-  exact this
-  simp_rw [ne_eq, inv_eq_zero, mul_eq_zero, Complex.ofReal_eq_zero, Real.sqrt_eq_zero hi,
-    NNReal.coe_eq_zero, Units.ne_zero, or_false, not_false_iff]
+  · exact this
+  · simp_rw [ne_eq, inv_eq_zero, mul_eq_zero, Complex.ofReal_eq_zero, Real.sqrt_eq_zero hi,
+      NNReal.coe_eq_zero, Units.ne_zero, or_false, not_false_iff]
 
 private theorem qam_A_is_sa_iff_aux8 (α : NNRealˣ) (β : ℂˣ)
     (h : ‖(β : ℂ)‖ ^ 2 * ((α : NNReal) : ℝ) = 1) :
@@ -667,16 +668,22 @@ private theorem qam_A_is_sa_iff_aux8 (α : NNRealˣ) (β : ℂˣ)
     have hnonneg : 0 ≤ ‖(β : ℂ)‖ * ‖(((α : NNReal) : ℝ).sqrt : ℂ)‖ :=
       mul_nonneg (norm_nonneg _) (norm_nonneg _)
     nlinarith
-  refine' ⟨Units.mk0 γ hγ, this, this1, _⟩
+  use Units.mk0 γ hγ
+  constructor
+  · exact this
+  constructor
+  · exact this1
   rw [← Complex.ofReal_inj, ← Complex.normSq_eq_norm_sq, ← Complex.mul_conj,
     Complex.ofReal_one, starRingEnd_apply, mul_comm, mul_eq_one_iff_eq_inv₀ hγ] at this1
   exact this1
 
+omit [Fintype n] [DecidableEq n] in
 private theorem qam_A_is_sa_iff_aux9 (x : ℍ) (α : NNRealˣ) (β γ : ℂˣ)
     (h : (γ : ℂ) ^ 2 = (β : ℂ) * (((α : NNReal) : ℝ).sqrt : ℂ)) (h2 : star (γ : ℂ) = (γ : ℂ)⁻¹)
     (hx : xᴴ = ((β : ℂ) * (Real.sqrt ((α : NNReal) : ℝ) : ℂ)) • x) : x.IsAlmostHermitian :=
   by
-  refine' ⟨Units.mk0 (star (γ : ℂ)) (star_ne_zero.mpr (Units.ne_zero _)), (γ : ℂ) • x, _⟩
+  use Units.mk0 (star (γ : ℂ)) (star_ne_zero.mpr (Units.ne_zero _))
+  use (γ : ℂ) • x
   simp_rw [IsHermitian, conjTranspose_smul, h2, Units.val_mk0, smul_smul,
     inv_mul_cancel₀ (Units.ne_zero γ), one_smul, true_and]
   rw [eq_comm, eq_inv_smul_iff₀ (Units.ne_zero γ), smul_smul, ← sq, h]
@@ -763,7 +770,7 @@ private theorem qam_A_is_sa_iff_aux6 [hφ : φ.IsFaithfulPosMap] (x' : { x : ℍ
     simpa [star_eq_conjTranspose] using star_ne_zero.mpr hx
   have hsqrtx : ((Real.sqrt ((α : NNReal) : ℝ) : ℂ) • x) ≠ 0 := by
     apply smul_ne_zero
-    · simp [Real.sqrt_ne_zero (NNReal.coe_nonneg _), NNReal.coe_ne_zero, Units.ne_zero α]
+    · simp [Units.ne_zero α]
     · exact hx
   obtain ⟨β, hβ⟩ := rankOne.ext_iff hxstar hsqrtx hα'
   rw [smul_smul] at hβ
@@ -823,8 +830,10 @@ theorem qamA.of_is_self_adjoint [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ // x 
   have h' := qam_A_is_sa_iff_aux5 x h
   exact qam_A_is_sa_iff_aux6 x h'
 
-theorem qamA.is_self_adjoint_of [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ // x ≠ 0 }) (hx₁ : x.1.IsAlmostHermitian)
-    (hx₂ : Commute φ.matrix x.1) : withMatrixQuantum[φ] (LinearMap.adjoint (qamA hφ x) = qamA hφ x) :=
+theorem qamA.is_self_adjoint_of [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ // x ≠ 0 }) (hx₁ :
+    x.1.IsAlmostHermitian)
+    (hx₂ : Commute φ.matrix x.1) : withMatrixQuantum[φ] (LinearMap.adjoint (qamA hφ x) =
+      qamA hφ x) :=
   by
   withMatrixQuantumCtx[φ]
   simp_rw [qamA_eq, LinearMap.adjoint_smul, Module.End.mul_eq_comp, LinearMap.adjoint_comp,
@@ -860,8 +869,11 @@ theorem qamA.isRealQam [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ // x ≠ 0 }) 
   exact ⟨qamA.is_idempotent _, qamA.isReal _⟩
 
 open scoped ComplexOrder
-theorem Matrix.PosDef.ne_zero [Nontrivial n] {Q : ℍ} (hQ : Q.PosDef) : Q ≠ 0 :=
+omit [Fintype n] [DecidableEq n] in
+theorem Matrix.PosDef.ne_zero [Finite n] [Nontrivial n] {Q : ℍ} (hQ : Q.PosDef) : Q ≠ 0 :=
   by
+  classical
+  letI := Fintype.ofFinite n
   have := PosDef.trace_ne_zero hQ
   intro h
   rw [h, trace_zero] at this
@@ -877,7 +889,7 @@ theorem qamA.edges [hφ : φ.IsFaithfulPosMap] (x : { x : ℍ // x ≠ 0 }) :
   rw [RealQam.edges_eq_one_iff]
   exact ⟨x, rfl⟩
 
-theorem qamA.is_irreflexive_iff [hφ : φ.IsFaithfulPosMap]  [Nontrivial n] (x : { x : ℍ // x ≠ 0 }) :
+theorem qamA.is_irreflexive_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n] (x : { x : ℍ // x ≠ 0 }) :
     withMatrixQuantum[φ]
       letI : Coalgebra ℂ ℍ := Coalgebra.ofFiniteDimensionalHilbertAlgebra
       (Qam.reflIdempotent hφ (qamA hφ x) 1 = 0 ↔ x.1.trace = 0) :=
@@ -888,7 +900,8 @@ theorem qamA.is_irreflexive_iff [hφ : φ.IsFaithfulPosMap]  [Nontrivial n] (x :
   rw [← Function.Injective.eq_iff (hφ.psi (ψ := φ) 0 (1 / 2)).injective]
   simp_rw [Qam.reflIdempotent, Psi.schurMul_faithful, Psi.one, _root_.map_smul,
     LinearEquiv.apply_symm_apply, smul_mul_assoc, ←
-    oneMapTranspose_symm_eq, ← _root_.map_mul, LinearEquiv.map_zero, smul_eq_zero, StarAlgEquiv.map_eq_zero_iff,
+    oneMapTranspose_symm_eq, ← _root_.map_mul, LinearEquiv.map_zero, smul_eq_zero,
+      StarAlgEquiv.map_eq_zero_iff,
     AlgEquiv.map_eq_zero_iff, rankOne_eq_rankOneLm, one_div, inv_eq_zero, sq_eq_zero_iff,
     Complex.ofReal_eq_zero, norm_eq_zero, x.property, false_or,
     Module.End.mul_eq_comp, rankOneLm_comp_rankOneLm, smul_eq_zero, rankOneLm_eq_rankOne,
@@ -918,9 +931,9 @@ theorem qamA.is_almost_injective [hφ : φ.IsFaithfulPosMap] (x y : { x : ℍ //
     symm
     rw [show (1 / (‖y.1‖ : ℂ)) • y.1 =
         star (1 / (‖y.1‖ : ℂ)) • y.1 by
-      simp [star_div₀, Complex.star_def, Complex.conj_ofReal]]
+      simp [Complex.conj_ofReal]]
     rw [rankOne_lm_smul_smul]
-    simp [Complex.star_def, Complex.conj_ofReal, sq]
+    simp [Complex.conj_ofReal, sq]
   simp_rw [this, ContinuousLinearMap.coe_inj]
   constructor
   · intro h
@@ -937,12 +950,13 @@ theorem qamA.is_almost_injective [hφ : φ.IsFaithfulPosMap] (x y : { x : ℍ //
     have : β ≠ 0 := by
       simp_rw [β, one_div]
       apply mul_ne_zero
-      apply mul_ne_zero
-      on_goal 2 => exact Units.ne_zero _
-      on_goal 2 => apply inv_ne_zero
-      all_goals
+      · apply mul_ne_zero
+        · simp only [Complex.ofReal_ne_zero, norm_ne_zero_iff]
+          exact x.property
+        · exact Units.ne_zero _
+      · apply inv_ne_zero
         simp only [Complex.ofReal_ne_zero, norm_ne_zero_iff]
-        simp only [ne_eq, x.property, y.property, not_false_iff]
+        exact y.property
     use Units.mk0 β this
     simp_rw [Units.val_mk0, β, mul_assoc]
     rw [← smul_smul]
@@ -955,7 +969,7 @@ theorem qamA.is_almost_injective [hφ : φ.IsFaithfulPosMap] (x y : { x : ℍ //
       smul_rankOneLm', smul_smul, norm_smul]
     simp [Complex.normSq_eq_norm_sq, Complex.mul_conj, Complex.ofReal_mul, one_div, mul_pow]
 
-theorem qamA.is_reflexive_iff [hφ : φ.IsFaithfulPosMap]  [Nontrivial n] (x : { x : ℍ // x ≠ 0 }) :
+theorem qamA.is_reflexive_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n] (x : { x : ℍ // x ≠ 0 }) :
     withMatrixQuantum[φ]
       letI : Coalgebra ℂ ℍ := Coalgebra.ofFiniteDimensionalHilbertAlgebra
       (Qam.reflIdempotent hφ (qamA hφ x) 1 = 1 ↔ ∃ α : ℂˣ, x.1 = (α : ℂ) • φ.matrix⁻¹) :=
@@ -981,7 +995,7 @@ theorem qamA.is_reflexive_iff [hφ : φ.IsFaithfulPosMap]  [Nontrivial n] (x : {
     simp
   rw [hstar, ← rankOne.left_sub, rankOne.eq_zero_iff]
   haveI := hφ.matrixIsPosDef.invertible
-  simp only [sub_eq_zero, smul_smul, Module.Dual.IsFaithfulPosMap.inner_eq']
+  simp only [sub_eq_zero, Module.Dual.IsFaithfulPosMap.inner_eq']
   rw [trace_mul_cycle, inv_mul_of_invertible, Matrix.one_mul, ← trace_star]
   simp only [hφ.matrixIsPosDef.inv.ne_zero, or_false]
   constructor
@@ -1004,7 +1018,8 @@ theorem qamA.is_reflexive_iff [hφ : φ.IsFaithfulPosMap]  [Nontrivial n] (x : {
   · rintro ⟨α, hx⟩
     simp_rw [hx, trace_smul, star_smul, norm_smul, trace_star]
     have : (‖φ.matrix⁻¹‖ : ℂ) ^ 2 = φ.matrix⁻¹.trace := by
-      simp_rw [Complex.ofReal'_eq_isROrC_ofReal, ← inner_self_eq_norm_sq_to_K, Module.Dual.IsFaithfulPosMap.inner_eq',
+      simp_rw [Complex.ofReal'_eq_isROrC_ofReal, ← inner_self_eq_norm_sq_to_K,
+        Module.Dual.IsFaithfulPosMap.inner_eq',
         hφ.matrixIsPosDef.inv.1.eq, Matrix.mul_assoc, mul_inv_cancel_left_of_invertible]
     simp only [Complex.ofReal_mul, mul_pow, one_div, _root_.mul_inv_rev, this, smul_smul,
       smul_eq_mul]
@@ -1026,11 +1041,11 @@ theorem qamA.of_trivialGraph [hφ : φ.IsFaithfulPosMap] [Nontrivial n] [Nonempt
   letI : QuantumSetDeltaForm ℍ := Matrix.quantumSetDeltaForm (φ := φ)
   rw [qamA_eq]
   haveI := hφ.matrixIsPosDef.invertible
-  simp only [LinearMap.mulLeft_smul, LinearMap.mulRight_smul, LinearMap.adjoint_smul,
-    Subtype.coe_mk, inv_mul_of_invertible, mul_inv_of_invertible, LinearMap.mulLeft_one,
+  simp only [inv_mul_of_invertible, mul_inv_of_invertible, LinearMap.mulLeft_one,
     LinearMap.mulRight_one, ← Module.End.one_eq_id, LinearMap.adjoint_one, one_mul]
   have : ((‖φ.matrix⁻¹‖ : ℝ) : ℂ) ^ 2 = φ.matrix⁻¹.trace := by
-    simp_rw [Complex.ofReal'_eq_isROrC_ofReal, ← inner_self_eq_norm_sq_to_K, Module.Dual.IsFaithfulPosMap.inner_eq',
+    simp_rw [Complex.ofReal'_eq_isROrC_ofReal, ← inner_self_eq_norm_sq_to_K,
+      Module.Dual.IsFaithfulPosMap.inner_eq',
       hφ.matrixIsPosDef.inv.1.eq, Matrix.mul_assoc, mul_inv_cancel_left_of_invertible]
   rw [this, one_div, Qam.trivialGraph_eq]
   change φ.matrix⁻¹.trace⁻¹ • (1 : l(ℍ)) = φ.matrix⁻¹.trace⁻¹ • (1 : l(ℍ))
@@ -1058,7 +1073,8 @@ theorem Qam.unique_one_edge_and_refl [hφ : φ.IsFaithfulPosMap] [Nontrivial n] 
   · rintro rfl
     exact ⟨Qam.trivialGraph_edges, Qam.Nontracial.trivialGraph⟩
 
-private theorem star_alg_equiv.is_isometry_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n] (f : ℍ ≃⋆ₐ[ℂ] ℍ) :
+private theorem star_alg_equiv.is_isometry_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n] (f :
+    ℍ ≃⋆ₐ[ℂ] ℍ) :
     withMatrixQuantum[φ] (StarAlgEquiv.IsIsometry f ↔ f φ.matrix = φ.matrix) := by
   withMatrixQuantumCtx[φ]
   rw [StarAlgEquiv.IsIsometry, isometry_iff_norm]
@@ -1159,8 +1175,10 @@ theorem qamA.iso_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n]
         LinearMap.congr_fun hU ((innerAutStarAlg U).symm z)
     rw [qamA.isometric_starAlgEquiv_conj _ hUUiso, qamA.is_almost_injective,
       Subtype.coe_mk] at hU'
-    refine' ⟨U, _, hUU⟩
-    simpa [_root_.map_smul, AlgEquiv.toLinearMap_apply, StarAlgEquiv.coe_toAlgEquiv] using hU'
+    use U
+    constructor
+    · simpa [_root_.map_smul, AlgEquiv.toLinearMap_apply, StarAlgEquiv.coe_toAlgEquiv] using hU'
+    · exact hUU
   · rintro ⟨U, ⟨hU, hUU⟩⟩
     have hUUiso : StarAlgEquiv.IsIsometry (innerAutStarAlg U) :=
       (unitary_commutes_with_hφ_matrix_iff_isIsometry hφ U).mp hUU
@@ -1171,8 +1189,10 @@ theorem qamA.iso_iff [hφ : φ.IsFaithfulPosMap] [Nontrivial n]
       rw [qamA.isometric_starAlgEquiv_conj _ hUUiso, qamA.is_almost_injective,
         Subtype.coe_mk]
       simpa [_root_.map_smul, AlgEquiv.toLinearMap_apply, StarAlgEquiv.coe_toAlgEquiv] using hU
-    refine' ⟨U, _, hUU⟩
-    rw [hU']
-    ext z
-    simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
-      StarAlgEquiv.coe_toAlgEquiv, StarAlgEquiv.symm_apply_apply]
+    use U
+    constructor
+    · rw [hU']
+      ext z
+      simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
+        StarAlgEquiv.coe_toAlgEquiv, StarAlgEquiv.symm_apply_apply]
+    · exact hUU

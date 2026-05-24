@@ -48,6 +48,10 @@ lemma PiLp.mul_apply_quantum (x y : PiQ A) (i : ι) :
     (x * y) i = x i * y i :=
   rfl
 
+lemma PiLp.mul_apply (x y : PiQ A) (i : ι) :
+    (x * y) i = x i * y i :=
+  PiLp.mul_apply_quantum x y i
+
 instance : StarRing (PiQ A) where
   star_involutive x := by
     ext i
@@ -112,6 +116,10 @@ noncomputable instance piInnerProductAlgebra : InnerProductAlgebra (PiQ A) where
 theorem piInnerProductAlgebra_inner_apply (a b : PiQ A) :
     ⟪a, b⟫_ℂ = ∑ i, ⟪a i, b i⟫_ℂ := by
   rw [PiLp.inner_apply]
+
+theorem piInnerProductAlgebra.inner_apply (a b : PiQ A) :
+    ⟪a, b⟫_ℂ = ∑ i, ⟪a i, b i⟫_ℂ :=
+  piInnerProductAlgebra_inner_apply a b
 
 noncomputable instance Pi.quantumSet [Fact (∀ i, (hQ i).k = 0)] : QuantumSet (PiQ A) where
   modAut_isSymmetric r x y := by

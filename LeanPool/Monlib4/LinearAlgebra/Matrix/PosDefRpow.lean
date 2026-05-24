@@ -22,24 +22,6 @@ variable {n 𝕜 : Type _} [RCLike 𝕜] [Fintype n] [DecidableEq n]
 
 open scoped Matrix BigOperators ComplexOrder MatrixOrder
 
-/-- The matrix whose columns are the Hermitian eigenvector basis. -/
-noncomputable abbrev _root_.Matrix.IsHermitian.eigenvectorMatrix {A : Matrix n n 𝕜}
-    (hA : A.IsHermitian) :
-    Matrix n n 𝕜 :=
-  hA.eigenvectorUnitary
-
-lemma _root_.Matrix.IsHermitian.eigenvectorUnitary_coe_eq_eigenvectorMatrix {A : Matrix n n 𝕜}
-    (hA : A.IsHermitian) :
-    hA.eigenvectorMatrix = hA.eigenvectorUnitary :=
-  rfl
-
-lemma _root_.Matrix.IsHermitian.eigenvalues_eq' {A : Matrix n n 𝕜}
-    (hA : A.IsHermitian) (i : n) :
-    hA.eigenvalues i =
-      RCLike.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorMatrixᵀ i) := by
-  simpa [IsHermitian.eigenvectorMatrix, Matrix.IsHermitian.eigenvectorUnitary_transpose_apply] using
-    hA.eigenvalues_eq i
-
 theorem _root_.Matrix.IsHermitian.eigenvectorMatrix_conjTranspose_mul {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) :
     hA.eigenvectorMatrixᴴ * hA.eigenvectorMatrix = 1 := by

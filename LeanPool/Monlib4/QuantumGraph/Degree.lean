@@ -28,14 +28,16 @@ by
     QuantumSet.modAut_adjoint, AlgEquiv.toLinearMap_apply]
   exact inner_self_nonneg'
 
-theorem QuantumGraph.toSubset_iff {A : Type*} [starAlgebra A] [h : QuantumSet A] {f : A →ₗ[ℂ] A} (r : ℝ) :
+theorem QuantumGraph.toSubset_iff {A : Type*} [starAlgebra A] [h : QuantumSet A] {f :
+    A →ₗ[ℂ] A} (r : ℝ) :
   letI := QuantumSet.instSubset (A := A) h r
   QuantumGraph (QuantumSet.subset r A)
   (LinearMap.toSubsetQuantumSet f r r) ↔ QuantumGraph A f :=
 by
   simp only [quantumGraph_iff, schurMul_toSubsetQuantumSet, LinearMap.toSubsetQuantumSet_inj]
 
-theorem QuantumGraph.real_toSubset_iff {A : Type*} [starAlgebra A] [h : QuantumSet A] {f : A →ₗ[ℂ] A} (r : ℝ) :
+theorem QuantumGraph.real_toSubset_iff {A : Type*} [starAlgebra A] [h : QuantumSet A] {f :
+    A →ₗ[ℂ] A} (r : ℝ) :
   letI := QuantumSet.instSubset (A := A) h r
   QuantumGraph.Real (QuantumSet.subset r A)
   (LinearMap.toSubsetQuantumSet f r r) ↔ QuantumGraph.Real A f :=
@@ -60,7 +62,7 @@ attribute [local instance] MulOpposite.starRing
 
 theorem QuantumGraph.Real.innerOne_map_one_eq_zero_iff_of_kms
   {A : Type*} [starAlgebra A] [QuantumSet A] {f : A →ₗ[ℂ] A}
-  (h : QuantumGraph.Real A f) [kms : Fact (k A = - (1 / 2))] :
+  (h : QuantumGraph.Real A f) [kms : Fact (k A = -(1 / 2))] :
     ⟪1, f 1⟫_ℂ = 0 ↔ f = 0 :=
 by
   rw [oneInner_map_one_eq_oneInner_Psi_map _ 0 (k A + (1/2)),
@@ -89,7 +91,7 @@ by
 
 theorem QuantumGraph.Real.innerOne_map_one_eq_norm_pow_four_iff_of_kms
   {A : Type*} [starAlgebra A] [QuantumSet A] {f : A →ₗ[ℂ] A}
-  (h : QuantumGraph.Real A f) [kms : Fact (k A = - (1 / 2))] :
+  (h : QuantumGraph.Real A f) [kms : Fact (k A = -(1 / 2))] :
     ⟪1, f 1⟫_ℂ = ‖(1 : A)‖ ^ 4 ↔ f = rankOne ℂ (1 : A) (1 : A) :=
 by
   have : ‖(1 : A)‖ ^ 4 = ⟪(1 : A ⊗[ℂ] Aᵐᵒᵖ), 1⟫_ℂ :=
@@ -150,7 +152,8 @@ noncomputable def QuantumGraph.inDegree {A : Type*} [starAlgebra A] [QuantumSet 
   toFun f := LinearMap.mul' ℂ _ ∘ₗ (LinearMap.lTensor _ (LinearMap.adjoint f))
     ∘ₗ (LinearMap.lTensor _ (Algebra.linearMap ℂ _))
     ∘ₗ (TensorProduct.rid ℂ _).symm.toLinearMap
-  map_add' _ _ := by simp only [map_add, LinearMap.lTensor_add, LinearMap.add_comp, LinearMap.comp_add]
+  map_add' _ _ := by simp only [map_add, LinearMap.lTensor_add, LinearMap.add_comp,
+    LinearMap.comp_add]
   map_smul' _ _ := by simp only [LinearMap.lTensor_smul, LinearMap.smul_comp,
     LinearMap.comp_smul, LinearMap.adjoint_smul]
 
@@ -216,8 +219,7 @@ by
     LinearMap.lTensor_tmul, TensorProduct.map_tmul,
     TensorProduct.rid_tmul, inDegree_eq, lmul_apply,
     ContinuousLinearMap.coe_coe, rankOne_apply, Algebra.linearMap_apply,
-    Algebra.algebraMap_eq_smul_one, one_smul, ← Coalgebra.inner_eq_counit',
-    LinearMap.adjoint_inner_right, rmul_apply, one_mul, smul_mul_assoc,
+    Algebra.algebraMap_eq_smul_one, one_smul, ← Coalgebra.inner_eq_counit', rmul_apply,
     rmul_adjoint, starAlgebra.modAut_star, starAlgebra.modAut_apply_modAut, star_star,
     ContinuousLinearMap.linearMap_adjoint, rankOne_adjoint, mul_one]
   ring_nf
@@ -238,7 +240,7 @@ by
     schurMul_one_right_rankOne, lmul_adjoint]
   simp only [lmul_eq_alg_lmul, map_mul, ContinuousLinearMap.linearMap_adjoint,
     rankOne_adjoint, ContinuousLinearMap.coe_coe, rankOne_apply,
-    star_smul, star_star, Complex.star_def, inner_conj_symm, map_smul, mul_smul_comm]
+    star_smul, star_star, Complex.star_def, inner_conj_symm, map_smul]
   simp only [QuantumSet.inner_conj_left, one_mul, gns]
   ring_nf
   simp only [starAlgebra.modAut_zero, AlgEquiv.one_apply]
@@ -258,14 +260,14 @@ by
     LinearMap.rankOne_comp, schurMul_one_left_rankOne, rmul_adjoint,
     rankOne_real, ContinuousLinearMap.linearMap_adjoint,
     rankOne_adjoint, ContinuousLinearMap.coe_coe,
-    LinearMap.adjoint_smul, mul_smul_comm,
+    LinearMap.adjoint_smul,
     starAlgebra.modAut_star, starAlgebra.modAut_apply_modAut,
     star_star, inner_conj_symm]
   simp_rw [QuantumSet.inner_star_left, mul_one]
   simp only [gns]
   ring_nf
   simp only [starAlgebra.modAut_zero, AlgEquiv.one_apply]
-  simp only [rmul_eq_mul, LinearMap.mulRight_mul, Module.End.mul_eq_comp]
+  simp only [rmul_eq_mul, LinearMap.mulRight_mul]
   rw [Finset.sum_comm]
   simp only [LinearMap.comp_smul]
 
@@ -300,11 +302,13 @@ by
 
 open scoped InnerProductSpace
 
-lemma ContinuousLinearMap.isPositive_iff_complex' {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
+lemma ContinuousLinearMap.isPositive_iff_complex' {E' :
+    Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
   [CompleteSpace E'] (T : E' →L[ℂ] E') :
   T.IsPositive ↔ ∀ (x : E'), 0 ≤ ⟪T x, x⟫_ℂ :=
 by simp [isPositive_iff_complex, RCLike.nonneg_def' (𝕜 := ℂ)]
-lemma ContinuousLinearMap.isPositive_iff_complex'' {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
+lemma ContinuousLinearMap.isPositive_iff_complex'' {E' :
+    Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
   [CompleteSpace E'] (T : E' →L[ℂ] E') :
   T.IsPositive ↔ ∀ (x : E'), 0 ≤ ⟪x, T x⟫_ℂ :=
 by
@@ -391,7 +395,7 @@ by
       norm_num
   rw [hd]
   refine ⟨mul_nonneg (QuantumGraph.Real.innerOne_map_one_nonneg h₁ h) ?_, ?_⟩
-  . simp only [inner_self_eq_norm_sq_to_K]
+  · simp only [inner_self_eq_norm_sq_to_K]
     simp only [Complex.coe_algebraMap, ← Complex.ofReal_pow, ← Complex.ofReal_inv,
       Complex.zero_le_real, inv_nonneg, pow_two_nonneg]
   rw [← ge_iff_le, ← Complex.ofReal_pow]
@@ -401,12 +405,13 @@ by
         norm_num
     _ = ((‖(1 : A)‖ ^ 4 / ‖(1 : A)‖ ^ 2 : ℝ) : ℂ) := by simp [← pow_mul]
     _ ≥ (⟪1, f 1⟫_ℂ / (‖(1 : A)‖ ^ 2 : ℝ) : ℂ) :=
-      by
-        rw [QuantumSet.innerOne_map_one_isReal_ofReal h.isReal]
-        rw [← Complex.ofReal_div, ge_iff_le, Complex.real_le_real]
-        apply div_le_div_of_nonneg_right ?_ (sq_nonneg _)
-        . simp [← Complex.real_le_real, ← QuantumSet.innerOne_map_one_isReal_ofReal h.isReal]
-          exact Real.innerOne_map_one_le_norm_one_pow_four_of_gns gns h₁ h
+        by
+          rw [QuantumSet.innerOne_map_one_isReal_ofReal h.isReal]
+          rw [← Complex.ofReal_div, ge_iff_le, Complex.real_le_real]
+          apply div_le_div_of_nonneg_right ?_ (sq_nonneg _)
+          · simpa only [← Complex.real_le_real,
+              ← QuantumSet.innerOne_map_one_isReal_ofReal h.isReal, Complex.ofReal_pow] using
+              Real.innerOne_map_one_le_norm_one_pow_four_of_gns gns h₁ h
   simp [inner_self_eq_norm_sq_to_K]
 
 theorem StarOrderedRing.nonneg_iff_toQuantumSetSubset

@@ -408,6 +408,7 @@ import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Lemmas
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.OrthonormalBasis
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.Submodule
 import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
+import LeanPool.Monlib4.Monlib
 import LeanPool.Monlib4.Other
 import LeanPool.Monlib4.Other.Sonia
 import LeanPool.Monlib4.Preq
