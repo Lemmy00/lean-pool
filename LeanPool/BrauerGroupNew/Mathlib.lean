@@ -7,6 +7,7 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 import LeanPool.BrauerGroupNew.Mathlib.Algebra
 import LeanPool.BrauerGroupNew.Mathlib.Data
 import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra
+import LeanPool.BrauerGroupNew.Mathlib.RepresentationTheory
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory
 
 /-!

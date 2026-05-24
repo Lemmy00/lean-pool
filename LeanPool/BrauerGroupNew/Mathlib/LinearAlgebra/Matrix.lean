@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 
-import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.LinearIndependent
-import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.Matrix
-import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.Span
+import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.Matrix.Charpoly
+import LeanPool.BrauerGroupNew.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 
 /-!
-# Brauer Group New Mathlib LinearAlgebra
+# Brauer Group New Mathlib LinearAlgebra Matrix
 
 Import index for the Brauer group formalization.
 -/

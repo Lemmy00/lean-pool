@@ -7,6 +7,8 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubring
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.MatrixAlgebra
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TensorProduct
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal
 
 /-!
