@@ -824,7 +824,11 @@ by
     Module.Dual.NormedAddCommGroup φ
   exact InnerProductSpace.ofCore _
 
+scoped[Functional] attribute [instance] Module.Dual.InnerProductSpace
+
 end
+
+open scoped Functional
 
 variable {k : Type _} [Fintype k] {s : k → Type _}
     [Π i, Fintype (s i)] [Π i, DecidableEq (s i)]
@@ -905,6 +909,7 @@ noncomputable def Module.Dual.PiNormedAddCommGroup
   --     add_left := fun x y z => by
   --       simp_rw [inner, Pi.add_apply, inner_add_left, Finset.sum_add_distrib]
   --     smul_left := fun x y r => by simp_rw [inner, Pi.smul_apply, inner_smul_left, Finset.mul_sum] }
+
 /-- The inner product space on a finite product induced by faithful positive matrix functionals. -/
 @[reducible]
 noncomputable def Module.Dual.pi.InnerProductSpace
@@ -924,3 +929,5 @@ by
   letI : InnerProductSpace.Core ℂ (PiMat ℂ k s) :=
     Module.Dual.PiInnerProductCore (φ := φ)
   exact InnerProductSpace.ofCore _
+
+scoped[Functional] attribute [instance high] Module.Dual.pi.InnerProductSpace

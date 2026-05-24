@@ -19,6 +19,11 @@ namespace Matrix
 
 open scoped BigOperators Matrix Kronecker
 
+/-- Compatibility name for the old Monlib/mathlib3 matrix unit API. -/
+abbrev stdBasisMatrix {R n m : Type _} [Zero R] [DecidableEq n] [DecidableEq m]
+    (i : n) (j : m) (a : R) : Matrix n m R :=
+  single i j a
+
 theorem eq_zero {R n₁ n₂ : Type _} [Zero R] (x : Matrix n₁ n₂ R) :
     (∀ (i : n₁) (j : n₂), x i j = 0) ↔ x = 0 := by
   simp_rw [← Matrix.ext_iff, Matrix.zero_apply]

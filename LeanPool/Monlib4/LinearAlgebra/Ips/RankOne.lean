@@ -317,6 +317,11 @@ by
     simp_rw [div_eq_inv_mul, Units.val_mk0, mul_smul, ← h, smul_smul,
       inv_mul_cancel₀ ((@inner_self_ne_zero 𝕜 _ _ _ _ _).mpr Hx), one_smul]
 
+theorem rankOne.ext_iff {x y : E₁} (_hx : x ≠ 0) (_hy : y ≠ 0)
+    (h : rankOne 𝕜 x x = rankOne 𝕜 y y) :
+    ∃ α : 𝕜ˣ, x = (α : 𝕜) • y :=
+  colinear_of_rankOne_self_eq_rankOne_self x y h
+
 theorem colinear_of_ne_zero_rankOne_eq_rankOne [CompleteSpace E₂] [CompleteSpace E₁]
   {a c : E₁} {b d : E₂} (h : rankOne 𝕜 a b = rankOne 𝕜 c d)
   (ha : a ≠ 0) (hb : b ≠ 0) :
@@ -460,21 +465,49 @@ end rankOne
 section rankOneLm
 
 
--- /-- same as `rank_one`, but as a linear map -/
--- @[reducible, simps!]
--- abbrev rankOneLm {𝕜 E₁ E₂ : Type*}
---   (x : E₁) (y : E₂) : E₂ →ₗ[𝕜] E₁ :=
---   (rankOne 𝕜 x y).toLinearMap
+/-- Same as `rankOne`, but as a linear map. -/
+abbrev rankOneLm {𝕜 E₁ E₂ : Type*} [RCLike 𝕜] [NormedAddCommGroup E₁]
+    [InnerProductSpace 𝕜 E₁] [NormedAddCommGroup E₂] [InnerProductSpace 𝕜 E₂]
+    (x : E₁) (y : E₂) : E₂ →ₗ[𝕜] E₁ :=
+  (rankOne 𝕜 x y).toLinearMap
 
 variable {𝕜 E₁ E₂ : Type _} [RCLike 𝕜] [NormedAddCommGroup E₁] [InnerProductSpace 𝕜 E₁]
   [NormedAddCommGroup E₂] [InnerProductSpace 𝕜 E₂]
 variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
--- theorem rankOneLm_comp_rankOneLm (x : E₁) (y z : E₂) (w : E) :
---     (rankOne x y) ∘ₗ rankOneLm z w = ⟪y,z⟫_𝕜 • rankOneLm x w := by
---   simp_rw [LinearMap.ext_iff, LinearMap.comp_apply, rankOneLm_apply, LinearMap.smul_apply,
---     inner_smul_right, mul_smul, rankOneLm_apply, smul_smul, mul_comm,
---     forall_true_iff]
+theorem rankOneLm_eq_rankOne (x : E₁) (y : E₂) :
+    rankOneLm (𝕜 := 𝕜) x y = (rankOne 𝕜 x y).toLinearMap :=
+  rfl
+
+theorem rankOne_eq_rankOneLm (x : E₁) (y : E₂) :
+    (rankOne 𝕜 x y : E₂ →ₗ[𝕜] E₁) = rankOneLm (𝕜 := 𝕜) x y :=
+  rfl
+
+theorem rankOneLm_apply (x : E₁) (y z : E₂) :
+    rankOneLm (𝕜 := 𝕜) x y z = inner 𝕜 y z • x :=
+  rankOne_apply (𝕜 := 𝕜) (x := x) (y := y) (z := z)
+
+theorem rankOneLm_smul (x : E₁) (y : E₂) (r : 𝕜) :
+    rankOneLm (𝕜 := 𝕜) (r • x) y = r • rankOneLm (𝕜 := 𝕜) x y := by
+  ext z
+  simp [rankOneLm_apply, smul_smul, mul_comm]
+
+theorem smul_rankOneLm (x : E₁) (y : E₂) (r : 𝕜) :
+    rankOneLm (𝕜 := 𝕜) x (star r • y) = r • rankOneLm (𝕜 := 𝕜) x y := by
+  ext z
+  simp [rankOneLm_apply, smul_smul, inner_smul_left]
+
+theorem smul_rankOneLm' (x : E₁) (y : E₂) (r : 𝕜) :
+    rankOneLm (𝕜 := 𝕜) x (r • y) = star r • rankOneLm (𝕜 := 𝕜) x y := by
+  simpa using smul_rankOneLm (𝕜 := 𝕜) x y (star r)
+
+theorem rankOneLm_comp_rankOneLm (x : E₁) (y z : E₂) (w : E) :
+  rankOneLm (𝕜 := 𝕜) x y ∘ₗ rankOneLm (𝕜 := 𝕜) z w =
+      inner 𝕜 y z • rankOneLm (𝕜 := 𝕜) x w := by
+  ext v
+  rw [LinearMap.comp_apply, rankOneLm_apply, rankOneLm_apply, LinearMap.smul_apply,
+    rankOneLm_apply, inner_smul_right, mul_smul, smul_smul]
+  rw [smul_smul, mul_comm]
 
 -- theorem rankOneLm_apply_rank_one (x : E₁) (y z : E₂) (w v : E) :
 --     (rankOneLm x y : _ →ₗ[𝕜] _) ((rankOneLm z w : _ →ₗ[𝕜] _) v) = (⟪y,z⟫_𝕜 * ⟪w,v⟫_𝕜) • x := by
@@ -552,6 +585,20 @@ by
 theorem ContinuousLinearMap.coe_eq_zero {𝕜 E₁ E₂ : Type _} [RCLike 𝕜] [NormedAddCommGroup E₁]
     [NormedAddCommGroup E₂] [InnerProductSpace 𝕜 E₁] [InnerProductSpace 𝕜 E₂] (f : E₁ →L[𝕜] E₂) :
     (f : E₁ →ₗ[𝕜] E₂) = 0 ↔ f = 0 := by norm_cast
+
+theorem rankOne.left_sub {𝕜 E₁ E₂ : Type _} [RCLike 𝕜] [NormedAddCommGroup E₁]
+    [NormedAddCommGroup E₂] [InnerProductSpace 𝕜 E₁] [InnerProductSpace 𝕜 E₂]
+    (x y : E₁) (z : E₂) :
+    rankOne 𝕜 (x - y) z = rankOne 𝕜 x z - rankOne 𝕜 y z := by
+  ext w
+  simp [rankOne_apply, smul_sub]
+
+theorem rankOne.smul_right_to_left {𝕜 E₁ E₂ : Type _} [RCLike 𝕜] [NormedAddCommGroup E₁]
+    [NormedAddCommGroup E₂] [InnerProductSpace 𝕜 E₁] [InnerProductSpace 𝕜 E₂]
+    (x : E₁) (y : E₂) (r : 𝕜) :
+    rankOne 𝕜 x (r • y) = rankOne 𝕜 (star r • x) y := by
+  ext w
+  simp [smul_smul]
 
 theorem rankOne.eq_zero_iff {𝕜 E₁ E₂ : Type _} [RCLike 𝕜] [NormedAddCommGroup E₁]
   [NormedAddCommGroup E₂] [InnerProductSpace 𝕜 E₁] [InnerProductSpace 𝕜 E₂]
