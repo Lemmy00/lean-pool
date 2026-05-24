@@ -113,6 +113,7 @@ import LeanPool.BrauerGroupNew.Subfield.Defs
 import LeanPool.BrauerGroupNew.Subfield.FiniteDimensional
 import LeanPool.BrauerGroupNew.TwoSidedIdeal
 import LeanPool.BrauerGroupNew.Wedderburn
+import LeanPool.BrauerGroupNew.ZeroSevenFourE
 import LeanPool.BruhatTits
 import LeanPool.BruhatTits.Cartan
 import LeanPool.BruhatTits.Cartan.Existence
