@@ -6,6 +6,7 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Centralizer
+import LeanPool.BrauerGroupNew.CrossProductAlgebra
 import LeanPool.BrauerGroupNew.ExtendScalar
 import LeanPool.BrauerGroupNew.FieldCat
 import LeanPool.BrauerGroupNew.AlgClosedUnion
