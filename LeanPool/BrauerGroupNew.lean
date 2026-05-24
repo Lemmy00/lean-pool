@@ -20,6 +20,7 @@ import LeanPool.BrauerGroupNew.TwoSidedIdeal
 import LeanPool.BrauerGroupNew.Wedderburn
 import LeanPool.BrauerGroupNew.ZeroSevenFourE
 import LeanPool.BrauerGroupNew.SkolemNoether
+import LeanPool.BrauerGroupNew.DoubleCentralizer
 import LeanPool.BrauerGroupNew.Mathlib
 import LeanPool.BrauerGroupNew.Subfield
 

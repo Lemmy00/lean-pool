@@ -58,6 +58,7 @@ import LeanPool.BrauerGroupNew.AlgClosedUnion
 import LeanPool.BrauerGroupNew.BrauerGroup
 import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Centralizer
+import LeanPool.BrauerGroupNew.DoubleCentralizer
 import LeanPool.BrauerGroupNew.ExtendScalar
 import LeanPool.BrauerGroupNew.FieldCat
 import LeanPool.BrauerGroupNew.FiniteField
