@@ -5,6 +5,7 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Kernel
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!

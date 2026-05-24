@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubring
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal
 
 /-!

@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 
-import LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Equiv
-import LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
 /-!
-# Brauer Group New Mathlib Algebra Algebra
+# Brauer Group New Mathlib NonUnitalSubsemiring
 
 Import index for the Brauer group formalization.
 -/
