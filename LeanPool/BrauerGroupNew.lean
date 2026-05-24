@@ -18,6 +18,7 @@ import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.MatrixCenterEquiv
 import LeanPool.BrauerGroupNew.MatrixEquivTensor
 import LeanPool.BrauerGroupNew.Morita.ChangeOfRings
+import LeanPool.BrauerGroupNew.Morita.TensorProduct
 import LeanPool.BrauerGroupNew.MoritaEquivalence
 import LeanPool.BrauerGroupNew.SplittingOfCSA
 import LeanPool.BrauerGroupNew.TwoSidedIdeal
