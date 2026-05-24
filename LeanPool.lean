@@ -55,6 +55,7 @@ import LeanPool.ArtinWedderburn.SetProd
 import LeanPool.Basic
 import LeanPool.BrauerGroupNew
 import LeanPool.BrauerGroupNew.AlgClosedUnion
+import LeanPool.BrauerGroupNew.Azumaya.Basic
 import LeanPool.BrauerGroupNew.BrauerGroup
 import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Centralizer
