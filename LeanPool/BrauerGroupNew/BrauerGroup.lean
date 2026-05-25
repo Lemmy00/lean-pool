@@ -677,6 +677,75 @@ def e4 :
 def e5 (e : A ≃ₐ[K] B) : (E ⊗[K] A) ≃ₐ[E] (E ⊗[K] B) :=
   Algebra.TensorProduct.congr AlgEquiv.refl e
 
+set_option maxHeartbeats 800000 in
+-- This restores the upstream compatibility homomorphism, whose tensor-product proof is expensive.
+/-- The algebra homomorphism underlying scalar-extension compatibility with tensor products. -/
+def e6Aux0 : (E ⊗[K] A) ⊗[E] (E ⊗[K] B) →ₐ[E] E ⊗[K] (A ⊗[K] B) :=
+  Algebra.TensorProduct.lift
+    (Algebra.TensorProduct.lift
+      { toFun e := e ⊗ₜ[K] (1 ⊗ₜ 1)
+        map_one' := rfl
+        map_mul' := fun e e' => by
+          simp only [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one]
+        map_zero' := by simp
+        map_add' := fun e e' => by simp [TensorProduct.add_tmul]
+        commutes' e := rfl }
+      { toFun a := 1 ⊗ₜ[K] (a ⊗ₜ 1)
+        map_one' := rfl
+        map_mul' := fun _ _ => by
+          simp only [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one]
+        map_zero' := by simp
+        map_add' := fun _ _ => by simp [TensorProduct.add_tmul, TensorProduct.tmul_add]
+        commutes' k := by
+          simp only [Algebra.TensorProduct.algebraMap_apply]
+          rw [show (algebraMap K A) k ⊗ₜ[K] (1 : B) = k • (1 : A ⊗[K] B) by
+            rw [Algebra.algebraMap_eq_smul_one]
+            rw [← TensorProduct.smul_tmul']
+            rfl]
+          rw [TensorProduct.tmul_smul]
+          rw [Algebra.smul_def (A := E ⊗[K] (A ⊗[K] B))]
+          convert _root_.mul_one _ } fun e a =>
+            show (_ ⊗ₜ[K] _) * (_ ⊗ₜ[K] _) = (_ ⊗ₜ[K] _) * (_ ⊗ₜ[K] _) by simp)
+    (Algebra.TensorProduct.lift
+      { toFun e := e ⊗ₜ[K] (1 ⊗ₜ 1)
+        map_one' := rfl
+        map_mul' := fun e e' => by
+          simp only [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one]
+        map_zero' := by simp
+        map_add' := fun e e' => by simp [TensorProduct.add_tmul]
+        commutes' e := rfl }
+      { toFun b := 1 ⊗ₜ[K] (1 ⊗ₜ b)
+        map_one' := rfl
+        map_mul' := fun _ _ => by
+          simp only [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one]
+        map_zero' := by simp
+        map_add' := fun _ _ => by simp [TensorProduct.tmul_add]
+        commutes' k := by
+          simp only [Algebra.TensorProduct.algebraMap_apply]
+          rw [show (1 : A) ⊗ₜ[K] (algebraMap K B) k = k • (1 : A ⊗[K] B) by
+            rw [Algebra.algebraMap_eq_smul_one]
+            rw [TensorProduct.tmul_smul]
+            rfl]
+          rw [TensorProduct.tmul_smul]
+          rw [Algebra.smul_def (A := E ⊗[K] (A ⊗[K] B))]
+          convert _root_.mul_one _ }
+    fun e b => show (_ ⊗ₜ _) * (_ ⊗ₜ _) = (_ ⊗ₜ _) * (_ ⊗ₜ _) by simp)
+      fun x y => show _ = _ by
+        induction x using TensorProduct.induction_on with
+        | zero => simp only [map_zero, zero_mul, mul_zero]
+        | add x x' hx hx' => simp only [map_add, mul_add, hx, hx', add_mul]
+        | tmul e a =>
+          simp only [Algebra.TensorProduct.lift_tmul, AlgHom.coe_mk, RingHom.coe_mk]
+          induction y using TensorProduct.induction_on with
+          | zero => simp only [map_zero, mul_zero, zero_mul]
+          | add y y' hy hy' => simp only [map_add, mul_add, hy, hy', add_mul]
+          | tmul e' b =>
+            simp only [Algebra.TensorProduct.lift_tmul, AlgHom.coe_mk, RingHom.coe_mk]
+            change (_ ⊗ₜ _) * (_ ⊗ₜ _) * ((_ ⊗ₜ _) * (_ ⊗ₜ _)) =
+              (_ ⊗ₜ _) * (_ ⊗ₜ _) * ((_ ⊗ₜ _) * (_ ⊗ₜ _))
+            simp only [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
+            rw [mul_comm]
+
 /-- Scalar extension is compatible with tensor products of algebras. -/
 def e6 :
     (E ⊗[K] A) ⊗[E] (E ⊗[K] B) ≃ₐ[E] E ⊗[K] (A ⊗[K] B) :=
