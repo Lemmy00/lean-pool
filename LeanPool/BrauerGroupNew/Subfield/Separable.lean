@@ -8,59 +8,47 @@ import LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import LeanPool.BrauerGroupNew.Subfield.Splitting
 import Mathlib.FieldTheory.JacobsonNoether
 
--- section
--- variable {ι R A : Type*} (B : ι → Type*) [Preorder ι] [CommRing R]
---   [Ring A] [Algebra R A] [∀ i, Ring (B i)] [∀ i, Algebra R (B i)]
-
--- lemma Algebra.IsSeparable.of_directedSystem [IsDirected ι (· ≤ ·)] [∀ i, Algebra.IsSeparable R (B i)]
---     (map : ∀ i j, i ≤ j → B i →ₐ[R] B j)
---     (directedSystem_map : DirectedSystem B fun i j hij ↦ map i j hij)
---     (cone : ∀ i, B i →ₐ[R] A)
---     (hcone : ∀ i j (hij : i ≤ j), cone i = (cone j).comp (map i j hij))
---     (hlimit : ∀ a , ∃ i, a ∈ Set.range (cone i)) :
---     Algebra.IsSeparable R A where
---   isSeparable' a := by
---     obtain ⟨i, b, rfl⟩ := hlimit a
---     sorry
---     -- exact IsSeparable.map _ (f := (cone i).toRingHom)
-
--- end
-
 universe u
 
 variable (K D : Type u) [Field K] [DivisionRing D] [Algebra K D] [Algebra.IsCentral K D]
   [FiniteDimensional K D]
 
 open Polynomial
-
--- se_option maxHeartbeats 3200000 in
 omit [Algebra.IsCentral K D] [FiniteDimensional K D] in
 lemma SubField.adjoin_centralizer_mul_comm (L : SubField K D) (a : D)
     (ha : a ∈ Subalgebra.centralizer K L) : ∀ (x y : D), x ∈ Algebra.adjoin K (L ∪ {a}) →
     y ∈ Algebra.adjoin K (L ∪ {a}) → x * y = y * x :=
   fun x y hx hy ↦ by
-    simp [Algebra.mem_adjoin_iff, Subalgebra.mem_centralizer_iff] at hx hy ha
+    rw [Algebra.mem_adjoin_iff] at hx hy
+    rw [Subalgebra.mem_centralizer_iff] at ha
     refine Subring.closure_induction₂ (R := D) (fun x1 y1 hx1 hy1 ↦ by
-      simp at hx1 hy1
+      simp only [Set.mem_union, SetLike.mem_coe, Set.mem_singleton_iff, Set.mem_range] at hx1 hy1
       obtain hx11 | hx12 | hx13 := hx1
       all_goals obtain hy11 | hy12 | hy13 := hy1
-      · simp_all
-      · obtain ⟨b, rfl⟩ := hy12
-        exact Algebra.commutes _ _ |>.symm
-      · subst hx11
-        exact ha _ hy13|>.symm
-      · obtain ⟨b, rfl⟩ := hx12
-        exact Algebra.commutes _ _
-      · obtain ⟨b, rfl⟩ := hx12
-        exact Algebra.commutes _ _
-      · obtain ⟨b, rfl⟩ := hx12
-        exact Algebra.commutes _ _
-      · subst hy11
-        exact ha _ hx13
-      · obtain ⟨b, rfl⟩ := hy12
-        exact Algebra.commutes _ _ |>.symm
-      · exact L.2 hx13 hy13) ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ hx hy
-    all_goals try simp_all [add_mul, mul_add]
+      · obtain ⟨b, rfl⟩ := hx11
+        obtain ⟨c, rfl⟩ := hy11
+        exact Algebra.commutes b ((algebraMap K D) c)
+      · obtain ⟨b, rfl⟩ := hx11
+        exact Algebra.commutes b y1
+      · obtain ⟨b, rfl⟩ := hx11
+        subst hy13
+        exact Algebra.commutes b y1
+      · obtain ⟨b, rfl⟩ := hy11
+        exact (Algebra.commutes b x1).symm
+      · exact L.2 hx12 hy12
+      · subst hy13
+        exact ha _ hx12
+      · subst hx13
+        obtain ⟨b, rfl⟩ := hy11
+        exact (Algebra.commutes b x1).symm
+      · subst hx13
+        exact ha _ hy12 |>.symm
+      · subst hx13
+        subst hy13
+        simp) ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ hx hy
+    all_goals try
+      simp_all only [Set.union_singleton, Set.union_insert, zero_mul, mul_zero, one_mul, mul_one,
+        neg_mul, mul_neg, add_mul, mul_add, forall_const, implies_true]
     · rintro x y z - - - hxz hyz
       rw [mul_assoc, hyz, ← mul_assoc, hxz, mul_assoc]
     · rintro x y z - - - hxy hxz
@@ -158,8 +146,6 @@ noncomputable abbrev iSup_chain_sepsubfield (c : Set (AllSepSubfield K D)) [None
       change x ∈ (_ : Set _) at hx
       change _ ∈ ( _ : Set _) at hy
       erw [this] at hx hy
-
-      -- rw [this] at hx hy
       simp only [Set.mem_iUnion, SetLike.mem_coe] at hx hy
       obtain ⟨L1, hx⟩ := hx
       obtain ⟨L2, hy⟩ := hy
@@ -185,15 +171,16 @@ noncomputable abbrev iSup_chain_sepsubfield (c : Set (AllSepSubfield K D)) [None
   property := by
     simp only [Set.coe_setOf, Set.mem_setOf_eq]
     rw [Algebra.isSeparable_def]
-    simp
+    simp only [Subtype.forall]
     intro a ha
     have := Subalgebra.coe_iSup_of_directed hc1.directed
-    simp at this
+    dsimp at this
     change a ∈ (_ : Set _) at ha
     erw [this] at ha
-    simp at ha
-    obtain ⟨L, ⟨ha', h⟩, hL2⟩ := ha
-    exact IsSeparable.map (F := K) (L := ((⨆ (L : c), L.1.1.1) : Subalgebra K D)) (x := (⟨a, hL2⟩ : L))
+    simp only [Set.mem_iUnion, SetLike.mem_coe, Subtype.exists] at ha
+    obtain ⟨L, ha', h, hL2⟩ := ha
+    exact IsSeparable.map (F := K) (L := ((⨆ (L : c), L.1.1.1) : Subalgebra K D))
+      (x := (⟨a, hL2⟩ : L))
       (Subalgebra.inclusion (le_iSup_of_le ⟨⟨L, ha'⟩, h⟩ le_rfl))
       (Subalgebra.inclusion_injective _) <| Algebra.isSeparable_def _ _|>.1 ha' ⟨a, hL2⟩
 
@@ -211,9 +198,9 @@ lemma exists_max_sepSub : ∃ L : AllSepSubfield K D, IsMax L :=
 theorem Set.centralizer.qsmul_mem (K D : Type u) [Field K] [DivisionRing D] [Algebra K D]
     (L : Set D) (q : ℚ) (a : D) (ha : a ∈ Set.centralizer L) :
     q • a ∈ Set.centralizer L := by
-  rw [Rat.smul_def]
+  rw [Set.mem_centralizer_iff] at ha ⊢
   intro m hm
-  simp_all [mem_centralizer_iff]
+  rw [Rat.smul_def]
   have (m : D) := Commute.left_comm <| Rat.cast_commute q m|>.symm
   rw [this, ha _ hm, mul_assoc]
 
@@ -319,24 +306,6 @@ lemma SubField.bot_adjoin_coe (a : D) :
     exact ⟨bot_le (α := Subalgebra K D), by simp⟩
   · rw [Algebra.adjoin_le_iff, Set.singleton_subset_iff]
     simp
-  -- change x ∈ Algebra.adjoin K ((Algebra.ofId _ _).range ∪ {a}) ↔ _
-  -- simp [Algebra.adjoin_algebraMap]
--- lemma extend_sep_sep (K D : Type u) [Field K] [DivisionRing D] [Algebra K D] [Algebra.IsCentral K D]
---     [FiniteDimensional K D] (L : Subalgebra K D) [Algebra.IsSeparable K L] [CommRing L] [Algebra L D] (a : D)
---     (ha : a ∈ Subalgebra.centralizer K L) (ha' : IsSeparable L a) :
---     Algebra.IsSeparable K (Algebra.adjoin K (L ∪ {a})) := by
---   rw [Algebra.isSeparable_def]
---   intro ⟨x, hx⟩
---   refine Algebra.adjoin_induction _ _ _ _ hx
---   sorry
-  --   Algebra.IsSeparable K (SubField.adjoin K D L a ha) := by
-  -- rw [Algebra.isSeparable_def]
-  -- intro x hx
-  -- change x ∈ Algebra.adjoin _ _ at hx
-  -- obtain ⟨y, hy⟩ := hx
-  -- have := SubField.adjoin_centralizer_mul_comm K D L a ha y x hy hx
-  -- simp at this
-  -- exact H y hy this
 
 -- todo: replace mathlib version with this one
 theorem IsSeparable.of_algHom_of_map
@@ -345,7 +314,8 @@ theorem IsSeparable.of_algHom_of_map
   (h : IsSeparable F (f x)) : IsSeparable F x :=
   have ⟨_q, hq⟩ := minpoly.dvd F x (p := minpoly F (f x)) (by
     apply f.injective
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_zero, ← aeval_algHom_apply, minpoly.aeval])
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_zero, ← aeval_algHom_apply,
+      minpoly.aeval])
   (Eq.mp (congrArg Separable hq) h).of_mul_left
 
 open Subalgebra in
@@ -353,9 +323,9 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
     Algebra.IsSeparable K (SubField.bot_adjoin K D a) := by
   obtain ⟨L, hL⟩ := exists_max_sepSub K D
   let CL := Subalgebra.centralizer K (A := D) L
-  -- have := comm_of_centralizer K D L.1.1 (fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ by simpa using L.1.2 x y hx hy)
   suffices h : CL = L.1.1 by
-    have Lmax := maxsubfield_of_div_iff K D L.1 |>.1 <| cor_two_2to3 K D L.1 (cor_two_1to2 K D L.1 |>.1 h)
+    have Lmax := maxsubfield_of_div_iff K D L.1 |>.1 <|
+      cor_two_2to3 K D L.1 (cor_two_1to2 K D L.1 |>.1 h)
     haveI : Algebra.IsSeparable _ _  := L.2
     obtain ⟨a, ha⟩ := Field.exists_primitive_element K L.1
     use a
@@ -383,15 +353,18 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
     refine le_antisymm ?_ ?_
     · rw [eq1]
       intro x hx
-      simp
+      simp only [mem_map, coe_val, Subtype.exists, exists_and_right, exists_eq_right]
       constructor
-      · simp [Subalgebra.mem_center_iff]
-        intro y hy
-        simp [Subalgebra.mem_centralizer_iff] at hy
-        exact hy x hx|>.symm
-      · simp [Subalgebra.mem_centralizer_iff]
+      · rw [Subalgebra.mem_center_iff]
+        intro y
+        ext
+        have hy := y.2
+        rw [Subalgebra.mem_centralizer_iff] at hy
+        exact hy x hx |>.symm
+      · rw [Subalgebra.mem_centralizer_iff]
         exact fun y hy ↦ L.1.2 hy hx
-    · convert le_trans ?_ (Subalgebra.map_centralizer_le_centralizer_image ⊤ (centralizer K (L.1.1: Set D)).val)
+    · convert le_trans ?_
+        (Subalgebra.map_centralizer_le_centralizer_image ⊤ (centralizer K (L.1.1 : Set D)).val)
       · simp
       apply Subalgebra.map_mono
       exact Subalgebra.center_le_centralizer _ _
@@ -427,11 +400,12 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
   simp_all only
   let e1 := Subalgebra.equivOfEq L.1 _ eq2
   let e2 := ZCL_equiv_ZCL_map K D L
-  have asep := IsSeparable.of_equiv_equiv (A₁ := Subalgebra.center K (Subalgebra.centralizer K (A := D) L))
+  have asep := IsSeparable.of_equiv_equiv
+    (A₁ := Subalgebra.center K (Subalgebra.centralizer K (A := D) L))
     (A₂ := L) (e2.trans e1.symm).toRingEquiv (RingEquiv.refl _) (by
     ext x
-    simp only [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, RingEquiv.coe_ringHom_refl, RingHomCompTriple.comp_eq,
+    simp only [AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
+      Function.comp_apply, RingEquiv.coe_ringHom_refl, RingHomCompTriple.comp_eq,
       SetLike.coe_eq_coe]
     unfold e1 e2
     simp only [equivOfEq_symm]
@@ -440,29 +414,33 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
       OneHom.coe_mk]
     change algebraMap _ _ x = _
     rfl) ha2
-  simp at asep
   have cond1 : Algebra.IsSeparable K (SubField.adjoin K D L a.1 a.2) := by
     rw [Algebra.isSeparable_def]
     rintro ⟨x, hx⟩
     change x ∈ Algebra.adjoin _ _  at hx
     refine Algebra.adjoin_induction (by
       intro x1 hx1
-      simp at hx1
-      obtain hx11 | hx12 := hx1
-      · subst hx11
+      simp only [Set.mem_union, SetLike.mem_coe, Set.mem_singleton_iff] at hx1
+      obtain hxL | hxa := hx1
+      · have hLsep' : Algebra.IsSeparable K L := hLsep
+        rw [Algebra.isSeparable_def] at hLsep'
+        have := IsSeparable.map (F := K) (K := L)
+          (L := SubField.adjoin K D L a.1 a.2) (x := (⟨x1, hxL⟩ : L))
+          (Subalgebra.inclusion (Set.subset_union_left |>.trans Algebra.subset_adjoin))
+          (Subalgebra.inclusion_injective _) <| hLsep' ⟨x1, hxL⟩
+        exact this
+      · subst hxa
         letI : Algebra.IsSeparable K L := hLsep
         letI := IsLAlg K D L a.1 a.2
         letI := SubField.adjoin_scalarTower K D L a.1 a.2
         exact IsSeparable.of_algebra_isSeparable_of_isSeparable K (E := L)
-          (K := SubField.adjoin K D L a.1 a.2) (x := ⟨a.1, Algebra.subset_adjoin hx1⟩) <| by
+          (K := SubField.adjoin K D L a.1 a.2)
+          (x := ⟨a.1, Algebra.subset_adjoin (by simp)⟩) <| by
             let f : SubField.adjoin K D L a.1 a.2 →ₐ[L] centralizer K (L : Set D) :=
-              ⟨(Subalgebra.inclusion (SubField.adjoin_le_centralizer K D L a.1 a.2)).toRingHom, fun r ↦ rfl⟩
+              ⟨(Subalgebra.inclusion
+                (SubField.adjoin_le_centralizer K D L a.1 a.2)).toRingHom, fun r ↦ rfl⟩
             refine IsSeparable.of_algHom_of_map f asep
-      · simp [Algebra.isSeparable_def] at hLsep
-        have := IsSeparable.map (F := K) (K := L) (L := SubField.adjoin K D L a.1 a.2)
-          (x := (⟨x1, hx12⟩ : L)) (Subalgebra.inclusion (Set.subset_union_left |>.trans
-          Algebra.subset_adjoin)) (Subalgebra.inclusion_injective _ ) <| hLsep x1 hx12
-        exact this)
+      )
       (fun k ↦ IsSeparable.map (Algebra.ofId K _) (FaithfulSMul.algebraMap_injective _ _)
         (Algebra.IsSeparable.isSeparable' k))
       (fun _ _ _ _ ↦ Field.isSeparable_add) (fun _ _ _ _ ↦ Field.isSeparable_mul)  hx
@@ -470,8 +448,9 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
     simp [cond1]
   have cond2 : L ≤ SubField.adjoin K D L a.1 a.2 :=
     Set.subset_union_left (s := L.1) (t := {a.1}) |>.trans <| Algebra.subset_adjoin (R := K)
-  simp [IsMax] at hL
-  specialize hL (SubField.adjoin K D L a.1 a.2) cond1 cond2
+  change ∀ M : AllSepSubfield K D, (⟨L, hLsep⟩ : AllSepSubfield K D) ≤ M →
+    M ≤ ⟨L, hLsep⟩ at hL
+  specialize hL ⟨SubField.adjoin K D L a.1 a.2, cond1⟩ cond2
   have : L = SubField.adjoin K D L a.1 a.2 := le_antisymm cond2 hL
   tauto
 
@@ -479,7 +458,8 @@ theorem exists_sep_masSubfield : ∃ L : SubField K D, IsMax L ∧ Algebra.IsSep
   obtain ⟨a, hL1, hL2⟩ := exists_sep_masSubfield' K D
   exact ⟨SubField.bot_adjoin K D a, hL1, hL2⟩
 
-theorem exists_sep_splitting : ∃ (L : Type u)(_ : Field L)(_ : Algebra K L)(_ : FiniteDimensional K L),
+theorem exists_sep_splitting :
+    ∃ (L : Type u) (_ : Field L) (_ : Algebra K L) (_ : FiniteDimensional K L),
     Algebra.IsSeparable K L ∧ isSplit K D L := by
   obtain ⟨L, hL1, hL2⟩ := exists_sep_masSubfield K D
   exact ⟨L, inferInstance, inferInstance, inferInstance, hL2, isSplit_of_isMax K D L hL1⟩
@@ -504,7 +484,8 @@ private theorem normalClosure_isSeparable {Kbar : Type u} [Field Kbar]
   rw [normalClosure_def]
   infer_instance
 
-theorem exists_finite_galois_split : ∃ (L : Type u)(_ : Field L)(_ : Algebra K L)(_ : FiniteDimensional K L),
+theorem exists_finite_galois_split :
+    ∃ (L : Type u) (_ : Field L) (_ : Algebra K L) (_ : FiniteDimensional K L),
     IsGalois K L ∧ isSplit K D L := by
   obtain ⟨L, _, _, _, hL1, hL2⟩ := exists_sep_splitting K D
   haveI : FiniteDimensional K L := inferInstance
