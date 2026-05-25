@@ -122,6 +122,7 @@ import LeanPool.BrauerGroupNew.Subfield.Defs
 import LeanPool.BrauerGroupNew.Subfield.FiniteDimensional
 import LeanPool.BrauerGroupNew.Subfield.Splitting
 import LeanPool.BrauerGroupNew.Subfield.Subfield
+import LeanPool.BrauerGroupNew.ToSecond
 import LeanPool.BrauerGroupNew.TwoSidedIdeal
 import LeanPool.BrauerGroupNew.Wedderburn
 import LeanPool.BrauerGroupNew.ZeroSevenFourE
