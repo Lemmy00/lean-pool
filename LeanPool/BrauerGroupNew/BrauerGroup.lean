@@ -591,6 +591,34 @@ def baseChangeTensorEquiv :
         rw [Algebra.TensorProduct.tmul_mul_tmul, Algebra.TensorProduct.tmul_mul_tmul]
         ring_nf)
 
+/-- If the matrix index is empty, the scalar-extension tensor source is subsingleton. -/
+lemma e3Aux3 (hm : m = 0) :
+    Subsingleton ((E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K)) := by
+  suffices ∀ a : (E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K), a = 0 by
+    exact ⟨fun a b => by rw [this a, this b]⟩
+  subst hm
+  intro x
+  induction x using TensorProduct.induction_on with
+  | zero => rfl
+  | add e a he ha => rw [he, ha, zero_add]
+  | tmul e a =>
+    induction a using TensorProduct.induction_on with
+    | zero => simp
+    | add _ _ hx hy => rw [TensorProduct.tmul_add, hx, hy, add_zero]
+    | tmul e' mat =>
+      rw [show mat = 0 from Subsingleton.elim _ _]
+      simp
+
+/-- The algebra homomorphism underlying `e3`. -/
+def e3Aux4 :
+    (E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K) →ₐ[E]
+      E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
+  (baseChangeTensorEquiv A (Matrix (Fin m) (Fin m) K)).toAlgHom
+
+/-- The algebra homomorphism underlying `e3` is surjective. -/
+lemma e3Aux5 : Function.Surjective (e3Aux4 (K := K) (E := E) A m) :=
+  (baseChangeTensorEquiv A (Matrix (Fin m) (Fin m) K)).surjective
+
 /-- Rewrites matrices over a scalar extension as a tensor product with matrices over the
 extension. -/
 def e1 : Matrix (Fin m) (Fin m) (E ⊗[K] A) ≃ₐ[E] (E ⊗[K] A) ⊗[E] Matrix (Fin m) (Fin m) E :=
