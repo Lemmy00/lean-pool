@@ -12,6 +12,7 @@ import LeanPool.ZhangYeungInequality.Theorem2
 import LeanPool.ZhangYeungInequality.Theorem3
 import LeanPool.ZhangYeungInequality.Theorem4
 import LeanPool.ZhangYeungInequality.Theorem5
+import LeanPool.ZhangYeungInequality.Test
 
 /-!
 # The Zhang-Yeung non-Shannon information inequality
@@ -19,7 +20,7 @@ import LeanPool.ZhangYeungInequality.Theorem5
 Source: doi:10.1109/18.681320
 Authors: Christopher Boone
 Status: verified
-Main declarations: `ZhangYeung.zhangYeung`, `ZhangYeung.zhangYeung_dual`, `ZhangYeung.zhangYeung_averaged`
+Main declarations: `ZhangYeung.zhangYeung`
 Tags: information-theory, entropy, non-shannon-inequality
 MSC: 94A17, 94A15
 -/

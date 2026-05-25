@@ -9,7 +9,15 @@ import LeanPool.ZhangYeungInequality.Prelude
 /-!
 # Entropy-region infrastructure for Theorem 4
 
-This module packages the generic `Fin n` set-function surface used by the exact entropic-region closure form of Theorem 4: the `n`-ary entropy function `entropyFn_n`, the generic cone predicates `zhangYeungAt_n` and `zhangYeungHolds_n`, the Shannon and entropic region sets, and the restriction map from `Fin n` down to the first four coordinates. Witness-specific `Fin n` lemmas (the lifted witness and its cone membership / violation) live in `ZhangYeung.Theorem4`.
+This module packages the generic `Fin n` set-function surface used by the exact
+entropic-region
+closure form of Theorem 4: the `n`-ary entropy function `entropyFn_n`, the generic cone
+predicates
+`zhangYeungAt_n` and `zhangYeungHolds_n`, the Shannon and entropic region sets, and the
+restriction
+map from `Fin n` down to the first four coordinates. Witness-specific `Fin n` lemmas
+(the lifted
+witness and its cone membership / violation) live in `ZhangYeung.Theorem4`.
 -/
 
 namespace ZhangYeung
@@ -42,20 +50,45 @@ def zhangYeungAt_n {n : ℕ} (F : Finset (Fin n) → ℝ) (i j k l : Fin n) : Pr
   delta_F_n F i j k l ≤ (1 / 2) * (I_F_n F {k} {l} + I_F_n F {k} ({i} ∪ {j})
     + condI_F_n F {i} {j} {k} - condI_F_n F {i} {j} {l})
 
-/-- The `Fin n`-indexed Zhang-Yeung cone `tildeΓ_n`: the Zhang-Yeung inequality holds at every ordered 4-tuple of pairwise distinct indices. This "pairwise-distinctness" presentation is extensionally equivalent to the paper's card-4 form (eq. 25) quantified over `Equiv.Perm (Fin n)` — every permutation yields a pairwise-distinct 4-tuple, and every pairwise-distinct 4-tuple extends to a permutation — but it is easier to manipulate in proofs, so the `Fin n` lift uses it in place of the `Equiv.Perm` form that `zhangYeungHolds` uses at `n = 4`. The point-level predicate `zhangYeungAt_n` does agree definitionally with `zhangYeungAt` at `n = 4` (pinned by `Iff.rfl` in the test module); the quantifier shapes of `zhangYeungHolds_n` and `zhangYeungHolds` differ, so their equivalence at `n = 4` is extensional rather than definitional. -/
+/--
+The `Fin n`-indexed Zhang-Yeung cone `tildeΓ_n`: the Zhang-Yeung inequality holds at
+every ordered
+4-tuple of pairwise distinct indices. This "pairwise-distinctness" presentation is
+extensionally
+equivalent to the paper's card-4 form (eq. 25) quantified over `Equiv.Perm (Fin n)` —
+every
+permutation yields a pairwise-distinct 4-tuple, and every pairwise-distinct 4-tuple
+extends to a
+permutation — but it is easier to manipulate in proofs, so the `Fin n` lift uses it in
+place of the
+`Equiv.Perm` form that `zhangYeungHolds` uses at `n = 4`. The point-level predicate
+`zhangYeungAt_n` does agree definitionally with `zhangYeungAt` at `n = 4` (pinned by
+`Iff.rfl` in
+the test module); the quantifier shapes of `zhangYeungHolds_n` and `zhangYeungHolds`
+differ, so
+their equivalence at `n = 4` is extensional rather than definitional.
+-/
 def zhangYeungHolds_n {n : ℕ} (F : Finset (Fin n) → ℝ) : Prop :=
   ∀ i j k l : Fin n, i ≠ j → i ≠ k → i ≠ l → j ≠ k → j ≠ l → k ≠ l →
     zhangYeungAt_n F i j k l
 
-/-- The entropy function of an `n`-variable random-variable family `X : ∀ i : Fin n, Ω → S i`, expressed as a set function on `Finset (Fin n)`. -/
+/--
+The entropy function of an `n`-variable random-variable family `X : ∀ i : Fin n, Ω → S
+i`,
+expressed as a set function on `Finset (Fin n)`.
+-/
 noncomputable def entropyFn_n
     {Ω : Type*} [MeasurableSpace Ω]
     {n : ℕ} {S : Fin n → Type u}
     [∀ i, MeasurableSpace (S i)]
     (X : ∀ i : Fin n, Ω → S i) (μ : Measure Ω) : Finset (Fin n) → ℝ :=
-  fun α => H[(fun ω : Ω => fun i : α => X i.1 ω) ; μ]
+  fun α => H[(fun ω : Ω => fun i : α => X i.1 ω); μ]
 
-/-- The original four-variable entropy function surface, now as the `n = 4` specialization of `entropyFn_n`. -/
+/--
+The original four-variable entropy function surface, now as the `n = 4` specialization
+of
+`entropyFn_n`.
+-/
 noncomputable abbrev entropyFn
     {Ω : Type*} [MeasurableSpace Ω]
     {S : Fin 4 → Type u}
@@ -63,11 +96,20 @@ noncomputable abbrev entropyFn
     (X : ∀ i : Fin 4, Ω → S i) (μ : Measure Ω) : Finset (Fin 4) → ℝ :=
   entropyFn_n X μ
 
-/-- The Shannon outer bound `Γ_n`, packaged as a set. Membership is definitionally `shannonCone_n`. -/
+/--
+The Shannon outer bound `Γ_n`, packaged as a set. Membership is definitionally
+`shannonCone_n`.
+-/
 def shannonRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
   {F | shannonCone_n F}
 
-/-- The entropic region `Γ_n^*`, packaged as the set of actual entropy functions of `n` discrete random variables. The quantified probability space and codomain family range over the ambient universe `u`, so a `Type u` realization is literally a member of the set. -/
+/--
+The entropic region `Γ_n^*`, packaged as the set of actual entropy functions of `n`
+discrete random
+variables. The quantified probability space and codomain family range over the ambient
+universe
+`u`, so a `Type u` realization is literally a member of the set.
+-/
 def entropyRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
   {F | ∃ (Ω : Type u) (_ : MeasurableSpace Ω) (μ : Measure Ω) (_ : IsProbabilityMeasure μ)
       (S : Fin n → Type u) (_ : ∀ i, MeasurableSpace (S i)) (_ : ∀ i, Fintype (S i))
@@ -75,7 +117,12 @@ def entropyRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
       (X : ∀ i : Fin n, Ω → S i),
       (∀ i, Measurable (X i)) ∧ F = entropyFn_n X μ}
 
-/-- The almost-entropic region `closure (Γ_n^*)`. Inherits the universe parameter from `entropyRegion_n`: the closure is taken in the same ambient universe `u`, so a point witnessed by a `Type u` entropy function (or a limit of such) is literally a member of the set. -/
+/--
+The almost-entropic region `closure (Γ_n^*)`. Inherits the universe parameter from
+`entropyRegion_n`: the closure is taken in the same ambient universe `u`, so a point
+witnessed by a
+`Type u` entropy function (or a limit of such) is literally a member of the set.
+-/
 def almostEntropicRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
   closure (entropyRegion_n.{u} n)
 
@@ -85,11 +132,16 @@ def restrictFirstFour {n : ℕ} (hn : 4 ≤ n) :
   fun F α => F (α.map (Fin.castLEEmb hn))
 
 /-- `restrictFirstFour` is continuous in the pointwise topology. -/
-theorem restrictFirstFour_continuous {n : ℕ} (hn : 4 ≤ n) : Continuous (restrictFirstFour hn) := by
+theorem restrictFirstFour_continuous {n : ℕ} (hn : 4 ≤ n) :
+  Continuous (restrictFirstFour hn) := by
   refine continuous_pi fun α => ?_
   simpa [restrictFirstFour] using (continuous_apply (α.map (Fin.castLEEmb hn)))
 
-/-- Restricting an `n`-variable entropy function to the first four coordinates agrees with taking the entropy function of the restricted family. -/
+/--
+Restricting an `n`-variable entropy function to the first four coordinates agrees with
+taking the
+entropy function of the restricted family.
+-/
 theorem entropyFn_n_restrictFirstFour
     {Ω : Type*} [MeasurableSpace Ω]
     {n : ℕ} {S : Fin n → Type u}
@@ -97,7 +149,8 @@ theorem entropyFn_n_restrictFirstFour
     [∀ i, MeasurableSingletonClass (S i)]
     {X : ∀ i : Fin n, Ω → S i} (hX : ∀ i, Measurable (X i))
     (μ : Measure Ω) (hn : 4 ≤ n) :
-    restrictFirstFour hn (entropyFn_n X μ) = entropyFn_n (fun i : Fin 4 => X (Fin.castLE hn i)) μ := by
+    restrictFirstFour hn (entropyFn_n X μ) =
+      entropyFn_n (fun i : Fin 4 => X (Fin.castLE hn i)) μ := by
   letI : ∀ i, Fintype (S i) := fun i => Fintype.ofFinite (S i)
   ext α
   let e : Fin 4 ↪ Fin n := Fin.castLEEmb hn
@@ -131,13 +184,17 @@ theorem restrictFirstFour_mem_entropyRegion_n
   letI : ∀ i, MeasurableSpace (S i) := hS
   letI : ∀ i, Fintype (S i) := hFin
   letI : ∀ i, MeasurableSingletonClass (S i) := hMSC
-  refine ⟨Ω, inferInstance, μ, inferInstance, (fun i : Fin 4 => S (Fin.castLE hn i)), inferInstance,
+  refine ⟨Ω, inferInstance, μ, inferInstance, (fun i : Fin 4 => S (Fin.castLE hn i)),
+    inferInstance,
     inferInstance, inferInstance, (fun i : Fin 4 => X (Fin.castLE hn i)), ?_, ?_⟩
   · intro i
     exact hX (Fin.castLE hn i)
   · simpa using entropyFn_n_restrictFirstFour hX μ hn
 
-/-- Almost-entropic points remain almost entropic after restriction to the first four coordinates. -/
+/--
+Almost-entropic points remain almost entropic after restriction to the first four
+coordinates.
+-/
 theorem restrictFirstFour_mem_almostEntropicRegion_n
     {n : ℕ} (hn : 4 ≤ n) {F : Finset (Fin n) → ℝ}
     (hF : F ∈ almostEntropicRegion_n.{u} n) :
