@@ -21,6 +21,7 @@ Authors: FrenzyMath
 Status: verified
 Main declarations: `anderson_main_theorem`
 Tags: commutative-algebra, ring-theory
+MSC: 13B35, 13H10
 -/
 
 /-!
