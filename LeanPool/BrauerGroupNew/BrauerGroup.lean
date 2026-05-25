@@ -677,8 +677,6 @@ def e4 :
 def e5 (e : A ≃ₐ[K] B) : (E ⊗[K] A) ≃ₐ[E] (E ⊗[K] B) :=
   Algebra.TensorProduct.congr AlgEquiv.refl e
 
-set_option maxHeartbeats 800000 in
--- This restores the upstream compatibility homomorphism, whose tensor-product proof is expensive.
 /-- The algebra homomorphism underlying scalar-extension compatibility with tensor products. -/
 def e6Aux0 : (E ⊗[K] A) ⊗[E] (E ⊗[K] B) →ₐ[E] E ⊗[K] (A ⊗[K] B) :=
   Algebra.TensorProduct.lift
