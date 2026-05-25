@@ -122,6 +122,7 @@ import LeanPool.BrauerGroupNew.SplittingOfCSA
 import LeanPool.BrauerGroupNew.Subfield
 import LeanPool.BrauerGroupNew.Subfield.Defs
 import LeanPool.BrauerGroupNew.Subfield.FiniteDimensional
+import LeanPool.BrauerGroupNew.Subfield.Separable
 import LeanPool.BrauerGroupNew.Subfield.Splitting
 import LeanPool.BrauerGroupNew.Subfield.Subfield
 import LeanPool.BrauerGroupNew.ToSecond
