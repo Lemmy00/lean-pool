@@ -15,6 +15,7 @@ Authors: Michał Dobranowski
 Status: verified
 Main declarations: `Apportionment.balinski_young`
 Tags: social-choice-theory, combinatorics
+MSC: 91B12, 91B14
 -/
 
 /-!
