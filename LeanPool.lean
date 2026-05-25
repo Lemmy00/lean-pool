@@ -66,6 +66,7 @@ import LeanPool.BrauerGroupNew.Examples.ShortComplex.LeftHomologyMapData
 import LeanPool.BrauerGroupNew.ExtendScalar
 import LeanPool.BrauerGroupNew.FieldCat
 import LeanPool.BrauerGroupNew.FiniteField
+import LeanPool.BrauerGroupNew.IsoSecond
 import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.Mathlib
 import LeanPool.BrauerGroupNew.Mathlib.Algebra

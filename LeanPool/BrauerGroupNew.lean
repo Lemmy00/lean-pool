@@ -28,6 +28,7 @@ import LeanPool.BrauerGroupNew.ZeroSevenFourE
 import LeanPool.BrauerGroupNew.RelativeBrauer
 import LeanPool.BrauerGroupNew.SkolemNoether
 import LeanPool.BrauerGroupNew.ToSecond
+import LeanPool.BrauerGroupNew.IsoSecond
 import LeanPool.BrauerGroupNew.DoubleCentralizer
 import LeanPool.BrauerGroupNew.Mathlib
 import LeanPool.BrauerGroupNew.Subfield
