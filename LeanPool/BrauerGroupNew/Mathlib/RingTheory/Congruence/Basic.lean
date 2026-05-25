@@ -8,6 +8,8 @@ import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.RingQuot
 import Mathlib.RingTheory.Congruence.Basic
 
+open Function
+
 /-!
 # Ring congruence quotient compatibility
 
