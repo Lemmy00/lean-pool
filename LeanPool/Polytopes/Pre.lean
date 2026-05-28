@@ -6,10 +6,28 @@ Authors: Jun Kwon
 
 import Mathlib.Analysis.Convex.Intrinsic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
+import Mathlib.Data.Vector.Basic
 import Mathlib.LinearAlgebra.Basis.Submodule
 
 
 open Pointwise Module
+
+/-- Lifts a set whose elements satisfy `property` to the corresponding subtype. -/
+lemma Set.Subtype {α : Type*} {property : α → Prop} (S : Set α) (hS : ∀ s ∈ S, property s) :
+    ∃ S' : Set {x : α // property x}, Subtype.val '' S' = S ∧ Subtype.val ⁻¹' S = S' := by
+  have : ∃ S' : Set {x : α // property x}, Subtype.val '' S' = S := CanLift.prf S hS
+  rcases this with ⟨S', hS'⟩
+  refine ⟨S', hS', ?_⟩
+  ext x
+  rw [Set.mem_preimage, ← hS', Set.mem_image]
+  constructor
+  · -- 1.
+    rintro ⟨x', hx', hxx⟩
+    rw [Subtype.coe_inj] at hxx
+    exact hxx ▸ hx'
+  · -- 2.
+    intro hx
+    exact ⟨x, hx, rfl⟩
 
 lemma Set.Finite.translation {α : Type} [AddGroup α] {S : Set α} (hS : S.Finite) (x : α) :
   (S + ({x} : Set α)).Finite := by
@@ -166,3 +184,37 @@ lemma AffineSubspace.direction_subset_subset {k : Type u_1} {V : Type u_2} {P : 
     (hS : S ⊆ Q) (hT : T ⊆ Q) : S -ᵥ T ⊆ Q.direction := by
   rintro x ⟨ a, b, haS, hbT, rfl ⟩
   exact AffineSubspace.vsub_mem_direction (hS b) (hT hbT)
+
+/-- The row operation that normalizes a pivot row and clears the pivot column. -/
+def Matrix.rowOp_pivot {R : Type*} [Field R] {m n : ℕ}
+    (A : Matrix (Fin m) (Fin n) R) (i : Fin m) (x : Fin n) (h : A i x ≠ 0) :
+    Matrix (Fin m) (Fin n) R :=
+  have _ : A i x ≠ 0 := h
+  let v : Fin n → R := (A i x)⁻¹ • A i
+  fun j => if j = i then v else (-A j x) • v + A j
+
+/-- The list of all elements of `Fin n`, in increasing order. -/
+def Nat.fin_list_range (n : ℕ) : List (Fin n) :=
+  match n with
+  | 0 => []
+  | Nat.succ m => 0 :: (m.fin_list_range).map Fin.succ
+
+lemma Fin.mem_fin_list_range {n : ℕ} (i : Fin n) : i ∈ n.fin_list_range := by
+  induction n with
+  | zero => exact i.elim0
+  | succ n ih =>
+    match i with
+    | 0 => exact List.mem_cons_self
+    | mk (Nat.succ m) h =>
+      have : m < n := by omega
+      let m' : Fin n := ⟨m, this⟩
+      unfold Nat.fin_list_range
+      apply List.mem_cons_of_mem
+      simp only [List.mem_map]
+      use m'
+      use ih m'
+      rfl
+
+/-- Drops the first `m` entries from a length-indexed vector. -/
+def Vector.Listdrop {R : Type*} {n : ℕ} (m : ℕ) : Vector R n → Vector R (n - m) :=
+  fun v => v.drop m
