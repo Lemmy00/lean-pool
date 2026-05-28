@@ -7,7 +7,7 @@ Authors: Jun Kwon
 import LeanPool.Polytopes.MainTheorem
 
 /-!
-# The main theorem of polytopes (V- and H-representations)
+# The main theorem of polytopes
 
 Source: url:https://github.com/Jun2M/Main-theorem-of-polytopes
 Authors: Jun Kwon
