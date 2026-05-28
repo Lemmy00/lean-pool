@@ -14,7 +14,12 @@ import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Measure.Dirac
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.WithDensity
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.Probability.HasLaw
+import Mathlib.Probability.Moments.Basic
+import Mathlib.Probability.Moments.Variance
+import Mathlib.Combinatorics.Enumerative.Catalan
 
 /-!
 # Semicircle Distributions over `ℝ`
@@ -32,9 +37,19 @@ We define the real-valued Wigner semicircle distribution.
 * `semicircleReal`: the semicircle measure on `ℝ`, parametrized by mean `μ` and
   variance `v`. If `v = 0`, this is `Measure.dirac μ`; otherwise it is the
   measure with density `semicirclePDF μ v` against the Lebesgue measure.
+
+## Main results
+
+* `semicircleReal_add_const`, `semicircleReal_const_mul`: affine transformations of a semicircular
+  random variable stay semicircular, with the mean and variance transformed accordingly.
+* `integral_id_semicircleReal`: the mean of `semicircleReal μ v` is its mean parameter `μ`.
+* `variance_id_semicircleReal`: the variance of `semicircleReal μ v` is its variance parameter `v`.
+* `centralMoment_two_mul_semicircleReal`: the `2 * n`-th central moment of the semicircle
+  distribution equals `v ^ n` times the `n`-th Catalan number.
+* `centralMoment_odd_semicircleReal`: the odd central moments of the semicircle distribution vanish.
 -/
 
-open scoped ENNReal NNReal Real
+open scoped ENNReal NNReal Real ProbabilityTheory
 
 open MeasureTheory Set
 
@@ -559,5 +574,470 @@ lemma memLp_id_semicircleReal' (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp id p (semicircleReal μ v) := by
   lift p to ℝ≥0 using hp
   exact memLp_id_semicircleReal p
+
+/-- The support of the semicircle pdf with mean `μ` and variance `v` is the open interval
+`(μ - 2√v, μ + 2√v)`. -/
+@[simp]
+lemma support_semicirclePDF (hv : v ≠ 0) :
+    Function.support (semicirclePDF μ v) = Ioo (μ - 2 * √v) (μ + 2 * √v) := by
+  have hv_nonneg : 0 ≤ (v : ℝ) := NNReal.coe_nonneg v
+  ext x
+  rw [Function.mem_support, semicirclePDF, ne_eq, ENNReal.ofReal_eq_zero, not_le, mem_Ioo]
+  constructor
+  · intro hpos
+    have h_sqrt_pos : 0 < √(4 * (v : ℝ) - (x - μ) ^ 2) := by
+      rcases mul_pos_iff.mp hpos with ⟨_, h2⟩ | ⟨_, h2⟩
+      · exact h2
+      · exact absurd h2 (not_lt.mpr (Real.sqrt_nonneg _))
+    have h_arg_pos : 0 < 4 * (v : ℝ) - (x - μ) ^ 2 := by
+      by_contra h
+      rw [Real.sqrt_eq_zero_of_nonpos (not_lt.mp h)] at h_sqrt_pos
+      exact lt_irrefl _ h_sqrt_pos
+    have h_lt : (x - μ) ^ 2 < (2 * √(v : ℝ)) ^ 2 := by
+      rw [mul_pow, Real.sq_sqrt hv_nonneg]; linarith
+    have h_abs : |x - μ| < 2 * √(v : ℝ) :=
+      abs_lt_of_sq_lt_sq h_lt (by positivity)
+    rw [abs_lt] at h_abs
+    exact ⟨by linarith [h_abs.1], by linarith [h_abs.2]⟩
+  · intro ⟨h1, h2⟩
+    have h_abs : |x - μ| < 2 * √(v : ℝ) := by
+      rw [abs_lt]; exact ⟨by linarith, by linarith⟩
+    have h_sq_lt : (x - μ) ^ 2 < 4 * (v : ℝ) := by
+      have := sq_lt_sq' (neg_lt_of_abs_lt h_abs) (lt_of_abs_lt h_abs)
+      rw [mul_pow, Real.sq_sqrt hv_nonneg] at this; linarith
+    have h_arg_pos : 0 < 4 * (v : ℝ) - (x - μ) ^ 2 := by linarith
+    have hden : 0 < 1 / (2 * π * (v : ℝ)) := by
+      have : 0 < (v : ℝ) := lt_of_le_of_ne hv_nonneg (Ne.symm (by exact_mod_cast hv))
+      positivity
+    rw [semicirclePDFReal]
+    exact mul_pos hden (Real.sqrt_pos.mpr h_arg_pos)
+
+/-- The real part of the `ℝ≥0∞`-valued semicircle density coincides with the real-valued density,
+when the latter is nonnegative. -/
+lemma semicirclePDF_toReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) (h₀ : 0 ≤ semicirclePDFReal μ v x) :
+    (ENNReal.ofReal (semicirclePDFReal μ v x)).toReal = semicirclePDFReal μ v x :=
+  ENNReal.toReal_ofReal h₀
+
+/-- The canonical inclusion of `ℝ≥0` into `ℝ≥0∞` is measurable. -/
+lemma measurable_ofNNReal : Measurable (ENNReal.ofNNReal) := by
+  have h1 : Measurable fun (x : ℝ≥0) ↦ (x : ℝ) := measurable_subtype_coe
+  have h2 : Measurable fun (x : ℝ) ↦ ENNReal.ofReal x := ENNReal.measurable_ofReal
+  have h3 : Measurable fun (x : ℝ≥0) ↦ ENNReal.ofReal (x : ℝ) := h2.comp h1
+  simpa [ENNReal.ofReal_coe_nnreal] using h3
+
+/-- The integral of an even power of cosine over `[0, π]`, as a Wallis-type product. -/
+lemma integral_cos_pow_even (n : ℕ) : (∫ x in (0)..π, Real.cos x ^ (2 * n))
+    = π * ∏ k ∈ Finset.range n, ((2 * k + 1) : ℝ) / (2 * (k + 1)) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have c1 : ∀ (m : ℕ),
+        ∫ (x : ℝ) in (0)..π, Real.cos x ^ (m + 2) =
+        (Real.cos π ^ (m + 1) * Real.sin π - Real.cos 0 ^ (m + 1) * Real.sin 0 +
+        (m + 1) * ∫ (x : ℝ) in (0)..π, Real.cos x ^ m) -
+        (m + 1) * ∫ (x : ℝ) in (0)..π, Real.cos x ^ (m + 2) :=
+      fun m ↦ integral_cos_pow_aux (n := m) (a := 0) (b := π)
+    simp only [Real.cos_pi, Real.sin_pi, Real.cos_zero, Real.sin_zero, mul_zero,
+      sub_zero] at c1
+    set A := ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n + 2)
+    set B := ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n)
+    have c2 : A = (2 * n + 1) * B - (2 * n + 1) * A := by
+      have c21 := c1 (2 * n)
+      simpa [A, B, Nat.cast_mul, Nat.cast_ofNat, two_mul, add_comm, add_left_comm, add_assoc,
+        mul_comm, mul_left_comm, mul_assoc] using c21
+    have c3 : ((2 * n + 2) : ℝ) * A = ((2 * n + 1) : ℝ) * B := by linarith
+    have c5 : ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * (n + 1))
+        = (2 * n + 1) / (2 * n + 2) * ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n) := by
+      have hAB : A = (2 * (n : ℝ) + 1) / (2 * (n : ℝ) + 2) * B := by
+        rw [div_mul_eq_mul_div, eq_div_iff (by positivity : (2 * (n : ℝ) + 2) ≠ 0)]
+        linarith [c3]
+      simpa [A, B, show 2 * (n + 1) = 2 * n + 2 from by ring] using hAB
+    rw [c5]
+    change (2 * (n : ℝ) + 1) / (2 * (n : ℝ) + 2) * B = _
+    rw [ih, Finset.prod_range_succ]
+    ring
+
+/-- The product `∏_{x < n} 2 * (x + 1)` equals `2 ^ n * n!`. -/
+lemma prod_two_mul_factorial (n : ℕ) : ∏ x ∈ Finset.range n, (2 : ℝ) * (↑x + 1)
+    = 2 ^ n * (↑n.factorial : ℝ) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Finset.prod_range_succ, ih]
+    rw [pow_succ, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
+    ring
+
+/-- The Wallis product ratio equals the central binomial coefficient divided by `4 ^ n`. -/
+lemma prod_odd_over_even_central_choose (n : ℕ) :
+    (∏ x ∈ Finset.range n, (2 * (x : ℝ) + 1)) /
+      (∏ x ∈ Finset.range n, (2 * ((x : ℝ) + 1))) =
+      (Nat.choose (2 * n) n : ℝ) / 2 ^ (2 * n) := by
+  set P_odd := ∏ x ∈ Finset.range n, (2 * (x : ℝ) + 1) with hP_odd
+  set P_even := ∏ x ∈ Finset.range n, (2 * ((x : ℝ) + 1)) with hP_even
+  have h_P_even : P_even = (2 : ℝ) ^ n * (Nat.factorial n : ℝ) := by
+    rw [hP_even, prod_two_mul_factorial]
+  have h_prod_all : P_odd * P_even = (Nat.factorial (2 * n) : ℝ) := by
+    have h_nat_prod_id : ∀ k, ∏ i ∈ Finset.range k, ((2 * i + 1) * (2 * i + 2))
+        = Nat.factorial (2 * k) := by
+      intro k
+      induction k with
+      | zero => simp
+      | succ k IH =>
+        rw [Finset.prod_range_succ, IH]
+        rw [show Nat.factorial (2 * (k + 1)) = Nat.factorial (2 * k + 2) by ring_nf]
+        rw [Nat.factorial_succ, Nat.factorial_succ]
+        ring
+    rw [hP_odd, hP_even, ← Finset.prod_mul_distrib]
+    conv_lhs => arg 2; ext x; rw [show (2 * (x : ℝ) + 1) * (2 * ((x : ℝ) + 1))
+      = ((2 * x + 1) * (2 * x + 2) : ℝ) by ring]
+    rw [show ∏ x ∈ Finset.range n, ((2 * x + 1) * (2 * x + 2) : ℝ)
+      = (∏ x ∈ Finset.range n, (2 * x + 1) * (2 * x + 2) : ℕ) by push_cast; rfl]
+    rw [h_nat_prod_id]
+  have h_P_even_ne_zero : P_even ≠ 0 := by
+    rw [h_P_even]
+    exact mul_ne_zero (pow_ne_zero _ two_ne_zero) (by exact_mod_cast Nat.factorial_ne_zero n)
+  calc
+    P_odd / P_even
+    _ = (↑(Nat.factorial (2 * n)) / P_even) / P_even := by
+          rw [div_div, ← h_prod_all]; field_simp
+    _ = ↑(Nat.factorial (2 * n)) / (P_even * P_even) := by rw [div_div]
+    _ = ↑(Nat.factorial (2 * n))
+        / (((2 : ℝ) ^ n * ↑(Nat.factorial n)) ^ 2) := by rw [h_P_even]; ring
+    _ = ↑(Nat.factorial (2 * n))
+        / (2 ^ (2 * n) * (↑(Nat.factorial n)) ^ 2) := by rw [mul_pow, ← pow_mul, mul_comm n 2]
+    _ = (↑(Nat.choose (2 * n) n)) / 2 ^ (2 * n) := by
+          rw [show (Nat.choose (2 * n) n : ℝ)
+            = (2 * n).factorial / (n.factorial * n.factorial) by
+            rw [Nat.cast_choose ℝ (by omega : n ≤ 2 * n), show 2 * n - n = n by omega]]
+          ring
+
+/-- The Catalan numbers satisfy the recurrence `(n + 2) * C_{n+1} = (4n + 2) * C_n`. -/
+lemma catalan_recur (n : ℕ) : (n + 2) * catalan (n + 1) = (4 * n + 2) * (catalan n) := by
+  -- Recurrence for the central binomial coefficients.
+  have h_central : (n + 1) * Nat.centralBinom (n + 1) = (4 * n + 2) * Nat.centralBinom n := by
+    have h := Nat.succ_mul_centralBinom_succ n
+    rw [h]; ring
+  -- `(n + 2) * catalan (n + 1)` telescopes back to the central binomial coefficient.
+  have h_left : (n + 2) * catalan (n + 1) = Nat.centralBinom (n + 1) := by
+    rw [catalan_eq_centralBinom_div]
+    exact Nat.mul_div_cancel' (by simpa using Nat.succ_dvd_centralBinom (n + 1))
+  -- `(4n + 2) * catalan n` does too, using the recurrence above.
+  have h_right : (4 * n + 2) * catalan n = Nat.centralBinom (n + 1) := by
+    rw [catalan_eq_centralBinom_div, ← Nat.mul_div_assoc _ (Nat.succ_dvd_centralBinom n)]
+    refine Nat.div_eq_of_eq_mul_left (Nat.succ_pos n) ?_
+    rw [← h_central]; ring
+  rw [h_left, h_right]
+
+/-- Reduction of `∫_{-2}^{2} x ^ (2n) √(4 - x ^ 2)` to a difference of even cosine-power
+integrals over `[0, π]`. -/
+lemma integral_even_pow_mul_sqrt_eq_cos_diff (n : ℕ) :
+    ∫ (x : ℝ) in (-2)..2, x ^ (2 * n) * √(4 - x ^ 2) = 2 ^ (2 * n + 2) *
+      ((∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n))
+        - ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n + 2)) := by
+  have c50 : ∫ (x : ℝ) in (-2)..2, x ^ (2 * n) * √(4 - x ^ 2)
+      = 2 ^ (2 * n + 2) * ∫ (u : ℝ) in (-1)..1, u ^ (2 * n) * √(1 - u ^ 2) := by
+    have c5000A : (2 : ℝ) ≠ 0 := by norm_num
+    have c5000 := intervalIntegral.integral_comp_mul_left
+      (f := fun (x : ℝ) ↦ x ^ (2 * n) * √(4 - x ^ 2)) (c := (2 : ℝ)) (a := -1) (b := 1) c5000A
+    simp only [smul_eq_mul, show (2 : ℝ) * (-1) = -2 by norm_num,
+      show (2 : ℝ) * 1 = 2 by norm_num] at c5000
+    have c5001 : ∫ (x : ℝ) in (-1)..1, (2 * x) ^ (2 * n) * √(4 - (2 * x) ^ 2)
+        = ∫ (x : ℝ) in (-1)..1, 2 ^ (2 * n + 1) * x ^ (2 * n) * √(1 - x ^ 2) := by
+      apply intervalIntegral.integral_congr
+      intro x _
+      dsimp only
+      have c500100 : (2 * x) ^ (2 * n) = 2 ^ (2 * n) * x ^ (2 * n) := mul_pow 2 x (2 * n)
+      have c500101 : √(4 - (2 * x) ^ 2) = 2 * √(1 - x ^ 2) := by
+        rw [show 4 - (2 * x) ^ 2 = 2 ^ 2 * (1 - x ^ 2) by ring,
+          Real.sqrt_mul (by positivity), Real.sqrt_sq (by norm_num)]
+      rw [c500100, c500101]; ring
+    have c5002 : ∫ (x : ℝ) in (-1)..1, 2 ^ (2 * n + 1) * x ^ (2 * n) * √(1 - x ^ 2)
+        = 2 ^ (2 * n + 1) * ∫ (x : ℝ) in (-1)..1, x ^ (2 * n) * √(1 - x ^ 2) := by
+      rw [← intervalIntegral.integral_const_mul]
+      apply intervalIntegral.integral_congr
+      intro x _; dsimp only; ring
+    have c5003 : ∫ (x : ℝ) in (-2)..2, x ^ (2 * n) * √(4 - x ^ 2)
+        = 2 * ∫ (x : ℝ) in (-1)..1, (2 * x) ^ (2 * n) * √(4 - (2 * x) ^ 2) := by
+      rw [c5000]; ring
+    rw [c5003, c5001, c5002]; ring
+  rw [c50]
+  have c51 : ∫ (x : ℝ) in (-1)..1, x ^ (2 * n) * √(1 - x ^ 2)
+      = (∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n))
+        - ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n + 2) := by
+    have c510 : ∫ (x : ℝ) in (-1)..1, x ^ (2 * n) * √(1 - x ^ 2)
+        = ∫ (x : ℝ) in (0)..π, (Real.sin x) ^ 2 * (Real.cos x) ^ (2 * n) := by
+      set g := fun (x : ℝ) ↦ x ^ (2 * n) * √(1 - x ^ 2)
+      set f := fun (x : ℝ) ↦ Real.cos x
+      have c5100A : ∀ x ∈ uIcc 0 π, HasDerivAt f ((deriv f) x) x := by
+        intro x _
+        have c5100A0 : (deriv f) x = -Real.sin x := Real.deriv_cos
+        rw [c5100A0]; exact Real.hasDerivAt_cos x
+      have c5100B : ContinuousOn (deriv f) (uIcc 0 π) := by
+        have c5100B0 : (deriv f) = fun (x : ℝ) ↦ -Real.sin x := funext fun x ↦ Real.deriv_cos
+        rw [c5100B0]; fun_prop
+      have c5100C : Continuous g := by unfold g; fun_prop
+      have c5100 : ∫ (x : ℝ) in (0)..π, (g ∘ f) x * (deriv f) x = ∫ (x : ℝ) in f 0..f π, g x :=
+        intervalIntegral.integral_comp_mul_deriv c5100A c5100B c5100C
+      simp only [f, g, Function.comp, Real.deriv_cos, Real.cos_zero, Real.cos_pi] at c5100
+      -- `c5100 : ∫_0^π cos^(2n)·√(1-cos²)·(-sin) = ∫_1^{-1} x^(2n)√(1-x²)`.
+      rw [intervalIntegral.integral_symm (-1) 1] at c5100
+      -- The integrand on `[0, π]` simplifies to `sin²·cos^(2n)` up to sign.
+      have c5101A : ∫ (x : ℝ) in (0)..π,
+          Real.cos x ^ (2 * n) * √(1 - Real.cos x ^ 2) * -Real.sin x
+          = -∫ (x : ℝ) in (0)..π, Real.sin x ^ 2 * Real.cos x ^ (2 * n) := by
+        rw [← intervalIntegral.integral_neg]
+        apply intervalIntegral.integral_congr
+        intro x hx
+        have c51010 : √(1 - Real.cos x ^ 2) = |Real.sin x| :=
+          (Real.abs_sin_eq_sqrt_one_sub_cos_sq x).symm
+        have hsin : Real.sin x ≥ 0 := by
+          refine Real.sin_nonneg_of_mem_Icc ?_
+          rwa [← uIcc_of_le Real.pi_nonneg]
+        simp only
+        rw [c51010, abs_of_nonneg hsin]; ring
+      rw [c5101A] at c5100
+      simp only [g]
+      linarith [c5100]
+    have c511 : ∫ (x : ℝ) in (0)..π, (Real.sin x) ^ 2 * (Real.cos x) ^ (2 * n)
+        = ∫ (x : ℝ) in (0)..π, (1 - (Real.cos x) ^ 2) * (Real.cos x) ^ (2 * n) := by
+      apply intervalIntegral.integral_congr
+      intro x _; simp only; rw [Real.sin_sq]
+    have c512 : ∫ (x : ℝ) in (0)..π, (1 - (Real.cos x) ^ 2) * (Real.cos x) ^ (2 * n)
+        = (∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n))
+          - ∫ (x : ℝ) in (0)..π, Real.cos x ^ (2 * n + 2) := by
+      rw [show (fun (x : ℝ) ↦ (1 - Real.cos x ^ 2) * Real.cos x ^ (2 * n))
+        = fun (x : ℝ) ↦ Real.cos x ^ (2 * n) - Real.cos x ^ (2 * n + 2) from
+        funext fun x ↦ by rw [pow_add]; ring]
+      rw [intervalIntegral.integral_sub
+        ((Real.continuous_cos.pow (2 * n)).intervalIntegrable _ _)
+        ((Real.continuous_cos.pow (2 * n + 2)).intervalIntegrable _ _)]
+    rw [c510, c511, c512]
+  rw [c51]
+
+/-- The mean of a real semicircle distribution `semicircleReal μ v` is its mean parameter `μ`. -/
+@[simp]
+lemma integral_id_semicircleReal : ∫ x, x ∂semicircleReal μ v = μ := by
+  by_cases hv : v = 0
+  · simp [hv]
+  rw [integral_semicircleReal_eq_integral_smul hv]
+  have h_integrable : Integrable (fun x => semicirclePDFReal μ v x * (x - μ)) := by
+    have h_cont : Continuous (fun x => semicirclePDFReal μ v x * (x - μ)) :=
+      (continuous_semicirclePDFReal μ v).mul (continuous_id.sub continuous_const)
+    have h_compact : IsCompact (Icc (μ - 2 * √(v : ℝ)) (μ + 2 * √(v : ℝ))) := isCompact_Icc
+    have h_int_on : IntegrableOn (fun x => semicirclePDFReal μ v x * (x - μ))
+        (Icc (μ - 2 * √(v : ℝ)) (μ + 2 * √(v : ℝ))) :=
+      h_cont.continuousOn.integrableOn_compact h_compact
+    refine (integrableOn_iff_integrable_of_support_subset ?_).mp h_int_on
+    intro x hx
+    by_contra hxI
+    exact hx (mul_eq_zero_of_left (semicirclePDFReal_eq_zero_of_notMem μ v hxI) _)
+  have h_split : (fun x => semicirclePDFReal μ v x • x) =
+      (fun x => semicirclePDFReal μ v x * (x - μ) + semicirclePDFReal μ v x * μ) := by
+    ext x; simp only [smul_eq_mul]; ring
+  rw [h_split, integral_add h_integrable ((integrable_semicirclePDFReal μ v).mul_const μ)]
+  have h_symm : ∫ a, semicirclePDFReal μ v a * (a - μ) = 0 := by
+    rw [semicirclePDFReal_def]
+    have h_shift : ∫ a, 1 / (2 * π * (v : ℝ)) * √(4 * (v : ℝ) - (a - μ) ^ 2) * (a - μ) =
+        ∫ y, 1 / (2 * π * (v : ℝ)) * √(4 * (v : ℝ) - y ^ 2) * y := by
+      rw [eq_comm, ← integral_sub_right_eq_self _ μ]
+    rw [h_shift]
+    have h_odd : ∫ y, 1 / (2 * π * (v : ℝ)) * √(4 * (v : ℝ) - y ^ 2) * y =
+        ∫ y, -(1 / (2 * π * (v : ℝ)) * √(4 * (v : ℝ) - y ^ 2) * y) := by
+      conv_lhs => rw [← integral_neg_eq_self
+        (fun y => 1 / (2 * π * (v : ℝ)) * √(4 * (v : ℝ) - y ^ 2) * y)]
+      apply integral_congr_ae
+      filter_upwards [] with y
+      rw [neg_sq]; ring
+    rw [integral_neg] at h_odd
+    linarith
+  rw [h_symm, zero_add]
+  simp_rw [show (fun a => semicirclePDFReal μ v a * μ) = (fun a => μ * semicirclePDFReal μ v a)
+    from funext fun a => mul_comm _ _]
+  rw [integral_const_mul, integral_semicirclePDFReal_eq_one μ hv, mul_one]
+
+/-- The substitution `x ↦ x * √v` rescales the centered semicircle moment integral to the
+standard interval `[-2, 2]`. -/
+lemma integral_scaled_semicircle_eq (v : ℝ≥0) (n : ℕ) (hv : v ≠ 0) :
+    1 / (2 * π * (v : ℝ)) * ∫ (x : ℝ) in (-2 * √v)..(2 * √v), x ^ (2 * n) * √(4 * v - x ^ 2)
+      = (v : ℝ) ^ n / (2 * π) * ∫ (x : ℝ) in (-2)..2, x ^ (2 * n) * √(4 - x ^ 2) := by
+  have hv_pos : 0 < (v : ℝ) := NNReal.coe_pos.mpr (pos_iff_ne_zero.mpr hv)
+  have hv_nonneg : 0 ≤ (v : ℝ) := hv_pos.le
+  have hsqrt_pos : 0 < √(v : ℝ) := Real.sqrt_pos.mpr hv_pos
+  -- Change of variables `x = √v * t` on `[-2, 2]`.
+  have hcomp := intervalIntegral.smul_integral_comp_mul_left
+    (a := -2) (b := 2) (c := √(v : ℝ))
+    (f := fun x ↦ x ^ (2 * n) * √(4 * (v : ℝ) - x ^ 2))
+  rw [show √(v : ℝ) * (-2) = -2 * √(v : ℝ) by ring,
+    show √(v : ℝ) * 2 = 2 * √(v : ℝ) by ring] at hcomp
+  -- Rewrite the right-hand interval integral via the substitution.
+  rw [show ∫ (x : ℝ) in (-2 * √(v : ℝ))..(2 * √v), x ^ (2 * n) * √(4 * v - x ^ 2)
+    = √(v : ℝ) • ∫ (x : ℝ) in (-2)..2,
+        (√(v : ℝ) * x) ^ (2 * n) * √(4 * (v : ℝ) - (√(v : ℝ) * x) ^ 2) from hcomp.symm]
+  -- Simplify the substituted integrand.
+  have h_integrand : ∀ x : ℝ, (√(v : ℝ) * x) ^ (2 * n) * √(4 * (v : ℝ) - (√(v : ℝ) * x) ^ 2)
+      = ((v : ℝ) ^ n * √(v : ℝ)) * (x ^ (2 * n) * √(4 - x ^ 2)) := by
+    intro x
+    have hpow : (√(v : ℝ) * x) ^ (2 * n) = (v : ℝ) ^ n * x ^ (2 * n) := by
+      rw [mul_pow, pow_mul, Real.sq_sqrt hv_nonneg]
+    have hsqrt : √(4 * (v : ℝ) - (√(v : ℝ) * x) ^ 2) = √(v : ℝ) * √(4 - x ^ 2) := by
+      rw [show (√(v : ℝ) * x) ^ 2 = (v : ℝ) * x ^ 2 by rw [mul_pow, Real.sq_sqrt hv_nonneg],
+        show 4 * (v : ℝ) - (v : ℝ) * x ^ 2 = (v : ℝ) * (4 - x ^ 2) by ring,
+        Real.sqrt_mul hv_nonneg]
+    rw [hpow, hsqrt]; ring
+  simp_rw [h_integrand]
+  rw [intervalIntegral.integral_const_mul, smul_eq_mul]
+  have hv_ne : (v : ℝ) ≠ 0 := ne_of_gt hv_pos
+  field_simp
+  rw [Real.sq_sqrt hv_nonneg]
+
+/-- The Wallis product telescopes: `2 ^ (2n+1)` times the difference of consecutive Wallis
+partial products equals the `n`-th Catalan number. -/
+lemma wallis_prod_diff_eq_catalan (n : ℕ) :
+    2 ^ (2 * n + 1) * ((∏ i ∈ Finset.range n, (2 * (i : ℝ) + 1) / (2 * (i + 1)))
+        - ∏ i ∈ Finset.range (n + 1), (2 * (i : ℝ) + 1) / (2 * (i + 1)))
+      = catalan n := by
+  have hprod : (∏ i ∈ Finset.range n, (2 * (i : ℝ) + 1) / (2 * (i + 1)))
+      = (Nat.choose (2 * n) n : ℝ) / 2 ^ (2 * n) := by
+    rw [← prod_odd_over_even_central_choose n, Finset.prod_div_distrib]
+  have hsucc : (∏ i ∈ Finset.range (n + 1), (2 * (i : ℝ) + 1) / (2 * (i + 1)))
+      = (∏ i ∈ Finset.range n, (2 * (i : ℝ) + 1) / (2 * (i + 1)))
+        * ((2 * (n : ℝ) + 1) / (2 * (n + 1))) := Finset.prod_range_succ _ n
+  have hne : (2 * ((n : ℝ) + 1)) ≠ 0 := by positivity
+  have hdiff : (∏ i ∈ Finset.range n, (2 * (i : ℝ) + 1) / (2 * (i + 1)))
+      - ∏ i ∈ Finset.range (n + 1), (2 * (i : ℝ) + 1) / (2 * (i + 1))
+      = (Nat.choose (2 * n) n : ℝ) / 2 ^ (2 * n) * (1 / (2 * (n + 1))) := by
+    rw [hsucc, hprod]; field_simp; ring
+  rw [hdiff]
+  -- `catalan n = C(2n,n) / (n+1)` over `ℝ`.
+  have hcat : (catalan n : ℝ) = (Nat.choose (2 * n) n : ℝ) / (n + 1) := by
+    rw [catalan_eq_centralBinom_div, Nat.centralBinom_eq_two_mul_choose,
+      Nat.cast_div (by simpa [Nat.centralBinom] using Nat.succ_dvd_centralBinom n)
+        (by exact_mod_cast Nat.succ_ne_zero n)]
+    push_cast; ring
+  rw [hcat]
+  have h2 : (2 : ℝ) ^ (2 * n) ≠ 0 := by positivity
+  have hn1 : ((n : ℝ) + 1) ≠ 0 := by positivity
+  rw [pow_succ]
+  field_simp
+
+/-- The centered `2 * n`-th power integral against the semicircle measure, rewritten as a
+weighted integral of the unnormalized kernel over its centered support interval. -/
+lemma integral_centered_pow_semicircleReal (μ : ℝ) (v : ℝ≥0) (n : ℕ) (hv : v ≠ 0) :
+    ∫ (x : ℝ), (x - μ) ^ (2 * n) ∂semicircleReal μ v
+      = 1 / (2 * π * (v : ℝ))
+        * ∫ (x : ℝ) in (-2 * √v)..(2 * √v), x ^ (2 * n) * √(4 * v - x ^ 2) := by
+  rw [integral_semicircleReal_eq_integral_smul hv]
+  -- The integrand vanishes outside the support interval, so restrict to it.
+  have h_support : Function.support
+      (fun x ↦ semicirclePDFReal μ v x • (x - μ) ^ (2 * n)) ⊆ Icc (μ - 2 * √v) (μ + 2 * √v) := by
+    intro x hx
+    by_contra hxI
+    apply hx
+    simp only [semicirclePDFReal_eq_zero_of_notMem μ v hxI, smul_eq_mul, zero_mul]
+  rw [← setIntegral_eq_integral_of_forall_compl_eq_zero
+    (fun x hx ↦ by
+      by_contra hne
+      exact hx (h_support hne))]
+  rw [integral_Icc_eq_integral_Ioc,
+    ← intervalIntegral.integral_of_le (by linarith [Real.sqrt_nonneg (v : ℝ)])]
+  -- Center the variable: substitute `x ↦ x + μ`.
+  have h_center := intervalIntegral.integral_comp_add_right
+    (a := -2 * √(v : ℝ)) (b := 2 * √(v : ℝ)) (d := μ)
+    (f := fun x ↦ semicirclePDFReal μ v x • (x - μ) ^ (2 * n))
+  rw [show μ - 2 * √(v : ℝ) = -2 * √(v : ℝ) + μ by ring,
+    show μ + 2 * √(v : ℝ) = 2 * √(v : ℝ) + μ by ring, ← h_center]
+  -- Unfold the kernel and pull out the constant.
+  simp only [smul_eq_mul, semicirclePDFReal, add_sub_cancel_right]
+  rw [← intervalIntegral.integral_const_mul]
+  apply intervalIntegral.integral_congr
+  intro x _
+  simp only
+  ring
+
+/-- The `2 * n`-th central moment of the semicircle distribution equals `v ^ n` times the `n`-th
+Catalan number. -/
+lemma centralMoment_fun_two_mul_semicircleReal (μ : ℝ) (v : ℝ≥0) (n : ℕ) :
+    ProbabilityTheory.centralMoment (fun x ↦ x) (2 * n) (semicircleReal μ v)
+      = v ^ n * catalan n := by
+  rw [ProbabilityTheory.centralMoment]
+  simp only [Pi.pow_apply, Pi.sub_apply, integral_id_semicircleReal]
+  -- Split off the degenerate `v = 0` case.
+  by_cases h1 : v = 0
+  · subst h1; rw [semicircleReal_zero_var]; simp; cases n <;> simp [catalan_zero]
+  have c0 := integral_centered_pow_semicircleReal μ v n h1
+  rw [c0]
+  /- Change of variable 2 (trigonometric substitution)-/
+  have c2 := integral_scaled_semicircle_eq v n h1
+  rw [c2]
+  have c3 := integral_cos_pow_even n
+  have c4 := integral_cos_pow_even (n + 1)
+  rw [show 2 * (n + 1) = 2 * n + 2 from by ring] at c4
+  have c5 := integral_even_pow_mul_sqrt_eq_cos_diff n
+  rw [c5, c3, c4]
+  -- Reduce to the telescoping Wallis identity.
+  rw [show (v : ℝ) ^ n / (2 * π) * (2 ^ (2 * n + 2)
+      * (π * ∏ k ∈ Finset.range n, (2 * (k : ℝ) + 1) / (2 * (k + 1))
+        - π * ∏ k ∈ Finset.range (n + 1), (2 * (k : ℝ) + 1) / (2 * (k + 1))))
+    = (v : ℝ) ^ n * (2 ^ (2 * n + 1)
+      * ((∏ k ∈ Finset.range n, (2 * (k : ℝ) + 1) / (2 * (k + 1)))
+        - ∏ k ∈ Finset.range (n + 1), (2 * (k : ℝ) + 1) / (2 * (k + 1)))) by
+    rw [pow_succ]; field_simp]
+  rw [wallis_prod_diff_eq_catalan n]
+
+/-- The `2 * n`-th central moment of the identity equals `v ^ n` times the `n`-th Catalan number. -/
+lemma centralMoment_two_mul_semicircleReal (μ : ℝ) (v : ℝ≥0) (n : ℕ) :
+    ProbabilityTheory.centralMoment id (2 * n) (semicircleReal μ v) = v ^ n * catalan n := by
+  unfold id; apply centralMoment_fun_two_mul_semicircleReal
+
+variable {μ : ℝ} {v : ℝ≥0}
+
+/-- The variance of a real semicircle distribution `semicircleReal μ v` is its variance
+parameter `v`. -/
+@[simp]
+lemma variance_id_semicircleReal : Var[id; semicircleReal μ v] = v := by
+  rw [← ProbabilityTheory.centralMoment_two_eq_variance measurable_id.aemeasurable]
+  have := centralMoment_two_mul_semicircleReal μ v 1
+  simpa [catalan_one] using this
+
+/-- The variance of a real semicircle distribution `semicircleReal μ v` is its variance
+parameter `v`. -/
+@[simp]
+lemma variance_fun_id_semicircleReal : Var[fun x ↦ x; semicircleReal μ v] = v :=
+  variance_id_semicircleReal
+
+/-- The odd central moments of the semicircle distribution vanish. -/
+lemma centralMoment_fun_odd_semicircleReal (μ : ℝ) (v : ℝ≥0) (n : ℕ) :
+    ProbabilityTheory.centralMoment (fun x ↦ x) ((2 * n) + 1) (semicircleReal μ v) = 0 := by
+  rw [ProbabilityTheory.centralMoment]
+  simp only [Pi.pow_apply, Pi.sub_apply, integral_id_semicircleReal]
+  by_cases hv : v = 0
+  · subst hv; rw [semicircleReal_zero_var]; simp
+  rw [integral_semicircleReal_eq_integral_smul hv]
+  -- Center the variable: `∫ (semicirclePDF·(x-μ)^(2n+1)) = ∫ u^(2n+1)·semicirclePDF(u+μ)`.
+  have h_subst : ∫ x, semicirclePDFReal μ v x • (x - μ) ^ (2 * n + 1)
+      = ∫ u, u ^ (2 * n + 1) * semicirclePDFReal μ v (u + μ) := by
+    rw [← integral_add_right_eq_self _ μ]
+    apply integral_congr_ae
+    filter_upwards [] with u
+    rw [smul_eq_mul, add_sub_cancel_right]; ring
+  rw [h_subst]
+  -- The integrand is odd: replacing `u` by `-u` negates it, so the integral is zero.
+  have h_odd : ∫ u, u ^ (2 * n + 1) * semicirclePDFReal μ v (u + μ)
+      = ∫ u, -(u ^ (2 * n + 1) * semicirclePDFReal μ v (u + μ)) := by
+    conv_lhs => rw [← integral_neg_eq_self
+      (fun u ↦ u ^ (2 * n + 1) * semicirclePDFReal μ v (u + μ))]
+    apply integral_congr_ae
+    filter_upwards [] with u
+    rw [semicirclePDFReal, semicirclePDFReal,
+      show -u + μ - μ = -(u - (μ - μ)) by ring, show u + μ - μ = u - (μ - μ) by ring,
+      neg_sq, Odd.neg_pow ⟨n, by ring⟩]
+    ring
+  rw [integral_neg] at h_odd
+  linarith
+
+/-- The odd central moments of the identity vanish. -/
+lemma centralMoment_odd_semicircleReal (μ : ℝ) (v : ℝ≥0) (n : ℕ) :
+    ProbabilityTheory.centralMoment id ((2 * n) + 1) (semicircleReal μ v) = 0 := by
+  unfold id; apply centralMoment_fun_odd_semicircleReal
 
 end LeanPool.SemicircleLaw
