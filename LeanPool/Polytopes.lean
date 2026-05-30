@@ -5,6 +5,7 @@ Authors: Jun Kwon
 -/
 
 import LeanPool.Polytopes.MainTheorem
+import LeanPool.Polytopes.SimplexAlgorithm
 
 /-!
 # The main theorem of polytopes
