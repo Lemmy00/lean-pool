@@ -621,7 +621,7 @@ lemma hom_orthogonal_aux_uniq
         exact diagonals_hom_cospan_lift_fst l r
       _ = s.fst := comm₁
       _ = lift ≫ hom_pullback_fst l r := by
-        simpa [lift, hom_pullback_fst] using
+        convert
           ((hom_pullback_cone_isLimit l r).fac s Limits.WalkingCospan.left).symm
   have comm₂' :
       (m ≫ hom_orthogonal_aux_hom l r h) ≫ hom_pullback_snd l r =
@@ -635,7 +635,7 @@ lemma hom_orthogonal_aux_uniq
         exact diagonals_hom_cospan_lift_snd l r
       _ = s.snd := comm₂
       _ = lift ≫ hom_pullback_snd l r := by
-        simpa [lift, hom_pullback_snd] using
+        convert
           ((hom_pullback_cone_isLimit l r).fac s Limits.WalkingCospan.right).symm
   have whee : m ≫ hom_orthogonal_aux_hom l r h = (hom_pullback_cone_isLimit l r).lift s :=
     Limits.pullback.hom_ext comm₁' comm₂'
@@ -763,8 +763,11 @@ def is_hom_orthogonal_aux_implies_is_orthogonal
         _ = (diagonal_filler_to_pullback l r S d' ≫ diagonals_cone_snd l r) PUnit.unit := by rfl
     have unique := Limits.PullbackCone.IsLimit.hom_ext
       (hom_orthogonal_aux_implies_is_pullback_diagonals l r h) comm₁ comm₂
-    simpa [diagonal_filler_to_pullback] using
-      congrArg (fun f : PUnit ⟶ diagonals_cone_point l r => f PUnit.unit) unique
+    have unique' :
+        (diagonal_filler_to_pullback l r S d : PUnit ⟶ (B ⟶ X)) =
+          diagonal_filler_to_pullback l r S d' := by
+      simpa [diagonal_filler_to_pullback, diagonals_cone_point, diagonals_cone] using unique
+    exact congrArg (fun f : PUnit ⟶ (B ⟶ X) => f PUnit.unit) unique'
 
 /-- Imported FactorizationSystems declaration. -/
 noncomputable

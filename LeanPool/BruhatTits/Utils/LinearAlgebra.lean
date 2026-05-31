@@ -200,7 +200,6 @@ lemma lt_of_ne_top (p : Submodule R M) {p' : Submodule R p}
     absurd h
     rw [eq_top_iff]
     rintro x -
-    simp
     have : x.val ∈ Submodule.map p.subtype q := by
       rw [hc]
       exact x.property

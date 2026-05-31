@@ -309,7 +309,7 @@ lemma A_monotone
     Nat.succPNat_mono hnm
   have hApos : Apos H (Nat.succPNat n) ≤ Apos H (Nat.succPNat m) :=
     hH.uniformMonotone.monotone hnm'
-  simpa [A, Apos, uniformFin, uniformPNat] using hApos
+  convert hApos using 1 <;> simp [A, Apos, uniformFin, uniformPNat] <;> rfl
 
 lemma Apos_monotone
     (H : {α : Type} → [Fintype α] → ProbDist α → ℝ)

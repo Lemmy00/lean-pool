@@ -227,7 +227,9 @@ lemma z0_mem_Icc (x y : Rand) : z0 x y ∈ Set.Icc (0 : ℝ) 1 := by
     · by_cases hx_lt : (x : ℝ) ∈ Set.Iio (t2 : ℝ)
       · simp [z0, hsq, hy_lt, hx_lt, ht]
       · simp [z0, hsq, hy_lt, hx_lt, ht2]
-  · simpa only [z0, hsq] using zBase_mem_Icc x y
+  · unfold z0
+    rw [if_neg hsq]
+    exact zBase_mem_Icc x y
 
 /-- Imported auxiliary declaration for the 2-coloring one-round formalization. -/
 noncomputable def z0I (x y : Rand) : Rand :=

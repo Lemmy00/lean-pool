@@ -7301,9 +7301,7 @@ lemma markov_card_mul_le
     have hS_empty : S = ∅ := by
       have : Finset.univ.filter (fun u : (ZMod d)ˣ => 0 < f u) = ∅ :=
         filter_empty_of_avg_zero d f hf (by simp_all) R
-      convert this using 2
-      ext u
-      simp [mul_zero]
+      simpa [S, mul_zero] using this
     rw [hS_empty]
     simp
   · have hlower := sum_filter_lower_bound d f hf avg R S (fun u hu => by

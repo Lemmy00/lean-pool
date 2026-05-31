@@ -254,8 +254,12 @@ elab_rules : conv
   let some n := k.raw.isNatLit?
     | throwErrorAt k "peel_iAlls': expected a nonnegative integer literal"
   Conv.evalUnfold (← `(conv| unfold iAlls'))
+  Conv.evalSimp (← `(conv| simp only [IsEnum.size.Empty, IsEnum.size.Vars1,
+    IsEnum.size.Vars2, IsEnum.size.Vars3, Nat.add_zero, Nat.reduceAdd]))
   for _ in [:n + 1] do
     Conv.evalUnfold (← `(conv| unfold BoundedFormula.alls))
+    Conv.evalSimp (← `(conv| simp only [IsEnum.size.Empty, IsEnum.size.Vars1,
+      IsEnum.size.Vars2, IsEnum.size.Vars3, Nat.add_zero, Nat.reduceAdd]))
   for _ in [:n] do
     Conv.evalRewrite (← `(conv| rw [BoundedFormula.realize_all]))
     Conv.evalExt (← `(conv| ext))
@@ -271,8 +275,12 @@ elab_rules : conv
   let some n := k.raw.isNatLit?
     | throwErrorAt k "peel_iExs': expected a nonnegative integer literal"
   Conv.evalUnfold (← `(conv| unfold iExs'))
+  Conv.evalSimp (← `(conv| simp only [IsEnum.size.Empty, IsEnum.size.Vars1,
+    IsEnum.size.Vars2, IsEnum.size.Vars3, Nat.add_zero, Nat.reduceAdd]))
   for _ in [:n + 1] do
     Conv.evalUnfold (← `(conv| unfold BoundedFormula.exs))
+    Conv.evalSimp (← `(conv| simp only [IsEnum.size.Empty, IsEnum.size.Vars1,
+      IsEnum.size.Vars2, IsEnum.size.Vars3, Nat.add_zero, Nat.reduceAdd]))
   Conv.evalUnfold (← `(conv| unfold Formula.Realize))
   for _ in [:n] do
     Conv.evalRewrite (← `(conv| rw [BoundedFormula.realize_ex]))
@@ -402,19 +410,16 @@ by
   · cases x
     · simp only [Sum.elim_inl, Nat.add_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.castAdd_zero,
       Fin.cast_refl, Function.comp_id, Function.comp_apply, Sum.map_inl, id_eq]
-    · simp only [Sum.elim_inr, IsEnum.size.Vars1, Nat.add_zero,
-      Nat.succ_eq_add_one, Nat.reduceAdd, Fin.castAdd_zero, Fin.cast_refl, Function.comp_id,
-      Function.comp_apply, Sum.map_inr]
+    · simp only [Sum.elim_inr, Nat.add_zero, Nat.succ_eq_add_one, Nat.reduceAdd,
+      Fin.castAdd_zero, Fin.cast_refl, Function.comp_id, Function.comp_apply, Sum.map_inr]
       simp only [Fin.snoc, Nat.reduceAdd, Fin.val_eq_zero, lt_self_iff_false,
         ↓reduceDIte, Fin.reduceLast, cast_eq]
   · cases x;
-    · simp only [Sum.elim_inl, IsEnum.size.Vars1, Nat.add_zero,
-        Nat.succ_eq_add_one, Nat.reduceAdd, Fin.castAdd_zero, Fin.cast_refl, Function.comp_id,
-        Function.comp_apply, Sum.map_inl, id_eq]
-    · simp only [Sum.elim_inr, IsEnum.size.Vars1, Nat.add_zero,
-      Nat.succ_eq_add_one, Nat.reduceAdd, Fin.castAdd_zero, Fin.cast_refl, Function.comp_id,
-      Function.comp_apply, Sum.map_inr, Fin.snoc, Fin.val_eq_zero, lt_self_iff_false, ↓reduceDIte,
-      Fin.reduceLast, cast_eq]
+    · simp only [Sum.elim_inl, Nat.add_zero, Nat.succ_eq_add_one, Nat.reduceAdd,
+        Fin.castAdd_zero, Fin.cast_refl, Function.comp_id, Function.comp_apply, Sum.map_inl, id_eq]
+    · simp only [Sum.elim_inr, Nat.add_zero, Nat.succ_eq_add_one, Nat.reduceAdd,
+      Fin.castAdd_zero, Fin.cast_refl, Function.comp_id, Function.comp_apply, Sum.map_inr, Fin.snoc,
+      Fin.val_eq_zero, lt_self_iff_false, ↓reduceDIte, Fin.reduceLast, cast_eq]
 
 end realize_iExs'
 

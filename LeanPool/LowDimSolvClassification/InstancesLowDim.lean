@@ -99,16 +99,12 @@ def _root_.LieAlgebra.Dim2.Affine.equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K 
     intro a ⟨f, x⟩
     unfold Affine mkAbelian at *
     ext i
-    simp only [LinearMap.smul_apply, smul_eq_mul, RingHom.id_apply, Pi.smul_apply]
-    fin_cases i
-    · simp only [Fin.zero_eta, Matrix.cons_val_zero]
-    · simp only [Fin.mk_one, Matrix.cons_val_one, Matrix.cons_val_fin_one]
+    fin_cases i <;> rfl
   map_lie' := by
     intro ⟨f, x⟩ ⟨g, y⟩
-    simp only [trivial_lie_zero, add_zero, bracket, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
+    simp only [bracket, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
       Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
     unfold Affine ofAffineEquivAux
-    rw [LieEquiv.coe_toLieHom]
     unfold mkAbelian at *
     ext i
     fin_cases i
@@ -121,15 +117,16 @@ def _root_.LieAlgebra.Dim2.Affine.equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K 
         have : g x = x • g 1 := by rw [← map_smul]; simp
         rw [this, smul_eq_mul, mul_comm]
       rw [hf (g 1), hg (f 1)]; ring
-    · simp only [Fin.mk_one, Matrix.cons_val_one,
-      Abelian.DerivationCoeFun]
+    · simp only [Fin.mk_one, Matrix.cons_val_one]
       have hf : ∀ x : K, f x = f 1 * x := fun x => by
         have : f x = x • f 1 := by rw [← map_smul]; simp
         rw [this, smul_eq_mul, mul_comm]
       have hg : ∀ x : K, g x = g 1 * x := fun x => by
         have : g x = x • g 1 := by rw [← map_smul]; simp
         rw [this, smul_eq_mul, mul_comm]
+      change f y - g x + 0 = f 1 * y - g 1 * x
       rw [hf y, hg x]
+      simp
 
 /-- TODO. -/
 def _root_.LieAlgebra.Dim2.Affine.equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆ 𝔥𝔶𝔭 2 K:={
@@ -401,8 +398,7 @@ def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect :
       Abelian.DerivationCoeFun']
     ext
     · simp only
-    · simp only [mkAbelian]
-      ext i
+    · funext i
       fin_cases i
       · change x 1 * y 2 - y 1 * x 2 = (x 1 • ![y 2, 0] - y 1 • ![x 2, 0] + 0) 0
         simp [Matrix.smul_cons, Matrix.smul_empty, smul_eq_mul]
@@ -419,8 +415,7 @@ def _root_.LieAlgebra.Dim3.Heisenberg.equivToSemidirect :
       Matrix.cons_val_two, Matrix.tail_cons]
     ext
     · rfl
-    · simp only [mkAbelian]
-      exact List.ofFn_inj.mp rfl
+    · exact List.ofFn_inj.mp rfl
 }
 
 /-- Section boundary marker (keeps the proof-size linter happy). -/
@@ -528,8 +523,7 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect :
       Function.comp_apply, Abelian.DerivationCoeFun']
     ext
     · simp only
-    · simp only [mkAbelian]
-      ext i
+    · funext i
       fin_cases i
       · change (0:K) = (x 2 • ![0, -(-y 1)] - y 2 • ![0, -(-x 1)] + 0) 0
         simp [Matrix.smul_cons]
@@ -548,8 +542,7 @@ def _root_.LieAlgebra.Dim3.AffinePlusAbelian.equivToSemidirect :
       Matrix.tail_cons, neg_neg, Matrix.cons_val_one]
     ext
     · rfl
-    · simp only [mkAbelian]
-      exact List.ofFn_inj.mp rfl
+    · exact List.ofFn_inj.mp rfl
 }
 
 end dim3_lemmas
@@ -877,8 +870,7 @@ def _root_.LieAlgebra.Dim3.Family.equivToSemidirect :
     ext
     · simp only
       rw [mul_comm, sub_self]
-    · simp only [mkAbelian]
-      ext i
+    · funext i
       fin_cases i
       · change (x 0 * y 2 - x 2 * y 0) * α =
           (x 0 • ![α * y 2, y 1 + β * y 2] - y 0 • ![α * x 2, x 1 + β * x 2] + 0) 0
@@ -899,8 +891,7 @@ def _root_.LieAlgebra.Dim3.Family.equivToSemidirect :
       Matrix.cons_val_two, Matrix.tail_cons]
     ext
     · rfl
-    · simp only [mkAbelian]
-      exact List.ofFn_inj.mp rfl
+    · exact List.ofFn_inj.mp rfl
 }
 
 /-- TODO. -/

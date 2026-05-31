@@ -413,9 +413,9 @@ lemma nat_squarefree_dvd_pow (a b N : ℕ) (ha : Squarefree a) (hab : a ∣ b ^ 
       exact (ha.natFactorization_le_one p).trans
         ((hp.dvd_iff_one_le_factorization hb).mp hp_b)
     · rw [Nat.factorization_eq_zero_of_not_dvd hpa]
-      exact zero_le _
+      exact zero_le
   · rw [Nat.factorization_eq_zero_of_not_prime a hp]
-    exact zero_le _
+    exact zero_le
 
 theorem selbergBoundingSum_ge_sum_div (s : SelbergSieve)
     (hP : ∀ p : ℕ, p.Prime → (p : ℝ) ≤ s.level → p ∣ s.prodPrimes)
@@ -486,7 +486,7 @@ theorem selbergBoundingSum_ge_sum_div (s : SelbergSieve)
             · intro p
               have hy_mul_prod_nonneg :
                   0 ≤ ⌊s.level⌋₊ * (Nat.factorization (∏ p ∈ m.primeFactors, p)) p :=
-                zero_le _
+                zero_le
               trans (Nat.factorization m) p * 1
               · rw [mul_one]
               trans ⌊s.level⌋₊ * Nat.factorization (∏ p ∈ m.primeFactors, p) p
@@ -601,7 +601,6 @@ theorem card_range_filter_dvd (N d : ℕ) (hd : d ≠ 0) :
         (by exact_mod_cast hk.1 : (k : ℝ) < N)
         (by norm_cast; exact Nat.pos_of_ne_zero hd)
   · intro k hk
-    dsimp only
     rw [Finset.mem_filter, Finset.mem_range]
     rw [Nat.lt_ceil, lt_div_iff₀ (by norm_cast; exact Nat.pos_of_ne_zero hd : (0 : ℝ) < d),
       mul_comm] at hk

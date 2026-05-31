@@ -249,7 +249,7 @@ lemma int_birkhoffMaxDiff_in_divergentSet_tendsto (hf : MeasurePreserving f μ �
     intro x
     rw [Real.norm_eq_abs]
     exact abs_le_max_abs_abs (by simp [birkhoffMaxDiff_aux])
-      (birkhoffMaxDiff_antitone (zero_le n) _)
+      (birkhoffMaxDiff_antitone (Nat.zero_le n) _)
   · exact (ae_restrict_iff' (divergentSet_measurable hf.measurable hφ')).mpr
       (ae_of_all _ fun _ hx ↦ birkhoffMaxDiff_tendsto_of_mem_divergentSet hx)
 

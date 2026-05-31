@@ -151,7 +151,7 @@ theorem inv_sub_antitoneOn_gt {R : Type*} [Field R] [LinearOrder R] [IsStrictOrd
   refine antitoneOn_iff_forall_lt.mpr ?_
   intro a ha b hb hab
   rw [Set.mem_Ioi] at ha hb
-  gcongr; linarith
+  gcongr
 
 theorem inv_sub_antitoneOn_Icc {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     (a b c : R) (ha : c < a) :

@@ -147,7 +147,7 @@ theorem height_add_one_le_topologicalKrullDim_of_isClosed_of_ne_univ
     have h_sub : (f S : Set X) ⊆ Y :=
       closure_minimal (fun _ ⟨⟨_, hy⟩, _, rfl⟩ ↦ hy) hY
     have h_eq' : (f S : Set X) = Set.univ := by
-      simpa [T] using congrArg IrreducibleCloseds.carrier h_eq
+      simpa [T] using congrArg (fun Z : IrreducibleCloseds X => (Z : Set X)) h_eq
     rwa [h_eq', Set.univ_subset_iff] at h_sub
   have h_height_add_one : ((f S).height : WithBot ℕ∞) + 1 ≤ T.height := by
     exact_mod_cast height_add_one_le h_lt_top
@@ -235,7 +235,7 @@ private theorem topologicalKrullDim_lt_of_add_one_le_of_lt_top {X Y : Type u}
           (((ydim : ℕ∞) : WithBot ℕ∞) < (((ydim + 1 : ℕ∞) : WithBot ℕ∞))) := by
         exact_mod_cast hy_lt
       have h' : (((ydim + 1 : ℕ∞) : WithBot ℕ∞) ≤ ((xdim : ℕ∞) : WithBot ℕ∞)) := by
-        simpa using h
+        simpa [WithBot.some_eq_coe] using h
       exact lt_of_lt_of_le hy_lt' h'
 
 /-- On an irreducible space, a proper closed subset with finite Krull dimension has
@@ -266,7 +266,7 @@ theorem topologicalKrullDim_pos_iff_exists_irreducibleCloseds_ne_univ {X : Type 
   · rintro ⟨Z, hZ_ne_univ⟩
     have hZ_lt : Z < T := by
       refine lt_of_le_of_ne (Set.subset_univ _) fun hZT ↦ hZ_ne_univ ?_
-      simpa [T] using congrArg IrreducibleCloseds.carrier hZT
+      simpa [T] using congrArg (fun Z : IrreducibleCloseds X => (Z : Set X)) hZT
     simpa [topologicalKrullDim, gt_iff_lt] using (Order.krullDim_pos_iff.mpr ⟨Z, T, hZ_lt⟩)
 
 /-- On an irreducible space of positive finite Krull dimension, one can choose a proper

@@ -5,7 +5,7 @@ Authors: YnirPaz
 -/
 
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 import Mathlib.Order.SuccPred.Limit
 
 /-!
@@ -109,7 +109,7 @@ def boundedLimitRec' {l : Ordinal} (lLim : IsSuccLimit l) {motive : Iio l → So
   obtain ⟨o, ho⟩ := o
   induction o using limitRecOn with
   | zero => exact zero
-  | succ o IH =>
+  | add_one o IH =>
     have ho' : o < l := (lt_succ o).trans ho
     exact succAux ⟨o, ho'⟩ (IH ho')
   | limit o ho' IH => exact limit ⟨o, ho⟩ ho' fun a ha ↦ IH a.1 ha (ha.trans (c := l) ho)

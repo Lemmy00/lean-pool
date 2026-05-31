@@ -439,7 +439,8 @@ private lemma tendsto_tailKernel_mul_mertensTail_zero {m y : ℕ} (hm : 1 ≤ m)
   have h₂ :
       Tendsto (fun n : ℕ => tailKernel m n * (Real.log (n : ℝ) - Real.log (y : ℝ)))
         atTop (𝓝 0) := by
-    simpa using (tendsto_tailKernel_mul_log_sub_log_zero_aux hm hy).comp tendsto_natCast_atTop_atTop
+    simpa [Function.comp_def] using
+      (tendsto_tailKernel_mul_log_sub_log_zero_aux hm hy).comp tendsto_natCast_atTop_atTop
   have h₃ : Tendsto (fun n : ℕ => tailKernel m n * (Real.log (y : ℝ) - mertensPartialSum (y - 1)))
       atTop (𝓝 0) := by
     simpa [mul_comm] using (tendsto_tailKernel_nat_zero hm).const_mul
@@ -525,6 +526,7 @@ private lemma integrableOn_Ioi_deriv_tailKernel_mul_log_sub_log {m y : ℕ}
     rw [deriv_tailKernel hmt]
   have hmajor :
       IntegrableOn (fun t : ℝ => 2 / (t * Real.log ((m : ℝ) * t) ^ 2)) (Set.Ioi (y : ℝ)) := by
+    rw [IntegrableOn]
     simpa [two_mul, div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using
       (integrableOn_Ioi_inv_log_sq hm_pos hmy).const_mul (2 : ℝ)
   have hmeas :
@@ -718,6 +720,7 @@ lemma tailEstimate :
       IntegrableOn
         (fun t : ℝ => (2 * (C₀ + Real.log 2)) * (2 / (t * Real.log ((m : ℝ) * t) ^ 3)))
         (Set.Ioi (y : ℝ)) := by
+    rw [IntegrableOn]
     simpa [mul_assoc, mul_left_comm, mul_comm] using
       (integrableOn_Ioi_two_inv_log_cube hm_pos hmy).const_mul (2 * (C₀ + Real.log 2))
   have hderivE_dom :
@@ -761,7 +764,12 @@ lemma tailEstimate :
     rw [IntegrableOn] at hmajor ⊢
     exact Integrable.mono' hmajor hmeas hderivE_bound
   have hA_int : IntegrableOn A (Set.Ioi (y : ℝ)) := by
-    simpa [hAeq] using hmain_int.add herr_int
+    rw [IntegrableOn, hAeq]
+    change Integrable
+      ((fun t : ℝ => deriv (tailKernel m) t * (Real.log t - Real.log (y : ℝ))) +
+        fun t : ℝ => deriv (tailKernel m) t * E t) _
+    rw [IntegrableOn] at hmain_int herr_int
+    exact hmain_int.add herr_int
   have hpartial :
       Tendsto partialS atTop (𝓝 (-∫ t in Set.Ioi (y : ℝ), A t)) := by
     refine Tendsto.congr' ?_ (by

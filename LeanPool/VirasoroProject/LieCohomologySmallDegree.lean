@@ -387,9 +387,9 @@ lemma _root_.VirasoroProject.LieTwoCocycle.cohomologyClass_add_bdry
 lemma _root_.VirasoroProject.LieTwoCocycle.exists_eq_bdry
     (γ : LieTwoCocycle 𝕜 𝓰 𝓪) (hγ : γ.cohomologyClass = 0) :
     ∃ β : LieOneCochain 𝕜 𝓰 𝓪, γ = β.bdry := by
-  simp_rw [@Eq.comm (LieTwoCocycle 𝕜 𝓰 𝓪) γ _]
-  simpa using (Submodule.Quotient.eq _).mp <|
-    show γ.cohomologyClass = LieTwoCocycle.cohomologyClass 0 by rw [hγ]; rfl
+  rw [LieTwoCocycle.cohomologyClass, LieTwoCocycle.toLieTwoCohomology] at hγ
+  obtain ⟨β, hβ⟩ := LinearMap.mem_range.mp ((Submodule.Quotient.mk_eq_zero _).mp hγ)
+  exact ⟨β, hβ.symm⟩
 
 end LieTwoCocycle -- namespace
 
@@ -405,7 +405,7 @@ variable {𝕜 𝓰 𝓪}
 lemma _root_.VirasoroProject.LieOneCochain.bdry_apply_eq_zero_of_isLieAbelian
     (β : LieOneCochain 𝕜 𝓰 𝓪) (X Y : 𝓰) :
     β.bdry X Y = 0 := by
-  simp [LieOneCochain.bdry_apply]
+  simpa [LieOneCochain.bdry_apply] using congrArg β (trivial_lie_zero 𝓰 𝓰 X Y)
 
 variable (𝕜 𝓰 𝓪)
 

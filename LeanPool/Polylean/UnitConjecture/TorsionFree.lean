@@ -80,16 +80,19 @@ open P
 theorem sq_square : ∀ g : P, g * g = (P.sq g, .e)
   | ((p, q, r), .e) => by
       refine (P.mul (p, q, r) (p, q, r) Q.e Q.e).trans ?_
-      simp [P.sq, Q.e, action, cocycle]
+      simp [P.sq, Q.e, K.x, K.y, K.z, action, cocycle] <;> ring_nf
   | ((p, q, r), .a) => by
       refine (P.mul (p, q, r) (p, q, r) Q.a Q.a).trans ?_
-      simp [P.sq, Q.e, Q.a, action, cocycle]
+      rw [show cocycle Q.a Q.a = K.x by rfl]
+      simp [P.sq, Q.e, Q.a, K.x, action] <;> ring_nf
   | ((p, q, r), .b) => by
       refine (P.mul (p, q, r) (p, q, r) Q.b Q.b).trans ?_
-      simp [P.sq, Q.e, Q.b, action, cocycle]
+      rw [show cocycle Q.b Q.b = K.y by rfl]
+      simp [P.sq, Q.e, Q.b, K.y, action] <;> ring_nf
   | ((p, q, r), .c) => by
       refine (P.mul (p, q, r) (p, q, r) Q.c Q.c).trans ?_
-      simp [P.sq, Q.e, Q.c, action, cocycle]
+      rw [show cocycle Q.c Q.c = K.z by rfl]
+      simp [P.sq, Q.e, Q.c, K.z, action] <;> ring_nf
 
 /-! ### **Step 2:** Proving that `K` (= `ℤ³`) is torsion-free. -/
 

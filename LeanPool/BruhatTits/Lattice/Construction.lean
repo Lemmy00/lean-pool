@@ -788,7 +788,7 @@ lemma IsLattice.of_le_of_isLattice_right [IsDiscreteValuationRing R] (L : Submod
   rw [maximalIdeal_smul_eq_uniformizer_smul _ hϖ] at h₂
   have hϖ' : ϖ.val ≠ 0 := by simpa using hϖ.ne_zero
   replace h₂ : Units.mk0 ϖ.val hϖ' • L ≤ M := by
-    simpa [Subring.smul_def, Units.smul_def] using h₂
+    exact h₂
   apply IsLattice.of_le_of_isLattice h₂ h₁
 
 end

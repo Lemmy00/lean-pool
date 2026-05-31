@@ -341,7 +341,7 @@ noncomputable def Λ_n (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
       circleMap 0 1 t, circleMap_mem_unit_circle t⟩ * u_n p r n (circleMap 0 1 t)| ≤
         ∫ t in (0 : ℝ)..2 * π, |f ⟨circleMap 0 1 t, circleMap_mem_unit_circle t⟩ *
           u_n p r n (circleMap 0 1 t)| := by
-      simpa only [intervalIntegral.integral_of_le Real.two_pi_pos.le] using
+      simpa only [intervalIntegral.integral_of_le Real.two_pi_pos.le, Real.norm_eq_abs] using
         norm_integral_le_integral_norm (_ : ℝ → ℝ)
     refine le_trans h_integral_bound (
       intervalIntegral.integral_mono_on ?_ ?_ ?_ ?_)
@@ -643,7 +643,7 @@ lemma norm_lambda_leq_one (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
         norm_num [← abs_mul]
         rw [abs_mul, abs_of_nonneg (by positivity)]
         gcongr
-        simpa only [intervalIntegral.integral_of_le Real.two_pi_pos.le] using
+        simpa only [intervalIntegral.integral_of_le Real.two_pi_pos.le, Real.norm_eq_abs] using
           norm_integral_le_integral_norm (_ : ℝ → ℝ)
       refine le_trans h_abs (mul_le_mul_of_nonneg_left (
         intervalIntegral.integral_mono_on ?_ ?_ ?_ ?_) (by positivity))
@@ -682,7 +682,7 @@ lemma Λ_seq_mem_K (p : ℂ → ℂ) (r : ℕ → ℝ) (n : ℕ)
     (hp_map : MapsTo p (ball (0 : ℂ) 1) {w : ℂ | 0 < w.re})
     (hr : ∀ k, r k ∈ Ioo 0 1) :
     Λ_seq p r hp_analytic hr n ∈ K_weak := by
-  exact fun f hf => by simpa using norm_lambda_leq_one p r n hp_analytic hp0 hp_map (hr n) f hf
+  exact fun f hf => by simpa [Λ_seq] using norm_lambda_leq_one p r n hp_analytic hp0 hp_map (hr n) f hf
 
 /-- There exists a subsequence Λ_{n_k} converging to some Λ in the weak* topology. -/
 lemma Λ_seq_converging_subsequence (p : ℂ → ℂ) (r : ℕ → ℝ)
@@ -812,7 +812,8 @@ lemma convergence_sub_seq_functionals (p : ℂ → ℂ) (r : ℕ → ℝ)
     exact ⟨by simpa using h⟩
   use ⟨μ, h_prob⟩
   use phi
-  exact ⟨hphi, fun f hf => by simpa only [hμ.2] using hΛ f⟩
+  exact ⟨hphi, fun f hf => by
+    simpa only [hμ.2, ProbabilityMeasure.coe_mk] using hΛ f⟩
 
 /-- The value of `u` at `z` is equal to the real part of the integral
 of the Herglotz–Riesz kernel against the measure `μ`, under hypothesis of
@@ -1135,10 +1136,8 @@ theorem HerglotzRiesz_representation_harmonic
                 rw [norm_div]
                 have hx : ‖(x : ℂ)‖ = 1 := by exact mem_sphere_zero_iff_norm.mp x.2
                 gcongr
-                · exact sub_pos_of_lt (by simpa using hz')
-                · exact le_trans (norm_add_le _ _) (by linarith[hz', hx])
-                · have := norm_sub_norm_le (x : ℂ) z
-                  exact le_trans (sub_le_sub_right (show ‖ (x : ℂ)‖ ≥ 1 from by simp) _) this
+                · exact le_trans (norm_add_le _ _) (by linarith [hz', hx])
+                · simpa [hx] using norm_sub_norm_le (x : ℂ) z
             exact (integral_re h_integrable) ▸ rfl
           rw [hg_real_part']
           refine integral_congr_ae ?_

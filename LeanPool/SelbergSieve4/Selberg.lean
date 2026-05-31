@@ -436,8 +436,7 @@ theorem selberg_bound_muPlus (n : ℕ) (hn : n ∈ divisors P) :
         (s.selberg_bound_weights d2)
     · rw [if_neg h, if_neg h]
   · rw [← Finset.sum_product']
-  · dsimp only []
-    rw [← sum_filter, Finset.sum_const, nsmul_one]
+  · rw [← sum_filter, Finset.sum_const, nsmul_one]
   · rw [← Nat.card_pair_lcm_eq (s.squarefree_of_mem_divisors_prodPrimes hn)]
     congr; ext; rw[eq_comm]
   norm_num

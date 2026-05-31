@@ -120,7 +120,7 @@ theorem _root_.zeroOutside_openHom_stalk_surj
       ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{u} x).map
         (TopCat.Presheaf.zeroOutside_openHom (F := F) h))) := by
   intro g
-  obtain ⟨W, hxW, s, rfl⟩ := (F.zeroOutside U).germ_exist x g
+  obtain ⟨W, hxW, s, rfl⟩ := (F.zeroOutside U).exists_germ_eq g
   set WV := W ⊓ V
   have hWV_le_V : WV ≤ V := inf_le_right
   have hWV_le_W : WV ≤ W := inf_le_left
@@ -262,6 +262,11 @@ theorem resGen_eqToHom_eq_one
   have hmap : (constZ.zeroOutside V).map (homOfLE hWV).op =
       eqToHom (by simp [TopCat.Presheaf.zeroOutside, constZ, hWV]) := by
     simp [TopCat.Presheaf.zeroOutside, hWV, constZ]
+    change eqToHom _ ≫ eqToHom
+        (rfl : AddCommGrpCat.of (ULift ℤ) = AddCommGrpCat.of (ULift ℤ)) ≫
+      eqToHom _ = eqToHom _
+    rw [eqToHom_trans_assoc]
+    simp [eqToHom_trans]
   rw [hmap]
   simp [← ConcreteCategory.comp_apply, eqToHom_trans]
 
@@ -273,7 +278,7 @@ theorem presheaf_stalk_zeroOutside_eq_zsmul_generator
       (constZ.zeroOutside V)) :
     ∃ n : ℤ,
       a = n • ((constZ.zeroOutside V).germ V x hx (generator V)) := by
-  obtain ⟨W, hxW, s, rfl⟩ := (constZ.zeroOutside V).germ_exist x a
+  obtain ⟨W, hxW, s, rfl⟩ := (constZ.zeroOutside V).exists_germ_eq a
   by_cases hWV : W ≤ V
   · have hObjW : (TopCat.Presheaf.zeroOutside V constZ).obj (op W) =
         AddCommGrpCat.of (ULift ℤ) := by
@@ -416,7 +421,7 @@ theorem _root_.stalk_zeroOutsideInt_zero_outside
   let T := TopCat.Presheaf.stalkFunctor AddCommGrpCat.{u} x
   haveI : IsIso (T.map (toSheafify J P)) := stalkFunctor_map_iso_toSheafify P x
   obtain ⟨q, rfl⟩ := (ConcreteCategory.bijective_of_isIso (T.map (toSheafify J P))).2 a
-  obtain ⟨W, hxW, s, rfl⟩ := P.germ_exist x q
+  obtain ⟨W, hxW, s, rfl⟩ := P.exists_germ_eq q
   haveI := AddCommGrpCat.subsingleton_of_isZero
     (TopCat.Presheaf.zeroOutside_isZero (F := TopCat.Presheaf.constZ) (fun h ↦ hx (h hxW)))
   rw [show s = 0 from Subsingleton.eq_zero s, map_zero]
@@ -487,7 +492,8 @@ theorem _root_.zsmul_generator_injective
           = n • (AddCommGrpCat.Hom.hom (T.map (toSheafify J P))) (P.germ V x hx gen_P) :=
             map_zsmul (AddCommGrpCat.Hom.hom (T.map (toSheafify J P))) n _
       _ = m • (AddCommGrpCat.Hom.hom (T.map (toSheafify J P))) (P.germ V x hx gen_P) := by
-            simpa [hgen_eq] using h
+            rw [hgen_eq]
+            exact h
       _ = (AddCommGrpCat.Hom.hom (T.map (toSheafify J P))) (m • P.germ V x hx gen_P) :=
             (map_zsmul (AddCommGrpCat.Hom.hom (T.map (toSheafify J P))) m _).symm
   obtain ⟨W, hxW, iU, iV, hEq⟩ := P.germ_eq x hx hx _ _ h'

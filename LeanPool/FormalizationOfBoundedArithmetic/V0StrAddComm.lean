@@ -63,6 +63,7 @@ theorem str_add_comm : ∀ {X Y : str}, X + Y = Y + X := by
   rw [mem_add_iff_xor (X := Y) (Y := X) (i := i)]
   rw [carry_comm (X := X) (Y := Y) (i := i)]
   unfold Xor'
+  unfold Xor
   tauto
 
 /-- Named alias emphasizing that this theorem is conditional on the strengthened V0 extension. -/

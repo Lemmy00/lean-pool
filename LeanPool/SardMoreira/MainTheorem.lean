@@ -451,7 +451,7 @@ theorem hausdorffMeasure_image_piProd_fst_null_of_isBigO_isLittleO
   set g := Pi.prod Prod.fst f
   set d := sardMoreiraBound n k α (dim E)
   have hgf (x y) : dist (g x) (g y) = max (‖x.1 - y.1‖) (‖f x - f y‖) := by
-    simp [g, dist_eq_norm_sub]
+    simp [g, Pi.prod, dist_eq_norm_sub]
   wlog H : ∃ cE : ℝ≥0, cE ≠ 0 ∧ ∀ x ∈ s,
     ∀ᶠ y in 𝓝 (x, x), y.1.2 = y.2.2 → dist (g y.1) (g y.2) ≤ cE * dist y.1 y.2 generalizing s
   · set t : ℕ → Set (E × F) := fun N ↦
@@ -530,7 +530,7 @@ theorem hausdorffMeasure_image_piProd_fst_null_of_fderiv_comp_inr_zero
   intro ψ hψ
   set g := Pi.prod Prod.fst (f ∘ ψ)
   suffices μH[sardMoreiraBound (dim E + dim F) (k + 1) α (dim E)] (g '' ψ.set) = 0 by
-    simpa [g] using this
+    simpa [g, Pi.prod] using this
   apply hausdorffMeasure_image_piProd_fst_null_of_isBigO_isLittleO
   · simp
   · simp [Module.finrank_pos]
@@ -571,7 +571,10 @@ theorem hausdorffMeasure_image_piProd_fst_null_of_finrank_eq
     subst f'
     rfl
   unfold Pi.prod
-  rw [DifferentiableAt.fderiv_prodMk (by fun_prop), fderiv_fst]
+  rw [DifferentiableAt.fderiv_prodMk (by fun_prop)]
+  change (fderiv ℝ Prod.fst x).prod (fderiv ℝ f x) =
+    (ContinuousLinearMap.fst ℝ E F).prod (fderiv ℝ f x)
+  rw [fderiv_fst]
   exact hf _ hx |>.differentiableAt hk
 
 theorem hausdorffMeasure_image_nhdsWithin_null_of_finrank_eq
@@ -602,8 +605,17 @@ theorem hausdorffMeasure_image_nhdsWithin_null_of_finrank_eq
         Nat.add_sub_cancel_left]
     · exact hs a ha
     · simp [eDom]
-    · simpa using hdf.implicitFunctionDataOfComplementedKerRange _ _ hker hrange
-        |>.isInvertible_fderiv_prodFun
+    · letI : CompleteSpace (fderiv ℝ f a).range := hrange.isClosed.completeSpace_coe
+      let φ := hdf.implicitFunctionDataOfComplementedKerRange f (fderiv ℝ f a) hker hrange
+      have hprod : (↑eDom : E → (fderiv ℝ f a).range × (fderiv ℝ f a).ker) = φ.prodFun := by
+        rw [hdf.coe_implicitToOpenPartialHomeomorphOfComplementedKerRange hker hrange]
+        funext x
+        rw [ImplicitFunctionData.prodFun_apply]
+        simp [φ, HasStrictFDerivAt.implicitFunctionDataOfComplementedKerRange,
+          HasStrictFDerivAt.implicitFunctionDataOfComplemented]
+      rw [hprod]
+      simpa [φ, HasStrictFDerivAt.implicitFunctionDataOfComplementedKerRange_pt] using
+        φ.isInvertible_fderiv_prodFun
     · intro x hx
       rw [hdf.coe_implicitToOpenPartialHomeomorphOfComplementedKerRange hker hrange]
       exact .prodMk (.comp (ContinuousLinearMap.contDiffMoreiraHolderAt _) (hf x hx) hk)
@@ -622,7 +634,7 @@ theorem hausdorffMeasure_image_nhdsWithin_null_of_finrank_eq
     · exact eDom.contDiffMoreiraHolderAt_symm hx.1 hx.2.2 (hcdmh _ hx.2.1)
   have hg_eqOn : eDom.target.EqOn (Pi.prod Prod.fst g) (eCod ∘ f ∘ eDom.symm) := by
     intro x hx
-    ext <;> simp [← hfst, hx, g]
+    ext <;> simp [Pi.prod, ← hfst, hx, g]
   have hgdim : ∀ x ∈ t, (fderiv ℝ (Pi.prod Prod.fst g) x).finrank = dim Range := by
     intro x hx
     have hd : DifferentiableAt ℝ eDom.symm x :=

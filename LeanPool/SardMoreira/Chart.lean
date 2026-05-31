@@ -88,9 +88,9 @@ def chartImplicitData (f : E × F → ℝ) (a : E × F)
     · rw [Submodule.disjoint_def]
       rintro ⟨x, y⟩ hker hmap
       have hx : x = 0 := by
-        simpa [ContinuousLinearMap.coe_prodMap] using congrArg Prod.fst hmap
+        exact congrArg Prod.fst hmap
       have hy : H.choose y = 0 := by
-        simpa [ContinuousLinearMap.coe_prodMap] using congrArg Prod.snd hmap
+        exact congrArg Prod.snd hmap
       refine Prod.ext hx ?_
       lift y to (fderiv ℝ f a ∘L .inr ℝ E F).ker using by simpa [hx] using hker
       have hy' : (y : F) = 0 := by
@@ -115,7 +115,7 @@ def chartImplicitData (f : E × F → ℝ) (a : E × F)
       · rwa [← zero_add x, ← Prod.mk_add_mk, LinearMap.mem_ker, map_add,
           ContinuousLinearMap.coe_coe, hz, add_zero]
       · have ht0 : H.choose t = 0 := by
-          simpa [LinearMap.mem_ker] using ht
+          exact ht
         change (0, H.choose t) = (0 : E × (fderiv ℝ f a ∘L .inr ℝ E F).ker)
         exact Prod.ext rfl ht0
       · rw [Prod.mk_add_mk, add_zero, add_right_comm w z t, hsub, sub_add_cancel]
@@ -176,7 +176,7 @@ theorem fderiv_implicitFunction_chartImplicitData_comp_inr {f : E × F → ℝ} 
       .inr ℝ E F ∘L Submodule.subtypeL _ := by
   ext1 x
   have := fderiv_implicitFunction_chartImplicitData_apply_mk_zero hfa hk hdf x
-  simpa [ContinuousLinearMap.comp_apply] using this
+  exact this
 
 theorem fst_implicitFunction_chartImplicitData_eventuallyEq {f : E × F → ℝ} {a : E × F}
     (hfa : ContDiffMoreiraHolderAt k α f a) (hk : k ≠ 0) (hdf : fderiv ℝ f a ∘L .inr ℝ E F ≠ 0) :
@@ -320,6 +320,7 @@ theorem exists_dim_lt_map_nhdsWithin_eq (hs : ¬IsLargeAt k α s a)
     · simpa [ψ] using ψ.implicitFunction_apply_image.self_of_nhds.symm
   have Hmem_target : ∀ᶠ x in 𝓝 (ψ.rightFun a), (0, x) ∈ ψ.toOpenPartialHomeomorph.target := by
     refine (ψ.toOpenPartialHomeomorph.open_target.preimage (by fun_prop)).eventually_mem ?_
+    change (0, ψ.rightFun a) ∈ ψ.toOpenPartialHomeomorph.target
     simpa [ψ, hfa₀] using ψ.map_pt_mem_toOpenPartialHomeomorph_target
   have Hfst : ∀ᶠ x in 𝓝 (ψ.rightFun a), (g x).fst = x.fst := by
     simpa [g, ψ, EventuallyEq, hfa₀]
@@ -369,7 +370,7 @@ theorem exists_dim_lt_map_nhdsWithin_eq (hs : ¬IsLargeAt k α s a)
     apply Injective.comp
     · exact (hUinv _ hxU).inverse.injective
     · intro x y hxy
-      simpa using congrArg Prod.snd hxy
+      exact congrArg Prod.snd hxy
   · exact Submodule.finrank_le _
   · rintro x ⟨hxU, hgx⟩
     simpa only [← hU_fst x hxU]

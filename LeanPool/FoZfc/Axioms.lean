@@ -574,7 +574,7 @@ theorem int_ordered_pair_inj [ModelPairing V] (s : ℕ → V) (xs : Fin 0 → V)
     ⟹ bv 5 0 =' bv 5 2 ∧' bv 5 1 =' bv 5 3)).Realize s xs := by
   suffices h : ∀ a₁ a₂ a₃ a₄ a₅ : V,
       ExtIsOrderedPair a₁ a₂ a₅ → ExtIsOrderedPair a₃ a₄ a₅ → a₁ = a₃ ∧ a₂ = a₄ by
-    simpa [realize_liftAt'] using h
+    simpa [realize_liftAt', fixedSnoc] using h
   intro a₁ a₂ a₃ a₄ a₅
   apply ext_ordered_pair_inj
 
@@ -593,7 +593,7 @@ theorem int_singleton_of_emptyset [ModelEP V] (s : ℕ → V) (xs : Fin 0 → V)
     (∀'(intIsEmptyset.liftAndReplaceFV 1 0 ![bv 1 0]
     ⟹∃'(intIsSingleton.liftAndReplaceFV 2 0 ![bv 2 0, bv 2 1]))).Realize s xs := by
   suffices h : ∀ e : V, ExtIsEmptyset e → ∃ a : V, ExtIsSingleton e a by
-    simpa [realize_liftAt'] using h
+    simpa [realize_liftAt', fixedSnoc] using h
   intro e he
   obtain ⟨a, ha⟩ := ext_singleton_of_emptyset e he
   use a
@@ -883,7 +883,7 @@ class ModelEPUPI (V : Type u) extends ModelEPUP V, ModelInfinity V
 theorem ext_infinity_exists [ModelEPUPI V] : ∃ (x : V), ExtIsInductive x := by
   obtain ⟨x, h_x⟩ := realize_ex.mp
     (ModelInfinity.infinity_exists (default : ℕ → V) (default : Fin 0 → V))
-  exact ⟨x, by simpa using h_x⟩
+  exact ⟨x, by simpa [fixedSnoc] using h_x⟩
 
 /-- Make a formula for the Regularity Axiom. -/
 def intRegularity {n : ℕ} : LZFC.BoundedFormula ℕ n :=

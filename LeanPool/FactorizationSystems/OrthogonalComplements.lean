@@ -60,18 +60,33 @@ def cone_source_triv_cone_arrow {J : Type u} [Category.{v} J] (f : J ⥤ Arrow C
     pt := Arrow.mk (𝟙 s.pt)
     π := {
       app := fun i =>
-        Arrow.homMk (s.π.app i) (s.π.app i ≫ (f.obj i).hom) (by aesop_cat)
+        Arrow.homMk (s.π.app i) (s.π.app i ≫ (f.obj i).hom) (by
+          change s.π.app i ≫ (f.obj i).hom = 𝟙 s.pt ≫ s.π.app i ≫ (f.obj i).hom
+          rw [Category.id_comp]
+          rfl)
       naturality := fun i j α => by
         have naturality' := s.π.naturality α
         ext
         · aesop_cat
-        · aesop_cat}
+        · convert (congrArg (fun h => h ≫ (f.obj j).hom) naturality') using 1
+          · rw [Arrow.comp_right]
+            convert Category.id_comp (s.π.app j ≫ (f.obj j).hom) using 1
+            convert congrArg (fun h => h ≫ (f.obj j).hom) (Category.id_comp (s.π.app j)) using 1
+          · rw [Arrow.comp_right]
+            convert congrArg (fun h => s.π.app i ≫ h) (f.map α).w.symm using 1
+            · simp only [Arrow.homMk_right]
+              rw [Category.assoc]
+              rfl
+            · simp only [Functor.comp_map, leftFunc_map]
+              exact Category.assoc (s.π.app i) (f.map α).left (f.obj j).hom}
         }
 
 /-- Imported FactorizationSystems declaration. -/
 @[reducible]
 def map_triv_map_arrow_source (f : Arrow C) (X : C) (m : X ⟶ f.left) : Arrow.mk (𝟙 X) ⟶ f := by
-  exact Arrow.homMk m (m ≫ f.hom) (by aesop_cat)
+  exact Arrow.homMk m (m ≫ f.hom) (by
+    change m ≫ f.hom = 𝟙 X ≫ m ≫ f.hom
+    simp)
 
 /- The domain functor dom : [I,C] ⥤ C preserves limits -/
 /-- Imported FactorizationSystems declaration. -/
@@ -93,9 +108,22 @@ def source_limit_cone_arrow_limit_cone {J : Type u} [Category.{v} J] (f : J ⥤ 
           fun j => by
             ext
             · aesop_cat
-            · simpa [m_triv, map_triv_map_arrow_source, source_cone_arrow_cone,
-                cone_source_triv_cone_arrow] using
-                congrArg (fun h => h ≫ (f.obj j).hom) (p j)
+            · have hcomm :
+                  (m ≫ Cf.cone.pt.hom) ≫ (Cf.cone.π.app j).right =
+                    (m ≫ (Cf.cone.π.app j).left) ≫ (f.obj j).hom := by
+                calc
+                  (m ≫ Cf.cone.pt.hom) ≫ (Cf.cone.π.app j).right =
+                      m ≫ (Cf.cone.pt.hom ≫ (Cf.cone.π.app j).right) := by
+                    rw [Category.assoc]
+                  _ = m ≫ ((Cf.cone.π.app j).left ≫ (f.obj j).hom) := by
+                    exact congrArg (fun h => m ≫ h) (Cf.cone.π.app j).w.symm
+                  _ = (m ≫ (Cf.cone.π.app j).left) ≫ (f.obj j).hom := by
+                    rw [← Category.assoc]
+              have hp :
+                  (m ≫ (Cf.cone.π.app j).left) ≫ (f.obj j).hom =
+                    s.π.app j ≫ (f.obj j).hom := by
+                exact congrArg (fun h => h ≫ (f.obj j).hom) (p j)
+              convert hcomm.trans hp using 1
         have uniq' := Cf.isLimit.uniq (cone_source_triv_cone_arrow f s) m_triv p'
         calc
           m = m_triv.left := by rfl
@@ -166,7 +194,7 @@ def target_limit_cone_arrow_limit_cone {J : Type u} [Category.{v} J]
         let p' : ∀ (j : J), Cf.cone.pt.map_triv_map_arrow_target s.pt m ≫ Cf.cone.π.app j =
           (cone_target_triv_cone_arrow f s).π.app j := fun j => by
             ext
-            · aesop_cat
+            · apply Limits.initial.hom_ext
             · aesop_cat
         have uniq' := Cf.isLimit.uniq (cone_target_triv_cone_arrow f s)
             (map_triv_map_arrow_target Cf.cone.pt s.pt m) p'
@@ -210,7 +238,15 @@ def square_completion_is_closed_under_limits_r_ort_complement
       m ≫ sq_lim.bot ≫ (s.cone.π.app i).right = (m ≫ sq_lim.bot) ≫ (s.cone.π.app i).right
         := by simp
     _ =  (sq_lim.top ≫ s.cone.pt.hom) ≫ (s.cone.π.app i).right := by rw [sq_lim.comm]
-    _ = (sq_lim.top ≫ (s.cone.π.app i).left) ≫ (f.obj i).hom := by aesop_cat
+    _ = (sq_lim.top ≫ (s.cone.π.app i).left) ≫ (f.obj i).hom := by
+      calc
+        (sq_lim.top ≫ s.cone.pt.hom) ≫ (s.cone.π.app i).right =
+            sq_lim.top ≫ (s.cone.pt.hom ≫ (s.cone.π.app i).right) := by
+          rw [Category.assoc]
+        _ = sq_lim.top ≫ ((s.cone.π.app i).left ≫ (f.obj i).hom) := by
+          exact congrArg (fun h => sq_lim.top ≫ h) (s.cone.π.app i).w.symm
+        _ = (sq_lim.top ≫ (s.cone.π.app i).left) ≫ (f.obj i).hom := by
+          rw [← Category.assoc]
   }
 
 /- Given a square (*) as above, we construct a cone over (U ∘ f) with apex B. -/
@@ -232,8 +268,7 @@ def cone_limit_is_closed_under_limits_r_ort_complement (W : MorphismProperty C) 
         let sq_i := square_completion_is_closed_under_limits_r_ort_complement f s m sq_lim i
         let m_ort_fj : orthogonal m (f.obj j).hom := hom_orthogonal_implies_orthogonal ((p j) m Wm)
         let sq_j := square_completion_is_closed_under_limits_r_ort_complement f s m sq_lim j
-        simp only [Functor.const_obj_obj, Functor.comp_obj, leftFunc_obj, Functor.const_obj_map,
-          Category.id_comp, Functor.comp_map, leftFunc_map]
+        simp only [Functor.comp_map, leftFunc_map]
         let d : diagonal_filler sq_j := {
           map := (m_ort_fj.diagonal sq_j).map
           comm_top := (m_ort_fj.diagonal sq_j).comm_top
@@ -248,7 +283,12 @@ def cone_limit_is_closed_under_limits_r_ort_complement (W : MorphismProperty C) 
             _ = sq_lim.top ≫ ((s.cone.π.app i).left ≫ (f.map α).left) := by simp
             _ = sq_lim.top ≫ (s.cone.π.app j).left := by
               have naturality := s.cone.π.naturality α
-              have naturality' : s.cone.π.app i ≫ f.map α = s.cone.π.app j := by aesop_cat
+              have naturality' : s.cone.π.app i ≫ f.map α = s.cone.π.app j := by
+                have hid :
+                    ((Functor.const J).obj s.cone.pt).map α ≫ s.cone.π.app j =
+                      s.cone.π.app j := by
+                  convert Category.id_comp (s.cone.π.app j) using 1
+                exact naturality.symm.trans hid
               calc
                 sq_lim.top ≫ (leftFunc.map (s.cone.π.app i) ≫ leftFunc.map (f.map α)) =
                   sq_lim.top ≫ leftFunc.map (s.cone.π.app i ≫ f.map α) := by
@@ -266,7 +306,12 @@ def cone_limit_is_closed_under_limits_r_ort_complement (W : MorphismProperty C) 
             _ = sq_lim.bot ≫ ((s.cone.π.app i).right ≫ (f.map α).right) := by simp
             _ = sq_lim.bot ≫ (s.cone.π.app j).right := by
               have naturality := s.cone.π.naturality α
-              have naturality' : s.cone.π.app i ≫ f.map α = s.cone.π.app j := by aesop_cat
+              have naturality' : s.cone.π.app i ≫ f.map α = s.cone.π.app j := by
+                have hid :
+                    ((Functor.const J).obj s.cone.pt).map α ≫ s.cone.π.app j =
+                      s.cone.π.app j := by
+                  convert Category.id_comp (s.cone.π.app j) using 1
+                exact naturality.symm.trans hid
               calc
                 sq_lim.bot ≫ (rightFunc.map (s.cone.π.app i) ≫ rightFunc.map (f.map α)) =
                   sq_lim.bot ≫ rightFunc.map (s.cone.π.app i ≫ f.map α) := by
@@ -276,7 +321,11 @@ def cone_limit_is_closed_under_limits_r_ort_complement (W : MorphismProperty C) 
                   exact congrArg (fun h : s.cone.pt ⟶ f.obj j => sq_lim.bot ≫ rightFunc.map h)
                     naturality'
             _ = sq_j.bot := by rfl}
-        apply (m_ort_fj.diagonal_unique sq_j) d d'}
+        have hunique : d.map = d'.map := (m_ort_fj.diagonal_unique sq_j) d d'
+        calc
+          ((Functor.const J).obj B).map α ≫ d.map = d.map := by
+            convert Category.id_comp d.map using 1
+          _ = d'.map := hunique}
   }
 
 /- By the universal property of the limit cone, the cone from the previous construction gives rise
@@ -339,7 +388,12 @@ lemma diagonal_comm_bot_limit_is_closed_under_limits_r_ort_complement (W : Morph
   have hleft :
       (d ≫ s.cone.pt.hom) ≫ (target_limit_cone_arrow_limit_cone f s).cone.π.app i =
         d ≫ ((s.cone.π.app i).left ≫ (f.obj i).hom) := by
-    aesop_cat
+    calc
+      (d ≫ s.cone.pt.hom) ≫ (s.cone.π.app i).right =
+          d ≫ (s.cone.pt.hom ≫ (s.cone.π.app i).right) := by
+        rw [Category.assoc]
+      _ = d ≫ ((s.cone.π.app i).left ≫ (f.obj i).hom) := by
+        exact congrArg (fun h => d ≫ h) (s.cone.π.app i).w.symm
   rw [hleft]
   change d ≫ ((source_limit_cone_arrow_limit_cone f s).cone.π.app i ≫ (f.obj i).hom) =
     sq_lim.bot ≫ (target_limit_cone_arrow_limit_cone f s).cone.π.app i
@@ -398,7 +452,7 @@ def diagonal_postcomp_is_diagonal {J : Type u}
             d.map ≫ ((s.cone.π.app i).left ≫ (f.obj i).hom) := by
           simp
         _ = d.map ≫ (s.cone.pt.hom ≫ (s.cone.π.app i).right) := by
-          aesop_cat
+          exact congrArg (fun h => d.map ≫ h) (s.cone.π.app i).w
         _ = (d.map ≫ s.cone.pt.hom) ≫ (s.cone.π.app i).right := by
           simp
         _ = S.bot ≫ (s.cone.π.app i).right := by rw [d.comm_bot]

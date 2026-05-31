@@ -153,7 +153,6 @@ lemma cauchy_integral_formula_scaled_disc {E : Type*} [NormedAddCommGroup E]
     rw [← mul_assoc I I⁻¹, mul_inv_cancel₀ I_ne_zero, one_mul]
     ring_nf
   rw [this, Complex.real_smul, mul_smul]
-  exact (algebraMap_smul ℂ _ _).symm
 
 /-- If `f` is `ℂ`-differentiable on a disc centered at zero, then
 `ζ ↦ (star z / (I * (R ^ 2 - star z * ζ))) • f (r * ζ)` is differentiable at `w`

@@ -188,7 +188,7 @@ theorem compBasis_entry_eq_div (r : Block) (d : DirIdx) (p q : Fin 3) :
       ac_rfl
     have hx' : x * (↑(basisDen r) * (↑(basisDen r))⁻¹) = x := by
       simp [hb]
-    simpa [x] using hx.trans hx'
+    simpa [x, div_eq_mul_inv] using hx.trans hx'
   have hsum :
       (Finset.univ.sum fun k : DirIdx =>
         Finset.univ.sum fun a : DirIdx =>

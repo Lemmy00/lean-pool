@@ -344,7 +344,7 @@ theorem homotopy_inverse {G : Graph V E} {x y : V}
       induction h with
         | consht x => simp[inverse, homotopy_rfl]
         | cancel ex ex' p t₁ t₂ t₃ =>
-          simpa [inverse, mult_assoc] using
+          simpa [inverse, mult_assoc, multiply] using
             induct_homotopy_inverse_cancel (G.bar ex') (G.bar ex) (inverse p)
               (by rw[← t₃]; rw[bar_involution ex]; apply t₁)
               (by rw[← t₃]; rw[(bar_involution ex)]; apply t₂)
@@ -355,7 +355,7 @@ theorem homotopy_inverse {G : Graph V E} {x y : V}
           let k :=
             induct_homotopy_inverse_mult (inverse s₁) (inverse s₂) (G.bar ex) t₂
               (term_bar_equals_init t₁) c
-          simpa [homotopy, inverse] using k
+          simpa [homotopy, inverse, basicpath] using k
   let k₂ := Quot.lift func g
   rw [h₁, h₂]
   exact congrArg k₂ h₀

@@ -147,7 +147,6 @@ lemma cauchy_integral_formula_on_scaled_unitDisc {E : Type*} [NormedAddCommGroup
     rw [← mul_assoc I I⁻¹, mul_inv_cancel₀ I_ne_zero, one_mul]
     ring_nf
   rw [this, Complex.real_smul, mul_smul]
-  exact (algebraMap_smul ℂ _ _).symm
 
 /-- If `f` is analytic on the unit disc, then
 `ζ ↦ (star z / (I * (1 - star z * ζ))) • f (r * ζ)`

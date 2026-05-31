@@ -22,10 +22,12 @@ namespace Xor'
 
 lemma true1 {P Q R : Prop} : P -> (Xor' (Xor' P Q) R <-> ¬ Xor' Q R) := by
   unfold Xor'
+  unfold Xor
   tauto
 
 lemma true2 {P Q R : Prop} : Q -> (Xor' (Xor' P Q) R <-> ¬ Xor' P R) := by
   unfold Xor'
+  unfold Xor
   tauto
 
 end Xor'
@@ -187,7 +189,7 @@ lemma lsb_not_succ : ∀ {X : str}, 0 ∈ X <-> 0 ∉ (succ X) := by
     apply h
     rw [ax_succ]
     constructor
-    · exact zero_le (len X)
+    · exact zero_le
     · right
       constructor
       · exact h0
@@ -374,6 +376,7 @@ lemma prefix_zero_contradiction_of_not_carry_of_all_lt_mem :
   constructor
   · exact lt_trans h_contr_lt h_i_lt
   · rw [Xor'.true2 (h_all_lt_mem_Y contr h_contr_lt)]
+    unfold Xor'
     rw [not_xor]
     rw [<- not_iff_not, iff_true_left]
     · exact h_Carry_prefix_zero contr h_contr_lt
@@ -758,7 +761,8 @@ lemma add_succ_of_succ_add_zero :
       · refine add_pos_of_nonneg_of_pos ?_ ?_
         · exact B9 (len X)
         · apply len_succ_pos
-    · rw [xor_comm]
+    · unfold Xor'
+      rw [xor_comm]
       rw [<- xor_not_not]
       left
       constructor
@@ -767,6 +771,7 @@ lemma add_succ_of_succ_add_zero :
       · rw [not_not]
         rw [@xor_iff_iff_not]
         rw [ax_add] at hy_not
+        unfold Xor' at hy_not
         simp only [not_and, not_xor] at hy_not
         rw [iff_false_right (carry_rec (i := y)).1] at hy_not
         constructor
@@ -809,6 +814,7 @@ lemma add_succ_of_succ_add_of_mem_add :
     ⟨h_X, h_notY, h_notC⟩ | ⟨h_notX, h_Y, h_notC⟩ |
     ⟨h_notX, h_notY, h_C⟩ | ⟨h_X, h_Y, h_C⟩
   · rw [Xor'.true1 h_X]
+    unfold Xor'
     rw [not_xor]
     constructor
     · intro h_SY

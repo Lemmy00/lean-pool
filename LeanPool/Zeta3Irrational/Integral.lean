@@ -783,7 +783,7 @@ lemma J_ENN_rr (r : ℕ) : J_ENN r r = ENNReal.ofReal
       · congr 1
         have h1 := Finset.sum_Ico_eq_sum_range (m := 1) (n := r + 1)
           (f := fun k => 1 / (k : ℝ) ^ 3)
-        simpa [Nat.cast_add, Nat.cast_one, add_comm] using h1.symm
+        simpa [Nat_Ico_succ_right, Nat.cast_add, Nat.cast_one, add_comm] using h1.symm
   rw [← h1, ENNReal.ofReal_tsum_of_nonneg]
   · intro n
     positivity

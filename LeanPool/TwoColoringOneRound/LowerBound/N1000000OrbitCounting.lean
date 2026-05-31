@@ -97,8 +97,10 @@ noncomputable instance (k : DirIdx) : Fintype (FreeCol k) := by
 
 private lemma card_freeCol (k : DirIdx) : Fintype.card (FreeCol k) = freeCols (maskAt k) := by
   classical
-  simpa [FreeCol, freeCols] using
-    (Fintype.card_subtype (α := Fin 3) (p := fun j : Fin 3 => colMatch (maskAt k) j = none))
+  change Fintype.card { j : Fin 3 // colMatch (maskAt k) j = none } = freeCols (maskAt k)
+  rw [freeCols]
+  exact Fintype.card_of_subtype
+    (Finset.univ.filter fun j : Fin 3 => colMatch (maskAt k) j = none) (by intro j; simp)
 
 private theorem colMatch_unique' (k : DirIdx) :
     ∀ j₁ j₂ : Fin 3, ∀ i : Fin 3,

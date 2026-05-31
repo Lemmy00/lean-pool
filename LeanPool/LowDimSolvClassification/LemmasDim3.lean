@@ -369,8 +369,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
     rw [Finsupp.linearCombination_apply (R:=K) (v:=![B 0 - b • B 1 + a • B 2, B 1,
       B 2]) (l:=l)] at hl
     rw [Finsupp.sum_fintype] at hl
-    · simp only at hl
-      rw [Fin.sum_univ_three] at hl
+    · rw [Fin.sum_univ_three] at hl
       simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero, smul_add,
         Matrix.cons_val_one, Matrix.cons_val] at hl
       apply linearIndependent_iff.mp at this
@@ -380,8 +379,7 @@ lemma case1b (dim3 : Module.finrank K L = 3) (h₁ : Module.finrank K (commutato
       specialize this llf
       rw [Finsupp.linearCombination_apply (R:=K) (v:=B) (l:=llf)] at this
       rw [Finsupp.sum_fintype] at this
-      · simp only at this
-        rw [Fin.sum_univ_three] at this
+      · rw [Fin.sum_univ_three] at this
         unfold llf at this
         have snd : (Finsupp.cons (l 0) (Finsupp.cons (-l 0 * b + l 1) (Finsupp.cons
             (l 0 * a + l 2) (0 : Fin 0 →₀ K)))) 1 = (-l 0 * b + l 1) := by
@@ -491,7 +489,6 @@ lemma commutator_abelian_of_dim_two (dim3 : Module.finrank K L = 3)
       (commutator K L).toSubmodule).mp B.linearIndependent
     have : FiniteDimensional K L := Module.finite_of_finrank_eq_succ dim3
     let Bn := Basis.extend_fin_succ B_is_li_L dim3
-    simp only at Bn
     have Bn10 : Bn 1 = B 0 := by
       have := Basis.extend_fin_succ_tail_eq B_is_li_L dim3
       apply_fun (fun x ↦ x 0) at this
@@ -804,7 +801,6 @@ private lemma case2_coarse_nuvn
         rw [@LinearIndependent.pair_iff]
         intro s t hst
         have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, s, t]
-        simp only at this
         have heqq : ∑ x : Fin 3, ![0, s, t] x • B x = s • B 1 + t • B 2 := by
           rw [@Fin.sum_univ_three]
           simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue,
@@ -841,7 +837,6 @@ private lemma case2_coarse_nuvn
       rw [hc01,hc02]
     · intro heq
       have := (Fintype.linearIndependent_iff).mp B.linearIndependent ![0, c01, c02]
-      simp only at this
       have heqq : ∑ x : Fin 3, ![0, c01, c02] x • B x = c01 • B 1 + c02 • B 2 := by
         rw [@Fin.sum_univ_three]
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_zero,
@@ -1091,10 +1086,12 @@ lemma case2_coarse (dim3 : Module.finrank K L = 3) (h₂ : Module.finrank K (com
           basisOfLinearIndependentOfCardEqFinrank XcX (by simp only [Fintype.card_fin]; rw [h₂])
         have XcXBasis0 : XcXBasis 0 = ⁅B 0, X⁆ := by
           rw [coe_basisOfLinearIndependentOfCardEqFinrank]
-          dsimp [Set.map_into_subtype]
+          rw [Set.map_into_subtype_apply]
+          simp [B]
         have XcXBasis1 : XcXBasis 1 = X := by
           rw [coe_basisOfLinearIndependentOfCardEqFinrank]
-          dsimp [Set.map_into_subtype]
+          rw [Set.map_into_subtype_apply]
+          simp
         let x : commutator K L := ⟨⁅B 0, ⁅B 0, X⁆⁆, by
           simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
             Nat.reduceAdd, Fin.isValue, V, B]

@@ -193,10 +193,9 @@ theorem kernel_pow (k : K) (n : ℕ) : ((k, Q.e) : P) ^ n = (n • k, Q.e) := by
       rw [ih]
       rw [P.mul]
       simp only [nsmul_eq_mul, AddMonoidHom.coe_prodMap, AddMonoidHom.coe_id,
-        Prod.map_id, id_eq, add_zero, Nat.cast_add, Nat.cast_one, Prod.mk.injEq,
-        add_eq_left]
+        Prod.map_id, id_eq, Nat.cast_add, Nat.cast_one, Prod.mk.injEq, add_eq_left]
       constructor
-      · ext <;> ring_nf
+      · ext <;> simp [cocycle] <;> ring_nf
       · rfl
 
 end P

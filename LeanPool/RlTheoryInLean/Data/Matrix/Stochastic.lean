@@ -151,7 +151,7 @@ instance svec_mul_smat_is_svec
       refine sum_nonneg ?_
       intro i _
       exact mul_nonneg (hμ.nonneg i) ((hP i).nonneg j)
-    simpa [Matrix.vecMul] using this
+    simpa [Matrix.vecMul, dotProduct] using this
   case rowsum =>
     simp only [Matrix.vecMul, dotProduct]
     rw [sum_comm]
@@ -906,8 +906,10 @@ instance (P : Matrix S S ℝ) [RowStochastic P] [Aperiodic P] [Irreducible P]
             simp only [h1, h2]
           _ = 2 := by ring
         gcongr
-        case hc => linarith
-        case hab.hbc => exact_mod_cast this
+        case hbc =>
+          have hthis : (↑‖toLp 1 (x₀ - x₀ ᵥ* P ^ N)‖₊ : ℝ) ≤ 2 := by
+            exact_mod_cast this
+          linarith
       _ ≤ 2 * K ^ (((n : ℝ) / N) - 1) / (1 - K) := by
         set z : ℕ := n / N
         set z' : ℝ := (n : ℝ) / N
@@ -932,7 +934,6 @@ instance (P : Matrix S S ℝ) [RowStochastic P] [Aperiodic P] [Irreducible P]
             apply Or.inr; refine ⟨hKpos, hKle1, this.le⟩)
           exact_mod_cast this
         gcongr
-        case hc => linarith
       _ = (2 / K / (1 - K)) * (K ^ (1 / (N : ℝ))) ^ n := by
         have hKne : (K : ℝ) ≠ 0 := by exact_mod_cast hKpos.ne'
         have hsub : (K : ℝ) ^ ((n : ℝ) / N - 1) = (K : ℝ) ^ ((n : ℝ) / N) / K :=

@@ -91,7 +91,7 @@ include heiComm
 /-- `heiOper k` and `heiOper l` commute unless `k = l`. -/
 lemma heiComm_of_add_ne_zero {k l : ℤ} (hkl : k + l ≠ 0) :
     (heiOper k) ∘ₗ (heiOper l) = (heiOper l) ∘ₗ (heiOper k) := by
-  simpa [hkl, sub_eq_zero, LinearMap.commutator] using heiComm k l
+  simpa [hkl, sub_eq_zero, LinearMap.commutator, Module.End.mul_eq_comp] using heiComm k l
 
 variable {heiOper}
 
@@ -552,6 +552,7 @@ lemma _root_.VirasoroProject.commutator_sugawaraGen [CharZero 𝕜] (n m : ℤ) 
             exact finite_support_smul_pairNO'_heiOper_apply₀ heiTrunc heiComm ..
         · have (k : ℤ) : n + m + k - n - m = k := by ring
           have hmn : m + n = n + m := by ring
+          unfold Function.HasFiniteSupport
           simpa [← sub_eq_add_neg, add_sub_assoc', this, hmn, ← neg_zsmul] using
             finite_support_smul_pairNO'_heiOper_apply₀ (𝕂 := ℤ) (heiOper := heiOper)
               heiTrunc heiComm (n + m) (fun i : ℤ ↦ n - i) v
@@ -587,8 +588,7 @@ lemma _root_.VirasoroProject.commutator_sugawaraGen [CharZero 𝕜] (n m : ℤ) 
                           (fun i ↦ -i) ..]
                 · intro i _ j _ hij; simpa using hij
                 · intro i hi; simpa using hi
-                · intro k hk hk'
-                  exfalso
+                · intro k hk hk'; exfalso
                   simp only [Finset.mem_Ioc, Finset.coe_range, Set.mem_image, Set.mem_Iio,
                              Int.lt_toNat, not_exists, not_and] at hk hk'
                   apply hk' (-k).toNat ?_
@@ -640,7 +640,8 @@ lemma _root_.VirasoroProject.commutator_sugawaraGen [CharZero 𝕜] (n m : ℤ) 
               simp only [Finset.coe_Ioc, Set.mem_Ioc, and_comm] at hk
               simp [hk]
         · simp [hnm]
-    · simpa [← sub_eq_add_neg] using finite_support_smul_pairNO'_heiOper_apply₀ heiTrunc heiComm ..
+    · simpa [Function.HasFiniteSupport, ← sub_eq_add_neg] using
+        finite_support_smul_pairNO'_heiOper_apply₀ heiTrunc heiComm ..
     · apply ((Set.finite_Ioc (n+m) m).union (Set.finite_Ioc m (n+m))).subset
       refine Function.support_subset_iff'.mpr ?_; intro k hk
       simp only [Set.Ioc_union_Ioc_symm, Set.mem_Ioc, inf_lt_iff, le_sup_iff] at hk

@@ -166,7 +166,7 @@ lemma length_eq_inv_of_isStandard {x y : Vertices R} {p : BTgraph.Walk x y} (h :
       intro hnil
       exact hl.ne_nil (List.map_eq_nil_iff.mp hnil)
     have hlast_eq := List.getLast_congr hmap_ne_nil p.support_ne_nil hleq
-    simpa [List.getLast_map] using (hlast_eq.trans p.getLast_support).symm
+    simpa [Vertices, List.getLast_map] using (hlast_eq.trans p.getLast_support).symm
   subst this
   assumption
 

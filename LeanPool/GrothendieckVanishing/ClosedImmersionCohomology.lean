@@ -46,6 +46,9 @@ noncomputable def PushforwardHIso
   induction n generalizing G with
   | zero =>
     exact by
+      change (sheafCohomologyFunctor (TopCat.of Z) 0).obj G ≅
+        (sheafCohomologyFunctor X 0).obj
+          ((TopCat.Sheaf.pushforward AddCommGrpCat.{u} closedIncl).obj G)
       simpa [Opens.map_top] using
         (sheafH0NatIsoSections (X := TopCat.of Z)).app G ≪≫
           ((sheafH0NatIsoSections (X := X)).app
@@ -65,13 +68,15 @@ noncomputable def PushforwardHIso
       sheafH_subsingleton_of_injective S.X₂ r
     have hTgtSub (r : ℕ) : Subsingleton (Sheaf.H SX.X₂ (r + 1)) :=
       sheafH_subsingleton_of_flasque X SX.X₂ hFlasqueSX₂ r
+    change AddCommGrpCat.of (Sheaf.H G (k + 1)) ≅
+      AddCommGrpCat.of (Sheaf.H SX.X₁ (k + 1))
     cases k with
     | zero =>
       exact by
         simpa [S, SX] using
           (show cokernel (SX.g.hom.app (op ⊤)) ≅ AddCommGrpCat.of (Sheaf.H G 1) from by
-            simpa [S, SX, Opens.map_top closedIncl] using
-              sheafH1_cokernel_iso_of_subsingleton_middle hSE (hSrcSub 0)).symm ≪≫
+            change cokernel (S.g.hom.app (op ⊤)) ≅ AddCommGrpCat.of (Sheaf.H S.X₁ 1)
+            exact sheafH1_cokernel_iso_of_subsingleton_middle hSE (hSrcSub 0)).symm ≪≫
           sheafH1_cokernel_iso_of_subsingleton_middle hSE_X (hTgtSub 0)
     | succ m =>
       exact by
@@ -120,9 +125,10 @@ theorem subsingleton_sheafH_of_closedImmersion_middle
     haveI :
         Subsingleton ↑((sheafCohomologyFunctor X n).obj
           (CokernelCofork.ofπ S.g S.zero).pt) := by
-      simpa [sheafCohomologyFunctor] using hPush
+      change Subsingleton (Sheaf.H S.X₃ n)
+      exact hPush
     exact ⟨fun a b ↦ by
       apply (ConcreteCategory.bijective_of_isIso e.hom).1
       exact Subsingleton.elim _ _⟩
-  simpa using
-    subsingleton_sheafH_of_shortExact_middle S.f n h₁' hCok
+  change Subsingleton (Sheaf.H S.X₂ n)
+  exact subsingleton_sheafH_of_shortExact_middle S.f n h₁' hCok

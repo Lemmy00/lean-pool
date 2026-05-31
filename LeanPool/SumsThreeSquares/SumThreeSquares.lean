@@ -1094,7 +1094,11 @@ theorem blueprint_case_mod8_eq3 (m : ℕ) (hm_sq : Squarefree m) (hm_pos : 0 < m
     exists_R_v_of_mod8_eq3 m hm_sq hm_pos hm_mod
   have h2v := two_v_sum_two_squares q b h x y R v m hm_sq hv_pos hv_def hbqm hRv hjac
   have habc : ∃ a b c : ℤ, (m : ℤ) = a ^ 2 + b ^ 2 + c ^ 2 := by
-    grind +qlia
+    obtain ⟨A, B, hAB⟩ := h2v
+    refine ⟨R, A, B, ?_⟩
+    have hAB_int : (2 * v : ℤ) = (A : ℤ) ^ 2 + (B : ℤ) ^ 2 := by
+      exact_mod_cast hAB
+    nlinarith [hRv, hAB_int]
   obtain ⟨a, b, c, habc⟩ := habc
   refine ⟨a.natAbs, b.natAbs, c.natAbs, ?_⟩
   apply Int.ofNat.inj

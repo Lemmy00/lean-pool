@@ -203,11 +203,15 @@ lemma _root_.VirasoroProject.TriangularDecomposition.VermaHW.hwVec_cyclic (η : 
 lemma _root_.VirasoroProject.TriangularDecomposition.VermaHW.upper_smul_hwVec
     (η : weight tri) {E : 𝓰} (hE : E ∈ tri.upper) :
     ιUEA 𝕜 E • VermaHW.hwVec η = 0 := by
+  change (ιUEA 𝕜 E : 𝓤 𝕜 𝓰) • VermaModule.hwVec (weightHW η) = 0
   simpa [weightHW] using VermaModule.apply_hwVec_eq (weightHW η) (Sum.inr ⟨E, hE⟩)
 
 lemma _root_.VirasoroProject.TriangularDecomposition.VermaHW.cartan_smul_hwVec
     (η : weight tri) {H : 𝓰} (hH : H ∈ tri.cartan) :
     ιUEA 𝕜 H • VermaHW.hwVec η = (η ⟨H, hH⟩) • VermaHW.hwVec η := by
+  change
+    (ιUEA 𝕜 H : 𝓤 𝕜 𝓰) • VermaModule.hwVec (weightHW η) =
+      (algebraMap 𝕜 (𝓤 𝕜 𝓰) (η ⟨H, hH⟩)) • VermaModule.hwVec (weightHW η)
   simpa [weightHW] using VermaModule.apply_hwVec_eq (weightHW η) (Sum.inl ⟨H, hH⟩)
 
 /-- The universal map from a Verma module to any module with a vector of the given

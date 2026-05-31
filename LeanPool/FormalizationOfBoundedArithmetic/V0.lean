@@ -762,7 +762,7 @@ lemma exists_of_len_lt' :
 
 lemma len_pos_of_exists : ∀ {i : num} {X : str}, i ∈ X -> len X > (0 : num) := by
   intro i X iX
-  exact lt_of_le_of_lt (zero_le i) (L1 iX)
+  exact lt_of_le_of_lt zero_le (L1 iX)
 
 
 
@@ -771,6 +771,7 @@ lemma xor3_split {P Q R : Prop} :
     Xor' (Xor' P Q) R <->
       (P ∧ ¬Q ∧ ¬R) ∨ (¬ P ∧ Q ∧ ¬ R) ∨ (¬ P ∧ ¬ Q ∧ R) ∨ (P ∧ Q ∧ R) := by
   unfold Xor'
+  unfold Xor
   tauto
 
 

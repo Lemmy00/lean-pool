@@ -622,13 +622,15 @@ lemma functorOnHomOfCoveredPartwise_trans {n : ℕ} :
       · apply functorOnHomOfCoveredPartwise_heq_of_ext hX h_comm
         focus
           intro t
-          simpa [Dipath.cast_apply] using
-            SplitProperties.trans_first_part_of_second_part γ₁ γ₂ n t
+          rw [SplitProperties.firstPart_cast]
+          simp only [Dipath.cast_apply]
+          exact SplitProperties.trans_first_part_of_second_part γ₁ γ₂ n t
         simp
       · apply functorOnHomOfCovered_heq_of_ext hX h_comm
         intro t
-        simpa [Dipath.cast_apply] using
-          SplitProperties.trans_second_part_second_part γ₁ γ₂ n t
+        rw [SplitProperties.secondPart_cast]
+        simp only [Dipath.cast_apply]
+        exact SplitProperties.trans_second_part_second_part γ₁ γ₂ n t
 lemma functorOnHomOfCoveredPartwise_unique {n m : ℕ} {γ : Dipath x y}
   (hγ_n : covered_partwise hX γ n) (hγ_m : covered_partwise hX γ m) :
     Fₙ hγ_n = Fₙ hγ_m := by
@@ -795,9 +797,7 @@ lemma functorOnHomAux_of_homotopic_dimaps {m : ℕ} :
               (Fraction.ofPos (Nat.succ_pos m.succ))).toDirectedMap 1⟩
           ext
           simp [Dipath.of_directedMap]
-        · simpa [f₂, T] using (functorOnHomAux_cast_heq hX X₁_open X₂_open h_comm
-            (SplitDipath.SecondPart (Dipath.of_directedMap f)
-              (Fraction.ofPos (Nat.succ_pos m.succ))) _ _).symm
+        · exact (functorOnHomAux_cast_heq hX X₁_open X₂_open h_comm f₂ _ _).symm
         · simpa using (functorOnHomAux_cast_heq hX X₁_open X₂_open h_comm
             (H.eval_at_right 1) _ _).symm
       · apply heq_comp
@@ -821,9 +821,7 @@ lemma functorOnHomAux_of_homotopic_dimaps {m : ℕ} :
           simp [Dipath.of_directedMap]
         · simpa [T] using (functorOnHomAux_cast_heq hX X₁_open X₂_open h_comm
             (H.eval_at_right (Fraction.ofPos (Nat.succ_pos m.succ))) _ _).symm
-        · simpa [g₂, T] using (functorOnHomAux_cast_heq hX X₁_open X₂_open h_comm
-            (SplitDipath.SecondPart (Dipath.of_directedMap g)
-              (Fraction.ofPos (Nat.succ_pos m.succ))) _ _).symm
+        · exact (functorOnHomAux_cast_heq hX X₁_open X₂_open h_comm g₂ _ _).symm
     have h₂ : Fh_aux f₁ ≫ Fh_aux (H.eval_at_right T) =
         Fh_aux (H.eval_at_right 0) ≫ Fh_aux g₁ := by
       have := functorOnHomAux_of_homotopic_dimaps_0 hX X₁_open X₂_open h_comm
@@ -901,7 +899,7 @@ lemma functorOnHomAux_of_homotopic_dimaps {m : ℕ} :
       _ = Fh_aux f₁ ≫ (Fh_aux f₂ ≫ Fh_aux (H.eval_at_right 1))
             := by rw [Category.assoc]
       _ = Fh_aux f₁ ≫ (Fh_aux (H.eval_at_right T) ≫ Fh_aux g₂)
-            := by simpa only [Category.assoc] using congrArg (fun q => Fh_aux f₁ ≫ q) h₁
+            := by exact congrArg (fun q => Fh_aux f₁ ≫ q) h₁
       _ = (Fh_aux f₁ ≫ Fh_aux (H.eval_at_right T)) ≫ Fh_aux g₂
             := by rw [Category.assoc]
       _ = (Fh_aux (H.eval_at_right 0) ≫ Fh_aux g₁) ≫ Fh_aux g₂
@@ -1039,7 +1037,7 @@ lemma functor_comp_left : (dπₘ j₁) ⋙ F = F₁ := by
     exact functor_comp_left_object hX X₁_open X₂_open h_comm x.as
   · intros x y f
     rw [←Quotient.out_eq f]
-    simpa using functor_comp_left_dipath hX X₁_open X₂_open h_comm f.out
+    exact functor_comp_left_dipath hX X₁_open X₂_open h_comm f.out
 lemma functor_comp_right_object (x : X₂) :
     (F).obj ((dπₘ j₂).obj ⟨x⟩) = F₂.obj ⟨x⟩ := by
   change F_obj ⟨j₂ _⟩ = _
@@ -1070,7 +1068,7 @@ lemma functor_comp_right : (dπₘ j₂) ⋙ F = F₂ := by
     exact functor_comp_right_object hX X₁_open X₂_open h_comm x.as
   · intros x y f
     rw [←Quotient.out_eq f]
-    simpa using functor_comp_right_dipath hX X₁_open X₂_open h_comm f.out
+    exact functor_comp_right_dipath hX X₁_open X₂_open h_comm f.out
 lemma functor_uniq_aux_obj (F' : (dπₓ X) ⥤ C) (h₁ : (dπₘ j₁) ⋙ F' = F₁)
     (h₂ : (dπₘ j₂) ⋙ F' = F₂) (x : X) :
     F'.obj ⟨x⟩ = (F).obj ⟨x⟩ := by

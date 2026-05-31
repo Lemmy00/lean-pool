@@ -160,7 +160,6 @@ theorem LinearIndependent.extend_fin {n k : ℕ} {l : Fin n → L}
       constructor
       · assumption
       · intro i
-        simp only at *
         rw [← bH]
         specialize b'H (i.addNat k)
         assumption
@@ -640,7 +639,7 @@ theorem finrank_commutator_le_one_of_lie_basis {n : ℕ} (B : Basis (Fin n) K L)
   by_cases hX: X = 0
   · rw [hX, span_zero_singleton, ← eq_bot_iff, LieSubmodule.toSubmodule_eq_bot] at h''
     rw [h'']
-    refine le_trans ?_ (zero_le 1)
+    refine le_trans ?_ (Nat.zero_le 1)
     rw [le_zero_iff]
     apply finrank_bot
   · apply Submodule.finrank_mono at h''

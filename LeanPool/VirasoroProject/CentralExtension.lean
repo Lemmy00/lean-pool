@@ -98,15 +98,24 @@ def bracket : γ.CentralExtension
   toFun := fun ⟨X,_⟩ ↦ {
     toFun := fun ⟨Y,_⟩ ↦ ⟨⁅X,Y⁆, γ X Y⟩
     map_add' := by intros; simp_all only [lie_add, map_add]; rfl
-    map_smul' := by intros; simp_all only [lie_smul, map_smul, id_apply]; rfl }
+    map_smul' := by
+      rintro m ⟨Y, _⟩
+      ext
+      · change ⁅X, m • Y⁆ = m • ⁅X, Y⁆
+        exact lie_smul m X Y
+      · change (γ X) (m • Y) = m • (γ X) Y
+        exact map_smul (γ X) m Y }
   map_add' := by
     intros
     simp_all only [add_lie, map_add, LinearMap.add_apply]
     rfl
   map_smul' := by
-    intros
-    simp_all only [smul_lie, map_smul, LinearMap.smul_apply, id_apply]
-    rfl
+    rintro m ⟨X, _⟩
+    ext ⟨Y, _⟩
+    · change ⁅m • X, Y⁆ = m • ⁅X, Y⁆
+      exact smul_lie m X Y
+    · change (γ (m • X)) Y = m • (γ X) Y
+      exact congrArg (fun f => f Y) (map_smul γ m X)
 
 @[simp] lemma bracket_apply (Z W : γ.CentralExtension) :
     γ.bracket Z W = ⟨⁅Z.fst, W.fst⁆, γ Z.fst W.fst⟩ := rfl

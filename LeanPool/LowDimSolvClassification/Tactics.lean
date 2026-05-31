@@ -271,7 +271,7 @@ variable (R)
 
 /-- TODO. -/
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
-  l.map (fun ⟨s, x⟩ ↦ (_root_.algebraMap S R s, x))
+  l.map (fun ⟨s, x⟩ ↦ (Algebra.algebraMap S R s, x))
 
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [LieRing M]
     [SMul S M]

@@ -189,7 +189,7 @@ lemma factorization_iso_set_inv_comm_left : {X Y : Type u} → (f : X ⟶ Y) →
   intro X Y f im left p right fact
   ext x
   apply Subtype.ext
-  simpa using congrArg (fun h : X ⟶ Y => h x) fact
+  exact congrArg (fun h : X ⟶ Y => h x) fact
 
 /- The factorization isomorphism -/
 /-- Imported FactorizationSystems declaration. -/

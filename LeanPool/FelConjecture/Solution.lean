@@ -2237,7 +2237,6 @@ lemma hilbertNumerator_coeff_at_jstar {S : NumericalSemigroup} (G : NumericalSem
       NumericalSemigroupGenerators.productPolynomial_eval_one G]
   rw [hcoeff, h1, zero_sub]
   have hgap := gap_sum_at_jstar G hnonempty
-  simp only at hgap
   rw [hgap, neg_neg_one_pow_eq]
 
 lemma neg_one_pow_ne_zero' (m : ℕ) : ((-1 : ℤ) ^ (m + 1)) ≠ 0 := by

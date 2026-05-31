@@ -123,9 +123,11 @@ variable [Zero (TopCat.Sheaf AddCommGrpCat.{u} X)]
 noncomputable def sheafH_filtered_colimit_succ_toArrow :
     J' ⥤ Arrow (TopCat.Sheaf AddCommGrpCat.{u} X) :=
   { obj := fun j ↦ Arrow.mk (0 : Y'.obj j ⟶ 0)
-    map := fun f ↦ Arrow.homMk (Y'.map f) (𝟙 0) (by simp)
-    map_id := fun j ↦ by ext <;> simp
-    map_comp := fun f g ↦ by ext <;> simp }
+    map := fun f ↦ Arrow.homMk (Y'.map f) (𝟙 0) (by
+      change Y'.map f ≫ (0 : Y'.obj _ ⟶ 0) = (0 : Y'.obj _ ⟶ 0) ≫ 𝟙 0
+      rw [zero_comp, comp_zero])
+    map_id := fun j ↦ by ext <;> aesop_cat
+    map_comp := fun f g ↦ by ext <;> aesop_cat }
 
 /-- Objectwise injective envelopes coming from functorial factorization of `0 : Y_j ⟶ 0`. -/
 noncomputable def sheafH_filtered_colimit_succ_Inj :
@@ -166,9 +168,9 @@ noncomputable def sheafH_filtered_colimit_succ_iotaCocone : Cocone Y' :=
         (sheafH_filtered_colimit_succ_eta Y').app j ≫
           (sheafH_filtered_colimit_succ_injCocone Y').ι.app j
       naturality := fun j j' f ↦ by
-        simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id,
-          ← (sheafH_filtered_colimit_succ_injCocone Y').w f, ← Category.assoc,
-          (sheafH_filtered_colimit_succ_eta Y').naturality f] }
+        rw [← Category.assoc, (sheafH_filtered_colimit_succ_eta Y').naturality f]
+        exact congrArg (fun t ↦ (sheafH_filtered_colimit_succ_eta Y').app j ≫ t)
+          ((sheafH_filtered_colimit_succ_injCocone Y').w f) }
 
 /-- The induced map from the colimit of the original diagram to the colimit of its injective
 replacement. -/
@@ -218,7 +220,7 @@ noncomputable def sheafH_filtered_colimit_succ_quotient :
       cokernel.map _ _
         (Y'.map f) ((sheafH_filtered_colimit_succ_Inj Y').map f)
         ((sheafH_filtered_colimit_succ_eta Y').naturality f).symm
-    map_id := fun j ↦ by ext; simp [cokernel.map]
+    map_id := fun j ↦ by aesop_cat
     map_comp := fun {j j' j''} f g ↦ by ext; simp [cokernel.map, Functor.map_comp] }
 
 /-- The quotient cocone on the cokernel diagram induced by the colimit short exact sequence. -/
@@ -260,7 +262,6 @@ private noncomputable def sheafH_filtered_colimit_succ_liftedCocone
     { app := fun j ↦
         cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫ s.ι.app j
       naturality := fun j j' a ↦ by
-        dsimp
         have hdesc :
             cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫
                 (sheafH_filtered_colimit_succ_quotient Y').map a =
@@ -313,7 +314,7 @@ noncomputable def sheafH_filtered_colimit_succ_quotientCocone_isColimit
               s.ι.app j) = c'.ι.app j ≫ 0
           rw [cokernel.condition, zero_comp]
           rw [comp_zero]
-        simpa [Category.assoc] using hzero)
+        exact hzero)
     fac := fun s j ↦ (cancel_epi (cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j))).mp (by
       let lifted := sheafH_filtered_colimit_succ_liftedCocone Y' s
       have hfac_lifted :
@@ -343,7 +344,7 @@ noncomputable def sheafH_filtered_colimit_succ_quotientCocone_isColimit
                 s.ι.app k) = c'.ι.app k ≫ 0
             rw [cokernel.condition, zero_comp]
             rw [comp_zero]
-          simpa [Category.assoc] using hzero
+          exact hzero
       change (cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫
           qCocone.ι.app j) ≫ cokernel.desc ι' (injColim.desc lifted) _ =
         cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫ s.ι.app j
@@ -363,7 +364,10 @@ noncomputable def sheafH_filtered_colimit_succ_quotientCocone_isColimit
         have hπ' :
             (colimit.cocone Inj).ι.app j ≫ cokernel.π ι' =
               cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫ qCocone.ι.app j := by
-          simpa [injCocone] using (hπ j).symm
+          change injCocone.ι.app j ≫ cokernel.π ι' =
+            cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫ qCocone.ι.app j
+          symm
+          exact hπ j
         have hfac_lifted' :
             (colimit.cocone Inj).ι.app j ≫ injColim.desc lifted =
               cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫ s.ι.app j := by
@@ -377,11 +381,11 @@ noncomputable def sheafH_filtered_colimit_succ_quotientCocone_isColimit
             cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫
                 (qCocone.ι.app j ≫ m) =
               (colimit.cocone Inj).ι.app j ≫ injColim.desc lifted := by
-          simpa [Category.assoc] using
+          exact
             (congrArg
               (fun t ↦ cokernel.π ((sheafH_filtered_colimit_succ_eta Y').app j) ≫ t)
               hmq).trans hfac_lifted'.symm
-        simpa [Category.assoc] using htarget) }
+        exact htarget) }
 
 omit [IsFiltered J'] in
 theorem sheafH_filtered_colimit_succ_stage_shortExact (j : J') :
@@ -442,12 +446,22 @@ noncomputable def sheafH_filtered_colimit_succ_shiftNatIso
         (h_mid_n j) (h_mid_succ j))
     (fun {j j'} f ↦ by
       ext y
-      simpa using congrArg (fun m ↦ AddCommGrpCat.Hom.hom m y)
+      let φ := sheafH_filtered_colimit_succ_stage_map_hom (Y' := Y') f
+      change AddCommGrpCat.Hom.hom
+          ((sheafCohomologyFunctor X n).map φ.τ₃ ≫
+            (sheafH_succ_iso_of_subsingleton_middle
+              (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Y') j') n
+              (h_mid_n j') (h_mid_succ j')).hom) y =
+        AddCommGrpCat.Hom.hom
+          ((sheafH_succ_iso_of_subsingleton_middle
+              (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Y') j) n
+              (h_mid_n j) (h_mid_succ j)).hom ≫
+            (sheafCohomologyFunctor X (n + 1)).map φ.τ₁) y
+      exact congrArg (fun m ↦ AddCommGrpCat.Hom.hom m y)
         ((sheafH_succ_iso_of_subsingleton_middle_natural
           (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Y') j)
           (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Y') j')
-          (sheafH_filtered_colimit_succ_stage_map_hom (Y' := Y') f)
-          n (h_mid_n j) (h_mid_succ j) (h_mid_n j') (h_mid_succ j')).symm))
+          φ n (h_mid_n j) (h_mid_succ j) (h_mid_n j') (h_mid_succ j')).symm))
 
 /-- The induced colimit isomorphism from the successor-step stagewise dimension shift. -/
 noncomputable def sheafH_filtered_colimit_succ_shiftDomainIso
@@ -560,14 +574,9 @@ theorem sheafH_filtered_colimit_comparison_succ_compatibility
         ((sheafH_filtered_colimit_succ_quotientCocone Ysh csh hcsh).ι.app j) ≫
       (sheafH_filtered_colimit_succ_shiftCodomainIso Ysh csh hcsh n
         h_colim_n h_colim_succ).hom from by
-    simpa only [Category.assoc] using
-      congrArg
-        (fun t ↦
-          t ≫ (sheafH_filtered_colimit_succ_shiftCodomainIso Ysh csh hcsh n
-            h_colim_n h_colim_succ).hom)
-        (colimit_ι_sheafH_filtered_colimit_comparison
-          (X := X) (Y' := sheafH_filtered_colimit_succ_quotient Ysh) (n := n)
-          (c' := sheafH_filtered_colimit_succ_quotientCocone Ysh csh hcsh) j)]
+    rw [← Category.assoc]
+    rw [colimit_ι_sheafH_filtered_colimit_comparison]
+    rfl]
   change
     (sheafH_succ_iso_of_subsingleton_middle
         (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Ysh) j) n
@@ -577,10 +586,17 @@ theorem sheafH_filtered_colimit_comparison_succ_compatibility
         ((sheafH_filtered_colimit_succ_quotientCocone Ysh csh hcsh).ι.app j) ≫
       (sheafH_filtered_colimit_succ_shiftCodomainIso Ysh csh hcsh n
         h_colim_n h_colim_succ).hom
-  simpa [sheafH_filtered_colimit_succ_shiftNatIso,
-    sheafH_filtered_colimit_succ_shiftCodomainIso] using
-    (sheafH_succ_iso_of_subsingleton_middle_natural
-      (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Ysh) j)
-      (sheafH_filtered_colimit_succ_shortExact Ysh csh hcsh)
-      (sheafH_filtered_colimit_succ_stage_hom Ysh csh hcsh j)
-      n (h_mid_n j) (h_mid_succ j) h_colim_n h_colim_succ)
+  let φ := sheafH_filtered_colimit_succ_stage_hom Ysh csh hcsh j
+  change
+    (sheafH_succ_iso_of_subsingleton_middle
+        (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Ysh) j) n
+        (h_mid_n j) (h_mid_succ j)).hom ≫
+      (sheafCohomologyFunctor X (n + 1)).map φ.τ₁ =
+    (sheafCohomologyFunctor X n).map φ.τ₃ ≫
+      (sheafH_succ_iso_of_subsingleton_middle
+        (sheafH_filtered_colimit_succ_shortExact Ysh csh hcsh) n
+        h_colim_n h_colim_succ).hom
+  exact sheafH_succ_iso_of_subsingleton_middle_natural
+    (sheafH_filtered_colimit_succ_stage_shortExact (Y' := Ysh) j)
+    (sheafH_filtered_colimit_succ_shortExact Ysh csh hcsh)
+    φ n (h_mid_n j) (h_mid_succ j) h_colim_n h_colim_succ

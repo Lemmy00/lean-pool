@@ -151,7 +151,18 @@ theorem int_test [ModelPR V] (s : ℕ → V) (xs : Fin 0 → V) :
     (∀'∃'((intIsImage intIsSingleton).liftAndReplaceFV 2 0
     ![bv'' 0, bv'' 1])).Realize s xs := by
   suffices h : ∀ (a : V), ∃ (b : V), ExtIsImage s xs intIsSingleton a b by
-    simpa [realize_liftAt'] using h
+    suffices h' :
+        ∀ (a : V), ∃ (b : V),
+          ExtIsImage s (fixedSnoc (fixedSnoc xs a) b ∘ fun i => i.addNat 2)
+            intIsSingleton a b by
+      simpa [realize_liftAt'] using h'
+    intro a
+    obtain ⟨b, hb⟩ := h a
+    refine ⟨b, ?_⟩
+    have hxs : (fixedSnoc (fixedSnoc xs a) b ∘ fun i : Fin 0 => i.addNat 2) = xs := by
+      funext i
+      exact Fin.elim0 i
+    simpa [hxs] using hb
   intro a
   exact ext_test s xs a
 

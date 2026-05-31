@@ -1551,8 +1551,8 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
         calc hfin.toFinset.card
             ≤ (Finset.image xs Finset.univ).card :=
               Finset.card_le_card (fun x hx => by
-                simpa only [Set.Finite.mem_toFinset, Finset.mem_image, Finset.mem_univ,
-                  true_and] using hx)
+                simpa only [Set.Finite.mem_toFinset, Set.mem_range, Finset.mem_image,
+                  Finset.mem_univ, true_and] using hx)
           _ ≤ Fintype.card (Fin m) := Finset.card_image_le
           _ = m := Fintype.card_fin m
       -- (1/n) * |range| <= m/n <= 1 / 2

@@ -87,7 +87,7 @@ lemma measurePreserving_pick4 {n : ℕ} (emb : Fin 4 ↪ Fin n) :
         (volume :
           Measure ((∀ i : { j // p j }, Rand) × ∀ i : { j // ¬ p j }, Rand))
         (volume : Measure (∀ i : { j // p j }, Rand)) := by
-    simpa using
+    simpa [MeasureSpace.volume] using
       (MeasureTheory.measurePreserving_fst
         (μ := (volume : Measure (∀ i : { j // p j }, Rand)))
         (ν := (volume : Measure (∀ i : { j // ¬ p j }, Rand))))

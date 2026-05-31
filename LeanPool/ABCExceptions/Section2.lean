@@ -1114,43 +1114,42 @@ theorem exists_nice_factorization
     ε, hε_pos, hε, d, hd, n, X, h1n, hnX
   ⟩
   letI : NiceFactorization.ProofData := data
+  change ∃ (x : (Fin ProofData.d) → ℕ), ∃ c : ℕ,
+    ProofData.n = c * ∏ j, x j ^ (j.val + 1 : ℕ) ∧
+    c ≤ (ProofData.X : ℝ) ^ ProofData.ε ∧
+    (∀ i j, i ≠ j → Nat.gcd (x i) (x j) = 1) ∧
+    (ProofData.X : ℝ) ^ (-ProofData.ε) * ∏ j, x j ≤ (radical ProofData.n : ℕ) ∧
+    (radical ProofData.n : ℕ) ≤ (ProofData.X : ℝ) ^ ProofData.ε * ∏ j, x j ∧
+    0 < c ∧ (∀ i, 0 < x i) ∧ (∀ i, x i ≤ ProofData.X)
   obtain ⟨x, c, hn, hc, hcop, h_le_rad, h_rad_le⟩ := NiceFactorization.exists_nice_factorization
   have : NeZero ProofData.d := by infer_instance
-  have hn' : n = c * ∏ j, x j ^ (j.val + 1) := by simpa [data] using hn
-  have hc' : c ≤ (X : ℝ) ^ ε := by simpa [data] using hc
-  have hcop' : ∀ i j : Fin d, i ≠ j → Nat.gcd (x i) (x j) = 1 := by
-    simpa [data] using hcop
-  have h_le_rad' : (X : ℝ) ^ (-ε) * ∏ j, x j ≤ (radical n : ℕ) := by
-    simpa [data] using h_le_rad
-  have h_rad_le' : (radical n : ℕ) ≤ (X : ℝ) ^ ε * ∏ j, x j := by
-    simpa [data] using h_rad_le
   have hc_pos : 0 < c := by
-    have : 0 < n := by omega
-    apply Nat.pos_of_mul_pos_right (hn' ▸ this)
-  have x_le_X (i : Fin d) : x i ≤ X := by
-    apply le_trans _ hnX
+    have : 0 < ProofData.n := lt_of_lt_of_le Nat.zero_lt_one ProofData.h1n
+    apply Nat.pos_of_mul_pos_right (hn ▸ this)
+  have x_le_X (i : Fin ProofData.d) : x i ≤ ProofData.X := by
+    apply le_trans _ ProofData.hnX
     apply Nat.le_of_dvd
-    · omega
-    rw [hn']
+    · exact lt_of_lt_of_le Nat.zero_lt_one ProofData.h1n
+    rw [hn]
     apply Dvd.dvd.mul_left
     trans x i ^ (i.val + 1)
     · apply dvd_pow (dvd_rfl)
       omega
     apply Finset.dvd_prod_of_mem
     exact Finset.mem_univ i
-  have hx_pos (i : Fin d) : 0 < x i := by
+  have hx_pos (i : Fin ProofData.d) : 0 < x i := by
     apply Nat.pos_of_ne_zero
     intro h
-    have hprod : (∏ j : Fin d, x j ^ (j.val + 1)) = 0 := by
+    have hprod : (∏ j : Fin ProofData.d, x j ^ (j.val + 1)) = 0 := by
       apply Finset.prod_eq_zero (Finset.mem_univ i)
       simp [h]
-    have hn_zero : n = 0 := by
+    have hn_zero : ProofData.n = 0 := by
       calc
-        n = c * (∏ j : Fin d, x j ^ (j.val + 1)) := hn'
+        ProofData.n = c * (∏ j : Fin ProofData.d, x j ^ (j.val + 1)) := hn
         _ = c * 0 := by rw [hprod]
         _ = 0 := by rw [mul_zero]
-    omega
-  exact ⟨x, c, hn', hc', hcop', h_le_rad', h_rad_le', hc_pos, hx_pos, x_le_X⟩
+    exact (Nat.ne_of_gt (lt_of_lt_of_le Nat.zero_lt_one ProofData.h1n)) hn_zero
+  exact ⟨x, c, hn, hc, hcop, h_le_rad, h_rad_le, hc_pos, hx_pos, x_le_X⟩
 
 /-- Some basic consequences of Proposition 2.5, phrased in a way that make them more useful in the
   proof of Proposition 2.6. -/
@@ -1512,7 +1511,7 @@ theorem const_nonneg {ε : ℝ} : 0 ≤ const ε := by
     · have := const_spec hε_pos hε 2 le_rfl
       simp only [inv_pow, Nat.cast_ofNat] at this
       have := calc
-        0 ≤ _ := mod_cast zero_le _
+        0 ≤ _ := mod_cast Nat.zero_le _
         _ ≤ _ := this
       -- surely there's a better lemma that doesn't require strict positivity
       apply nonneg_of_mul_nonneg_left this

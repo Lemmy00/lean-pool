@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 
 import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Quotient.Basic

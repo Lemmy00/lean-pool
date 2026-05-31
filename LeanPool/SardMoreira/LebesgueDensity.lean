@@ -265,7 +265,8 @@ theorem exists_pos_forall_measure_le_toSphere_ge_le
           refine MeasurableEquiv.measurable _ ?_
           exact hsm.preimage measurable_subtype_coe
         · intro x hx
-          simpa [T] using hx
+          simpa [T, homeomorphUnitSphereProd_symm_apply_coe, Set.preimage, Set.mem_setOf_eq]
+            using hx
       · refine MeasurableEquiv.measurable _ ?_
         exact hsm.preimage measurable_subtype_coe
     _ ≤ μ s := by

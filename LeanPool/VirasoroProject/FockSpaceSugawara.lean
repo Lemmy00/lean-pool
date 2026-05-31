@@ -126,7 +126,7 @@ lemma sugawaraRepresentation_of_module_uea_heisenbergAlgebra_cgen_apply
   have key := sugawaraRepresentation_cgen _
     ((fun v ↦ htrunc ((ModuleOfModuleAlgebra.unMkAddHom 𝕜 (𝓤 𝕜 (HeisenbergAlgebra 𝕜)) V) v)))
     (commutator_lsmul_jgen_of_module_uea_heisenbergAlgebra 𝕜 hc)
-  simpa using congr_arg (fun A ↦ A v) key
+  simpa [sugawaraRepresentation_of_module_uea_heisenbergAlgebra] using congr_arg (fun A ↦ A v) key
 
 end auxiliary
 
@@ -205,6 +205,9 @@ lemma _root_.VirasoroProject.ChargedFockSpace.sugawaraRepresentation_lgen_pos_ap
 @[simp] lemma _root_.VirasoroProject.ChargedFockSpace.sugawaraRepresentation_cgen_apply
     (α : 𝕜) (v : ChargedFockSpace 𝕜 α) :
     sugawaraRepresentation 𝕜 α (.cgen 𝕜) v = v := by
+  change (sugawaraRepresentation_of_module_uea_heisenbergAlgebra 𝕜
+    (fun x ↦ eventually_jgen_smul_eq_zero 𝕜 α x)
+    (fun x ↦ ChargedFockSpace.kgen_smul 𝕜 α x) (.cgen 𝕜)) v = v
   simpa using sugawaraRepresentation_of_module_uea_heisenbergAlgebra_cgen_apply ..
 
 noncomputable instance _root_.VirasoroProject.ChargedFockSpace.instModuleUEAVirasoroAlgebra

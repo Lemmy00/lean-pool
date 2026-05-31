@@ -56,10 +56,10 @@ abbrev f5 : Coloring 5 :=
   fun v => g (round5 (Vertex.a v)) (round5 (Vertex.b v)) (round5 (Vertex.c v))
 
 lemma card_Small5 : Fintype.card Small5 = 2 := by
-  simp [Small5, two5]
+  norm_num [Small5, two5]
 
 lemma card_Big5 : Fintype.card Big5 = 3 := by
-  simp [Big5, two5]
+  norm_num [Big5, two5]
 
 private lemma not_all_small (e : Edge 5) : ¬ (∀ i : Fin 4, e.1 i < two5) := by
   classical

@@ -163,13 +163,15 @@ def image_slice : {X : C} → {L R : MorphismProperty C} → (F : FactorizationS
 /-- Imported FactorizationSystems declaration. -/
 def left_map_slice : {X : C} → {L R : MorphismProperty C} → (F : FactorizationSystem L R) →
     {f g : Over X} → (φ : f ⟶ g) → (f ⟶ image_slice F φ) := by
-  rintro _ _ _ F ⟨_,_,f⟩ ⟨_,_,g⟩ ⟨φ,_,w⟩
-  have comm : F.left_map φ ≫ F.right_map φ ≫ g = f := by
-    calc
-      F.left_map φ ≫ F.right_map φ ≫ g =  (F.left_map φ ≫ F.right_map φ) ≫ g := by simp
-      _ = φ ≫ g := by exact (F.factorization φ) =≫ g
-      _ = f := by simpa using w
-  exact Over.homMk (F.left_map φ) comm
+  rintro X _ _ F f g ⟨φ, right, w⟩
+  exact Over.homMk (F.left_map φ) (by
+    have fact := F.factorization φ
+    dsimp [image_slice]
+    change F.left_map φ ≫ (F.right_map φ ≫ g.hom) = f.hom
+    rw [← Category.assoc, fact]
+    exact w.trans (by
+      change f.hom ≫ 𝟙 X = f.hom
+      rw [Category.comp_id]))
 
 lemma left_map_in_left_class_slice : {X : C} → {L R : MorphismProperty C} →
     (F : FactorizationSystem L R) → {f g : Over X} → (φ : f ⟶ g) →
@@ -204,19 +206,19 @@ def factorization_iso_slice : {X : C} → {L R : MorphismProperty C} → (F : Fa
     (q : (MorphismPropertySlice R X) right) → (fact : left ≫ right = φ) →
       Σ' i : image_slice F φ ≅ im,
         left_map_slice F φ ≫ i.hom = left ∧ i.hom ≫ right = right_map_slice F φ := by
-  rintro _ _ _ F _ ⟨_,_,g⟩ ⟨φ,_,_⟩ ⟨_,_,h⟩ ⟨l,_,_⟩ _ ⟨r,_,w⟩ _ fact
+  rintro X _ _ F _ ⟨_,_,g⟩ ⟨φ,_,_⟩ ⟨_,_,h⟩ ⟨l,_,_⟩ _ ⟨r,right,w⟩ _ fact
   have ⟨i,⟨P,Q⟩⟩ :=
     F.factorization_iso φ _ l (by aesop_cat) r (by aesop_cat) (Over.forget_map_comp _ _ _ fact)
   exact {
     fst := by
       have comm : i.hom ≫ h = (F.right_map φ) ≫ g := by
-        have h_eq : h = r ≫ g := by
-          simpa using w.symm
+        have hw : r ≫ g = h := w.trans (by
+          rw [Functor.const_obj_map]
+          exact Category.comp_id h)
         calc
-          i.hom ≫ h = (i.hom ≫ r) ≫ g := by
-            rw [h_eq]
-            exact (Category.assoc i.hom r g).symm
-          _ = (F.right_map φ) ≫ g := by rw [Q]
+          i.hom ≫ h = i.hom ≫ (r ≫ g) := congrArg (fun k => i.hom ≫ k) hw.symm
+          _ = (i.hom ≫ r) ≫ g := (Category.assoc i.hom r g).symm
+          _ = (F.right_map φ) ≫ g := congrArg (fun k => k ≫ g) Q
       exact Over.isoMk i comm
     snd := by aesop_cat
   }

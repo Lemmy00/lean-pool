@@ -203,7 +203,8 @@ lemma nonempty_mulEquiv_mulZMod_prime_semidirectProduct_mulZMod_prime
     rw [hf, hg1, hg2]
   refine Nonempty.intro (SemidirectProduct.congr (MulEquiv.refl Q) f (fun x => ?_))
   ext y
-  simpa using congrArg (fun e : MulAut Q => e y) (hcompat x)
+  change (φ1 x) y = (φ2 (f x)) y
+  exact congrArg (fun e : MulAut Q => e y) (hcompat x)
 
 lemma exists_monoidHom_ne_one_and_nonempty_mulEquiv_semidirectProduct
     (hpq : p < q) (h : Nat.card G = p * q) (h' : ¬IsCyclic G) :

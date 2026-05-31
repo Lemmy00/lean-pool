@@ -191,7 +191,7 @@ lemma industepFarkasBartl {m : ℕ} [DivisionRing R] [LinearOrder R] [IsStrictOr
     · intro w
       have haAa : ∑ i : Fin m, (withoutLastMap A w i - A w M * withoutLastMap A y i) • x' i =
           b w - A w M • b y
-      · simpa using hxb' w
+      · simpa [auxLinMaps, auxLinMap, smul_eq_mul] using hxb' w
       rw [←add_eq_of_eq_sub haAa]
       simp_rw [smul_dite]
       rw [Finset.sum_dite]

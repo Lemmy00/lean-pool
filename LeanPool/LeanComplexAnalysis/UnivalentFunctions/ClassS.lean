@@ -11,7 +11,8 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Tactic.LinearCombination'
+import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Tactic.LinearCombinationPrime
 
 /-!
 # Univalent Function Classes: classS and classSigma
@@ -62,6 +63,11 @@ is also analytic on the unit disc.
 -/
 lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
     AnalyticOn ℂ f (ball 0 1) → AnalyticOn ℂ (dslope f 0) (ball 0 1) := by
+  intro hf
+  exact ((differentiableOn_dslope (f := f) (c := (0 : ℂ)) (s := ball 0 1)
+    (isOpen_ball.mem_nhds (mem_ball_self zero_lt_one))).mpr
+      hf.differentiableOn).analyticOn isOpen_ball
+/-
   revert f
   intros f hf
   have h.diff : DifferentiableOn ℂ f (ball 0 1) := by
@@ -174,9 +180,6 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
             rw [intervalIntegral.integral_sub] <;> norm_num [h_ftc]
             · field_simp
               have := h_ftc 0 1; norm_num at this
-              rw [show ∫ (t : ℝ) in 0..1, deriv f ((↑t : ℂ) * z) * z =
-                    (∫ (t : ℝ) in 0..1, deriv f ((↑t : ℂ) * z)) * z from
-                  intervalIntegral.integral_mul_const _ _] at this
               linear_combination' this
             · apply_rules [ContinuousOn.intervalIntegrable]
               have h_cont : ContinuousOn (deriv f) (ball 0 1) := by
@@ -220,6 +223,7 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
     ext; simp  [dslope] ; ring_nf
     simp  [Function.update, slope_def_field]; ring_nf
   · exact isOpen_ball
+-/
 
 /--
 For any function `f` in `classS`, the difference slope of `f` at `0` is
