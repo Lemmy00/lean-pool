@@ -151,7 +151,7 @@ lemma directed_refl (f : D(X,Y))
     (f.directed_toFun (γ.map continuous_snd) (directed_snd.directed_toFun γ γ_dipath))
 
 /-- The trivial reflexive dihomotopy `F (t, x) = f x`. -/
-@[simps!]
+@[simps! -isSimp]
 def refl (f : D(X,Y)) : Dihomotopy f f := hom_to_dihom _ (directed_refl f)
 
 instance : Inhabited (Dihomotopy (DirectedMap.id X) (DirectedMap.id X)) := ⟨Dihomotopy.refl _⟩
@@ -395,7 +395,7 @@ lemma trans_apply {f₀ f₁ f₂ : D(X,Y)} (F : Dihomotopy f₀ f₁) (G : Diho
 
 /-- Casting a `Dihomotopy f₀ f₁` to a `Dihomotopy g₀ g₁` where `f₀ = g₀` and `f₁ = g₁`.
 -/
-@[simps]
+@[simps -isSimp]
 def cast {f₀ f₁ g₀ g₁ : D(X,Y)} (F : Dihomotopy f₀ f₁) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) :
   Dihomotopy g₀ g₁ where
     toFun := F
@@ -417,7 +417,7 @@ private def Homotopy.hcomp' {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)}
 /-- If we have a `Dihomotopy f₀ f₁` and a `Dihomotopy g₀ g₁`, then we can compose them and get a
 `Dihomotopy (g₀.comp f₀) (g₁.comp f₁)`.
 -/
-@[simps!]
+@[simps! -isSimp]
 def hcomp {f₀ f₁ : D(X,Y)} {g₀ g₁ : D(Y,Z)} (F : Dihomotopy f₀ f₁) (G : Dihomotopy g₀ g₁) :
   Dihomotopy (g₀.comp f₀) (g₁.comp f₁) := by
   set Fₕ := dihom_to_hom F
@@ -506,7 +506,7 @@ lemma prop (F : DihomotopyWith f₀ f₁ P) (t : I) : P (F.toDihomotopy.curry t)
 /-- Given a directed map `f`, and a proof `h : P f`, we can define a `DihomotopyWith f f P` by `F
 (t, x) = f x`
 -/
-@[simps!]
+@[simps! -isSimp]
 def refl (f : D(X,Y)) (hf : P f) : DihomotopyWith f f P := {
   Dihomotopy.refl f with
   prop' := by
@@ -553,7 +553,7 @@ Dihomotopy.trans_apply _ _ _
 
 /-- Casting a `DihomotopyWith f₀ f₁ P` to a `DihomotopyWith g₀ g₁ P` where `f₀ = g₀` and `f₁ = g₁`.
 -/
-@[simps!]
+@[simps! -isSimp]
 def cast {f₀ f₁ g₀ g₁ : D(X,Y)} (F : DihomotopyWith f₀ f₁ P) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) :
   DihomotopyWith g₀ g₁ P :=
 {
@@ -597,7 +597,7 @@ lemma fst_eq_snd (F : DihomotopyRel f₀ f₁ S) {x : X} (hx : x ∈ S) : f₀ x
 `F (t, x) = f x` for all `t`. This is defined using `DihomotopyWith.refl`, but with the proof
 filled in.
 -/
-@[simps!]
+@[simps! -isSimp]
 def refl (f : D(X,Y)) (S : Set X) : DihomotopyRel f f S :=
 DihomotopyWith.refl f (fun _ _ => rfl)
 
@@ -637,12 +637,15 @@ Dihomotopy.trans_apply _ _ _
 
 /-- Casting a `DihomotopyRel f₀ f₁ S` to a `DihomotopyRel g₀ g₁ S` where `f₀ = g₀` and `f₁ = g₁`.
 -/
-@[simps!]
+@[simps! -isSimp]
 def cast {f₀ f₁ g₀ g₁ : D(X,Y)} (F : DihomotopyRel f₀ f₁ S) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) :
   DihomotopyRel g₀ g₁ S :=
 {
   Dihomotopy.cast F.toDihomotopy h₀ h₁ with
-  prop' := fun t x hx => by { simpa [←h₀, ←h₁] using F.prop t x hx }
+  prop' := fun t x hx => by
+    change (Dihomotopy.cast F.toDihomotopy h₀ h₁) (t, x) = g₀ x
+    rw [Dihomotopy.cast_apply]
+    simpa [←h₀, ←h₁] using F.prop t x hx
 }
 
 end DihomotopyRel

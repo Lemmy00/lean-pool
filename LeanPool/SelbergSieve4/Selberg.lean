@@ -32,7 +32,6 @@ local notation3 "y" => SelbergSieve.level s
 local notation3 "hy" => SelbergSieve.one_le_level s
 
 /-- Selberg bounding sum over divisors below the square-root level. -/
-@[simp]
 def selbergBoundingSum : ℝ :=
   ∑ l ∈ divisors P, if l ^ 2 ≤ y then g l else 0
 local notation3 "S" => SelbergSieve.selbergBoundingSum s

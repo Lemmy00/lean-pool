@@ -311,8 +311,7 @@ lemma mem_stabilizer_twist_iff_mem {ϖ : R} (hϖ : Irreducible ϖ) (g : GL (Fin 
     · have := hk 0 1
       simp only [Fin.isValue, conj_cartanDiag_zero_one, Matrix.GeneralLinearGroup.map_apply,
         Subring.subtype_apply] at this
-      change ↑ϖ ^ (f 1 - f 0) *
-        (R.subtype.mapMatrix (g : Matrix (Fin 2) (Fin 2) R) (0 : Fin 2) (1 : Fin 2)) ∈ R
+      change ϖ.val ^ (f 1 - f 0) * (GL.map R.subtype g : GL (Fin 2) K) 0 1 ∈ R
       rw [← this, zpow_sub₀ hne, zpow_sub₀ hne]
       ring_nf
       field_simp [zpow_ne_zero]
@@ -320,8 +319,7 @@ lemma mem_stabilizer_twist_iff_mem {ϖ : R} (hϖ : Irreducible ϖ) (g : GL (Fin 
     · have := hk 1 0
       simp only [Fin.isValue, conj_cartanDiag_one_zero, Matrix.GeneralLinearGroup.map_apply,
         Subring.subtype_apply] at this
-      change ↑ϖ ^ (f 0 - f 1) *
-        (R.subtype.mapMatrix (g : Matrix (Fin 2) (Fin 2) R) (1 : Fin 2) (0 : Fin 2)) ∈ R
+      change ϖ.val ^ (f 0 - f 1) * (GL.map R.subtype g : GL (Fin 2) K) 1 0 ∈ R
       rw [← this, zpow_sub₀ hne, zpow_sub₀ hne]
       ring_nf
       field_simp [zpow_ne_zero]

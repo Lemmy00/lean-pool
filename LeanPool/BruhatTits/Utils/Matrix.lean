@@ -324,7 +324,7 @@ def _root_.Matrix.TransvectionStruct.toGL (t : TransvectionStruct n R) : GL n R 
   inv_val := t.inv_mul
 
 /-- The transpose of an invertible matrix as an element of `GL`. -/
-@[simps]
+@[simps val]
 def _root_.Matrix.GL.transpose (g : GL n R) : GL n R where
   val := g.val.transpose
   inv := g.inv.transpose
@@ -335,13 +335,21 @@ def _root_.Matrix.GL.transpose (g : GL n R) : GL n R where
     rw [← Matrix.transpose_mul]
     simp
 
+lemma _root_.Matrix.GL.val_inv_transpose (g : GL n R) :
+    ↑(Matrix.GL.transpose g)⁻¹ = g.inv.transpose :=
+  rfl
+
 /-- A diagonal matrix with unit diagonal entries as an element of `GL`. -/
-@[simps]
+@[simps val]
 def _root_.Matrix.GL.diagonal (g : n → Rˣ) : GL n R where
   val := Matrix.diagonal (fun j ↦ g j)
   inv := Matrix.diagonal (fun j ↦ (g j).inv)
   val_inv := by simp
   inv_val := by simp
+
+lemma _root_.Matrix.GL.val_inv_diagonal (g : n → Rˣ) :
+    ↑(Matrix.GL.diagonal g)⁻¹ = Matrix.diagonal (fun j ↦ (g j).inv) :=
+  rfl
 
 lemma _root_.Matrix.GL.diagonal_det (g : n → Rˣ) :
     GeneralLinearGroup.det (GL.diagonal g) = ∏ i : n, g i := by
@@ -351,7 +359,7 @@ lemma _root_.Matrix.GL.diagonal_det (g : n → Rˣ) :
 variable [DecidableEq m] [Fintype m]
 
 /-- The block diagonal sum of two general linear matrices. -/
-@[simps]
+@[simps val]
 def _root_.Matrix.GL.diagonalBlocks (g : GL n R) (h : GL m R) : GL (n ⊕ m) R where
   val := Matrix.fromBlocks g 0 0 h
   inv := Matrix.fromBlocks g.inv 0 0 h.inv
@@ -362,13 +370,21 @@ def _root_.Matrix.GL.diagonalBlocks (g : GL n R) (h : GL m R) : GL (n ⊕ m) R w
     rw [Matrix.fromBlocks_multiply]
     simp
 
+lemma _root_.Matrix.GL.val_inv_diagonalBlocks (g : GL n R) (h : GL m R) :
+    ↑(Matrix.GL.diagonalBlocks g h)⁻¹ = Matrix.fromBlocks g.inv 0 0 h.inv :=
+  rfl
+
 /-- Reindex the rows and columns of an element of `GL` along an equivalence. -/
-@[simps]
+@[simps val]
 def _root_.Matrix.GL.reindex (e : n ≃ m) (g : GL n R) : GL m R where
   val := Matrix.reindex e e g
   inv := Matrix.reindex e e g.inv
   val_inv := by simp
   inv_val := by simp
+
+lemma _root_.Matrix.GL.val_inv_reindex (e : n ≃ m) (g : GL n R) :
+    ↑(Matrix.GL.reindex e g)⁻¹ = Matrix.reindex e e g.inv :=
+  rfl
 
 lemma _root_.Matrix.GL.conj_diagonal_apply {ι : Type*} [Fintype ι]
     [DecidableEq ι] (d : ι → Rˣ) (g : GL ι R) (i j : ι) :

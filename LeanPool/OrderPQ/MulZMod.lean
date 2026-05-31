@@ -47,7 +47,7 @@ lemma unitOfNeZero_val (x : (ZMod p)ˣ) : unitOfNeZero x (Units.ne_zero _) = x :
   exact val_unitOfNeZero _ (Units.ne_zero _)
 
 /-- Multiplication by a unit in `ZMod p` as an additive automorphism. -/
-@[simps]
+@[simps -isSimp]
 def addAutOfUnit (x : (ZMod p)ˣ) : AddAut (ZMod p) where
   toFun a := x.val * a
   invFun a := x.inv * a
