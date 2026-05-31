@@ -311,6 +311,10 @@ import LeanPool.FormalizationOfBoundedArithmetic.V0StrAddComm
 import LeanPool.FormalizationOfBoundedArithmetic.V0StrSuccAssoc
 import LeanPool.ForwardEuler
 import LeanPool.ForwardEuler.Main
+import LeanPool.FriezePatterns
+import LeanPool.FriezePatterns.Chapter1
+import LeanPool.FriezePatterns.Chapter2
+import LeanPool.FriezePatterns.Chapter3
 import LeanPool.GrothendieckVanishing
 import LeanPool.GrothendieckVanishing.ClosedImmersion
 import LeanPool.GrothendieckVanishing.ClosedImmersionCohomology
