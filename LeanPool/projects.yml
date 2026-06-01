@@ -1822,3 +1822,27 @@ projects:
       - "60A05"
       - "18C50"
       - "68Q55"
+  - slug: lean4-gl-coalgebras
+    title: Craig Interpolation for Gödel-Löb logic via coalgebraic proofs
+    summary: Formalizes a proof-theoretic Craig interpolation theorem for Gödel-Löb provability logic, built on a coalgebraic notion of circular proof.
+    branch: provability logic
+    entry_module: LeanPool.Lean4GlCoalgebras
+    authors:
+      - Madeleine Gignoux
+    source:
+      doi: "10.1134/S0081543811060198"
+      github_repo: mgignoux/lean4-gl-coalgebras
+    status: verified
+    main_declarations:
+      - interpolation
+    main_results:
+      - declaration: interpolation
+        informal: Proves the Craig interpolation theorem for Gödel-Löb provability logic.
+    tags:
+      - modal-logic
+      - provability-logic
+      - craig-interpolation
+      - proof-theory
+    msc:
+      - "03B45"
+      - "03F45"
