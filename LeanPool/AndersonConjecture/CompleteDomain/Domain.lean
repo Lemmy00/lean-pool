@@ -70,7 +70,7 @@ lemma conj_I_le_ker_ψ : conj_I ≤ RingHom.ker ψ_hom.toRingHom := by
   subst hx
   exact RingHom.mem_ker.mpr ψ_kills_gen
 
-lemma gen_ne_zero : (X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ^ 2 -
+lemma anderson_gen_ne_zero : (X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ^ 2 -
     X 1 * X 2 ≠ 0 := by
   intro h
   have h1 := congr_arg (MvPowerSeries.coeff (R := ℂ) (Finsupp.single (0 : Fin 3) 2)) h

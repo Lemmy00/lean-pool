@@ -665,7 +665,7 @@ lemma mvPS_ringKrullDim_le :
 open MvPowerSeries nonZeroDivisors in
 lemma gen_mem_nonZeroDivisors :
     (X 0 : MvPowerSeries (Fin 3) ℂ) ^ 2 - X 1 * X 2 ∈ (MvPowerSeries (Fin 3) ℂ)⁰ :=
-  mem_nonZeroDivisors_of_ne_zero gen_ne_zero
+  mem_nonZeroDivisors_of_ne_zero anderson_gen_ne_zero
 
 open MvPowerSeries in
 lemma gen_mem_maximalIdeal :
