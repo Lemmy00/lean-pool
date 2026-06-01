@@ -8,6 +8,15 @@ name: PR Separation Guard
 # A PR may touch only content files, or only non-content files (.github/,
 # python/, scripts/, docs, lakefile.toml, lean-toolchain, etc.). Mixing both
 # categories fails this gate.
+#
+# Version-bump exemption: a Lean/Mathlib bump is inherently both content
+# (LeanPool/**/*.lean API repairs) and infra (toolchain + manifest), and
+# neither half builds without the other, so it cannot satisfy the split. A PR
+# may therefore carry content alongside ONLY these bump files:
+#   - lean-toolchain
+#   - lake-manifest.json
+#   - lakefile.toml
+# Any other non-content file alongside content still fails the gate.
 
 on:
   pull_request:
@@ -53,12 +62,19 @@ jobs:
           content="$(printf '%s\n' "$files" | { grep -E "$content_re" || true; })"
           non_content="$(printf '%s\n' "$files" | { grep -vE "$content_re" || true; })"
 
-          if [ -n "$content" ] && [ -n "$non_content" ]; then
+          # Bump allowlist: non-content files permitted to ride along with
+          # content in a version-bump PR (see header comment).
+          bump_re='^(lean-toolchain|lake-manifest\.json|lakefile\.toml)$'
+          disallowed_non_content="$(printf '%s\n' "$non_content" | { grep -vE "$bump_re" || true; })"
+
+          if [ -n "$content" ] && [ -n "$disallowed_non_content" ]; then
             echo "::error::This PR mixes content and non-content changes."
             echo "Content files may be changed only in content-only PRs:"
             echo "  - LeanPool.lean"
             echo "  - LeanPool/**/*.lean"
             echo "  - LeanPool/projects.yml"
+            echo "(Exception: a version bump may also touch lean-toolchain,"
+            echo " lake-manifest.json, and lakefile.toml.)"
             echo
             echo "Content files in this PR:"
             while IFS= read -r f; do
@@ -71,10 +87,12 @@ jobs:
               [ -n "$f" ] || continue
               echo "  - $f"
               echo "::error file=$f::mixed with LeanPool content; split content and non-content changes into separate PRs"
-            done <<< "$non_content"
+            done <<< "$disallowed_non_content"
             exit 1
           fi
-          if [ -n "$content" ]; then
+          if [ -n "$content" ] && [ -n "$non_content" ]; then
+            echo "✓ Version-bump PR: content alongside toolchain/manifest only."
+          elif [ -n "$content" ]; then
             echo "✓ Content-only PR."
           else
             echo "✓ Non-content-only PR."
