@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.LinearAlgebra.Finsupp.Supported
+
+/-!
+# LeanPool.VirasoroProject.ToMathlib.LinearAlgebra.Finsupp.Supported
+-/
+
 --import Mathlib
 
 lemma finsum_mem_span {ι R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
@@ -11,7 +16,7 @@ lemma finsum_mem_span {ι R V : Type*} [Semiring R] [AddCommMonoid V] [Module R 
     ∑ᶠ i, cfs i • vs i ∈ Submodule.span R (Set.range vs) := by
   by_cases h : {i | cfs i • vs i ≠ 0}.Finite
   · let s : Finset ι := h.toFinset
-    rw [finsum_eq_finset_sum_of_support_subset (s := s) _ (fun i hi ↦ by simpa [s] using hi)]
+    rw [finsum_eq_finsetSum_of_support_subset (s := s) _ (fun i hi ↦ by simpa [s] using hi)]
     apply Submodule.sum_smul_mem
     exact fun i his ↦ Submodule.mem_span_of_mem (Set.mem_range_self i)
   · suffices junk : ∑ᶠ i, cfs i • vs i = 0 by simp [junk]
@@ -24,7 +29,7 @@ lemma finsum_mem_mem_span {ι R V : Type*}
     ∑ᶠ i ∈ s, cfs i • vs i ∈ Submodule.span R (vs '' s) := by
   by_cases h : {i | cfs i • vs i ≠ 0 ∧ i ∈ s}.Finite
   · let t : Finset ι := h.toFinset
-    rw [finsum_eq_finset_sum_of_support_subset (s := t) _ ?_]
+    rw [finsum_eq_finsetSum_of_support_subset (s := t) _ ?_]
     · classical
       have aux : ∑ i ∈ t, ∑ᶠ (_ : i ∈ s), cfs i • vs i = ∑ i ∈ t.filter s, cfs i • vs i  := by
         rw [Finset.sum_filter]

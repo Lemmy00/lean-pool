@@ -30,16 +30,16 @@ calculations internal so downstream files never need to unfold `Sheaf.H` directl
   vanishing from a cokernel and stalk-epi hypothesis
 * `cokernel_stalk_zero_of_stalk_surj`: actual-cokernel specialization of the same stalk
   vanishing under stalk-surjectivity
-* `sheafH_succ_map`: successor connecting morphism
+* `sheafHSuccMap`: successor connecting morphism
 * `sheafH_succ_map_exists_preimage_of_subsingleton_middle`: successor-map
   preimage wrapper
 * `sheafH0EquivSections`: sheaf-level wrapper for `H^0(F) ≃+ F(⊤)`
 * `sheafH0EquivSections_natural`: sheaf-level naturality of the above
-* `sheafH1_cokernel_iso_of_subsingleton_middle`: sheaf-level form of the
+* `sheafH1CokernelIsoOfSubsingletonMiddle`: sheaf-level form of the
   `H¹` cokernel identification
 * `sheafH1_cokernel_iso_of_subsingleton_middle_natural`: sheaf-level
   naturality for the same `H¹` cokernel identification
-* `sheafH_succ_iso_of_subsingleton_middle`: sheaf-level form of the
+* `sheafHSuccIsoOfSubsingletonMiddle`: sheaf-level form of the
   higher-degree connecting isomorphism
 * `sheafH_succ_iso_of_subsingleton_middle_natural`: sheaf-level
   naturality for the same connecting isomorphism
@@ -85,7 +85,8 @@ instance (X : TopCat.{u}) : IsGrothendieckAbelian.{u} (TopCat.Sheaf AddCommGrpCa
 instance {C : Type*} [Category C] {D : Type*} [Category D] [Preadditive D] :
     (Functor.const Cᵒᵖ : D ⥤ Cᵒᵖ ⥤ D).Additive where
 
-instance {C : Type*} [Category C] [Preadditive C] {X : TopCat.{u}} :
+instance instPreadditivePresheafLeanPool
+    {C : Type*} [Category C] [Preadditive C] {X : TopCat.{u}} :
     Preadditive (TopCat.Presheaf C X) := by
   delta TopCat.Presheaf
   exact functorCategoryPreadditive
@@ -228,7 +229,7 @@ private theorem sheafH_comp_extClass_naturality {X : TopCat.{u}}
   exact hcomp
 
 /-- Successor connecting morphism attached to a short exact sequence of sheaves. -/
-noncomputable def sheafH_succ_map {X : TopCat.{u}}
+noncomputable def sheafHSuccMap {X : TopCat.{u}}
     {S : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)}
     (hS : S.ShortExact)
     (n : ℕ) :
@@ -249,7 +250,7 @@ private theorem sheafH_succ_map_apply {X : TopCat.{u}}
     (hS : S.ShortExact)
     (n : ℕ)
     (y : Sheaf.H S.X₃ n) :
-    ConcreteCategory.hom (sheafH_succ_map hS n) y = y.comp hS.extClass rfl := rfl
+    ConcreteCategory.hom (sheafHSuccMap hS n) y = y.comp hS.extClass rfl := rfl
 
 /-- If the middle term has subsingleton cohomology in degree `n + 1`, every
 `H^(n+1)(S.X₁)` class comes from some `H^n(S.X₃)` class via the successor map. -/
@@ -259,7 +260,7 @@ theorem sheafH_succ_map_exists_preimage_of_subsingleton_middle {X : TopCat.{u}}
     (n : ℕ)
     (h₂H : Subsingleton (Sheaf.H S.X₂ (n + 1)))
     (x : Sheaf.H S.X₁ (n + 1)) :
-    ∃ y : Sheaf.H S.X₃ n, ConcreteCategory.hom (sheafH_succ_map hS n) y = x := by
+    ∃ y : Sheaf.H S.X₃ n, ConcreteCategory.hom (sheafHSuccMap hS n) y = x := by
   obtain ⟨y, hy⟩ := Ext.covariant_sequence_exact₁ _ hS x (@Subsingleton.elim _ h₂H _ _) rfl
   refine ⟨y, ?_⟩
   rw [sheafH_succ_map_apply]
@@ -436,18 +437,18 @@ lemma sheafH0EquivSections_natural {X : TopCat.{u}}
 
 /-- `H¹(S.X₁)` as the cokernel of top sections for a short exact sequence of sheaves,
     assuming `H¹(S.X₂)` is subsingleton. -/
-noncomputable def sheafH1_cokernel_iso_of_subsingleton_middle {X : TopCat.{u}}
+noncomputable def sheafH1CokernelIsoOfSubsingletonMiddle {X : TopCat.{u}}
     {S : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)}
     (hS : S.ShortExact)
     (h₂H : Subsingleton (Sheaf.H S.X₂ 1)) :
   cokernel (S.g.hom.app (op ⊤)) ≅ AddCommGrpCat.of (Sheaf.H S.X₁ 1) := by
   let δ : S.X₃.obj.obj (op ⊤) ⟶ AddCommGrpCat.of (Sheaf.H S.X₁ 1) :=
     AddCommGrpCat.ofHom ((sheafH0EquivSections S.X₃).symm.toAddMonoidHom) ≫
-      sheafH_succ_map hS 0
+      sheafHSuccMap hS 0
   have hδ : S.g.hom.app (op ⊤) ≫ δ = 0 := by
     ext s
     let y : Sheaf.H S.X₂ 0 := (sheafH0EquivSections S.X₂).symm s
-    change ConcreteCategory.hom (sheafH_succ_map hS 0)
+    change ConcreteCategory.hom (sheafHSuccMap hS 0)
       ((sheafH0EquivSections S.X₃).symm
         (ConcreteCategory.hom (S.g.hom.app (op ⊤)) s)) = 0
     rw [← show y.comp (Ext.mk₀ S.g) (add_zero 0) =
@@ -481,7 +482,7 @@ noncomputable def sheafH1_cokernel_iso_of_subsingleton_middle {X : TopCat.{u}}
         ((((sheafH0EquivSections S.X₃).symm s).comp hS.extClass rfl) :
             Sheaf.H S.X₁ 1) = 0 := by
       have hmap :
-          ConcreteCategory.hom (sheafH_succ_map hS 0) ((sheafH0EquivSections S.X₃).symm s) =
+          ConcreteCategory.hom (sheafHSuccMap hS 0) ((sheafH0EquivSections S.X₃).symm s) =
             0 := by
         simpa [πH, δ, ← hs] using (by
           rw [map_sub, hab, sub_self] : ConcreteCategory.hom πH (a - b) = 0)
@@ -502,10 +503,10 @@ noncomputable def sheafH1_cokernel_iso_of_subsingleton_middle {X : TopCat.{u}}
     (h₂H : Subsingleton (Sheaf.H S.X₂ 1))
     (s : S.X₃.obj.obj (op ⊤)) :
     ConcreteCategory.hom
-        ((sheafH1_cokernel_iso_of_subsingleton_middle hS h₂H).hom)
+        ((sheafH1CokernelIsoOfSubsingletonMiddle hS h₂H).hom)
         (ConcreteCategory.hom (cokernel.π (S.g.hom.app (op ⊤))) s) =
       ((sheafH0EquivSections S.X₃).symm s).comp hS.extClass rfl := by
-  simpa [sheafH1_cokernel_iso_of_subsingleton_middle] using
+  simpa [sheafH1CokernelIsoOfSubsingletonMiddle] using
     sheafH_succ_map_apply hS 0 ((sheafH0EquivSections S.X₃).symm s)
 
 /-- If a sheaf morphism is surjective on top sections, then every degree-zero cohomology
@@ -681,7 +682,7 @@ theorem subsingleton_sheafH_of_shortExact_middle {X : TopCat.{u}}
     (@Subsingleton.elim _ ((add_zero n) ▸ h₃') _ _)
   rw [← hc, ← hd, @Subsingleton.elim _ h₁' c d]
 
-/-- Naturality of `sheafH1_cokernel_iso_of_subsingleton_middle` for a morphism between
+/-- Naturality of `sheafH1CokernelIsoOfSubsingletonMiddle` for a morphism between
     two short exact sequences of sheaves. -/
 theorem sheafH1_cokernel_iso_of_subsingleton_middle_natural {X : TopCat.{u}}
     {S₁ S₂ : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)}
@@ -694,8 +695,8 @@ theorem sheafH1_cokernel_iso_of_subsingleton_middle_natural {X : TopCat.{u}}
           change (S₁.g ≫ φ.τ₃).hom.app (op ⊤) =
             (φ.τ₂ ≫ S₂.g).hom.app (op ⊤)
           exact congrArg (fun α : S₁.X₂ ⟶ S₂.X₃ ↦ α.hom.app (op ⊤)) φ.comm₂₃.symm) ≫
-      (sheafH1_cokernel_iso_of_subsingleton_middle hS₂ h₂₂H).hom =
-    (sheafH1_cokernel_iso_of_subsingleton_middle hS₁ h₁₂H).hom ≫
+      (sheafH1CokernelIsoOfSubsingletonMiddle hS₂ h₂₂H).hom =
+    (sheafH1CokernelIsoOfSubsingletonMiddle hS₁ h₁₂H).hom ≫
       (sheafCohomologyFunctor X 1).map φ.τ₁ := by
   apply (cancel_epi (cokernel.π (S₁.g.hom.app (op ⊤)))).mp
   rw [cokernel.π_desc_assoc, Category.assoc]
@@ -711,10 +712,10 @@ theorem sheafH1_cokernel_iso_of_subsingleton_middle_natural {X : TopCat.{u}}
         (x := (sheafH0EquivSections S₁.X₃).symm s))
   change ConcreteCategory.hom
       (cokernel.π (S₂.g.hom.app (op ⊤)) ≫
-        (sheafH1_cokernel_iso_of_subsingleton_middle hS₂ h₂₂H).hom)
+        (sheafH1CokernelIsoOfSubsingletonMiddle hS₂ h₂₂H).hom)
       (ConcreteCategory.hom (φ.τ₃.hom.app (op ⊤)) s) =
     ConcreteCategory.hom
-      ((sheafH1_cokernel_iso_of_subsingleton_middle hS₁ h₁₂H).hom ≫
+      ((sheafH1CokernelIsoOfSubsingletonMiddle hS₁ h₁₂H).hom ≫
         (sheafCohomologyFunctor X 1).map φ.τ₁)
       (ConcreteCategory.hom (cokernel.π (S₁.g.hom.app (op ⊤))) s)
   simp only [ConcreteCategory.comp_apply]
@@ -766,7 +767,7 @@ private noncomputable def sheafH_extClassAddEquiv_of_subsingleton_middle {X : To
 /-- Higher-degree connecting isomorphism for a short exact sequence of sheaves: if the
 middle cohomology groups in degrees `n` and `n + 1` are subsingleton, then the connecting
 morphism induces an isomorphism `H^n(S.X₃) ≅ H^(n+1)(S.X₁)`. -/
-noncomputable def sheafH_succ_iso_of_subsingleton_middle {X : TopCat.{u}}
+noncomputable def sheafHSuccIsoOfSubsingletonMiddle {X : TopCat.{u}}
     {S : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)}
     (hS : S.ShortExact) (n : ℕ)
     (h₂n : Subsingleton (Sheaf.H S.X₂ n))
@@ -781,11 +782,11 @@ private theorem sheafH_succ_iso_of_subsingleton_middle_hom_apply {X : TopCat.{u}
     (h₂succ : Subsingleton (Sheaf.H S.X₂ (n + 1)))
     (y : Sheaf.H S.X₃ n) :
     ConcreteCategory.hom
-        ((sheafH_succ_iso_of_subsingleton_middle hS n h₂n h₂succ).hom) y =
+        ((sheafHSuccIsoOfSubsingletonMiddle hS n h₂n h₂succ).hom) y =
       y.comp hS.extClass rfl :=
   sheafH_extClassAddEquiv_of_subsingleton_middle_apply hS n h₂n h₂succ y
 
-/-- Naturality of `sheafH_succ_iso_of_subsingleton_middle` for a morphism between two
+/-- Naturality of `sheafHSuccIsoOfSubsingletonMiddle` for a morphism between two
 short exact sequences of sheaves. -/
 theorem sheafH_succ_iso_of_subsingleton_middle_natural {X : TopCat.{u}}
     {S₁ S₂ : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)}
@@ -794,10 +795,10 @@ theorem sheafH_succ_iso_of_subsingleton_middle_natural {X : TopCat.{u}}
     (h₁₂succ : Subsingleton (Sheaf.H S₁.X₂ (n + 1)))
     (h₂₂n : Subsingleton (Sheaf.H S₂.X₂ n))
     (h₂₂succ : Subsingleton (Sheaf.H S₂.X₂ (n + 1))) :
-    (sheafH_succ_iso_of_subsingleton_middle hS₁ n h₁₂n h₁₂succ).hom ≫
+    (sheafHSuccIsoOfSubsingletonMiddle hS₁ n h₁₂n h₁₂succ).hom ≫
         (sheafCohomologyFunctor X (n + 1)).map φ.τ₁ =
       (sheafCohomologyFunctor X n).map φ.τ₃ ≫
-        (sheafH_succ_iso_of_subsingleton_middle hS₂ n h₂₂n h₂₂succ).hom := by
+        (sheafHSuccIsoOfSubsingletonMiddle hS₂ n h₂₂n h₂₂succ).hom := by
   ext y
   have hcomp :
       y.comp (hS₁.extClass.comp (Ext.mk₀ φ.τ₁) (add_zero 1)) rfl =
@@ -806,9 +807,9 @@ theorem sheafH_succ_iso_of_subsingleton_middle_natural {X : TopCat.{u}}
   rw [AddCommGrpCat.hom_comp]
   change
       (ConcreteCategory.hom ((sheafCohomologyFunctor X (n + 1)).map φ.τ₁)
-        (ConcreteCategory.hom ((sheafH_succ_iso_of_subsingleton_middle
+        (ConcreteCategory.hom ((sheafHSuccIsoOfSubsingletonMiddle
           hS₁ n h₁₂n h₁₂succ).hom) y)) =
-      (ConcreteCategory.hom ((sheafH_succ_iso_of_subsingleton_middle
+      (ConcreteCategory.hom ((sheafHSuccIsoOfSubsingletonMiddle
         hS₂ n h₂₂n h₂₂succ).hom)
         (ConcreteCategory.hom ((sheafCohomologyFunctor X n).map φ.τ₃) y))
   rw [sheafH_succ_iso_of_subsingleton_middle_hom_apply,

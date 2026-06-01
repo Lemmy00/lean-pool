@@ -247,7 +247,13 @@ private lemma box3_ftc_slice_zero (F : (Fin 3 → ℝ) → ℝ) (i : Fin 3) (hF 
             · exact fun j => if j = i then 1 else 0
             · intro j
               fin_cases i <;> fin_cases j <;>
-                simp [Fin.insertNth, Fin.succAboveCases] <;> fun_prop
+                first
+                | change HasFDerivAt (fun x : ℝ => x) 1 x
+                  fun_prop
+                | change HasFDerivAt (fun x : ℝ => z 0) 0 x
+                  fun_prop
+                | change HasFDerivAt (fun x : ℝ => z 1) 0 x
+                  fun_prop
             · simp only [ContinuousLinearMap.comp_apply]
               congr 1
               ext j

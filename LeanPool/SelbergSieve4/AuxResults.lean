@@ -14,7 +14,6 @@ import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 import Mathlib.NumberTheory.ArithmeticFunction.Zeta
---import SelbergSieve.AesopDiv
 import LeanPool.SelbergSieve4.ForMathlib
 import LeanPool.SelbergSieve4.ForArithmeticFunction
 import LeanPool.SelbergSieve4.ForMathlib.ProdsAntidiagonal
@@ -22,6 +21,11 @@ import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Data.Nat.Prime.Basic
 import LeanPool.SelbergSieve4.Tactic.Multiplicativity
 
+/-!
+# LeanPool.SelbergSieve4.AuxResults
+-/
+
+--import SelbergSieve.AesopDiv
 noncomputable section
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
@@ -232,8 +236,8 @@ theorem sum_pow_cardDistinctFactors_div_self_le_log_pow {P k : ℕ} (x : ℝ) (h
     (hP : Squarefree P) :
     (∑ d ∈ P.divisors, if d ≤ x then (k:ℝ) ^ (ω d) / (d : ℝ) else (0 : ℝ))
     ≤ (1 + Real.log x) ^ k := by
-  have hx_pos : 0 < x
-  · linarith
+  have hx_pos : 0 < x := by
+    linarith
   calc
     _ = ∑ d ∈ P.divisors,
           ∑ a ∈ Fintype.piFinset fun _i : Fin k => P.divisors,

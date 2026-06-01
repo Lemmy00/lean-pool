@@ -20,7 +20,7 @@ underlies the irreducible positive-dimensional case of Grothendieck vanishing.
 ## Main definitions
 
 * `finsetGenFunctor` — the filtered diagram of finitely generated subsheaves.
-* `finsetGenCocone`, `finsetGenCocone_isColimit` — exhibits `K` as the colimit.
+* `finsetGenCocone`, `finsetGenCoconeIsColimit` — exhibits `K` as the colimit.
 
 ## Main results
 
@@ -30,7 +30,7 @@ underlies the irreducible positive-dimensional case of Grothendieck vanishing.
   generated subsheaves to vanishing for the epi-images of `zeroOutsideInt V`.
 * `directLimit_cohomology_vanishing` — composes both above into the headline reduction.
 
-The `isFlasque_filtered_colimit` and `sheafH_preserves_filtered_colimits` building blocks
+The `isFlasque_filtered_colimit` and `sheafHPreservesFilteredColimits` building blocks
 live in the `PresheafFilteredColimit` modules.
 -/
 
@@ -82,7 +82,7 @@ noncomputable def finsetGenCocone :
 /-- The cocone is a colimit: `K` is the filtered colimit of its finitely generated subsheaves.
     Proof: the canonical map `colim → K` is mono (by AB5 + mono transitions) and epi
     (since `allSectionMap K` factors through it), hence an isomorphism. -/
-noncomputable def finsetGenCocone_isColimit :
+noncomputable def finsetGenCoconeIsColimit :
     IsColimit (finsetGenCocone hK) := by
   -- Show the comparison map colim → K is an iso, then transport IsColimit
   let d := colimit.desc (finsetGenFunctor hK) (finsetGenCocone hK)
@@ -169,10 +169,10 @@ theorem cohomology_vanishing_of_finitelyGenerated_vanishing
         (Sheaf.H (⟨K, hK⟩ : TopCat.Sheaf AddCommGrpCat.{u} X) m)) := by
     change IsZero (AddCommGrpCat.of (Sheaf.H (finsetGenCocone hK).pt m))
     exact IsZero.of_iso hZeroColim
-      (sheafH_preserves_filtered_colimits
+      (sheafHPreservesFilteredColimits
         (Y' := finsetGenFunctor hK)
         (c' := finsetGenCocone hK)
-        (hc' := finsetGenCocone_isColimit hK)
+        (hc' := finsetGenCoconeIsColimit hK)
         m).symm
   simpa using AddCommGrpCat.subsingleton_of_isZero hZeroTarget
 

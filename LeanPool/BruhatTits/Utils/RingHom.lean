@@ -5,6 +5,10 @@ Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
+/-!
+# LeanPool.BruhatTits.Utils.RingHom
+-/
+
 open Module
 
 variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
@@ -99,11 +103,13 @@ lemma GL.mem_range_map_iff {f : R →+* S} (hf : Function.Injective f)
 variable {K : Type*} [CommRing K] (R : Subring K)
 
 /-- Coerce matrices over `R` to matrices over `K`. -/
-instance {α β : Type*} : CoeHead (Matrix α β R) (Matrix α β K) where
+instance instCoeHeadMatrixSubtypeMemSubringLeanPool {α β : Type*} :
+    CoeHead (Matrix α β R) (Matrix α β K) where
   coe g := g.map R.subtype
 
 /-- Coerce invertible matrices over `R` to matrices over `K`. -/
-instance {α : Type*} [DecidableEq α] [Fintype α] : CoeHead (GL α R) (GL α K) where
+instance instCoeHeadGeneralLinearGroupSubtypeMemSubringLeanPool
+    {α : Type*} [DecidableEq α] [Fintype α] : CoeHead (GL α R) (GL α K) where
   coe g := GL.map R.subtype g
 
 --the following lemmas are used in CartanUniqueness.lean

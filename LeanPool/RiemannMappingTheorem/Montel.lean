@@ -9,6 +9,10 @@ import LeanPool.RiemannMappingTheorem.Spaces
 import LeanPool.RiemannMappingTheorem.Defs
 import LeanPool.RiemannMappingTheorem.Hurwitz
 
+/-!
+# LeanPool.RiemannMappingTheorem.Montel
+-/
+
 open Set Function Metric UniformConvergence Complex
 
 variable {ι : Type*} {U K : Set ℂ} {z : ℂ} {F : ι → 𝓒 U} {Q : Set ℂ → Set ℂ}

@@ -14,6 +14,10 @@ import Mathlib.Order.CompletePartialOrder
 
 import LeanPool.ABCExceptions.ForMathlib.RingTheory.Radical
 
+/-!
+# LeanPool.ABCExceptions.Section2
+-/
+
 open Finset UniqueFactorizationMonoid
 
 section
@@ -509,7 +513,7 @@ open Classical in
 /-- The finite set counted by `B_d(C, X, Y, X)`. We choose to add `C` as an entry in these tuples,
   as this allows us to write down a surjective map from a union of these sets back to triples
   `(a, b, c)` in `dyadicTriples α β γ`. -/
-noncomputable def B_finset (d : ℕ) (C : Fin 3 → ℕ) (X Y Z : Fin d → ℕ) :
+noncomputable def BFinset (d : ℕ) (C : Fin 3 → ℕ) (X Y Z : Fin d → ℕ) :
     Finset ((Fin d → ℕ) × (Fin d → ℕ) × (Fin d → ℕ) × (Fin 3 → ℕ)) :=
   ((dyadicTuples X) ×ˢ (dyadicTuples Y) ×ˢ (dyadicTuples Z) ×ˢ {C}).filter fun ⟨x, y, z, c⟩ ↦
     c 0 * ∏ i, x i ^ (i.val + 1) + c 1 * ∏ i, y i ^ (i.val + 1) = c 2 * ∏ i, z i ^ (i.val + 1) ∧
@@ -519,19 +523,19 @@ noncomputable def B_finset (d : ℕ) (C : Fin 3 → ℕ) (X Y Z : Fin d → ℕ)
 
 theorem mem_B_finset (d : ℕ) (C : Fin 3 → ℕ) (X Y Z : Fin d → ℕ)
     (x y z : Fin d → ℕ) (c : Fin 3 → ℕ) :
-    (x, y, z, c) ∈ B_finset d C X Y Z ↔
+    (x, y, z, c) ∈ BFinset d C X Y Z ↔
       C = c ∧
       (∀ i, x i ~ X i) ∧ (∀ i, y i ~ Y i) ∧ (∀ i, z i ~ Z i) ∧
       c 0 * ∏ i, (x i)^(i.val + 1) + c 1 * ∏ i, (y i)^(i.val + 1) = c 2 * ∏ i, (z i)^(i.val + 1) ∧
       Nat.gcd (c 0 * ∏ i, (x i)) (c 1 * ∏ i, (y i)) = 1 ∧
       Nat.gcd (c 0 * ∏ i, (x i)) (c 2 * ∏ i, (z i)) = 1 ∧
       Nat.gcd (c 1 * ∏ i, (y i)) (c 2 * ∏ i, (z i)) = 1 := by
-  simp only [B_finset, Fin.isValue, Finset.mem_singleton, Finset.mem_filter, Finset.mem_product,
+  simp only [BFinset, Fin.isValue, Finset.mem_singleton, Finset.mem_filter, Finset.mem_product,
     mem_dyadicTuples]
   tauto
 
 /-- Definition 2.4 -/
-noncomputable def B (d : ℕ) (c : Fin 3 → ℕ) (X Y Z : Fin d → ℕ) : ℕ := (B_finset d c X Y Z).card
+noncomputable def B (d : ℕ) (c : Fin 3 → ℕ) (X Y Z : Fin d → ℕ) : ℕ := (BFinset d c X Y Z).card
 
 theorem Nat.factorization_le_right (p n : ℕ) (hp : p.Prime) : n.factorization p ≤ n := by
   refine factorization_le_of_le_pow ?_
@@ -628,7 +632,7 @@ private theorem prod_y_pow_eq_n : ∏ m ∈ Finset.Icc 1 d ∪ Finset.Ioc d n, y
   tauto
 
 private theorem p_dvd_y_iff (i : ℕ) (p : ℕ) (hp : p.Prime) : p ∣ y i → n.factorization p = i := by
-  rw [y, Prime.dvd_finset_prod_iff hp.prime]
+  rw [y, Prime.dvd_finsetProd_iff hp.prime]
   simp only [Finset.mem_filter, Nat.mem_primeFactors, ne_eq]
   rintro ⟨q, ⟨⟨hq, _⟩, rfl⟩, hpq⟩
   congr
@@ -848,7 +852,7 @@ private theorem prod_y_large_le_X_pow : ∏ m ∈ Finset.Ioc d n, y m ≤ (X : �
   have := hnX
   calc
     _ ≤ (∏ m ∈ Finset.Ioc d n, y m ^ m : ℝ) ^ (d⁻¹ : ℝ) := by
-      rw [← Real.finset_prod_rpow]
+      rw [← Real.finsetProd_rpow]
       · push_cast
         apply Finset.prod_le_prod
         · intros; positivity
@@ -969,7 +973,7 @@ theorem x_K_le_X_pow : x KIndex ≤ (X : ℝ) ^ ε := by
             apply hK_pos.ne.symm
           · exact_mod_cast (hy_pos _).le
         · push_cast
-          rw [← Real.finset_prod_rpow _ _ (by simp)]
+          rw [← Real.finsetProd_rpow _ _ (by simp)]
           gcongr with i hi
           rw [← Real.rpow_natCast_mul, ← Real.rpow_natCast]
           · gcongr
@@ -1211,7 +1215,7 @@ theorem exists_nice_factorization'
 
 
 /-- A surjective map ⋃_{c, X, Y ,Z} B (c, X, Y, Z) → S*_α β γ (X) -/
-def B_to_triple {d : ℕ} : (Fin d → ℕ) × (Fin d → ℕ) × (Fin d → ℕ) × (Fin 3 → ℕ) → ℕ × ℕ × ℕ :=
+def BToTriple {d : ℕ} : (Fin d → ℕ) × (Fin d → ℕ) × (Fin d → ℕ) × (Fin 3 → ℕ) → ℕ × ℕ × ℕ :=
   fun ⟨X, Y, Z, c⟩ ↦
     ⟨c 0 * ∏ i, X i ^ (i.val + 1), c 1 * ∏ i, Y i ^ (i.val + 1), c 2 * ∏ i, Z i ^ (i.val + 1)⟩
 
@@ -1246,7 +1250,7 @@ theorem card_indexSet'_le (α β γ : ℝ) (d : ℕ) (x : ℕ) (ε : ℝ) :
 noncomputable def BUnion (α β γ : ℝ) {d : ℕ} (x : ℕ) (ε : ℝ) :
     Finset ((Fin d → ℕ) × (Fin d → ℕ) × (Fin d → ℕ) × (Fin 3 → ℕ)) :=
   (indexSet' α β γ d x ε).sup fun ⟨r, s, t, c⟩ ↦
-    B_finset d c (fun i ↦ 2^r i) (fun i ↦ 2^s i) (fun i ↦ 2^t i)
+    BFinset d c (fun i ↦ 2^r i) (fun i ↦ 2^s i) (fun i ↦ 2^t i)
 
 theorem similar_pow_log {x : ℕ} (hx : 0 < x) : x ~ 2 ^ Nat.log 2 x := by
   simp only [similar, Set.mem_Icc]
@@ -1289,7 +1293,7 @@ theorem sum_range_id_add_one {d : ℕ} : ∑ i ∈ Finset.range d, (i + 1) = (d 
 theorem B_to_triple_surjOn {α β γ : ℝ} (x : ℕ) (ε : ℝ)
     (hε_pos : 0 < ε) (hε : ε < 1 / 2) {d : ℕ}
     (hd : d = ⌊10 * ε⁻¹ ^ 4⌋₊) :
-    Set.SurjOn (B_to_triple (d := d)) (BUnion α β γ (d := d) x ε : Set _)
+    Set.SurjOn (BToTriple (d := d)) (BUnion α β γ (d := d) x ε : Set _)
       (dyadicPoints α β γ x : Set _) := by
   intro ⟨a, b, c⟩
   simp only [Finset.mem_coe, mem_dyadicPoints, BUnion, Set.mem_image, Finset.mem_sup,
@@ -1331,7 +1335,7 @@ theorem B_to_triple_surjOn {α β γ : ℝ} (x : ℕ) (ε : ℝ)
     apply (hu _).ne.symm
   refine ⟨u, v, w, c', ?_, ?easy⟩
   case easy =>
-    simp only [B_to_triple, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val,
+    simp only [BToTriple, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val,
       Prod.mk.injEq, c']
     refine ⟨a_eq_c_mul_prod.symm, b_eq_c_mul_prod.symm, c_eq_c_mul_prod.symm⟩
   refine ⟨fun i ↦ Nat.log 2 (u i), fun i ↦ Nat.log 2 (v i), fun i ↦ Nat.log 2 (w i), c', ?_, ?_⟩

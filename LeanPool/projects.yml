@@ -1043,11 +1043,11 @@ projects:
       github_repo: ivankobe/FactorizationSystems
     status: verified
     main_declarations:
-      - CategoryTheory.FactorizationSystem_characterization
+      - CategoryTheory.FactorizationSystemCharacterization
     main_results:
       - declaration: CategoryTheory.FactorizationSystem
         informal: Defines factorization systems on a category with specified left and right classes.
-      - declaration: CategoryTheory.FactorizationSystem_characterization
+      - declaration: CategoryTheory.FactorizationSystemCharacterization
         informal: Constructs a factorization system from repleteness, weak factorizations, and orthogonality.
       - declaration: CategoryTheory.orthogonal
         informal: Defines orthogonality of two morphisms by existence and uniqueness of diagonal fillers.

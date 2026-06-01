@@ -5,8 +5,6 @@ Authors: Judith Ludwig, Christian Merten
 -/
 import LeanPool.BruhatTits.Graph.GroupAction
 
-open Module
-
 /-!
 # Proof that the Bruhat-Tits graph is a tree
 
@@ -27,6 +25,9 @@ The strategy for proving acyclicity is as follows:
   `3 > 0 = inv x x`, so no circles exist.
 
 -/
+
+open Module
+
 
 namespace BruhatTits
 

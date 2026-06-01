@@ -35,9 +35,12 @@ import LeanPool.FormalizationOfBoundedArithmetic.Algebra
 import LeanPool.FormalizationOfBoundedArithmetic.AxiomSchemes
 import LeanPool.FormalizationOfBoundedArithmetic.Register
 
+/-!
+# LeanPool.FormalizationOfBoundedArithmetic.V0
+-/
 
 open FirstOrder Language
-open HasTypes_is
+open HasTypesIs
 open HasEmptySet
 open HasLen
 
@@ -590,7 +593,7 @@ where
     )
 
   ax_add : ∀ {X Y : str}, ∀ {i : num}, i ∈ X + Y ↔
-    (i < len X + len Y ∧ (Xor' (Xor' (i ∈ X) (i ∈ Y)) (Carry i X Y)))
+    (i < len X + len Y ∧ (Xor (Xor (i ∈ X) (i ∈ Y)) (Carry i X Y)))
 
 
 
@@ -768,9 +771,8 @@ lemma len_pos_of_exists : ∀ {i : num} {X : str}, i ∈ X -> len X > (0 : num) 
 
 
 lemma xor3_split {P Q R : Prop} :
-    Xor' (Xor' P Q) R <->
+    Xor (Xor P Q) R <->
       (P ∧ ¬Q ∧ ¬R) ∨ (¬ P ∧ Q ∧ ¬ R) ∨ (¬ P ∧ ¬ Q ∧ R) ∨ (P ∧ Q ∧ R) := by
-  unfold Xor'
   unfold Xor
   tauto
 

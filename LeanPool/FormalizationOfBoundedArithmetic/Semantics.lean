@@ -15,6 +15,10 @@ import LeanPool.FormalizationOfBoundedArithmetic.Order
 import LeanPool.FormalizationOfBoundedArithmetic.LanguagePeano
 import LeanPool.FormalizationOfBoundedArithmetic.LanguageZambella
 
+/-!
+# LeanPool.FormalizationOfBoundedArithmetic.Semantics
+-/
+
 namespace FirstOrder.Language
 open BoundedFormula
 
@@ -102,7 +106,7 @@ by
 
 @[delta0_simps]
 lemma realize_rotate_21 (phi : L.Formula (Vars2 n1 n2)) {v : _ -> M}
-  : phi.rotate_21.Realize v
+  : phi.rotate21.Realize v
     <->
     phi.Realize (v ∘ (fun fv => match fv with
       | .fv1 => .fv2
@@ -110,14 +114,14 @@ lemma realize_rotate_21 (phi : L.Formula (Vars2 n1 n2)) {v : _ -> M}
   :=
 by
   unfold Formula.Realize
-  unfold Formula.rotate_21
+  unfold Formula.rotate21
   rw [realize_relabelEquiv]
   dsimp only [Equiv.coe_fn_mk]
   exact Eq.to_iff rfl
 
 @[delta0_simps]
 lemma realize_rotate_213 (phi : L.Formula (Vars3 n1 n2 n3)) {v : _ -> M}
-  : phi.rotate_213.Realize v
+  : phi.rotate213.Realize v
     <->
     phi.Realize (v ∘ (fun fv => match fv with
       | .fv1 => .fv2
@@ -126,7 +130,7 @@ lemma realize_rotate_213 (phi : L.Formula (Vars3 n1 n2 n3)) {v : _ -> M}
   :=
 by
   unfold Formula.Realize
-  unfold Formula.rotate_213
+  unfold Formula.rotate213
   rw [realize_relabelEquiv]
   dsimp only [Equiv.coe_fn_mk]
   exact Eq.to_iff rfl
@@ -212,7 +216,7 @@ by
 @[delta0_simps]
 lemma realize_display_swapleft (phi : L.Formula (Vars1 n1 ⊕ Vars2 n2 n3))
     {v : ((Vars2 n1 n2) ⊕ (Vars1 n3)) -> M}
-  : phi.display_swapleft.Realize v
+  : phi.displaySwapleft.Realize v
     <->
     phi.Realize (v ∘ (fun fv => match fv with
       | .inl .fv1 => .inl .fv1
@@ -221,7 +225,7 @@ lemma realize_display_swapleft (phi : L.Formula (Vars1 n1 ⊕ Vars2 n2 n3))
   :=
 by
   unfold Formula.Realize
-  unfold Formula.display_swapleft
+  unfold Formula.displaySwapleft
   rw [realize_relabelEquiv]
   dsimp only [Equiv.coe_fn_mk]
   exact Eq.to_iff rfl
@@ -229,7 +233,7 @@ by
 @[delta0_simps]
 lemma realize_display_swapleft' (phi : L.Formula (Vars1 n1 ⊕ Vars2 n2 n3))
     {v : ((Vars1 n1 ⊕ Vars1 n2) ⊕ (Vars1 n3)) -> M}
-  : phi.display_swapleft'.Realize v
+  : phi.displaySwapleft'.Realize v
     <->
     phi.Realize (v ∘ (fun fv => match fv with
       | .inl .fv1 => .inl (.inl .fv1)
@@ -238,7 +242,7 @@ lemma realize_display_swapleft' (phi : L.Formula (Vars1 n1 ⊕ Vars2 n2 n3))
   :=
 by
   unfold Formula.Realize
-  unfold Formula.display_swapleft'
+  unfold Formula.displaySwapleft'
   rw [realize_relabelEquiv]
   dsimp only [Equiv.coe_fn_mk]
   exact Eq.to_iff rfl

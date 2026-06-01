@@ -241,16 +241,16 @@ def compile (e : Expr Γ A) : Part A :=
 /-- Evaluate an expression under the assumption that it is closed.
     Return `inl x` if variable `x` is encountered, otherwise `inr u`
     where `u` is the partial element so obtained. -/
-def eval_closed : Expr Γ A → Sum Γ (Part A)
+def evalClosed : Expr Γ A → Sum Γ (Part A)
   | .K => .inr K
   | .S => .inr S
   | .elm a => .inr (.some a)
   | .var x => .inl x
   | .app e₁ e₂ =>
-    match eval_closed e₁ with
+    match evalClosed e₁ with
     | .inl x => .inl x
     | .inr a₁ =>
-      match eval_closed e₂ with
+      match evalClosed e₂ with
       | .inl x => .inl x
       | .inr a₂ => .inr (a₁ ⬝ a₂)
 

@@ -335,7 +335,7 @@ lemma continuous_entropyNat
     Continuous (fun p : ProbDist α => entropyNat p) := by
   classical
   unfold entropyNat
-  refine (continuous_finset_sum (s := Finset.univ)
+  refine (continuous_finsetSum (s := Finset.univ)
     (f := fun a => fun p : ProbDist α => p a * Real.log (p a)) ?_).neg
   intro a _
   have hcont_eval : Continuous (fun p : ProbDist α => (p : α → ℝ) a) :=

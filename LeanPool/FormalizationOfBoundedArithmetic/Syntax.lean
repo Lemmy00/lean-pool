@@ -8,6 +8,10 @@ import Mathlib.ModelTheory.Syntax
 
 import LeanPool.FormalizationOfBoundedArithmetic.IsEnum
 
+/-!
+# LeanPool.FormalizationOfBoundedArithmetic.Syntax
+-/
+
 namespace FirstOrder
 namespace Language
 
@@ -219,13 +223,19 @@ theorem relabel_relabelSum [enum : IsEnum β] (g : α ≃ γ) :
           =
         Term.relabel (BoundedFormula.relabelAux
             (fun a : γ ⊕ β => Sum.map id enum.toIdx a) n)
-          ((Term.relabelEquiv
-            ((g.sumCongr (_root_.Equiv.refl β)).sumCongr (_root_.Equiv.refl (Fin n)))) t) := by
+            ((Term.relabelEquiv
+              ((g.sumCongr (_root_.Equiv.refl β)).sumCongr (_root_.Equiv.refl (Fin n)))) t) := by
     intro n t
-    simp [Term.relabelEquiv_apply, Term.relabel_relabel]
-    apply congrArg (fun h => Term.relabel h t)
-    funext x
-    exact relabelAux_sumCongr g n x
+    have hfun :
+        ((g.sumCongr (_root_.Equiv.refl (Fin (enum.size + n)))) ∘
+            BoundedFormula.relabelAux (fun a : α ⊕ β => Sum.map id enum.toIdx a) n)
+          =
+        (BoundedFormula.relabelAux (fun a : γ ⊕ β => Sum.map id enum.toIdx a) n ∘
+          ((g.sumCongr (_root_.Equiv.refl β)).sumCongr (_root_.Equiv.refl (Fin n)))) := by
+      funext x
+      exact relabelAux_sumCongr g n x
+    simpa only [Term.relabelEquiv_apply, Term.relabel_relabel] using
+      congrArg (fun h => Term.relabel h t) hfun
   induction φ with
   | falsum => rfl
   | equal t1 t2 =>

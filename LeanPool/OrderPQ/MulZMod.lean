@@ -5,6 +5,11 @@ Authors: Scott Harper, Peiran Wu
 -/
 import LeanPool.OrderPQ.PrimeOrder
 import Mathlib.Data.ZMod.Aut
+import Mathlib.RingTheory.ZMod.UnitsCyclic
+
+/-!
+# LeanPool.OrderPQ.MulZMod
+-/
 
 section MulZMod
 
@@ -66,6 +71,9 @@ def mulEquivAddAutZMod : AddAut (ZMod p) ≃+ Additive (ZMod p)ˣ :=
 to the group of units of `ZMod p`. -/
 def mulEquivMulAutMulZMod : MulAut (MulZMod p) ≃* (ZMod p)ˣ :=
   (MulAutMultiplicative (ZMod p)).trans (AddEquiv.toMultiplicativeLeft (mulEquivAddAutZMod p))
+
+noncomputable instance : Fintype (MulAut (MulZMod p)) :=
+  Fintype.ofEquiv (ZMod p)ˣ (mulEquivMulAutMulZMod p).symm.toEquiv
 
 lemma mulAut_MulZMod_isCyclic : IsCyclic (MulAut (MulZMod p)) :=
   isCyclic_of_surjective (mulEquivMulAutMulZMod p).symm (mulEquivMulAutMulZMod p).symm.surjective

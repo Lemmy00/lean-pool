@@ -15,6 +15,10 @@ import Mathlib.Algebra.Field.Defs
 import LeanPool.LowDimSolvClassification.GeneralResults
 import LeanPool.LowDimSolvClassification.InstancesLowDim
 
+/-!
+# LeanPool.LowDimSolvClassification.Classification1
+-/
+
 open Module
 open Submodule
 namespace LieAlgebra

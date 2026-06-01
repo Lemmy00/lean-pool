@@ -215,7 +215,7 @@ theorem constantSheaf_flasque_of_irreducible
   exact presheafToSheaf_const_flasque_of_irreducible (X := X) A (U := U) (V := V) i
 
 /-- `zeroOutsideInt ⊤` is flasque on an irreducible space: it is the sheafification of
-    `constZ.zeroOutside ⊤ ≅ constZ` (via `zeroOutside_top_iso`), and the constant sheaf
+    `constZ.zeroOutside ⊤ ≅ constZ` (via `zeroOutsideTopIso`), and the constant sheaf
     on an irreducible space is flasque (`constantSheaf_flasque_of_irreducible`). -/
 theorem isFlasqueSheaf_zeroOutsideInt_top (X : TopCat.{u}) [IrreducibleSpace X] :
     IsFlasqueSheaf (TopCat.Sheaf.zeroOutsideInt (⊤ : Opens X)) := by
@@ -225,7 +225,7 @@ theorem isFlasqueSheaf_zeroOutsideInt_top (X : TopCat.{u}) [IrreducibleSpace X] 
   let P : (Opens X)ᵒᵖ ⥤ AddCommGrpCat.{u} := (Functor.const (Opens X)ᵒᵖ).obj A
   let e :=
     (presheafToSheaf J AddCommGrpCat.{u}).mapIso
-      (TopCat.Presheaf.zeroOutside_top_iso (F := TopCat.Presheaf.constZ))
+      (TopCat.Presheaf.zeroOutsideTopIso (F := TopCat.Presheaf.constZ))
   let eP := (sheafToPresheaf J AddCommGrpCat.{u}).mapIso e
   have hconst : Epi (((presheafToSheaf J AddCommGrpCat.{u}).obj P).obj.map i.op) :=
     presheafToSheaf_const_flasque_of_irreducible X A (U := U) (V := W) i

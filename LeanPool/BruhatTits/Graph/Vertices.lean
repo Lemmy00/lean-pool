@@ -6,8 +6,6 @@ Authors: Judith Ludwig, Christian Merten
 import LeanPool.BruhatTits.Lattice.Distance
 import LeanPool.BruhatTits.Lattice.Construction
 
-open Module
-
 /-!
 # Definition of vertices
 
@@ -29,6 +27,9 @@ is later used to define the edge relations on the Bruhat-Tits graph (see `Bruhat
   deduce that the Bruhat-Tits graph is connected.
 
 -/
+
+open Module
+
 namespace BruhatTits
 
 variable {K : Type*} [Field K] (R : Subring K) [IsDiscreteValuationRing R]

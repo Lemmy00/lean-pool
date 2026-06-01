@@ -7,6 +7,10 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import LeanPool.RiemannMappingTheorem.Cindex
 
+/-!
+# LeanPool.RiemannMappingTheorem.ToMathlib
+-/
+
 open intervalIntegral Real MeasureTheory Filter Topology Set Metric Interval
 
 variable {𝕜 E V : Type*} {r : ℝ} {z : ℂ} {a b t : ℝ} {n : ℕ}

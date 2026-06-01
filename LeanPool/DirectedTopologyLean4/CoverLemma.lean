@@ -8,6 +8,8 @@ import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.UnitInterval
 import LeanPool.DirectedTopologyLean4.Fraction
 
+/-! ### Auxiliary lemmas -/
+
 /-
   This file contains two applications of the Lebesgue Number Lemma:
   One concerns the unit interval and the other concerns the unit square.
@@ -17,7 +19,6 @@ universe u
 
 open scoped unitInterval
 
-/-! ### Auxiliary lemmas -/
 
 /-- For any two natural numbers `i n : ℕ` with `n > 0`, we have that
 `(2i+1)/(2n)` is contained in the interval `[i/n, (i+1)/n]`.

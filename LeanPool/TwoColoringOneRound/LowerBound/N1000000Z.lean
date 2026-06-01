@@ -9,6 +9,10 @@ import LeanPool.TwoColoringOneRound.LowerBound.N1000000ZData
 import Mathlib.Data.Rat.Star
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
+/-!
+# LeanPool.TwoColoringOneRound.LowerBound.N1000000Z
+-/
+
 namespace Distributed2Coloring.LowerBound
 
 namespace N1000000Z

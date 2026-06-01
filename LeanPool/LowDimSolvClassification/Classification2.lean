@@ -15,6 +15,10 @@ import LeanPool.LowDimSolvClassification.InstancesLowDim
 import LeanPool.LowDimSolvClassification.GeneralResults
 import LeanPool.LowDimSolvClassification.Classification1
 
+/-!
+# LeanPool.LowDimSolvClassification.Classification2
+-/
+
 open Module
 open Submodule
 namespace LieAlgebra

@@ -8,6 +8,10 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.EuclideanDomain.Defs
 import LeanPool.LeanPolyABC.MasonStothers
 
+/-!
+# LeanPool.LeanPolyABC.Corollaries.Davenport
+-/
+
 noncomputable section
 
 open scoped Polynomial

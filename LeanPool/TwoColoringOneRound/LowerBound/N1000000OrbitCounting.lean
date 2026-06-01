@@ -12,6 +12,10 @@ import LeanPool.TwoColoringOneRound.LowerBound.N1000000OrbitalBasis
 import LeanPool.TwoColoringOneRound.LowerBound.N1000000PairTransitivity
 import LeanPool.TwoColoringOneRound.LowerBound.N1000000StructureConstants
 
+/-!
+# LeanPool.TwoColoringOneRound.LowerBound.N1000000OrbitCounting
+-/
+
 namespace Distributed2Coloring.LowerBound
 
 namespace N1000000OrbitCounting
@@ -388,7 +392,7 @@ private theorem encode_decode_id (k : DirIdx) :
   simpa using this
 
 /-- Imported auxiliary declaration for the 2-coloring one-round formalization. -/
-noncomputable def baseOrbit_equiv_embedding (k : DirIdx) :
+noncomputable def baseOrbitEquivEmbedding (k : DirIdx) :
     BaseOrbit k ≃ (FreeCol k ↪ AvailFrom3) where
   toFun := encodeBaseOrbit k
   invFun := decodeBaseOrbit k
@@ -399,7 +403,7 @@ theorem baseOrbit_card (k : DirIdx) : Fintype.card (BaseOrbit k) = baseTypeCount
   classical
   -- Convert to embeddings of the free columns into the `n-3` outside symbols.
   have hEquiv : Fintype.card (BaseOrbit k) = Fintype.card (FreeCol k ↪ AvailFrom3) :=
-    Fintype.card_congr (baseOrbit_equiv_embedding k)
+    Fintype.card_congr (baseOrbitEquivEmbedding k)
   -- Count embeddings via falling factorial.
   have hEmb :
       Fintype.card (FreeCol k ↪ AvailFrom3)

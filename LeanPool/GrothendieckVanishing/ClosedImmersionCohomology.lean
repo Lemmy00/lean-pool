@@ -76,15 +76,15 @@ noncomputable def PushforwardHIso
         simpa [S, SX] using
           (show cokernel (SX.g.hom.app (op ⊤)) ≅ AddCommGrpCat.of (Sheaf.H G 1) from by
             change cokernel (S.g.hom.app (op ⊤)) ≅ AddCommGrpCat.of (Sheaf.H S.X₁ 1)
-            exact sheafH1_cokernel_iso_of_subsingleton_middle hSE (hSrcSub 0)).symm ≪≫
-          sheafH1_cokernel_iso_of_subsingleton_middle hSE_X (hTgtSub 0)
+            exact sheafH1CokernelIsoOfSubsingletonMiddle hSE (hSrcSub 0)).symm ≪≫
+          sheafH1CokernelIsoOfSubsingletonMiddle hSE_X (hTgtSub 0)
     | succ m =>
       exact by
         simpa [S, SX] using
-          (sheafH_succ_iso_of_subsingleton_middle hSE (m + 1) (hSrcSub m)
+          (sheafHSuccIsoOfSubsingletonMiddle hSE (m + 1) (hSrcSub m)
             (hSrcSub (m + 1))).symm ≪≫
         ih_push S.X₃ ≪≫
-          sheafH_succ_iso_of_subsingleton_middle hSE_X (m + 1) (hTgtSub m)
+          sheafHSuccIsoOfSubsingletonMiddle hSE_X (m + 1) (hTgtSub m)
             (hTgtSub (m + 1))
 
 /-- Closed-immersion step: if the kernel term of the closed-immersion

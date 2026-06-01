@@ -3,7 +3,16 @@ Copyright (c) 2026 Evan Chen, Kenny Lau, Ken Ono, Jujian Zhang. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Chen, Kenny Lau, Ken Ono, Jujian Zhang
 -/
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Polyrith
 import Mathlib.Analysis.Fourier.ZMod
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
@@ -17,6 +26,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Data.ZMod.Coprime
 
+/-!
+# LeanPool.LatticeTriangle.Solution
+-/
 
 /-- The largest prime factor of `n`, or `0` if `n` has no prime factors (i.e. `n ≤ 1`). -/
 def largestPrimeFactor (n : ℕ) : ℕ :=
@@ -35,7 +47,7 @@ def truncatedObtuseRegion (n : ℕ) (η : ℝ) : Set (ℤ × ℤ) :=
 def intervalSet (n : ℕ) (m : ℕ) : Set (ZMod n) :=
   {x : ZMod n | 1 ≤ ZMod.val x ∧ ZMod.val x ≤ m}
 
-instance intervalSet_decidableMem (n : ℕ) (m : ℕ) :
+instance intervalSetDecidableMem (n : ℕ) (m : ℕ) :
     DecidablePred (· ∈ intervalSet n m) :=
   fun _ => instDecidableAnd
 

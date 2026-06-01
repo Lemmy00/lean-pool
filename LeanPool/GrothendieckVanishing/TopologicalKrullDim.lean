@@ -6,8 +6,17 @@ Authors: Vasily Ilin, Brian Nugent
 
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Tactic
-
+import Mathlib.Topology.Sets.Opens
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Polyrith
 /-!
 # Topological Krull Dimension
 
@@ -35,7 +44,7 @@ API for topological Krull dimension on irreducible spaces.
 
 universe u
 
-open CategoryTheory TopologicalSpace Limits
+open CategoryTheory TopologicalSpace
 
 /-! ## Irreducible spaces of dimension 0 -/
 

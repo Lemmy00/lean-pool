@@ -10,6 +10,7 @@ import LeanPool.GrothendieckVanishing.FinitelyGeneratedVanishing
 import LeanPool.GrothendieckVanishing.FlasqueVanishing
 import LeanPool.GrothendieckVanishing.TopologicalKrullDim
 import LeanPool.GrothendieckVanishing.ZeroOutside
+import Mathlib.GroupTheory.Archimedean
 
 /-!
 # Irreducible positive-dimensional vanishing

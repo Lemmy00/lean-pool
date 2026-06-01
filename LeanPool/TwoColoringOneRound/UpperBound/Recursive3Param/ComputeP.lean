@@ -8,6 +8,14 @@ import LeanPool.TwoColoringOneRound.UpperBound.Recursive3Param.Basic
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
+/-!
+Computation of `ClassicalAlgorithm.p` for `recursive3ParamAlg`.
+
+This file will prove that the 3-parameter recursive cutoff algorithm from
+`Distributed2Coloring/UpperBound/Recursive3Param.lean` satisfies
+`ClassicalAlgorithm.p recursive3ParamAlg < 24118/100000`.
+-/
+
 namespace Distributed2Coloring
 
 open MeasureTheory
@@ -16,13 +24,6 @@ open scoped unitInterval
 namespace UpperBound
 namespace Recursive3Param
 
-/-!
-Computation of `ClassicalAlgorithm.p` for `recursive3ParamAlg`.
-
-This file will prove that the 3-parameter recursive cutoff algorithm from
-`Distributed2Coloring/UpperBound/Recursive3Param.lean` satisfies
-`ClassicalAlgorithm.p recursive3ParamAlg < 24118/100000`.
--/
 
 open scoped ENNReal
 

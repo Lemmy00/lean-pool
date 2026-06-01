@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Tactic.LinearCombinationPrime
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Univalent Function Classes: classS and classSigma
@@ -180,7 +180,7 @@ lemma analyticOn_dslope_of_analyticOn (f : ℂ → ℂ) :
             rw [intervalIntegral.integral_sub] <;> norm_num [h_ftc]
             · field_simp
               have := h_ftc 0 1; norm_num at this
-              linear_combination' this
+              linear_combination this
             · apply_rules [ContinuousOn.intervalIntegrable]
               have h_cont : ContinuousOn (deriv f) (ball 0 1) := by
                 have h_cont : AnalyticOn ℂ (deriv f) (ball 0 1) := by
@@ -544,7 +544,7 @@ lemma exists_log_of_analytic_nonzero_on_ball (f : ℂ → ℂ)
         rw [intervalIntegral.integral_congr fun t ht =>
           by rw [hH_const _ (h_path t <| by simpa using ht)]]; norm_num
       have h_eq : H z = H 0 := by
-        linear_combination' h_int.symm.trans h_zero
+        linear_combination h_int.symm.trans h_zero
       exact h_eq
     exact hH_const z hz
   have hf_eq : ∀ z ∈ ball 0 1, f z = H 0 * exp (g0 z) := by
@@ -569,7 +569,7 @@ lemma exists_sqrt_f_div_z (f : ℂ → ℂ) (hf : f ∈ classS) :
     · exact fun z a ↦ dslope_ne_zero_of_in_S f hf z a
   obtain ⟨n, hn⟩ : ∃ n : ℤ, g 0 = 2 * Real.pi * I * n := by
     have := hg.2 0; norm_num [hf.2.2] at this; rw [exp_eq_one_iff] at this
-    obtain ⟨n, hn⟩ := this; exact ⟨n, by linear_combination' hn⟩
+    obtain ⟨n, hn⟩ := this; exact ⟨n, by linear_combination hn⟩
   refine ⟨fun z => exp ((g z - 2 * Real.pi * I * n) / 2), ?_, ?_, ?_⟩
   · exact DifferentiableOn.analyticOn (by exact DifferentiableOn.cexp (DifferentiableOn.div_const (
       hg.1.differentiableOn.sub_const _) _)) (isOpen_ball)
@@ -604,7 +604,7 @@ theorem square_root_transform_in_S (f : ℂ → ℂ) (hf : f ∈ classS) :
       have h_inj : z^2 = w^2 := by
         have h_inj : f (z^2) = f (w^2) := by
           have h_f_eq : z^2 * h (z^2)^2 = w^2 * h (w^2)^2 := by
-            linear_combination' h_eq' * (z * h (z ^ 2) + w * h (w ^ 2))
+            linear_combination h_eq' * (z * h (z ^ 2) + w * h (w ^ 2))
           by_cases hz' : z ^ 2 = 0 <;> by_cases hw' : w ^ 2 = 0 <;> simp_all [mul_div_cancel₀]
         exact hf.2.1 (by simpa using hz) (by simpa using hw) h_inj
       by_cases hzw : z = w <;> simp_all [sq_eq_sq_iff_eq_or_eq_neg]

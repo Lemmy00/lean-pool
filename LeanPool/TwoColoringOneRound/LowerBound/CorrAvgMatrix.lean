@@ -9,6 +9,10 @@ import Mathlib.Data.Rat.Star
 
 import LeanPool.TwoColoringOneRound.LowerBound.Correlation
 
+/-!
+# LeanPool.TwoColoringOneRound.LowerBound.CorrAvgMatrix
+-/
+
 namespace Distributed2Coloring.LowerBound
 
 namespace Correlation

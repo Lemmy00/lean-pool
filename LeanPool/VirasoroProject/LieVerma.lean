@@ -126,13 +126,13 @@ def ofBasis {ι : Type*} [Nontrivial 𝕜] [IsCancelMulZero 𝕜] [Module.IsTors
 variable {𝕜 𝓰} in
 /-- The parts of a triangular decomposition determined by a basis have natural bases by
 construction. -/
-noncomputable def _root_.VirasoroProject.TriangularDecomposition.ofBasis.basis_part {ι : Type*}
+noncomputable def _root_.VirasoroProject.TriangularDecomposition.ofBasis.basisPart {ι : Type*}
     [Nontrivial 𝕜] [IsCancelMulZero 𝕜] [Module.IsTorsionFree 𝕜 𝓰]
     (B : Basis ι 𝕜 𝓰) (Bp : SignType → Set ι)
     (Bp_disj : Pairwise (fun ε₁ ε₂ ↦ Disjoint (Bp ε₁) (Bp ε₂)))
     (Bp_cover : ⋃ ε, Bp ε = Set.univ) (ε : SignType) :
     Basis (Bp ε) 𝕜 ((ofBasis B Bp Bp_disj Bp_cover).part ε) :=
-  Basis.basis_submodule_span B (Bp ε)
+  Basis.basisSubmoduleSpan B (Bp ε)
 
 variable {𝕜 𝓰}
 variable (tri : TriangularDecomposition 𝕜 𝓰)

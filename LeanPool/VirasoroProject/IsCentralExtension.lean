@@ -189,7 +189,7 @@ extending Lie algebras. -/
 noncomputable def _root_.VirasoroProject.LieAlgebra.IsExtension.basis
     {ιA ιG : Type u'} (basA : Basis ιA 𝕜 𝓪) (basG : Basis ιG 𝕜 𝓰) :
     Basis (ιA ⊕ ιG) 𝕜 𝓮 :=
-  ses_basis basA basG (LieSubmodule.mk_eq_bot_iff.mp ex.ker_eq_bot)
+  sesBasis basA basG (LieSubmodule.mk_eq_bot_iff.mp ex.ker_eq_bot)
     (congr_arg LieSubalgebra.toSubmodule ex.exact) hσ
 
 @[simp] lemma _root_.VirasoroProject.LieAlgebra.IsExtension.basis_eq_of_left

@@ -15,7 +15,7 @@ that two central extensions are isomorphic if the corresponding cocycles differ 
 
 * `LieTwoCocycle.CentralExtension`: The central extension of a Lie algebra 𝓰 by an abelian Lie
   algebra 𝓪 defined by a 2-cocycle γ ∈ H²(𝓰,𝓪).
-* `LieTwoCocycle.CentralExtension.equiv_of_lieTwoCoboundary`: An isomorphism between the central
+* `LieTwoCocycle.CentralExtension.equivOfLieTwoCoboundary`: An isomorphism between the central
   extensions defined by two 2-cocycles which differ by a coboundary.
 
 ## Main statements
@@ -238,15 +238,15 @@ lemma hom_of_coboundary_add (γ₁ γ₂ γ₃ : LieTwoCocycle 𝕜 𝓰 𝓪)
 
 /-- A Lie algebra isomorphism between two central extensions determined by cocycles
 which differ by a coboundary. -/
-noncomputable def equiv_of_lieTwoCoboundary {γ' : LieTwoCocycle 𝕜 𝓰 𝓪}
+noncomputable def equivOfLieTwoCoboundary {γ' : LieTwoCocycle 𝕜 𝓰 𝓪}
     (h : γ' - γ ∈ LieTwoCoboundary 𝕜 𝓰 𝓪) :
     (γ.CentralExtension) ≃ₗ⁅𝕜⁆ (γ'.CentralExtension) :=
   let β := h.choose
   have obs : γ + β.bdry = γ' := by
-    change γ + LieOneCochain_bdryHom _ _ _ h.choose = γ'; simp [h.choose_spec]
+    change γ + LieOneCochainBdryHom _ _ _ h.choose = γ'; simp [h.choose_spec]
   have obs' : γ' + -β.bdry = γ := by
-    change γ' - LieOneCochain_bdryHom _ _ _ h.choose = γ; simp [h.choose_spec]
-  LieEquiv.mk_of_comp_eq_id
+    change γ' - LieOneCochainBdryHom _ _ _ h.choose = γ; simp [h.choose_spec]
+  LieEquiv.mkOfCompEqId
       (f := (LieTwoCocycle.CentralExtension.congr obs).toLieHom.comp <| β.bdryHom γ)
       (g := (LieTwoCocycle.CentralExtension.congr obs').toLieHom.comp <| (-β).bdryHom γ')
       (by

@@ -383,8 +383,8 @@ lemma bound_4_point_9_upper (hε : 0 < ε) (f : ℕ → ℝ) (h45 : Bound4Point5
   linear_combination h45.lower + hε
 
 /-- Define `δₛ` to be the sum of the `δ_` values for `a, b, c`. -/
-def delta_s (d : ℕ) (a b c : ℕ → ℝ) := δ_ d a + δ_ d b + δ_ d c
-local notation "δₛ" => delta_s d a b c
+def deltaS (d : ℕ) (a b c : ℕ → ℝ) := δ_ d a + δ_ d b + δ_ d c
+local notation "δₛ" => deltaS d a b c
 
 lemma δₛ_eq : δₛ = δ_ d a + δ_ d b + δ_ d c := rfl
 

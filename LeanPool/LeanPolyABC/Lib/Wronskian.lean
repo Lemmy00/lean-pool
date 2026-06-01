@@ -6,6 +6,10 @@ Authors: Seewoo Lee
 
 import Mathlib.Algebra.Polynomial.Derivative
 
+/-!
+# LeanPool.LeanPolyABC.Lib.Wronskian
+-/
+
 noncomputable section
 
 open scoped Polynomial

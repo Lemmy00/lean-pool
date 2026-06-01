@@ -12,6 +12,10 @@ import LeanPool.TwoColoringOneRound.LowerBound.N1000000OrbitCounting
 import LeanPool.TwoColoringOneRound.LowerBound.N1000000PairTransitivity
 import LeanPool.TwoColoringOneRound.LowerBound.N1000000StructureConstants
 
+/-!
+# LeanPool.TwoColoringOneRound.LowerBound.N1000000IntersectionCounting
+-/
+
 namespace Distributed2Coloring.LowerBound
 
 namespace N1000000IntersectionCounting

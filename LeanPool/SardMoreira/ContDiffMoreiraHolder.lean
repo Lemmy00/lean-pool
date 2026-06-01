@@ -11,9 +11,22 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.UnitInterval
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Polyrith
 import LeanPool.SardMoreira.ContDiff
 import LeanPool.SardMoreira.ContinuousMultilinearMap
+
+/-!
+# LeanPool.SardMoreira.ContDiffMoreiraHolder
+-/
 
 open scoped unitInterval Topology NNReal
 open Asymptotics Filter Set

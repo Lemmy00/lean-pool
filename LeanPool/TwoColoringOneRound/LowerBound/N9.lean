@@ -7,11 +7,17 @@ Authors: Jukka Suomela
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic
-
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Polyrith
 import LeanPool.TwoColoringOneRound.LowerBound.Defs
-
-namespace Distributed2Coloring.LowerBound
 
 /-!
 ## Warm-up: `n = 9` gives `> 20%`
@@ -24,6 +30,9 @@ This file proves a small “warm-up” theorem matching the report:
 
 All proofs are kernel-checked (no `native_decide`).
 -/
+
+namespace Distributed2Coloring.LowerBound
+
 
 namespace N9
 

@@ -10,6 +10,10 @@ import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 import LeanPool.SardMoreira.ImplicitFunction
 import LeanPool.SardMoreira.LocalEstimates
 
+/-!
+# LeanPool.SardMoreira.Chart
+-/
+
 noncomputable section
 
 open scoped unitInterval Topology NNReal

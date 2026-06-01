@@ -7,8 +7,16 @@ Authors: ruplet
 -- for a quick demo, jump straight to `theorem add_assoc`
 import Mathlib.Tactic.Core
 import Mathlib.Logic.Basic
-import Mathlib.Tactic
-
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Polyrith
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Complexity
@@ -22,6 +30,10 @@ import LeanPool.FormalizationOfBoundedArithmetic.Complexity
 import LeanPool.FormalizationOfBoundedArithmetic.Order
 import LeanPool.FormalizationOfBoundedArithmetic.BasicSingleSorted
 import LeanPool.FormalizationOfBoundedArithmetic.SimpRules
+
+/-!
+# LeanPool.FormalizationOfBoundedArithmetic.IOPEN
+-/
 
 open FirstOrder Language BoundedFormula
 
@@ -57,8 +69,8 @@ by
     ((x + y) + z) =' (x + (y + z))
   have ind := iopen.open_induction <| display3 .z phi
   unfold phi at ind
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   rw [forall_swap_231]
   apply ind ?base ?step
   · intro x y
@@ -79,8 +91,8 @@ lemma add_zero_comm
 by
   have ind := iopen.open_induction <| display1
     (((x + 0) =' (0 + x)) : Formula _ (Vars1 .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   apply ind ?base ?step
   · trivial
   · intro a ha
@@ -103,8 +115,8 @@ theorem add_one_comm
 by
   have ind := iopen.open_induction <| display1
     (((x + 1) =' (1 + x)) : Formula _ (Vars1 .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   apply ind ?base ?step
   · calc
       (0 : M) + 1 = 1 := zero_add 1
@@ -120,8 +132,8 @@ theorem add_comm
 by
   have ind := iopen.open_induction <| display2 .y
     (((x + y) =' (y + x)) : Formula _ (Vars2 .y .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   rw [forall_comm]
   apply ind ?base ?step
   · intro x
@@ -144,8 +156,8 @@ theorem mul_add
 by
   have ind := iopen.open_induction <| display3 .z
      ((x * (y + z)) =' ((x * y) + (x * z)) : Formula _ (Vars3 .z .x .y))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   rw [forall_swap_231]
   apply ind ?base ?step
   · intro a b
@@ -182,8 +194,8 @@ theorem mul_assoc
   by
     have ind := iopen.open_induction <| display3 .z
       ((((x * y) * z) =' (x * (y * z))) : Formula _ (Vars3 .z .x .y))
-    simp_complexity at ind
-    simp_induction at ind
+    simpComplexity at ind
+    simpInduction at ind
     rw [forall_swap_231]
     apply ind ?base ?step
     · intro x y
@@ -210,8 +222,8 @@ lemma zero_mul
 by
   have ind := iopen.open_induction <| display1
     (((0 * x) =' 0) : Formula _ (Vars1 .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   apply ind ?base ?step
   · rw [B5]
   · intro x hInd_0_x
@@ -224,8 +236,8 @@ lemma one_mul
 by
   have ind := iopen.open_induction <| display1
     (((1 * x) =' x) : Formula _ (Vars1 .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   apply ind ?base ?step
   · rw [B5]
   · intro x hInd_1_x
@@ -237,8 +249,8 @@ lemma mul_add_1_left
 by
   have ind := iopen.open_induction <| display2 .y
     (((x + 1) * y) =' ((x * y) + y) : Formula _ (Vars2 .y .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   rw [forall_comm]
   apply ind ?base ?step
   · intro x
@@ -268,8 +280,8 @@ theorem mul_comm
 by
   have ind := iopen.open_induction <| display2 .y
     (((x * y) =' (y * x)) : Formula _ (Vars2 .y .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   rw [forall_comm]
   apply ind ?base ?step
   · intro x
@@ -294,8 +306,8 @@ theorem mp
   by
     have ind := iopen.open_induction <| display3 .z
       (((x + z) =' (y + z) ⟹ (x =' y)) : Formula _ (Vars3 .z .x .y))
-    simp_complexity at ind
-    simp_induction at ind
+    simpComplexity at ind
+    simpInduction at ind
     rw [forall_swap_231]
     apply ind ?base ?step
     · intro x y
@@ -366,8 +378,8 @@ theorem ne_succ
 by
   have ind := iopen.open_induction <| display1
     ((x ≠' (x + 1)) : Formula _ (Vars1 .x))
-  simp_complexity at ind
-  simp_induction at ind
+  simpComplexity at ind
+  simpInduction at ind
   apply ind ?base ?step
   · intro h
     -- TODO: why this self is necessary?

@@ -6,8 +6,7 @@ Authors: Judith Ludwig, Christian Merten
 import LeanPool.BruhatTits.Lattice.Transvect
 import LeanPool.BruhatTits.Utils.LinearAlgebra
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-
-open Module
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # The `R ⧸ ϖ R`-vector space `L ⧸ ϖ L`
@@ -29,6 +28,9 @@ the two-dimensional `R ⧸ ϖ R`-vector space `L ⧸ ϖ L`.
   `ϖ L` and `L``.
 
 -/
+
+open Module
+
 
 suppress_compilation
 
@@ -59,7 +61,8 @@ instance (L : Lattice R) : Module (ResidueField R) L.quotient :=
     Module (R ⧸ maximalIdeal R) (L.M ⧸ (maximalIdeal R • ⊤ : Submodule R L.M))
 
 
-instance (priority := 9999999) : SMul (↥R) (↥R ⧸ maximalIdeal ↥R) :=
+instance (priority := 9999999) instSMulSubtypeMemSubringQuotientIdealMaximalIdealLeanPool :
+    SMul (↥R) (↥R ⧸ maximalIdeal ↥R) :=
   Submodule.Quotient.instSMul (maximalIdeal ↥R)
 
 instance (priority := 9999999) (L : Lattice R) :

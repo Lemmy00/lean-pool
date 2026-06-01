@@ -5,6 +5,10 @@ Authors: Vincent Beffara
 -/
 import LeanPool.RiemannMappingTheorem.Hurwitz
 
+/-!
+# LeanPool.RiemannMappingTheorem.DerivInj
+-/
+
 open Complex Metric circleIntegral Topology Filter Set
 
 variable {ι α β : Type*} {U : Set ℂ} {c z₀ : ℂ} {r : ℝ} {f g : ℂ → ℂ}

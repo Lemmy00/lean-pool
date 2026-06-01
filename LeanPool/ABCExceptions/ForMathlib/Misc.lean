@@ -11,6 +11,10 @@ import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Finset.Powerset
 
+/-!
+# LeanPool.ABCExceptions.ForMathlib.Misc
+-/
+
 noncomputable section
 
 open Set

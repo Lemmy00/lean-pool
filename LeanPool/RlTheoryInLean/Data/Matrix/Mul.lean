@@ -9,6 +9,10 @@ import Mathlib.Tactic.Ring.RingNF
 
 import Mathlib.Data.Real.Basic
 
+/-!
+# LeanPool.RlTheoryInLean.Data.Matrix.Mul
+-/
+
 open Finset Real
 
 namespace Matrix

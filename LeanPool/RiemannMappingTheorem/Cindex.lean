@@ -7,6 +7,10 @@ import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 
+/-!
+# LeanPool.RiemannMappingTheorem.Cindex
+-/
+
 open Real Complex Function TopologicalSpace Filter Topology Metric MeasureTheory Nat
 
 /-- The argument-principle integral

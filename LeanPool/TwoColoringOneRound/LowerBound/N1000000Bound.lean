@@ -10,6 +10,10 @@ import LeanPool.TwoColoringOneRound.LowerBound.N1000000MuLinear
 import LeanPool.TwoColoringOneRound.LowerBound.N1000000Objective
 import LeanPool.TwoColoringOneRound.LowerBound.N1000000WeakDuality
 
+/-!
+# LeanPool.TwoColoringOneRound.LowerBound.N1000000Bound
+-/
+
 namespace Distributed2Coloring.LowerBound
 
 namespace N1000000Bound

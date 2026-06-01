@@ -11,6 +11,10 @@ import LeanPool.FormalizationOfBoundedArithmetic.Complexity
 import LeanPool.FormalizationOfBoundedArithmetic.IsEnum
 import LeanPool.FormalizationOfBoundedArithmetic.IOPEN
 
+/-!
+# LeanPool.FormalizationOfBoundedArithmetic.IDelta0
+-/
+
 open FirstOrder Language BoundedFormula
 
 /-- Models of open induction extended with induction for delta-zero formulas. -/
@@ -57,7 +61,7 @@ by
       rw [IsOpen.not]
       constructor; constructor
   )
-  simp_induction at ind
+  simpInduction at ind
   apply ind ?base ?step <;> clear ind ind1 ind2
   · simp only [IsEmpty.forall_iff]
   · intro a hind h
@@ -107,7 +111,7 @@ by
       · constructor; constructor
     · constructor; constructor; constructor
   )
-  simp_induction at ind
+  simpInduction at ind
   intro x y
   apply ex_of_bdEx
   apply ind ?base ?step <;> clear ind1 ind2 ind3 ind
@@ -532,7 +536,7 @@ by
     · constructor; constructor; constructor
   )
   unfold ind1 at ind
-  simp_induction at ind
+  simpInduction at ind
   apply ind ?base ?step <;> clear ind ind1
   · intro y z hyz_z
     obtain ⟨hyz, hz⟩ := hyz_z

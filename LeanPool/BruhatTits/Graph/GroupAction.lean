@@ -6,8 +6,6 @@ Authors: Judith Ludwig, Christian Merten
 import LeanPool.BruhatTits.Graph.Graph
 import LeanPool.BruhatTits.Utils.GraphAction
 
-open Module
-
 /-!
 # Group actions on the Bruhat-Tits graph
 
@@ -25,6 +23,9 @@ In this file we equip the Bruhat-Tits graph with group actions of `GL₂(K)` and
   the subgroup of `GL₂(R)` that is upper triangular modulo `ϖ ^ n`.
 
 -/
+
+open Module
+
 
 -- Let R be a discrete valuation ring and K its field of fractions
 variable {K : Type*} [Field K]

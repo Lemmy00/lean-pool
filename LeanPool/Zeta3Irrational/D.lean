@@ -12,6 +12,10 @@ import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.NumberTheory.PrimeCounting
 
+/-!
+# LeanPool.Zeta3Irrational.D
+-/
+
 namespace LeanPool.Zeta3Irrational
 
 open scoped Nat

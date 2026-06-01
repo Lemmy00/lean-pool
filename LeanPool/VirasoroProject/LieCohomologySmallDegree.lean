@@ -250,7 +250,7 @@ instance : Module 𝕜 (LieTwoCocycle 𝕜 𝓰 𝓪) where
   add_smul c c' γ := by ext1; simpa using Module.add_smul c c' γ.toBilin
   zero_smul γ := by ext1; simp
 
-instance [LieAlgebra 𝕜 𝓰] [AddCommGroup 𝓪] [Module 𝕜 𝓪] :
+instance :
     AddCommGroup (LieTwoCocycle 𝕜 𝓰 𝓪) where
   zero_add γ := AddZeroClass.zero_add γ
   add_zero γ := AddZeroClass.add_zero γ
@@ -318,7 +318,7 @@ def _root_.VirasoroProject.LieOneCochain.bdry (β : LieOneCochain 𝕜 𝓰 𝓪
 variable (𝕜 𝓰 𝓪)
 
 /-- The `∂` as a linear map from Lie algebra 1-cochains to Lie algebra 2-cocycles. -/
-def _root_.VirasoroProject.LieOneCochain_bdryHom
+def _root_.VirasoroProject.LieOneCochainBdryHom
     : LieOneCochain 𝕜 𝓰 𝓪 →ₗ[𝕜] LieTwoCocycle 𝕜 𝓰 𝓪 where
   toFun β := β.bdry
   map_add' _ _ := rfl
@@ -326,14 +326,14 @@ def _root_.VirasoroProject.LieOneCochain_bdryHom
 
 @[simp] lemma _root_.VirasoroProject.LieOneCochain.neg_bdry
     (β : LieOneCochain 𝕜 𝓰 𝓪) : (-β).bdry = -β.bdry := by
-  change LieOneCochain_bdryHom 𝕜 𝓰 𝓪 (-β) = -LieOneCochain_bdryHom 𝕜 𝓰 𝓪 β
+  change LieOneCochainBdryHom 𝕜 𝓰 𝓪 (-β) = -LieOneCochainBdryHom 𝕜 𝓰 𝓪 β
   simp
 
 lemma _root_.VirasoroProject.LieOneCochain.bdry_apply (β : LieOneCochain 𝕜 𝓰 𝓪) (X Y : 𝓰) :
     β.bdry X Y = β (⁅X, Y⁆) := rfl
 
 /-- Lie algebra 2-coboundaries as a vector space. -/
-abbrev _root_.VirasoroProject.LieTwoCoboundary := LinearMap.range (LieOneCochain_bdryHom 𝕜 𝓰 𝓪)
+abbrev _root_.VirasoroProject.LieTwoCoboundary := LinearMap.range (LieOneCochainBdryHom 𝕜 𝓰 𝓪)
 
 end LieTwoCoboundary -- section
 
