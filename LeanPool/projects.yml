@@ -1788,3 +1788,37 @@ projects:
     msc:
       - "13B35"
       - "13H10"
+  - slug: quasi-borel-spaces
+    title: Quasi-Borel Spaces
+    summary: Formalizes quasi-Borel spaces and quasi-Borel pre-domains, a category for higher-order probability theory.
+    branch: probability theory
+    entry_module: LeanPool.QuasiBorelSpaces
+    authors:
+      - Anthony Vandikas
+      - Kiarash Sotoudeh
+    source:
+      url: https://github.com/YellPika/quasi-borel-spaces
+      github_repo: YellPika/quasi-borel-spaces
+    status: verified
+    main_declarations:
+      - QuasiBorelSpace
+      - OmegaQuasiBorelSpace
+      - QuasiBorelSpace.ProbabilityMeasure
+    main_results:
+      - declaration: QuasiBorelSpace
+        informal: Defines a quasi-Borel space as a type with a set of random variables closed under constants, measurable precomposition, and gluing.
+      - declaration: QuasiBorelSpace.IsHom
+        informal: Defines morphisms of quasi-Borel spaces as maps that preserve random variables under precomposition.
+      - declaration: OmegaQuasiBorelSpace
+        informal: Combines the quasi-Borel and ω-complete partial order structures with the compatibility axiom of Vakar-Kammar-Staton.
+      - declaration: QuasiBorelSpace.ProbabilityMeasure
+        informal: Defines the probability-measure monad on quasi-Borel spaces by quotienting pre-probability measures by integral equivalence.
+    tags:
+      - probability
+      - category-theory
+      - measure-theory
+      - denotational-semantics
+    msc:
+      - "60A05"
+      - "18C50"
+      - "68Q55"
