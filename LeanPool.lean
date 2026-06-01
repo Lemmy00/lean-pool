@@ -9,6 +9,10 @@ import LeanPool.AharoniKorman
 import LeanPool.AharoniKorman.Counterexample
 import LeanPool.AharoniKorman.ForMathlib
 import LeanPool.AharoniKorman.ForMathlib.Misc
+import LeanPool.Apportionment
+import LeanPool.Apportionment.Basic
+import LeanPool.Apportionment.PlausibleInstances
+import LeanPool.Apportionment.Utils
 import LeanPool.ArchonFirstProofResults
 import LeanPool.ArchonFirstProofResults.FirstProof4
 import LeanPool.ArchonFirstProofResults.FirstProof4.Auxiliary
