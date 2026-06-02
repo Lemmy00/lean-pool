@@ -1,11 +1,44 @@
 # Contributing to Lean Pool
 
-Lean Pool sits between `mathlib` and `merely-true` — like arXiv for formal mathematics. We welcome medium and large formalizations of serious mathematics and related disciplines. Check the existing projects in Lean Pool for examples. Pull Requests need to pass the deterministic CI such as linters, the LLM reviewer and the profiler.
+Lean Pool collects medium-to-large formalizations of serious mathematics and related disciplines (see [`MOTIVATION.md`](MOTIVATION.md)). Browse [`LeanPool/`](LeanPool/) for examples and [`candidates/CRITERIA.txt`](candidates/CRITERIA.txt) for what we include. Contributions of all sizes are welcome.
 
-## Linting and Testing
+## Submitting a project
 
-**Never change the checks or gates themselves.** Do not modify `.github/workflows/`, `.github/CODE_QUALITY.md`, `python/lean_pool/quality.py`, `scripts/nolints-style.txt`, the `[leanOptions]`/lint settings in `lakefile.toml`, or any other CI step, quality gate, or linter configuration — and do not add an exception or waiver of any kind (a `size-limit-ok` comment, a `nolints-style.txt` entry, `set_option linter.X false`, etc.) — unless the user has explicitly asked for that exact change. If a check fails, fix the code, not the check. This applies to everyone, and especially to AI agents working on the repo.
+There are two paths:
 
-### Lean
+- **Propose a repo.** Open an issue with the GitHub URL and a maintainer can import it. Repos that Reservoir does not index can be added to [`candidates/manual.txt`](candidates/manual.txt).
+- **Open a content PR.** Add your project under `LeanPool/<YourProject>/`, register it in [`LeanPool/projects.yml`](LeanPool/projects.yml), and regenerate the index with `lake exe mk_all`.
 
-CI currently runs `lake exe mk_all --check`, `lake build LeanPool`, `lake exe runLinter LeanPool`, `lake exe lint-style LeanPool`, and the repository quality checker (see [`.github/workflows/lean_action_ci.yml`](.github/workflows/lean_action_ci.yml)). Build locally with `lake build`. Project-wide code-quality conventions and future work are documented in [`.github/CODE_QUALITY.md`](.github/CODE_QUALITY.md).
+Either way the result must pass CI: the deterministic linters, the LLM reviewer, and the profiler. Accepted projects must be `sorry`-free, introduce no axioms beyond `Classical.choice`/`propext`/`Quot.sound`, and avoid `unsafe`/`partial`.
+
+## Dev setup
+
+Requires Lean (via [`elan`](https://leanprover-community.github.io/install/), with the toolchain pinned in [`lean-toolchain`](lean-toolchain)) and Python 3.13+ with [`uv`](https://docs.astral.sh/uv/).
+
+```bash
+make setup            # pull Mathlib oleans, build LeanPool, install Python tooling
+lake build            # build the Lean library
+cd python && uv sync  # Python tooling; add `--group test` for pytest
+```
+
+## Pull requests
+
+- **Don't mix content and non-content changes.** A content PR may modify **only** `LeanPool.lean`, `LeanPool/**/*.lean`, and `LeanPool/projects.yml`. Infra / CI / tooling / doc changes may touch other files, but must not be bundled with content. This is enforced by [`content-pr-guard.yml`](.github/workflows/content-pr-guard.yml).
+- **Never change the checks or gates.** Do not modify `.github/workflows/`, `.github/CODE_QUALITY.md`, `python/lean_pool/quality.py`, `scripts/nolints-style.txt`, the `[leanOptions]`/lint settings in `lakefile.toml`, or any other CI step or linter config — and do not add a waiver of any kind (a `size-limit-ok` comment, a `nolints-style.txt` entry, `set_option linter.X false`, etc.) — unless explicitly asked. If a check fails, fix the code, not the check. This applies to everyone, and especially to AI agents.
+- **Commits.** Use imperative mood ("Add manifest fetcher", not "Added"). Do not include AI-generated tags ("Generated with…", "Co-authored-by: …").
+- **Branches.** `yourname/description` for solo work; `feature/`/`fix/` prefixes when shared. Open PRs early (draft + `WIP` is fine) and use `Closes #123` to link issues.
+
+## Linting and testing
+
+**Lean.** CI runs `lake exe mk_all --check`, `lake build LeanPool`, `lake exe runLinter LeanPool`, `lake exe lint-style LeanPool`, and the quality checker (see [`lean_action_ci.yml`](.github/workflows/lean_action_ci.yml)). Conventions live in [`.github/CODE_QUALITY.md`](.github/CODE_QUALITY.md).
+
+**Python.** From `python/`: `uv run ruff check`, `uv run ruff format`, and `uv run --group test pytest`.
+
+## Coding guidelines
+
+- **Naming.** Full words, not abbreviations (`configuration`, not `config`).
+- **Comments.** Only when the *why* is non-obvious; don't restate what the code does.
+- **Functions.** Keep bodies under ~40 lines; write self-documenting code.
+- **Logging.** Use loggers in library code; CLI entry points may print user-facing output.
+- **Python.** Absolute imports at the top of the file; modern type hints (`|`, built-in `list`/`dict`); module-level and Google-style function docstrings.
+- **Lean.** See [`.github/CODE_QUALITY.md`](.github/CODE_QUALITY.md).
