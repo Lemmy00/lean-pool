@@ -57,6 +57,7 @@ projects:
       authors:
         - Frits Beukers
       doi: "10.1112/blms/11.3.268"
+      arxiv: "2503.07625"
       github_repo: ahhwuhu/zeta_3_irrational
     status: verified
     main_declarations:
@@ -381,7 +382,7 @@ projects:
     authors:
       - FrenzyMath
     source:
-      url: https://github.com/frenzymath/Archon-FirstProof-Results
+      arxiv: "2602.05192"
       github_repo: frenzymath/Archon-FirstProof-Results
     status: verified
     main_declarations:
@@ -485,7 +486,7 @@ projects:
     authors:
       - Samuel Schlesinger
     source:
-      url: https://github.com/SamuelSchlesinger/sensitivity-conjecture
+      arxiv: "1907.00847"
       github_repo: SamuelSchlesinger/sensitivity-conjecture
     status: verified
     main_declarations:
@@ -604,6 +605,7 @@ projects:
       - Martin Dvorak
     source:
       arxiv: "2409.08119"
+      doi: "10.46298/afm.14253"
       github_repo: madvorak/duality
     status: verified
     main_declarations:
@@ -706,7 +708,8 @@ projects:
       - Siddhartha Gadgil
       - Anand Rao
     source:
-      url: https://github.com/siddhartha-gadgil/Polylean
+      arxiv: "2102.11818"
+      doi: "10.4007/annals.2021.194.3.9"
       github_repo: siddhartha-gadgil/Polylean
     status: verified
     main_declarations:
@@ -735,7 +738,8 @@ projects:
       - Henning Basold
       - Peter Bruin
     source:
-      url: https://github.com/Dominique-Lawson/Directed-Topology-Lean-4
+      arxiv: "2312.06506"
+      doi: "10.4230/LIPIcs.ITP.2024.8"
       github_repo: Dominique-Lawson/Directed-Topology-Lean-4
     status: verified
     main_declarations:
@@ -805,12 +809,12 @@ projects:
       - Bhavik Mehta
       - Arend Mellendijk
     source:
-      url: https://arxiv.org/abs/2410.12234
       title: Bounds on the exceptional set in the abc conjecture
       authors:
         - Tim Browning
         - Jared Duker Lichtman
         - Joni Teräväinen
+      arxiv: "2410.12234"
       github_repo: b-mehta/ABC-Exceptions
     status: verified
     main_declarations:
@@ -838,7 +842,7 @@ projects:
     authors:
       - Joris Roos
     source:
-      url: https://github.com/roos-j/lean-booleanfun
+      doi: "10.1017/CBO9781139814782"
       github_repo: roos-j/lean-booleanfun
     status: verified
     main_declarations:
@@ -984,7 +988,8 @@ projects:
       title: A First Course in Noncommutative Rings
       authors:
         - T. Y. Lam
-      url: https://doi.org/10.1007/978-1-4419-8616-0
+      arxiv: "2405.04588"
+      doi: "10.1007/978-1-4419-8616-0"
       github_repo: JobPetrovcic/ArtinWedderburn
     status: verified
     main_declarations:
@@ -1099,7 +1104,8 @@ projects:
     authors:
       - Bhavik Mehta
     source:
-      url: https://github.com/b-mehta/AharoniKorman
+      arxiv: "2411.16844"
+      doi: "10.1007/BF00383948"
       github_repo: b-mehta/AharoniKorman
     status: verified
     main_declarations:
@@ -1205,7 +1211,7 @@ projects:
     authors:
       - Yury G. Kudryashov
     source:
-      url: https://github.com/urkud/SardMoreira
+      doi: "10.5565/PUBLMAT_45101_06"
       github_repo: urkud/SardMoreira
       paper: http://dmle.icmat.es/pdf/PUBLICACIONSMATEMATIQUES_2001_45_01_06.pdf
     status: verified
@@ -1262,7 +1268,7 @@ projects:
       - Seewoo Lee
     source:
       title: "Formalization of Polynomial ABC and FLT"
-      url: https://github.com/seewoo5/lean-poly-abc
+      arxiv: "2408.15180"
       github_repo: seewoo5/lean-poly-abc
     status: verified
     main_declarations:
@@ -1292,7 +1298,7 @@ projects:
       - Jineon Baek
     source:
       title: "On the Erdős–Tuza–Valtr Conjecture"
-      url: https://github.com/jcpaik/erdos-tuza-valtr
+      arxiv: "2206.04260"
       github_repo: jcpaik/erdos-tuza-valtr
     status: verified
     main_declarations:
@@ -1412,7 +1418,7 @@ projects:
     authors:
       - Hu Yongle
     source:
-      url: https://github.com/jjdishere/neukirch
+      doi: "10.1007/978-3-662-03983-0"
       github_repo: jjdishere/neukirch
     status: verified
     main_declarations:
@@ -1501,7 +1507,7 @@ projects:
       title: On dividing a square into triangles
       authors:
         - Paul Monsky
-      doi: "10.2307/2316270"
+      doi: "10.2307/2317329"
       github_repo: dhyan-aranha/Monsky
     status: verified
     main_declarations:
@@ -1621,6 +1627,7 @@ projects:
       - Monica Omar
     source:
       doi: 10.4169/amer.math.monthly.124.10.966
+      arxiv: "1810.08368"
       github_repo: themathqueen/monlib4
     status: verified
     main_declarations:
@@ -1775,7 +1782,7 @@ projects:
     authors:
       - FrenzyMath
     source:
-      url: "https://github.com/frenzymath/Anderson-Conjecture"
+      doi: "10.1007/978-1-4939-0925-4_2"
       github_repo: frenzymath/Anderson-Conjecture
     status: verified
     main_declarations:
@@ -1798,7 +1805,7 @@ projects:
       - Anthony Vandikas
       - Kiarash Sotoudeh
     source:
-      url: https://github.com/YellPika/quasi-borel-spaces
+      arxiv: "1701.02547"
       github_repo: YellPika/quasi-borel-spaces
     status: verified
     main_declarations:
@@ -1832,6 +1839,7 @@ projects:
       - Chris Birkbeck
     source:
       arxiv: "1808.00997"
+      doi: "10.1155/2019/6130464"
       github_repo: CBirkbeck/LeanModularForms
     status: verified
     main_declarations:
