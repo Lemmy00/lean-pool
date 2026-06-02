@@ -7,7 +7,6 @@ import LeanPool.ABCExceptions.Section2
 import LeanPool.ABCExceptions.Section4
 import LeanPool.AFormalizationOfBorelDeterminacyInLean
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications
-import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.AiBanachMazur
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.Choquet
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.General
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.Meager

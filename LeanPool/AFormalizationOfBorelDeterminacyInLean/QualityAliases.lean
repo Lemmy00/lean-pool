@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
 
-import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.AiBanachMazur
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.Choquet
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.FinLists
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.BuildStrategies
@@ -121,12 +120,6 @@ alias system := GaleStewartGame.Covering.LvlStratHom.system
 alias systemOfObj := GaleStewartGame.Covering.LvlStratHom.systemOfObj
 alias systemToObj := GaleStewartGame.Covering.LvlStratHom.systemToObj
 end LvlStratHom
-
-namespace OpenSub
-alias coe_set := BanachMazur.OpenSub.coe_set
-alias nonempty_mem := BanachMazur.OpenSub.nonempty_mem
-alias restrict := BanachMazur.OpenSub.restrict
-end OpenSub
 
 namespace PartiallyUnravelled
 alias «continue» := GaleStewartGame.BorelDet'.PartiallyUnravelled.continue
