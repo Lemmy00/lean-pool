@@ -936,8 +936,10 @@ def _project_card(project: dict[str, Any]) -> str:
 def _format_source(source: Any) -> str:
     if isinstance(source, str):
         return source
-    key = next(key for key in SOURCE_KEY_ORDER if key in source)
-    return f"{key}:{source[key]}"
+    # List every recognized identifier, in arxiv/doi/url priority order.
+    return ", ".join(
+        f"{key}:{source[key]}" for key in SOURCE_KEY_ORDER if key in source
+    )
 
 
 def _format_msc(msc: Any) -> str:
