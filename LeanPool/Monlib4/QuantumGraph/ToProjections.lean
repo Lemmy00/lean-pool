@@ -215,7 +215,7 @@ theorem rankOne_psi_transpose_to_lin {n : Type _} [DecidableEq n] [Fintype n]
     Matrix.mul_one, Module.Dual.IsFaithfulPosMap.sig_apply_sig]
   have : (1 / 2 : ℝ) + -1 = -(1 / 2) := by norm_num
   rw [AlgEquiv.apply_symm_apply, Module.Dual.IsFaithfulPosMap.psi, LinearEquiv.coe_mk]
-  simp only [QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply, TensorProduct.map_tmul,
+  simp only [QuantumSet.Psi_apply, QuantumSet.PsiToFun_apply, TensorProduct.map_tmul,
     TensorProduct.toKronecker_apply, Module.End.one_apply, AlgEquiv.toLinearMap_apply,
     LinearEquiv.coe_coe, transposeAlgEquiv_symm_op_apply]
   rw [starAlgebra.modAut_zero, this]
@@ -296,7 +296,7 @@ theorem rankOne_toMatrix_transpose_psi_symm [hφ : φ.IsFaithfulPosMap]
   rw [Matrix.kmul_representation
     (vecMulVec (hφ.orthonormalBasis.repr x).ofLp (star (hφ.orthonormalBasis.repr y).ofLp))]
   simp only [map_sum, _root_.map_smul, kroneckerToTensorProduct_apply,
-    TensorProduct.map_tmul, QuantumSet.Psi_symm_apply, QuantumSet.Psi_invFun_apply,
+    TensorProduct.map_tmul, QuantumSet.Psi_symm_apply, QuantumSet.PsiInvFun_apply,
     vecMulVec_apply, neg_zero, starAlgebra.modAut_zero, AlgEquiv.one_apply]
   simp_rw [AlgEquiv.toLinearMap_apply, transposeAlgEquiv_apply, MulOpposite.unop_op,
     Module.End.one_apply, ← rankOne_lm_smul_smul, Pi.star_apply, star_star,
@@ -591,8 +591,6 @@ by
   letI : FiniteDimensional ℂ U :=
     Submodule.finiteDimensional_of_le
       (show U ≤ (⊤ : Submodule ℂ ℍ) from le_top)
-  have hUcomplete : IsComplete (U : Set ℍ) := Submodule.complete_of_finiteDimensional U
-  letI : CompleteSpace U := completeSpace_coe_iff_isComplete.mpr hUcomplete
   simp_rw [← rankOne_toMatrix_transpose_psi_symm, ← map_sum, ←
     Qam.fdOrthogonalProjection_eq_sum_rankOne (Qam.onbOfIdempotentAndReal hA1 hA2),
     Qam.orthogonalProjection'_eq, AlgEquiv.apply_symm_apply]
@@ -781,7 +779,7 @@ theorem psi_apply_complete_graph [hφ : φ.IsFaithfulPosMap] {t s : ℝ} :
   by
   withMatrixQuantumCtx[φ]
   simp only [Module.Dual.IsFaithfulPosMap.psi,
-    QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply, _root_.map_one]
+    QuantumSet.Psi_apply, QuantumSet.PsiToFun_apply, _root_.map_one]
   simp [star_one, MulOpposite.op_one, Algebra.TensorProduct.one_def]
 
 lemma AlgEquiv.TensorProduct.map_toLinearMap' {R S T U V : Type _} [CommSemiring R]

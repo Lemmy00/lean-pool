@@ -291,7 +291,7 @@ theorem homotopicWith_const_isMapOfPairs_of_unique_pi
   let f' : C(I^ Fin (n + 1), X) := f.comp i_d
   have hf' : Cube.IsMapOfPairs X A f' := fun y hy ↦ by
     unfold f' i_d iup
-    simp only [Arrow.mk_right, ContinuousMap.comp_apply]
+    simp only [ContinuousMap.comp_apply]
     change f ( (cubeBoundaryIncl (n + 1) ≫ e.inv.right) ⟨⟨y, hy⟩⟩ ) ∈ A
     change f ( (e.inv.left ≫ diskBoundaryIncl (n + 1)) ⟨⟨y, hy⟩⟩ ) ∈ A
     -- CategoryTheory.Arrow.iso_w e
@@ -303,7 +303,7 @@ theorem homotopicWith_const_isMapOfPairs_of_unique_pi
   let H' := H.toHomotopy.comp (ContinuousMap.Homotopy.refl d_i)
   have f'_d_i : f'.comp d_i = f := by
     unfold f' d_i i_d
-    simp only [Arrow.mk_right, ContinuousMap.comp_assoc]
+    simp only [ContinuousMap.comp_assoc]
     change _ = f.comp (ContinuousMap.id _)
     congr 1
     change e.inv.right.hom.comp ((iup.comp idown).comp e.hom.right.hom) = _
@@ -317,10 +317,7 @@ theorem homotopicWith_const_isMapOfPairs_of_unique_pi
       map_one_left x := by rw [H'.map_one_left x]; rfl
       prop' t x := by
         unfold H' d_i diskBoundaryIncl
-        simp only [Arrow.mk_right, ContinuousMap.toFun_eq_coe,
-          ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.comp_apply,
-          ContinuousMap.Homotopy.refl_apply, ContinuousMap.comp_apply,
-          ContinuousMap.HomotopyWith.coe_toHomotopy, ContinuousMap.coe_mk]
+        simp only [ContinuousMap.coe_mk]
         apply H.prop' t
         change idown ((diskBoundaryIncl (n + 1) ≫ e.hom.right) x) ∈ _
         -- diskPair.homeoCubePairULift_comm
@@ -330,7 +327,7 @@ theorem homotopicWith_const_isMapOfPairs_of_unique_pi
           intro ⟨z, hz⟩
           unfold idown cubeBoundaryIncl
           simp only [ContinuousMap.coe_mk]
-          simp_all only [Subtype.forall, Arrow.mk_right, ContinuousMap.comp_assoc, f', i_d, e,
+          simp_all only [Subtype.forall, ContinuousMap.comp_assoc, f', i_d, e,
             iup, d_i, idown]
           obtain ⟨val, property⟩ := a
           obtain ⟨val_1, property_1⟩ := t

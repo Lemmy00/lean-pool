@@ -45,7 +45,7 @@ under successor.
 
 The "successor" of a set `x` is defined as the insertion of `x` into itself.
 -/
-def inductive_set (E : ZFSet) : Prop := ∅ ∈ E ∧ ∀ n, n ∈ E → insert n n ∈ E
+def inductiveSet (E : ZFSet) : Prop := ∅ ∈ E ∧ ∀ n, n ∈ E → insert n n ∈ E
 
 theorem trans_imp_insert_trans {x : ZFSet} : transitive x → transitive (insert x x) := by
   intro trans y
@@ -56,9 +56,9 @@ theorem trans_imp_insert_trans {x : ZFSet} : transitive x → transitive (insert
   · simp_rw [subset_def, mem_insert_iff]
     exact fun _ _ => Or.inr (trans y ‹_› ‹_›)
 
-theorem inductive_sep {S} (P : ZFSet → Prop) (ind : inductive_set S)
-  (h₀ : P ∅) (h₁ : ∀ n ∈ S, P n → P (insert n n)) : inductive_set <| S.sep P := by
-  unfold inductive_set at *
+theorem inductive_sep {S} (P : ZFSet → Prop) (ind : inductiveSet S)
+  (h₀ : P ∅) (h₁ : ∀ n ∈ S, P n → P (insert n n)) : inductiveSet <| S.sep P := by
+  unfold inductiveSet at *
   simp_rw [mem_sep]
   apply And.intro
   · exact ⟨ind.left, h₀⟩
@@ -67,9 +67,9 @@ theorem inductive_sep {S} (P : ZFSet → Prop) (ind : inductive_set S)
     · exact ind.right n ‹_›
     · exact h₁ n ‹_› ‹_›
 
-theorem inductive_imp_transitive {E : ZFSet} (h : inductive_set E) :
-  inductive_set (E.sep transitive) := by
-  unfold inductive_set
+theorem inductive_imp_transitive {E : ZFSet} (h : inductiveSet E) :
+  inductiveSet (E.sep transitive) := by
+  unfold inductiveSet
   rcases h with ⟨_, hind⟩
   apply And.intro <;> simp_rw [mem_sep]
   · exact ⟨‹_›, by intro; rw [imp_iff_or_not]; exact Or.inr <| notMem_empty _⟩
@@ -81,13 +81,13 @@ theorem inductive_imp_transitive {E : ZFSet} (h : inductive_set E) :
 notation "ω" => omega
 
 /-- The first Von Neumann ordinal `ω` is an inductive set. -/
-theorem omega_inductive : inductive_set ω := ⟨omega_zero, fun _ => omega_succ⟩
+theorem omega_inductive : inductiveSet ω := ⟨omega_zero, fun _ => omega_succ⟩
 
 /-- Witness for an infinite set, meant to be used for definitional purpose only. -/
-private abbrev some_inf := @Classical.choose _ inductive_set ⟨_, omega_inductive⟩
+private abbrev some_inf := @Classical.choose _ inductiveSet ⟨_, omega_inductive⟩
 
 /-- The set `some_inf` is inductive. -/
-private lemma inductive_some_inf : inductive_set some_inf := Classical.choose_spec _
+private lemma inductive_some_inf : inductiveSet some_inf := Classical.choose_spec _
 
 private lemma some_inf_nonempty : some_inf ≠ ∅ := by
   intro h
@@ -95,7 +95,7 @@ private lemma some_inf_nonempty : some_inf ≠ ∅ := by
   rw [h] at h'
   exact (ZFSet.notMem_empty ∅) h'
 
-private lemma some_inf_mem_sep_inductive_set : some_inf ∈ some_inf.powerset.sep inductive_set := by
+private lemma some_inf_mem_sep_inductiveSet : some_inf ∈ some_inf.powerset.sep inductiveSet := by
   simp only [mem_sep, mem_powerset, subset_refl, true_and]
   exact inductive_some_inf
 
@@ -107,7 +107,7 @@ private lemma some_inf_mem_sep_inductive_set : some_inf ∈ some_inf.powerset.se
 The set of natural numbers `Nat` is defined as the smallest inductive set.
 This definition avoids the use of `ω`, even though `ω` may be thought of as `ℕ`.
 -/
-def Nat : ZFSet := ⋂₀ ((powerset some_inf).sep inductive_set)
+def Nat : ZFSet := ⋂₀ ((powerset some_inf).sep inductiveSet)
 
 /-- The type of natural numbers `ZFNat` is defined as the subtype of `Nat`. -/
 abbrev ZFNat := {x // x ∈ Nat}
@@ -116,10 +116,10 @@ namespace ZFNat
 
 /--
 `some_inf` is an inductive subset of `some_inf`:
-`some_inf ∈ { a ⊆ some_inf | inductive_set a }`.
+`some_inf ∈ { a ⊆ some_inf | inductiveSet a }`.
 -/
 private theorem some_inf_mem_powerset_some_inf_ind :
-  some_inf ∈ some_inf.powerset.sep inductive_set :=
+  some_inf ∈ some_inf.powerset.sep inductiveSet :=
   mem_sep.mpr ⟨mem_powerset.mpr fun _ => id, inductive_some_inf⟩
 
 /-- `Nat` is an infinite inductive set. -/
@@ -128,8 +128,8 @@ theorem Nat_subset_some_inf : Nat ⊆ some_inf := by
   unfold Nat at hn
   rw [mem_sInter] at hn
   · have aux :
-      n ∈ (⋃₀ (powerset some_inf).sep inductive_set : ZFSet) ∧
-      (fun b => ∀ c, c ∈ (powerset some_inf).sep inductive_set → b ∈ c) n := by
+      n ∈ (⋃₀ (powerset some_inf).sep inductiveSet : ZFSet) ∧
+      (fun b => ∀ c, c ∈ (powerset some_inf).sep inductiveSet → b ∈ c) n := by
         simp only [mem_sUnion, mem_sep, and_imp] at *
         exact ⟨
           ⟨some_inf,
@@ -150,11 +150,11 @@ theorem zero_in_Nat : ∅ ∈ Nat := by
     exact hx.right.left
   · exact ⟨some_inf, some_inf_mem_powerset_some_inf_ind⟩
 
-instance nat_zero : Zero ZFNat := ⟨∅, zero_in_Nat⟩
-lemma nat_zero_eq : (0 : ZFNat) = ⟨∅, zero_in_Nat⟩ := rfl
+instance natZero : Zero ZFNat := ⟨∅, zero_in_Nat⟩
+lemma natZero_eq : (0 : ZFNat) = ⟨∅, zero_in_Nat⟩ := rfl
 
-instance nat_lt : LT ZFNat := ⟨fun x y => x.val ∈ y.val⟩
-instance nat_le : LE ZFNat := ⟨fun x y => x < y ∨ x = y⟩
+instance natLt : LT ZFNat := ⟨fun x y => x.val ∈ y.val⟩
+instance natLe : LE ZFNat := ⟨fun x y => x < y ∨ x = y⟩
 
 theorem not_lt_zero {n : ZFNat} : ¬ n < 0 := fun _ => notMem_empty _ ‹_›
 theorem zero_lt_ne_zero {n : ZFNat} : 0 < n → n ≠ 0 := by
@@ -164,24 +164,24 @@ theorem zero_lt_ne_zero {n : ZFNat} : 0 < n → n ≠ 0 := by
   trivial
 
 /-- Any inductive set contains zero. -/
-lemma zero_mem_inductive {a} (h : inductive_set a) : ↑(0 : ZFNat).val ∈ a := h.left
+lemma zero_mem_inductive {a} (h : inductiveSet a) : ↑(0 : ZFNat).val ∈ a := h.left
 
 /-- Any inductive set containing an element also contains its successor. -/
-theorem insert_mem_inductive {a n} (h : inductive_set a) (h' : n ∈ a) : insert n n ∈ a :=
+theorem insert_mem_inductive {a n} (h : inductiveSet a) (h' : n ∈ a) : insert n n ∈ a :=
   h.right n h'
 
-theorem some_inf_powerset_sep_inductive_nonempty : (some_inf.powerset.sep inductive_set).Nonempty :=
+theorem some_inf_powerset_sep_inductive_nonempty : (some_inf.powerset.sep inductiveSet).Nonempty :=
   ⟨some_inf, some_inf_mem_powerset_some_inf_ind⟩
 
 /-- Any inductive set is a subset of `some_inf`. -/
-theorem inductive_subset_some_inf_contains_Nat {a} (h : inductive_set a) (h' : a ⊆ some_inf) :
+theorem inductive_subset_some_inf_contains_Nat {a} (h : inductiveSet a) (h' : a ⊆ some_inf) :
   Nat ⊆ a := by
   intro n hn
   unfold Nat at hn
   rw [mem_sInter] at hn
   · have aux :
-      n ∈ (⋃₀ (powerset some_inf).sep inductive_set : ZFSet) ∧
-      (fun b => ∀ c, c ∈ (powerset some_inf).sep inductive_set → b ∈ c) n := by
+      n ∈ (⋃₀ (powerset some_inf).sep inductiveSet : ZFSet) ∧
+      (fun b => ∀ c, c ∈ (powerset some_inf).sep inductiveSet → b ∈ c) n := by
         simp only [mem_sUnion, mem_sep, and_imp] at *
         exact ⟨
           ⟨some_inf,
@@ -193,7 +193,7 @@ theorem inductive_subset_some_inf_contains_Nat {a} (h : inductive_set a) (h' : a
   · exact some_inf_powerset_sep_inductive_nonempty
 
 theorem succ_mem_Nat' {n} (h : n ∈ Nat) : insert n n ∈ Nat := by
-  have all_sub_ind : ∀ a, a ∈ some_inf.powerset.sep inductive_set → insert n n ∈ a := by
+  have all_sub_ind : ∀ a, a ∈ some_inf.powerset.sep inductiveSet → insert n n ∈ a := by
     intro a ha
     rw [mem_sep] at ha
     exact ha.2.2 n (inductive_subset_some_inf_contains_Nat ha.2 (mem_powerset.mp ha.1) h)
@@ -211,13 +211,13 @@ def succ (n : ZFNat) : ZFNat :=
   have p : insert n n ∈ Nat := succ_mem_Nat' h
   ⟨insert n n, p⟩
 
-instance nat_one : One ZFNat := ⟨succ 0⟩
+instance natOne : One ZFNat := ⟨succ 0⟩
 
-theorem nat_one_eq : 1 = succ 0 := rfl
+theorem natOne_eq : 1 = succ 0 := rfl
 
 theorem succ_ne_zero : ∀ n, succ n ≠ 0 := by
   rintro ⟨n, hn⟩ h
-  rw [succ, nat_zero_eq, Subtype.mk.injEq, ZFSet.ext_iff] at h
+  rw [succ, natZero_eq, Subtype.mk.injEq, ZFSet.ext_iff] at h
   simp only [mem_insert_iff, notMem_empty, iff_false, not_or] at h
   exact h n |>.1 rfl
 
@@ -249,9 +249,9 @@ theorem succ_inj {m n} (h : succ m = succ n) : m = n := by
   exact ⟨succ_inj_aux h, succ_inj_aux (Eq.symm h)⟩
 
 /-- Any inductive set `a` separated by an inductive predicate `P` is inductive. -/
-theorem sep_of_ind_is_ind (P : ZFSet → Prop) {a} (h : inductive_set a)
-  (h₀ : P ∅) (ih : ∀ n, n ∈ a → P n → P (insert n n)) : inductive_set (a.sep P) := by
-  unfold inductive_set at *
+theorem sep_of_ind_is_ind (P : ZFSet → Prop) {a} (h : inductiveSet a)
+  (h₀ : P ∅) (ih : ∀ n, n ∈ a → P n → P (insert n n)) : inductiveSet (a.sep P) := by
+  unfold inductiveSet at *
   apply And.intro
   · exact mem_sep.mpr ⟨h.left, h₀⟩
   · simp only [mem_sep, and_imp]
@@ -301,8 +301,8 @@ purposes only.
 -/
 lemma ind {P : ZFSet → Prop} (n : ZFSet)
   (h : n ∈ Nat) (zero : P ∅) (succ : ∀ n ∈ Nat, P n → P (insert n n)) : P n := by
-  have : Nat.sep P |>.inductive_set := by
-    unfold inductive_set
+  have : Nat.sep P |>.inductiveSet := by
+    unfold inductiveSet
     apply And.intro
     · exact mem_sep.mpr ⟨zero_in_Nat, ‹_›⟩
     · simp only [mem_sep, and_imp]
@@ -323,7 +323,7 @@ theorem induction {P : ZFNat → Prop} (n : ZFNat)
   rw [← this]
   apply @ind P' n hn
   · unfold P'
-    simpa [hn, zero_in_Nat, nat_zero_eq] using zero
+    simpa [hn, zero_in_Nat, natZero_eq] using zero
   · intro m hm hm'
     unfold P' at *
     rw [dif_pos hm] at hm'
@@ -339,8 +339,7 @@ theorem every_nat_transitive {n : ZFSet} (h : n ∈ Nat) : transitive n := by
   apply ind _ h
   · intros _ _
     exact False.elim (notMem_empty _ ‹_›)
-  · intros _ _ ih _ hy
-    intro _ _
+  · intro _ _ ih _ hy _ _
     rw [mem_insert_iff] at hy ⊢
     rcases hy with rfl | _
     · exact Or.inr ‹_›
@@ -552,12 +551,12 @@ theorem pred_eq (n : ZFNat) : pred n = ⟨⋃₀ n.val, pred_in_Nat' n.property�
 @[simp]
 theorem pred_zero : pred 0 = 0 := by
   unfold pred
-  rw [nat_zero_eq, Subtype.map, Subtype.mk.injEq, sUnion_empty]
+  rw [natZero_eq, Subtype.map, Subtype.mk.injEq, sUnion_empty]
 
 @[simp]
 theorem pred_one : pred 1 = 0 := by
   unfold pred
-  rw [nat_one_eq, nat_zero_eq, Subtype.map, Subtype.mk.injEq]
+  rw [natOne_eq, natZero_eq, Subtype.map, Subtype.mk.injEq]
   dsimp [succ]
   rw [LawfulSingleton.insert_empty_eq, sUnion_singleton]
 
@@ -646,7 +645,7 @@ def rec {motive : ZFNat → Sort u} (n : ZFNat)
   rw [← this]
   apply @ZFNat.rec' motive' n hn
   · unfold motive'
-    simpa [hn, zero_in_Nat, nat_zero_eq] using zero
+    simpa [hn, zero_in_Nat, natZero_eq] using zero
   · intro m hm hm'
     unfold motive' at *
     rw [dif_pos hm] at hm'
@@ -698,7 +697,7 @@ theorem pos_of_ne_zero {n : ZFNat} : 0 ≠ n → 0 < n := by
     exact zero_lt_succ
 
 instance : Preorder ZFNat where
-  le := nat_le.le
+  le := natLe.le
   le_trans _ _ _ := le_trans
   le_refl _ := Or.inr rfl
   lt_iff_le_not_ge _ _ := lt_iff_le_not_ge
@@ -727,40 +726,40 @@ instance : IsStrictTotalOrder ZFNat (·<·) where
 /-- The addition function on natural numbers, defined inductively. -/
 protected abbrev add (n m : ZFNat) : ZFNat := ZFNat.rec n m (fun _ : ZFNat => succ)
 
-instance add_inst : Add ZFNat := ⟨ZFNat.add⟩
-lemma add_inst_eq {n m : ZFNat} : n + m = n.add m := rfl
+instance addInst : Add ZFNat := ⟨ZFNat.add⟩
+lemma addInst_eq {n m : ZFNat} : n + m = n.add m := rfl
 
 lemma add_one_eq_succ {n : ZFNat} : n + 1 = succ n := by
-  dsimp [add_inst_eq]
+  dsimp [addInst_eq]
   induction n with
-  | zero => rw [ZFNat.add, ZFNat.rec_zero, nat_one_eq]
+  | zero => rw [ZFNat.add, ZFNat.rec_zero, natOne_eq]
   | succ _ ih => rw [ZFNat.add, ZFNat.rec_succ, ← ZFNat.add, ih]
 
 lemma add_one_eq_succ' {n : ZFNat} : 1 + n = succ n := by
-  rw [add_inst_eq, ZFNat.add, nat_one_eq, rec_succ, rec_zero]
+  rw [addInst_eq, ZFNat.add, natOne_eq, rec_succ, rec_zero]
 
 lemma add_zero {n : ZFNat} : n + 0 = n := by
-  dsimp [add_inst_eq]
+  dsimp [addInst_eq]
   induction n with
   | zero => rw [ZFNat.add, rec_zero]
   | succ _ ih => rw [ZFNat.add, rec_succ, ← ZFNat.add, ih]
 
 lemma zero_add {n : ZFNat} : 0 + n = n := by
-  rw [add_inst_eq, ZFNat.add, rec_zero]
+  rw [addInst_eq, ZFNat.add, rec_zero]
 
 lemma add_succ {n m : ZFNat} : succ n + m = succ (n + m) := rec_succ n m fun _ => succ
 
 lemma succ_add {n m : ZFNat} : succ (n + m) = n + succ m := by
   induction n with
-  | zero => rw [add_inst_eq, add_inst_eq, ZFNat.add, rec_zero, ZFNat.add, rec_zero]
+  | zero => rw [addInst_eq, addInst_eq, ZFNat.add, rec_zero, ZFNat.add, rec_zero]
   | succ n ih =>
     rw [add_succ, ih]
-    dsimp [add_inst_eq]
+    dsimp [addInst_eq]
     conv => rhs; rw [ZFNat.add, rec_succ]
 
 lemma add_comm (n m : ZFNat) : n + m = m + n := by
   induction n with
-  | zero => rw [add_zero, add_inst_eq, ZFNat.add, rec_zero]
+  | zero => rw [add_zero, addInst_eq, ZFNat.add, rec_zero]
   | succ n ih => rw [← succ_add, add_succ, ih]
 
 @[simp]
@@ -966,31 +965,31 @@ theorem add_self_ne_one {n : ZFNat} : n + n ≠ 1 := by
   intro h
   induction n with
   | zero =>
-    simp only [zero_add, nat_one_eq] at h
+    simp only [zero_add, natOne_eq] at h
     absurd succ_ne_zero _ (Eq.symm h)
     trivial
   | succ n _ =>
-    rw [add_succ, ← succ_add, nat_one_eq] at h
+    rw [add_succ, ← succ_add, natOne_eq] at h
     absurd succ_ne_zero _ (succ_inj h)
     trivial
 
 /-- Natural-number subtraction in the ZF natural model. -/
 protected abbrev sub (n m : ZFNat) : ZFNat := ZFNat.rec m n (fun _ => pred)
 /-- Imported ZFLean declaration. -/
-instance sub_inst : Sub ZFNat := ⟨ZFNat.sub⟩
-lemma sub_inst_eq {n m : ZFNat} : n - m = n.sub m := rfl
+instance subInst : Sub ZFNat := ⟨ZFNat.sub⟩
+lemma subInst_eq {n m : ZFNat} : n - m = n.sub m := rfl
 
 theorem sub_zero {n : ZFNat} : n - 0 = n := by
-  rw [sub_inst_eq, ZFNat.sub, ZFNat.rec_zero]
+  rw [subInst_eq, ZFNat.sub, ZFNat.rec_zero]
 
 theorem sub_one_eq_pred {n : ZFNat} : n - 1 = pred n := by
-  rw [sub_inst_eq, ZFNat.sub, nat_one_eq, ZFNat.rec_succ, ZFNat.rec_zero]
+  rw [subInst_eq, ZFNat.sub, natOne_eq, ZFNat.rec_succ, ZFNat.rec_zero]
 
 theorem succ_mono {n m : ZFNat} : n < m ↔ succ n < succ m :=
   ⟨lt_mono, lt_of_succ_lt_succ⟩
 
 theorem sub_succ (n m : ZFNat) : n - succ m = pred (n - m) := by
-  rw [sub_inst_eq, ZFNat.sub, ZFNat.rec_succ, ← ZFNat.sub]
+  rw [subInst_eq, ZFNat.sub, ZFNat.rec_succ, ← ZFNat.sub]
   rfl
 
 theorem zero_sub {n : ZFNat} : 0 - n = 0 := by
@@ -1000,12 +999,12 @@ theorem zero_sub {n : ZFNat} : 0 - n = 0 := by
 
 theorem succ_sub_succ (n m : ZFNat) : succ n - succ m = n - m := by
   induction m with
-  | zero      => rw [← nat_one_eq, sub_one_eq_pred, pred_succ, sub_zero]
+  | zero      => rw [← natOne_eq, sub_one_eq_pred, pred_succ, sub_zero]
   | succ m ih => rw [sub_succ, ih, ← sub_succ]
 
 theorem succ_sub_self (n : ZFNat) : succ n - n = 1 := by
   induction n with
-  | zero => rw [sub_zero, nat_one_eq]
+  | zero => rw [sub_zero, natOne_eq]
   | succ n ih => rw [succ_sub_succ, ih]
 
 theorem sub_self {n : ZFNat} : n - n = 0 := by
@@ -1112,32 +1111,32 @@ theorem le_zero_imp_eq {n : ZFNat} : n ≤ 0 → n = 0 := by
 
 /-- The multiplication function on natural numbers, defined inductively. -/
 protected abbrev mul (n m : ZFNat) : ZFNat := ZFNat.rec n 0 (fun _ => (· + m))
-instance mul_inst : Mul ZFNat := ⟨ZFNat.mul⟩
-lemma mul_inst_eq {n m : ZFNat} : n * m = n.mul m := rfl
+instance mulInst : Mul ZFNat := ⟨ZFNat.mul⟩
+lemma mulInst_eq {n m : ZFNat} : n * m = n.mul m := rfl
 
 lemma mul_zero {n : ZFNat} : n * 0 = 0 := by
-  dsimp [mul_inst_eq]
+  dsimp [mulInst_eq]
   induction n using induction with
   | zero => rw [ZFNat.mul, rec_zero]
   | succ _ ih => rw [ZFNat.mul, rec_succ, ← ZFNat.mul, ih, add_zero]
 
 lemma zero_mul {n : ZFNat} : 0 * n = 0 := by
-  rw [mul_inst_eq, ZFNat.mul, rec_zero]
+  rw [mulInst_eq, ZFNat.mul, rec_zero]
 
 lemma mul_one {n : ZFNat} : n * 1 = n := by
-  dsimp [mul_inst_eq]
+  dsimp [mulInst_eq]
   induction n using induction with
   | zero => rw [ZFNat.mul, rec_zero]
   | succ _ ih => rw [ZFNat.mul, rec_succ, ← ZFNat.mul, ih, add_one_eq_succ]
 
 lemma one_mul {n : ZFNat} : 1 * n = n := by
-  rw [mul_inst_eq, ZFNat.mul, nat_one_eq, rec_succ, rec_zero, zero_add]
+  rw [mulInst_eq, ZFNat.mul, natOne_eq, rec_succ, rec_zero, zero_add]
 
 lemma mul_succ {n m : ZFNat} : (n + 1) * m = n * m + m := by
   induction n with
   | zero => rw [zero_add, one_mul, zero_mul, zero_add]
-  | succ n ih => rw [add_one_eq_succ, mul_inst_eq, ZFNat.mul, rec_succ, rec_succ, ← ZFNat.mul,
-    ← mul_inst_eq, ← ih, add_one_eq_succ]
+  | succ n ih => rw [add_one_eq_succ, mulInst_eq, ZFNat.mul, rec_succ, rec_succ, ← ZFNat.mul,
+    ← mulInst_eq, ← ih, add_one_eq_succ]
 
 lemma succ_mul {n m : ZFNat} : (succ n) * m = n * m + m := by
   rw [← add_one_eq_succ, mul_succ]
@@ -1201,7 +1200,7 @@ theorem pos_mul_pos {k n : ZFNat} (h : 0 < k) : 0 < k*n → 0 < n := by
       rw [not_lt] at contr
       replace contr := le_zero_imp_eq contr
       nomatch succ_ne_zero m contr
-    · rw [← nat_one_eq, one_mul] at h'
+    · rw [← natOne_eq, one_mul] at h'
       assumption
 
 theorem mul_lt_mono {n m k : ZFNat} (h : 0 < k) : n < m → k*n < k*m := by
@@ -1250,7 +1249,7 @@ lemma left_distrib_mul_sub_one {n m : ZFNat} : n * (m - 1) = n * m - n := by
   induction m using induction with
   | zero => rw [zero_sub, mul_zero, zero_sub]
   | succ _ _ =>
-    rw [nat_one_eq, succ_sub_succ, sub_zero, succ_mul', add_sub_assoc, sub_self, add_zero]
+    rw [natOne_eq, succ_sub_succ, sub_zero, succ_mul', add_sub_assoc, sub_self, add_zero]
     right
     rfl
 
@@ -1382,15 +1381,15 @@ lemma mul_right_cancel_iff {n m k : ZFNat} (k_pos : k ≠ 0) : m * k = n * k ↔
 
 /-- The power function on natural numbers, defined inductively. -/
 protected abbrev pow (n p : ZFNat) : ZFNat := ZFNat.rec p 1 (fun _  => (· * n))
-instance pow_inst : HomogeneousPow ZFNat := ⟨ZFNat.pow⟩
-lemma pow_inst_eq {n p : ZFNat} : n ^ p = n.pow p := rfl
+instance powInst : HomogeneousPow ZFNat := ⟨ZFNat.pow⟩
+lemma powInst_eq {n p : ZFNat} : n ^ p = n.pow p := rfl
 
 lemma pow_zero {n : ZFNat} : n ^ 0 = 1 := by
-  dsimp [pow_inst_eq]
+  dsimp [powInst_eq]
   rw [ZFNat.pow, rec_zero]
 
 lemma pow_one {n : ZFNat} : n ^ 1 = n := by
-  rw [pow_inst_eq, ZFNat.pow, nat_one_eq, rec_succ, rec_zero, ← nat_one_eq, one_mul]
+  rw [powInst_eq, ZFNat.pow, natOne_eq, rec_succ, rec_zero, ← natOne_eq, one_mul]
 
 
 /--
@@ -1470,7 +1469,7 @@ theorem _root_.ZFSet.Nat.is_transitive : transitive Nat := by
     · exact hx' hz
 
 /-- `Nat` is an inductive set. -/
-theorem _root_.ZFSet.Nat.is_inductive : inductive_set Nat where
+theorem _root_.ZFSet.Nat.is_inductive : inductiveSet Nat where
   left := ZFNat.zero_in_Nat
   right := fun _ _ => ZFNat.succ_mem_Nat' ‹_›
 
@@ -1541,7 +1540,7 @@ theorem _root_.ZFSet.ZFNat.toNat_iff {n m : ZFNat} : n = m ↔ n.toNat = m.toNat
         rfl
 
 /-- The equivalence between ZF natural numbers and Lean natural numbers. -/
-def _root_.ZFSet.ZFNat.instEquivZFNat_Nat : ZFNat ≃ ℕ where
+def _root_.ZFSet.ZFNat.instEquivZFNatNat : ZFNat ≃ ℕ where
   toFun := toNat
   invFun := ofNat
   left_inv := by

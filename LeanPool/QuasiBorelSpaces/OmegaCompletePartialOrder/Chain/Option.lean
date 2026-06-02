@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.Option.Instances
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.OmegaCompletePartialOrder
 
+/-!
+# LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Option
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Option`.
+-/
+
 
 variable {A : Type*} [Preorder A]
 

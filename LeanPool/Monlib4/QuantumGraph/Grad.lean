@@ -6,6 +6,12 @@ Authors: Monica Omar
 import LeanPool.Monlib4.QuantumGraph.Basic
 import LeanPool.Monlib4.QuantumGraph.Degree
 
+/-!
+# LeanPool.Monlib4.QuantumGraph.Grad
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph.Grad`.
+-/
+
 variable {B : Type*} [starAlgebra B] [QuantumSet B]
 
 open scoped TensorProduct

@@ -8,6 +8,12 @@ import LeanPool.Rupert.Basic
 import LeanPool.Rupert.Convex
 import LeanPool.Rupert.Equivalences.RupertEquivRupertPrime
 
+/-!
+# LeanPool.Rupert.Square
+
+Imported Lean Pool material for `LeanPool.Rupert.Square`.
+-/
+
 namespace Square
 
 open Matrix
@@ -33,13 +39,13 @@ theorem rh_lemma : rh * rh + rh * rh  = 1 := by
        _ = 1 := by norm_num
 
 /-- Rotation matrix for the inner square shadow. -/
-abbrev inner_rot : Matrix (Fin 3) (Fin 3) ℝ :=
+abbrev innerRot : Matrix (Fin 3) (Fin 3) ℝ :=
    !![1, 0, 0;
       0, 0,-1;
       0, 1, 0]
 
-lemma inner_rot_so3 : inner_rot ∈ SO3 := by
-  dsimp only [inner_rot]
+lemma innerRot_so3 : innerRot ∈ SO3 := by
+  dsimp only [innerRot]
   rw [mem_specialOrthogonalGroup_iff]
   constructor
   · constructor <;> (ext i j; fin_cases i, j) <;>
@@ -47,13 +53,13 @@ lemma inner_rot_so3 : inner_rot ∈ SO3 := by
   · simp [det_succ_row_zero, Fin.sum_univ_three]
 
 /-- Rotation matrix for the outer square shadow. -/
-noncomputable abbrev outer_rot : Matrix (Fin 3) (Fin 3) ℝ :=
+noncomputable abbrev outerRot : Matrix (Fin 3) (Fin 3) ℝ :=
    !![ rh, rh, 0;
       -rh, rh, 0;
         0,  0, 1]
 
-lemma outer_rot_so3 : outer_rot ∈ SO3 := by
-  dsimp only [outer_rot]
+lemma outerRot_so3 : outerRot ∈ SO3 := by
+  dsimp only [outerRot]
   rw [mem_specialOrthogonalGroup_iff]
   constructor
   · constructor <;> (ext i j; fin_cases i, j) <;>
@@ -64,8 +70,8 @@ theorem square_is_rupert : IsRupert vertices := by
 /-
 
 The diagram shows the (x,y) plane, the z axis runs through the
-screen. The rotation inner_rot rotates about the x axis, creating the
-horizontal slot shape.  The rotation outer_rot rotates the (x,y) plane
+screen. The rotation innerRot rotates about the x axis, creating the
+horizontal slot shape.  The rotation outerRot rotates the (x,y) plane
 by π/4 radians. No offset translation is needed.
 
       +
@@ -79,9 +85,9 @@ by π/4 radians. No offset translation is needed.
       +
 -/
  rw [rupert_iff_rupert']
- let inner_offset : ℝ² := 0
- use inner_rot, inner_rot_so3, inner_offset, outer_rot, outer_rot_so3
- intro inner_shadow outer_shadow x hx
+ let innerOffset : ℝ² := 0
+ use innerRot, innerRot_so3, innerOffset, outerRot, outerRot_so3
+ intro inner_shadow outerShadow x hx
  obtain ⟨ε₀, hε₀0, hε₀⟩ : ∃ ε₀, 0 < ε₀ ∧ ε₀ < √2/2 := by
    use 0.00001
    have h : 1 / 2 < √2 / 2 := by
@@ -90,7 +96,7 @@ by π/4 radians. No offset translation is needed.
    constructor
    · norm_num
    · linarith
- have zero_in_outer : Metric.ball 0 ε₀ ⊆ convexHull ℝ outer_shadow := by
+ have zero_in_outer : Metric.ball 0 ε₀ ⊆ convexHull ℝ outerShadow := by
    intro v hv
    simp only [Metric.mem_ball, dist_zero_right] at hv
    rw [mem_convexHull_iff_exists_fintype]
@@ -139,14 +145,14 @@ by π/4 radians. No offset translation is needed.
    · intro i
      fin_cases i
      · refine ⟨3, ?_⟩
-       simp [proj_xy, rh]
+       simp [projXy, rh]
      · refine ⟨0, ?_⟩
-       simp [proj_xy, rh]
+       simp [projXy, rh]
        ring_nf
      · refine ⟨2, ?_⟩
-       simp [proj_xy, rh]
+       simp [projXy, rh]
      · refine ⟨1, ?_⟩
-       simp [proj_xy, rh]
+       simp [projXy, rh]
        ring_nf
    · rw [Fin.sum_univ_four]
      ext i
@@ -154,7 +160,7 @@ by π/4 radians. No offset translation is needed.
  -- subset_interior_hull
  let ε₁ : ℝ := 0.001
  have hε₁ : ε₁ ∈ Set.Ioo 0 1 := by norm_num
- have negx_in_outer : !₂[-1, 0] ∈ interior (convexHull ℝ outer_shadow) := by
+ have negx_in_outer : !₂[-1, 0] ∈ interior (convexHull ℝ outerShadow) := by
    apply Convex.mem_interior_hull hε₀0 hε₁ zero_in_outer
    rw [mem_convexHull_iff_exists_fintype]
    -- we need to write (-1,0) as a convex combination of
@@ -179,7 +185,7 @@ by π/4 radians. No offset translation is needed.
      field_simp; ring
    · intro i
      fin_cases i
-     · unfold outer_shadow proj_xy outer_rot rh
+     · unfold outerShadow projXy outerRot rh
        simp only [Fin.isValue, cons_val_zero, neg_sub, Fin.zero_eta, Set.mem_image]
        use !₂[√2, 0]
        constructor
@@ -187,8 +193,8 @@ by π/4 radians. No offset translation is needed.
          use 3; simp
        · ext i
          fin_cases i <;> simp
-     · simp only [proj_xy, outer_rot, rh, Fin.isValue, cons_val_fin_one,
-        cons_val_one, neg_sub, Fin.mk_one, Set.mem_image, outer_shadow]
+     · simp only [projXy, outerRot, rh, Fin.isValue, cons_val_fin_one,
+        cons_val_one, neg_sub, Fin.mk_one, Set.mem_image, outerShadow]
        use !₂[-√2, 0]
        constructor
        · rw [Set.mem_setOf]
@@ -202,7 +208,7 @@ by π/4 radians. No offset translation is needed.
      fin_cases i
      · simp; field
      · simp
- have posx_in_outer : !₂[1, 0] ∈ interior (convexHull ℝ outer_shadow) := by
+ have posx_in_outer : !₂[1, 0] ∈ interior (convexHull ℝ outerShadow) := by
    apply Convex.mem_interior_hull hε₀0 hε₁ zero_in_outer
    rw [mem_convexHull_iff_exists_fintype]
    -- we need to write (1,0) as a convex combination of
@@ -225,15 +231,15 @@ by π/4 radians. No offset translation is needed.
    · simp; field
    · intro i
      fin_cases i
-     · unfold outer_shadow proj_xy outer_rot rh
+     · unfold outerShadow projXy outerRot rh
        simp only [Fin.isValue, cons_val_zero, neg_sub, Fin.zero_eta, Set.mem_image]
        use !₂[√2, 0]
        constructor
        · use 3; simp
        · ext i
          fin_cases i <;> simp
-     · simp only [proj_xy,outer_rot, rh, Fin.isValue,
-        cons_val_fin_one, cons_val_one, neg_sub, Fin.mk_one, Set.mem_image, outer_shadow]
+     · simp only [projXy,outerRot, rh, Fin.isValue,
+        cons_val_fin_one, cons_val_one, neg_sub, Fin.mk_one, Set.mem_image, outerShadow]
        use !₂[-√2, 0]
        constructor
        · use 0; simp; ring_nf
@@ -245,16 +251,16 @@ by π/4 radians. No offset translation is needed.
      · simp; field
      · simp
  -- we have y ∈ ℝ³ that came from the square, which after being rotated by
- -- inner_rot and projected, is x
+ -- innerRot and projected, is x
  rw [Set.mem_setOf] at hx
  obtain ⟨y, proj_rot_y_eq_x⟩ := hx
  rw [← proj_rot_y_eq_x]
- unfold inner_offset
+ unfold innerOffset
  simp only [zero_add]
  fin_cases y
- · simpa [proj_xy, vecHead, vecTail] using negx_in_outer
- · simpa [proj_xy, vecHead, vecTail] using posx_in_outer
- · simpa [proj_xy, vecHead, vecTail] using negx_in_outer
- · simpa [proj_xy, vecHead, vecTail] using posx_in_outer
+ · simpa [projXy, vecHead, vecTail] using negx_in_outer
+ · simpa [projXy, vecHead, vecTail] using posx_in_outer
+ · simpa [projXy, vecHead, vecTail] using negx_in_outer
+ · simpa [projXy, vecHead, vecTail] using posx_in_outer
 
 end Square

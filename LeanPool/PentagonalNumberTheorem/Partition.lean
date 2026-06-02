@@ -6,7 +6,14 @@ Authors: Weiyi Wang
 
 import LeanPool.PentagonalNumberTheorem.PowerSeries
 import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
+import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.Order.Lemmas
+
+/-!
+# LeanPool.PentagonalNumberTheorem.Partition
+
+Imported Lean Pool material for `LeanPool.PentagonalNumberTheorem.Partition`.
+-/
 
 theorem two_pentagonal (k : ℤ) : 2 * (k * (3 * k - 1) / 2) = k * (3 * k - 1) := by
   refine Int.two_mul_ediv_two_of_even ?_

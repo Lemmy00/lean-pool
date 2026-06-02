@@ -734,7 +734,7 @@ lemma conj_cartanDiag_one_zero {ϖ : R} (hϖ : Irreducible ϖ) (g : GL (Fin 2) K
     rw [Subring.coe_eq_zero_iff] at hzero
     exact hϖ.ne_zero hzero
   rw [zpow_sub₀ hzero]
-  ring
+  ring_nf
   left
   trivial
 
@@ -748,7 +748,7 @@ lemma conj_cartanDiag_zero_one {ϖ : R} (hϖ : Irreducible ϖ) (g : GL (Fin 2) K
     rw [Subring.coe_eq_zero_iff] at hzero
     exact hϖ.ne_zero hzero
   rw [zpow_sub₀ hzero]
-  ring
+  ring_nf
   left
   trivial
 

@@ -42,7 +42,7 @@ import LeanPool.BrauerGroupNew.Subfield
 Source: url:https://doi.org/10.1017/9781107359419
 Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 Status: verified
-Main declarations: `BrauerGroup.Bruaer_Group`, `BrauerGroupHom.Br`, `Wedderburn_Artin`
+Main declarations: `BrauerGroup.BruaerGroup`, `BrauerGroupHom.Br`, `WedderburnArtin`
 Tags: algebra, ring-theory, central-simple-algebras, brauer-groups
 MSC: 16K20, 16K50, 16S35
 -/

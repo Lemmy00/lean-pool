@@ -6,6 +6,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 
 import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Cases
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Cases`.
+-/
+
 
 open scoped MeasureTheory
 

@@ -135,7 +135,7 @@ lemma mem_unitSubrectangle {t₀ t₁ : ℝ} {n m i j : ℕ} (hi : i < n.succ) (
 
 end UnitSubrectangle
 
-theorem lebesgue_number_lemma_unit_square {ι : Sort u} {c : ι → Set (I × I)}
+theorem lebesgue_number_lemma_unitSquare {ι : Sort u} {c : ι → Set (I × I)}
   (hc₁ : ∀ (i : ι), IsOpen (c i)) (hc₂ : UnitSquare ⊆ (⋃ (i : ι), c i)) :
     ∃ (n : ℕ), ∀ (i j : ℕ) (hi : i < n.succ)
         (hj : j < n.succ), ∃ (a : ι), UnitSubrectangle hi hj ⊆ c a := by

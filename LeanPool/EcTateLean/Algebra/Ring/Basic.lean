@@ -9,6 +9,12 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Contrapose
 
+/-!
+# LeanPool.EcTateLean.Algebra.Ring.Basic
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Algebra.Ring.Basic`.
+-/
+
 
 
 variable {R : Type _}

@@ -66,7 +66,12 @@ theorem algHom_comp_mul {R A B : Type*} [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     f.toLinearMap ∘ₗ LinearMap.mul' R A =
       (LinearMap.mul' R B) ∘ₗ (f.toLinearMap ⊗ₘ f.toLinearMap) :=
-  by simpa using nonUnitalAlgHom_comp_mul f.toNonUnitalAlgHom
+  by
+  change (LinearMapClass.linearMap f.toNonUnitalAlgHom) ∘ₗ LinearMap.mul' R A =
+    (LinearMap.mul' R B) ∘ₗ
+      ((LinearMapClass.linearMap f.toNonUnitalAlgHom) ⊗ₘ
+        (LinearMapClass.linearMap f.toNonUnitalAlgHom))
+  exact nonUnitalAlgHom_comp_mul f.toNonUnitalAlgHom
 
 attribute [local instance] Algebra.ofIsScalarTowerSmulCommClass
 
@@ -307,7 +312,7 @@ theorem Psi.schurMul {A B : Type*} [starAlgebra A] [starAlgebra B]
   intro a c b d
   rw [schurMul.apply_rankOne]
   repeat rw [QuantumSet.Psi_apply]
-  repeat rw [QuantumSet.Psi_toFun_apply]
+  repeat rw [QuantumSet.PsiToFun_apply]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, map_mul, star_mul]
   rfl
 
@@ -328,7 +333,12 @@ theorem comul_comp_algHom_adjoint (f : A →ₐ[ℂ] B) :
     Coalgebra.comul ∘ₗ LinearMap.adjoint f.toLinearMap =
       ((LinearMap.adjoint f.toLinearMap) ⊗ₘ (LinearMap.adjoint f.toLinearMap)) ∘ₗ
         Coalgebra.comul := by
-  simpa using comul_comp_nonUnitalAlgHom_adjoint f.toNonUnitalAlgHom
+  change Coalgebra.comul ∘ₗ
+      LinearMap.adjoint (LinearMapClass.linearMap f.toNonUnitalAlgHom) =
+    ((LinearMap.adjoint (LinearMapClass.linearMap f.toNonUnitalAlgHom)) ⊗ₘ
+      (LinearMap.adjoint (LinearMapClass.linearMap f.toNonUnitalAlgHom))) ∘ₗ
+        Coalgebra.comul
+  exact comul_comp_nonUnitalAlgHom_adjoint f.toNonUnitalAlgHom
 
 theorem schurMul_nonUnitalAlgHom_comp_coalgHom {C D : Type*}
     [Semiring C] [Semiring D]
@@ -354,7 +364,10 @@ theorem schurMul_algHom_comp_coalgHom {C D : Type*}
     (g : C →ₐ[ℂ] D) (f : A →ₗc[ℂ] B) (x y : B →ₗ[ℂ] C) :
     (g.toLinearMap ∘ₗ x ∘ₗ f.toLinearMap) •ₛ (g.toLinearMap ∘ₗ y ∘ₗ f.toLinearMap) =
       g.toLinearMap ∘ₗ (x •ₛ y) ∘ₗ f.toLinearMap := by
-  simpa using schurMul_nonUnitalAlgHom_comp_coalgHom g.toNonUnitalAlgHom f x y
+  change ((LinearMapClass.linearMap g.toNonUnitalAlgHom) ∘ₗ x ∘ₗ f.toLinearMap) •ₛ
+      ((LinearMapClass.linearMap g.toNonUnitalAlgHom) ∘ₗ y ∘ₗ f.toLinearMap) =
+    (LinearMapClass.linearMap g.toNonUnitalAlgHom) ∘ₗ (x •ₛ y) ∘ₗ f.toLinearMap
+  exact schurMul_nonUnitalAlgHom_comp_coalgHom g.toNonUnitalAlgHom f x y
 
 theorem schurMul_nonUnitalAlgHom_comp_nonUnitalAlgHom_adjoint {C D : Type*}
     [Semiring C] [Semiring D]
@@ -382,9 +395,15 @@ theorem schurMul_algHom_comp_algHom_adjoint {C D : Type*}
     [IsScalarTower ℂ C C] [IsScalarTower ℂ D D]
     (g : C →ₐ[ℂ] D) (f : B →ₐ[ℂ] A) (x y : B →ₗ[ℂ] C) :
     (g.toLinearMap ∘ₗ x ∘ₗ LinearMap.adjoint f.toLinearMap) •ₛ
-        (g.toLinearMap ∘ₗ y ∘ₗ LinearMap.adjoint f.toLinearMap) =
+    (g.toLinearMap ∘ₗ y ∘ₗ LinearMap.adjoint f.toLinearMap) =
       g.toLinearMap ∘ₗ (x •ₛ y) ∘ₗ LinearMap.adjoint f.toLinearMap := by
-  simpa using schurMul_nonUnitalAlgHom_comp_nonUnitalAlgHom_adjoint
+  change ((LinearMapClass.linearMap g.toNonUnitalAlgHom) ∘ₗ x ∘ₗ
+        LinearMap.adjoint (LinearMapClass.linearMap f.toNonUnitalAlgHom)) •ₛ
+      ((LinearMapClass.linearMap g.toNonUnitalAlgHom) ∘ₗ y ∘ₗ
+        LinearMap.adjoint (LinearMapClass.linearMap f.toNonUnitalAlgHom)) =
+    (LinearMapClass.linearMap g.toNonUnitalAlgHom) ∘ₗ (x •ₛ y) ∘ₗ
+      LinearMap.adjoint (LinearMapClass.linearMap f.toNonUnitalAlgHom)
+  exact schurMul_nonUnitalAlgHom_comp_nonUnitalAlgHom_adjoint
     g.toNonUnitalAlgHom f.toNonUnitalAlgHom x y
 
 protected lemma QuantumSet.schurMul_algHom_comp_algHom_adjoint {A B C D : Type*}

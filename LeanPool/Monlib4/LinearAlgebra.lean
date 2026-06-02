@@ -10,13 +10,13 @@ import LeanPool.Monlib4.LinearAlgebra.End
 import LeanPool.Monlib4.LinearAlgebra.InnerAut
 import LeanPool.Monlib4.LinearAlgebra.InvariantSubmodule
 import LeanPool.Monlib4.LinearAlgebra.Ips
-import LeanPool.Monlib4.LinearAlgebra.IsProj'
+import LeanPool.Monlib4.LinearAlgebra.IsProjPrime
 import LeanPool.Monlib4.LinearAlgebra.IsReal
 import LeanPool.Monlib4.LinearAlgebra.KroneckerToTensor
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.LmulRmul
 import LeanPool.Monlib4.LinearAlgebra.Matrix
-import LeanPool.Monlib4.LinearAlgebra.Mul''
+import LeanPool.Monlib4.LinearAlgebra.MulPrimePrime
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.LinearAlgebra.Nacgor

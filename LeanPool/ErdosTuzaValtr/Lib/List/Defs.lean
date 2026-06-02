@@ -9,6 +9,12 @@ import Mathlib.Data.Finset.Image
 import Mathlib.Tactic.Cases
 import LeanPool.ErdosTuzaValtr.Lib.Core.Rel3
 
+/-!
+# LeanPool.ErdosTuzaValtr.Lib.List.Defs
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Lib.List.Defs`.
+-/
+
 variable {α : Type _}
 
 /-- Local notion for a list whose elements all lie in a finset. -/

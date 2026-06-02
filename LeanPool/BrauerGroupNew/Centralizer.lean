@@ -116,12 +116,11 @@ lemma _root_.Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct [
   · ext x
     simpa only [AlgHom.coe_range, mem_centralizer_iff, Set.mem_range,
       Algebra.TensorProduct.includeRight_apply, forall_exists_index, forall_apply_eq_imp_iff,
-      AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe,
-      Algebra.TensorProduct.includeLeft_apply] using
+      mem_comap, Algebra.TensorProduct.includeLeft_apply] using
       ⟨fun h b ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by simpa using h b,
         fun h b ↦ (Algebra.TensorProduct.comm R A B).injective <| by simpa using h b⟩
   ext x
-  simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
+  simp only [AlgHom.mem_range, mem_comap]
   constructor
   · rintro ⟨x, rfl⟩
     refine ⟨(Algebra.TensorProduct.comm R _ _) x, ?_⟩
@@ -135,16 +134,21 @@ lemma _root_.Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct [
     · rfl
   · rintro ⟨y, hy⟩
     refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-    rw [← hy]
-    change
-      ((Algebra.TensorProduct.comm R A B).toAlgHom.comp
-        (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)).comp
-        (Algebra.TensorProduct.comm R (↥(center R B)) A) y =
-      ((Algebra.TensorProduct.map _ _)) y
-    congr 1
-    ext
-    · rfl
-    · rfl
+    calc
+      (Algebra.TensorProduct.comm R A B)
+          ((Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)
+            ((Algebra.TensorProduct.comm R (↥(center R B)) A) y)) =
+          (Algebra.TensorProduct.map (center R B).val (AlgHom.id R A)) y := by
+            change
+              ((Algebra.TensorProduct.comm R A B).toAlgHom.comp
+                (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)).comp
+                (Algebra.TensorProduct.comm R (↥(center R B)) A) y =
+              ((Algebra.TensorProduct.map _ _)) y
+            congr 1
+            ext
+            · rfl
+            · rfl
+      _ = (Algebra.TensorProduct.comm R A B) x := hy
 
 lemma _root_.Subalgebra.centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
     Subalgebra.centralizer R

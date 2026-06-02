@@ -4,13 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiazhen Xia
 -/
 
-import Mathlib.Data.Real.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+
+/-!
+# LeanPool.WhiteheadTheorem.Auxiliary
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Auxiliary`.
+-/
 
 
 namespace CategoryTheory
@@ -134,8 +140,10 @@ namespace ContinuousMap
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 variable {ι : Type*} [Finite ι] (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
-(hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
-(hS_cover : ∀ x : α, ∃ i, x ∈ S i) (hS_closed : ∀ i, IsClosed (S i))
+variable
+  (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j),
+    φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
+  (hS_cover : ∀ x : α, ∃ i, x ∈ S i) (hS_closed : ∀ i, IsClosed (S i))
 
 /-- `liftCoverClosed` -/
 noncomputable def liftCoverClosed : C(α, β) :=

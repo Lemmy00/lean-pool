@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Pack
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Pack`.
+-/
+
 
 namespace MeasureTheory
 
@@ -38,7 +44,7 @@ lemma unpack_pack [Nonempty A] (x : A) : unpack (pack x) = x := by
 lemma pack_unpack [Nonempty A] (h : ¬Countable A) (x : ℝ) : pack (unpack (A := A) x) = x :=by
   simp only [pack, h, ↓reduceDIte, unpack, MeasurableEquiv.apply_symm_apply]
 
-@[simp, measurability, fun_prop]
+@[simp, fun_prop]
 lemma measurable_pack : Measurable (pack (A := A)) := by
   unfold pack
   by_cases h : Countable A
@@ -47,7 +53,7 @@ lemma measurable_pack : Measurable (pack (A := A)) := by
   · simp only [h, ↓reduceDIte]
     fun_prop
 
-@[simp, measurability, fun_prop]
+@[simp, fun_prop]
 lemma measurable_unpack [Nonempty A] : Measurable (unpack (A := A)) := by
   unfold unpack
   by_cases h : Countable A

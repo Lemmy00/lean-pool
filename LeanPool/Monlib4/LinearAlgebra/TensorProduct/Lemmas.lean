@@ -50,11 +50,11 @@ noncomputable def AlgEquiv.TensorProduct.map {R : Type _} [CommSemiring R] {A B 
   toFun x := Algebra.TensorProduct.map f.toAlgHom g.toAlgHom x
   invFun x := Algebra.TensorProduct.map f.symm.toAlgHom g.symm.toAlgHom x
   left_inv x := by
-    simp_rw [Algebra.TensorProduct.map_apply_map_apply, AlgEquiv.toAlgHom_eq_coe,
-      AlgEquiv.symm_comp, Algebra.TensorProduct.map_id, AlgHom.id_apply]
+    simp_rw [Algebra.TensorProduct.map_apply_map_apply, AlgEquiv.symm_comp,
+      Algebra.TensorProduct.map_id, AlgHom.id_apply]
   right_inv x := by
-    simp_rw [Algebra.TensorProduct.map_apply_map_apply, AlgEquiv.toAlgHom_eq_coe,
-      AlgEquiv.comp_symm, Algebra.TensorProduct.map_id, AlgHom.id_apply]
+    simp_rw [Algebra.TensorProduct.map_apply_map_apply, AlgEquiv.comp_symm,
+      Algebra.TensorProduct.map_id, AlgHom.id_apply]
   map_add' x y := by simp_rw [map_add]
   map_mul' x y := by simp_rw [_root_.map_mul]
   commutes' r := by simp_rw [Algebra.algebraMap_eq_smul_one, _root_.map_smul, _root_.map_one]
@@ -107,7 +107,7 @@ lemma AlgEquiv.TensorProduct.map_map_toLinearMap
   (AlgEquiv.TensorProduct.map h i) ((AlgEquiv.TensorProduct.map f g) x)
     = (AlgEquiv.TensorProduct.map (f.trans h) (g.trans i)) x :=
 by
-  simp only [TensorProduct.map, toAlgHom_eq_coe, coe_mk, Algebra.TensorProduct.map_apply_map_apply,
+  simp only [TensorProduct.map, coe_mk, Algebra.TensorProduct.map_apply_map_apply,
     Equiv.coe_fn_mk]
   rfl
 

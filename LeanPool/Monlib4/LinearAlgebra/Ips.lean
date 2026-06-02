@@ -18,3 +18,9 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.Strict
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 import LeanPool.Monlib4.LinearAlgebra.Ips.TensorHilbert
 import LeanPool.Monlib4.LinearAlgebra.Ips.Vn
+
+/-!
+# LeanPool.Monlib4.LinearAlgebra.Ips
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.Ips`.
+-/

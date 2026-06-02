@@ -222,7 +222,7 @@ theorem sum_inv_le_log_real (y : ℝ) (hy : 1 ≤ y) :
   · norm_cast; apply Nat.lt_of_succ_le; apply le_floor; norm_cast
   · apply floor_le; linarith
 
-theorem nat_le_prod {f : ι → ℕ} {s : Finset ι} {i : ι} (hi : i ∈ s)
+theorem natLe_prod {f : ι → ℕ} {s : Finset ι} {i : ι} (hi : i ∈ s)
     (hf : ∀ i ∈ s, f i ≠ 0) :
     f i ≤ ∏ j ∈ s, f j := by
   classical

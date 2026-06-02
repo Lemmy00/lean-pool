@@ -19,7 +19,7 @@ import LeanPool.EcTateLean.Init.Data.Int.Lemmas
 Source: url:https://www.math.rug.nl/~top/ian.pdf
 Authors: Sacha H., Sander R. Dahmen, Anne Baanen, Alex J. Best
 Status: verified
-Main declarations: `Model`, `Model.Field.is_singular_point_singular_point`
+Main declarations: `Model`, `Model.Field.isSingularPoint_singularPoint`
 Tags: number-theory, elliptic-curves, algebraic-geometry
 MSC: 11G05, 11G07, 14H52
 -/

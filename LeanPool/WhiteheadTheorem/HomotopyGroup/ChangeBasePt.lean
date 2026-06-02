@@ -9,6 +9,12 @@ import LeanPool.WhiteheadTheorem.RelHomotopyGroup.Defs
 import LeanPool.WhiteheadTheorem.HEP.Cube
 import LeanPool.WhiteheadTheorem.HEP.Cofibration
 import LeanPool.WhiteheadTheorem.HomotopyGroup.InducedMaps
+
+/-!
+# LeanPool.WhiteheadTheorem.HomotopyGroup.ChangeBasePt
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.HomotopyGroup.ChangeBasePt`.
+-/
 -- import Mathlib.CategoryTheory.Category.Pointed
 -- import WhiteheadTheorem.HEP.Retract
 -- import Mathlib.CategoryTheory.LiftingProperties.Adjunction
@@ -39,7 +45,7 @@ variable {f₀ g₀ : Ω^ (Fin n) X x₀} {f₁ : Ω^ (Fin n) X x₁} {f₂ : Ω
 variable {p : Path x₀ x₁} {q : Path x₁ x₂}
 
 /-- A level homotopy along the constant path -/
-noncomputable def refl_of_GenLoop_homotopic (H : GenLoop.Homotopic f₀ g₀) :
+noncomputable def reflOfGenLoopHomotopic (H : GenLoop.Homotopic f₀ g₀) :
     LevelHomotopy f₀ g₀ (Path.refl _) where
   toHomotopy := H.some.toHomotopy
   prop' t y hy := by
@@ -76,7 +82,7 @@ noncomputable def trans (K : LevelHomotopy f₀ f₁ p) (L : LevelHomotopy f₁ 
       exact L.prop' ⟨2 * t - 1, t_mem⟩ y hy
 
 /-- A level homotopy whose intermediate maps are constant `GenLoop`s -/
-def const_loops : LevelHomotopy (@const (Fin n) _ _ _) const p where
+def constLoops : LevelHomotopy (@const (Fin n) _ _ _) const p where
   toContinuousMap := ⟨fun ⟨t, y⟩ ↦ p t, by fun_prop⟩
   map_zero_left y := by simp only [Path.source, const, ContinuousMap.const_apply]
   map_one_left y := by simp only [Path.target, const, ContinuousMap.const_apply]
@@ -283,7 +289,7 @@ lemma homotopic_of_path_homotopic {f₀ : Ω^ (Fin n) X x₀}
 lemma apply_const {p : Path x₀ x₁} :
     GenLoop.Homotopic (p # const) <| @const (Fin n) _ _ _ :=
   homotopic_of_levelHomotopy_along_homotopic_paths
-    (p #~ const) GenLoop.LevelHomotopy.const_loops (Path.Homotopic.refl p)
+    (p #~ const) GenLoop.LevelHomotopy.constLoops (Path.Homotopic.refl p)
 
 /-- Changing base point along the constant path `Path.refl _` does nothing. -/
 lemma along_const {f : Ω^ (Fin n) X x₀} :
@@ -344,7 +350,7 @@ noncomputable def HomotopyGroup.changeBasePt (n : ℕ) (p : Path x₀ x₁) :
   intro f₀ g₀ eq₀
   let Hf := (p #~ f₀)
   let Hg := (p #~ g₀)
-  let L := GenLoop.LevelHomotopy.refl_of_GenLoop_homotopic eq₀
+  let L := GenLoop.LevelHomotopy.reflOfGenLoopHomotopic eq₀
   apply GenLoop.homotopic_of_levelHomotopy_along_homotopic_paths Hf (L.trans Hg)
   exact Nonempty.intro <| (Path.Homotopy.reflTrans _).symm
 
@@ -471,11 +477,10 @@ theorem inducedPointedHom_comp_pointedHomOfHomotopy_eq
   dsimp only [inducedPointedHom, pointedHomOfPath, functorToPointed]
   change changeBasePt n (F.evalAt x₀) ((functorToType n).map (PointedTopCat.ofHom f x₀) α) =
     (functorToType n).map (PointedTopCat.ofHom g x₀) α
-  simp only [functorToType, CategoryTheory.Under.mk_right]
+  simp only [functorToType]
   rw [← Quotient.out_eq α]
   apply Quotient.sound
-  simp only [GenLoop.inducedMap', CategoryTheory.Under.mk_right, CategoryTheory.Under.homMk_right,
-    TopCat.hom_ofHom]
+  simp only [GenLoop.inducedMap', CategoryTheory.Under.homMk_right]
   generalize_proofs fα_mem gα_mem
   let fα : Ω^ (Fin n) X (f x₀) := ⟨f.comp α.out, fα_mem⟩
   let gα : Ω^ (Fin n) X (g x₀) := ⟨g.comp α.out, gα_mem⟩

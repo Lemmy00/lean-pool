@@ -25,7 +25,7 @@ lemma J_rr_linear (r : ℕ) :
       J r r = 2 * ∑' n : ℕ , 1 / ((n : ℝ) + 1) ^ 3 -
         a / (d (Finset.Icc 1 r)) ^ 3 := by
   if h : r = 0 then
-    rw [h, zeta_3]; use 0; simp
+    rw [h, zeta3]; use 0; simp
   else
     rw [J_rr]
     simp only [sub_right_inj]

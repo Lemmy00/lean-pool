@@ -1080,7 +1080,7 @@ lemma Summable_of_zeta_two' : Summable (fun (n : ℕ) ↦ 1 / ((n : ℝ) + 1) ^ 
   simp only [f]
   exact h
 
-lemma zeta_3_pos : 0 < ∑' (n : ℕ), 1 / ((n : ℝ) + 1) ^ 3 := by
+lemma zeta3_pos : 0 < ∑' (n : ℕ), 1 / ((n : ℝ) + 1) ^ 3 := by
   apply Summable.tsum_pos (g := fun n : ℕ => 1 / ((n : ℝ) + 1) ^ 3) (i := 1)
   · apply summable_of_sum_range_le (c := Real.pi ^ 2 / 6)
     · intro _
@@ -1126,7 +1126,7 @@ theorem JJ_upper (n : ℕ) :
       · exact JJENN_upper n
     · rw [ENNReal.toReal_ofReal]
       apply mul_nonneg (by norm_num)
-      linarith [zeta_3_pos]
+      linarith [zeta3_pos]
   · apply MeasureTheory.ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter
     · rw [MeasureTheory.IntegrableOn]
       exact integrableOn_JJ' n

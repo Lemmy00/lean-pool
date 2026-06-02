@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.RingTheory.TensorProduct.Basic
 
+/-!
+# LeanPool.BrauerGroupNew.ExtendScalar
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.ExtendScalar`.
+-/
+
 open scoped TensorProduct
 
 universe u
@@ -145,7 +151,7 @@ def absorb : L ⊗[K] (K ⊗[k] A) →ₐ[L] L ⊗[k] A where
 
 /-- Algebra equivalence between direct scalar extension and extension through the intermediate
 field. -/
-def absorb_eqv : L ⊗[k] A ≃ₐ[L] L ⊗[K] (K ⊗[k] A) where
+def absorbEqv : L ⊗[k] A ≃ₐ[L] L ⊗[K] (K ⊗[k] A) where
   toFun := release k K L A
   invFun := absorb k K L A
   left_inv := fun x ↦ by
@@ -175,5 +181,5 @@ def absorb_eqv : L ⊗[k] A ≃ₐ[L] L ⊗[K] (K ⊗[k] A) where
   map_add' := map_add _
   commutes' := release k K L A|>.commutes
 
-theorem absorb_eqv_apply (l : L) (a : A) : absorb_eqv k K L A (l ⊗ₜ a) = l ⊗ₜ[K] (1 ⊗ₜ a) :=
+theorem absorbEqv_apply (l : L) (a : A) : absorbEqv k K L A (l ⊗ₜ a) = l ⊗ₜ[K] (1 ⊗ₜ a) :=
   rfl

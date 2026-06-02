@@ -275,7 +275,8 @@ lemma exists_t (m : ℕ) (q : ℕ) (hm_sq : Squarefree m) (hm_mod : m % 8 = 3)
           ne_eq, ← ZMod.intCast_eq_intCast_iff, Int.cast_pow, Int.cast_neg,
           Int.cast_mul, Int.cast_ofNat, Int.cast_natCast]
         specialize h_jacobi p hp.2.1 hp.1
-        simp_all? +decide [Nat.primeFactorsList_prime hp.1]
+        simp_all +decide only [Nat.primeFactorsList_prime hp.1, List.pmap_cons, List.pmap_nil,
+          List.prod_cons, List.prod_nil, mul_one]
         rw [legendreSym.eq_one_iff] at h_jacobi
         · obtain ⟨x, hx⟩ := h_jacobi
           use x.val
@@ -947,7 +948,8 @@ lemma p_mod4_eq1_of_dvd_v_not_dvd_m (p : ℕ) (q : ℤ) (b h x y v R m : ℤ)
     haveI := Fact.mk hp
     simp_all +decide only [ne_eq, Nat.not_even_iff_odd, ← ZMod.intCast_eq_intCast_iff,
       Int.cast_pow, jacobiSym]
-    simp? +decide [Nat.primeFactorsList_prime hp]
+    simp +decide only [Nat.primeFactorsList_prime hp, List.pmap_cons, List.pmap_nil, List.prod_cons,
+      List.prod_nil, mul_one]
     haveI := Fact.mk hp
     rw [legendreSym.eq_one_iff]
     · aesop
@@ -958,8 +960,10 @@ lemma p_mod4_eq1_of_dvd_v_not_dvd_m (p : ℕ) (q : ℤ) (b h x y v R m : ℤ)
         exact Int.modEq_iff_dvd.mpr ⟨-4 * h * hpq.choose, by
           linear_combination -hbqm - 4 * h * hpq.choose_spec⟩
       haveI := Fact.mk hp
-      simp_all? +decide [← ZMod.intCast_eq_intCast_iff, jacobiSym]
-      simp_all? +decide [Nat.primeFactorsList_prime hp]
+      simp_all +decide only [jacobiSym, ← ZMod.intCast_eq_intCast_iff, Int.cast_pow,
+        Int.cast_neg]
+      simp_all +decide only [Nat.primeFactorsList_prime hp, List.pmap_cons, List.pmap_nil,
+        List.prod_cons, List.prod_nil, mul_one]
       rw [legendreSym.eq_one_iff] at *
       · exact ⟨b, by simpa [sq] using hb_sq_mod_p.symm⟩
       · rwa [← ZMod.intCast_zmod_eq_zero_iff_dvd] at hpm
@@ -1018,7 +1022,7 @@ lemma p_mod4_of_dvd_v_dvd_m (p : ℕ) (q : ℕ) (b h x y : ℤ) (R v : ℤ) (m :
         simp_all +decide only [Int.reduceNeg, neg_mul, Int.modEq_iff_dvd]
         obtain ⟨a, ha⟩ := hp_R
         obtain ⟨b', hb'⟩ := hp_2qx_by
-        simp_all? +decide [← eq_sub_iff_add_eq', ← mul_assoc]
+        simp_all +decide only [← eq_sub_iff_add_eq', ← mul_assoc]
         exact ⟨a ^ 2 * 2 * q, by nlinarith⟩
       have h_div_p : (4 * q * v : ℤ) ≡ (2 * q * x + b * y) ^ 2 + m * y ^ 2 [ZMOD p ^ 2] := by
         exact Int.modEq_of_dvd ⟨0, by rw [hv]; linear_combination hbqm * y ^ 2⟩
@@ -1040,7 +1044,8 @@ lemma p_mod4_of_dvd_v_dvd_m (p : ℕ) (q : ℕ) (b h x y : ℤ) (R v : ℤ) (m :
     simp_all +decide only [jacobiSym, Int.reduceNeg, neg_mul,
       ← ZMod.intCast_eq_intCast_iff, Int.cast_pow, Int.cast_mul, Int.cast_ofNat,
       Int.cast_natCast]
-    simp_all? +decide [Nat.primeFactorsList_prime hp]
+    simp_all +decide only [Nat.primeFactorsList_prime hp, List.pmap_cons, List.pmap_nil,
+      List.prod_cons, List.prod_nil, mul_one]
     rw [legendreSym.eq_one_iff]
     · exact ⟨y, by simpa [sq, ← ZMod.intCast_eq_intCast_iff] using h_y_sq_mod_p.symm⟩
     · intro H
@@ -1077,7 +1082,7 @@ lemma even_padicVal_of_mod4_eq3 (p : ℕ) (q : ℕ) (b h x y : ℤ) (R : ℤ) (v
         simp_all +decide only [Int.reduceNeg, neg_mul, Nat.not_even_iff_odd,
           imp_false, Nat.not_odd_iff_even, ne_eq, hv_pos.ne', not_false_eq_true,
           padicValNat.mul]
-        simp_all? [← hv_def]
+        simp_all only [← hv_def, padicValInt.of_nat]
         rw [padicValNat.eq_zero_of_not_dvd] <;> simp_all +decide [Nat.prime_dvd_prime_iff_eq]
     · rw [padicValNat.eq_zero_of_not_dvd] <;> norm_num
       exact fun h => hpv <| Int.natCast_dvd_natCast.mpr <| hp.dvd_mul.mp h |> Or.resolve_left <| by

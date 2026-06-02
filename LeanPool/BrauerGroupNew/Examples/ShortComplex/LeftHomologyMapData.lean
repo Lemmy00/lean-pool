@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
+/-!
+# LeanPool.BrauerGroupNew.Examples.ShortComplex.LeftHomologyMapData
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Examples.ShortComplex.LeftHomologyMapData`.
+-/
+
 universe v u
 
 open CategoryTheory

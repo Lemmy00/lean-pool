@@ -8,6 +8,12 @@ module
 
 public import Mathlib.Data.Set.Basic
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Basic
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Basic`.
+-/
+
 public section
 
 namespace Set

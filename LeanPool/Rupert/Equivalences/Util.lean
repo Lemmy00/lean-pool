@@ -4,40 +4,46 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
 
-import Mathlib.Data.Real.Hom
+import Mathlib.Algebra.Order.Archimedean.Real.Hom
 import LeanPool.Rupert.Basic
 import LeanPool.Rupert.Set
+
+/-!
+# LeanPool.Rupert.Equivalences.Util
+
+Imported Lean Pool material for `LeanPool.Rupert.Equivalences.Util`.
+-/
 open Pointwise
 open Matrix
 
 /-- Projecting from ℝ³ to ℝ² is linear -/
 noncomputable
-def proj_xy_linear : ℝ³ →ₗ[ℝ] ℝ² :=
+def projXyLinear : ℝ³ →ₗ[ℝ] ℝ² :=
   {
-   toFun := proj_xy,
+   toFun := projXy,
    map_add' := by
      intro x y;
-     ext i; fin_cases i <;> simp [proj_xy]
+     ext i; fin_cases i <;> simp [projXy]
    ,
    map_smul' := by
-     intro x y; ext i; fin_cases i <;> simp [proj_xy]
+     intro x y; ext i; fin_cases i <;> simp [projXy]
    }
 
 /-- Rotation by an element of `SO3`, viewed as an affine map. -/
 noncomputable
-def rotation_affine (rot : SO3) : ℝ³ →ᵃ[ℝ] ℝ³ := (Matrix.toEuclideanLin rot).toAffineMap
+def rotationAffine (rot : SO3) : ℝ³ →ᵃ[ℝ] ℝ³ := (Matrix.toEuclideanLin rot).toAffineMap
 
 /-- Translating is affine. -/
 noncomputable
-def offset_affine (off : E 2) : ℝ² →ᵃ[ℝ] ℝ² :=
+def offsetAffine (off : E 2) : ℝ² →ᵃ[ℝ] ℝ² :=
   {toFun v := off + v, linear := LinearMap.id, map_vadd' p v := add_vadd_comm v off p }
 
 /-- Projection of a rotated point onto the xy-plane, as an affine map. -/
 noncomputable
-def proj_xy_rotation_is_affine (rot : SO3) : ℝ³ →ᵃ[ℝ] ℝ² :=
-  AffineMap.comp proj_xy_linear.toAffineMap (rotation_affine rot)
+def projXyRotationIsAffine (rot : SO3) : ℝ³ →ᵃ[ℝ] ℝ² :=
+  AffineMap.comp projXyLinear.toAffineMap (rotationAffine rot)
 
 /-- Full affine transform used for projected Rupert shadows. -/
 noncomputable
-def full_transform_affine (off : E 2) (rot : SO3) : ℝ³ →ᵃ[ℝ] ℝ² :=
-  AffineMap.comp (offset_affine off) (proj_xy_rotation_is_affine rot)
+def fullTransformAffine (off : E 2) (rot : SO3) : ℝ³ →ᵃ[ℝ] ℝ² :=
+  AffineMap.comp (offsetAffine off) (projXyRotationIsAffine rot)

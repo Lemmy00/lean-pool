@@ -6,6 +6,12 @@ Authors: Vincent Trélat
 
 import LeanPool.ZFLean.Isomorphisms
 
+/-!
+# LeanPool.ZFLean.IsomorphismsFunsToPowRel
+
+Imported Lean Pool material for `LeanPool.ZFLean.IsomorphismsFunsToPowRel`.
+-/
+
 namespace ZFSet
 
 open Classical in

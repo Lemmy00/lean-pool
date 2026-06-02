@@ -47,11 +47,11 @@ structure RamanujanTau where
 variable (R : RamanujanTau)
 
 /-- The set of positive primes `ℓ ≤ X` such that `|τ n| = ℓ` for some `n ≥ 1`. -/
-noncomputable def SSet (X : ℝ) : Set ℕ :=
+noncomputable def tauPrimeSet (X : ℝ) : Set ℕ :=
   {ℓ : ℕ | Nat.Prime ℓ ∧ (ℓ : ℝ) ≤ X ∧ ∃ n : ℕ+, (R.τ n).natAbs = ℓ}
 
 /-- `S X` is the number of primes `ℓ ≤ X` taken (in absolute value) by `τ`. -/
-noncomputable def S (X : ℝ) : ℕ := (SSet R X).ncard
+noncomputable def S (X : ℝ) : ℕ := (tauPrimeSet R X).ncard
 
 /-- The pairs `(x, y) ∈ ℕ+ × ℤ` with `x > X ^ (2/11)` and `1 ≤ |x ^ 11 - y ^ 2| ≤ X`. -/
 noncomputable def E2Set (X : ℝ) : Set (ℕ+ × ℤ) :=
@@ -737,7 +737,7 @@ lemma tau_eq_of_pnat_eq_pow (R : RamanujanTau) (n : ℕ+) (p : ℕ+) (k : ℕ)
   exact heq
 
 lemma S_set_subset_union (R : RamanujanTau) (X : ℝ) (_hX : 1 < X) :
-    SSet R X ⊆
+    tauPrimeSet R X ⊆
       {2} ∪
       {ℓ : ℕ | Nat.Prime ℓ ∧ (ℓ : ℝ) ≤ X ∧
         ∃ p : ℕ+, (p : ℕ).Prime ∧ (R.τ (p ^ 2)).natAbs = ℓ} ∪
@@ -747,7 +747,7 @@ lemma S_set_subset_union (R : RamanujanTau) (X : ℝ) (_hX : 1 < X) :
         ∃ p : ℕ+, (p : ℕ).Prime ∧ ∃ k : ℕ, 3 ≤ k ∧
           (R.τ (p ^ (2 * k))).natAbs = ℓ} := by
   intro ℓ hℓ_mem
-  simp only [SSet, Set.mem_setOf_eq] at hℓ_mem
+  simp only [tauPrimeSet, Set.mem_setOf_eq] at hℓ_mem
   obtain ⟨hprime, hle, n, hτ⟩ := hℓ_mem
   rcases hprime.eq_two_or_odd' with rfl | hodd_ℓ
   · left; left; left
@@ -872,7 +872,7 @@ lemma S_decomposition (R : RamanujanTau) (X : ℝ) (hX : 1 < X) :
   have hsub := S_set_subset_union R X hX
   have hfin := full_union_finite R X
   have hcard := ncard_four_union_le R X
-  unfold S SSet
+  unfold S tauPrimeSet
   calc (({ℓ : ℕ | Nat.Prime ℓ ∧ (ℓ : ℝ) ≤ X ∧ ∃ n : ℕ+, (R.τ n).natAbs = ℓ}.ncard : ℝ))
       ≤ (({2} ∪
           {ℓ : ℕ | Nat.Prime ℓ ∧ (ℓ : ℝ) ≤ X ∧
@@ -1029,7 +1029,7 @@ lemma int_diff_toNat_le_floor (z n : ℤ) (X : ℝ) (_hX : 0 ≤ X)
     _ = (z : ℝ) - (n : ℝ) := by push_cast; ring
     _ ≤ X := hle
 
-lemma int_le_add_floor_of_toNat_le (z n : ℤ) (X : ℝ)
+lemma intLe_add_floor_of_toNat_le (z n : ℤ) (X : ℝ)
     (hnn : 0 ≤ z - n) (h : (z - n).toNat ≤ ⌊X⌋₊) :
     z ≤ n + ⌊X⌋₊ := by
   have key : (z - n : ℤ) ≤ ↑⌊X⌋₊ := by
@@ -1038,11 +1038,11 @@ lemma int_le_add_floor_of_toNat_le (z n : ℤ) (X : ℝ)
     exact_mod_cast h
   omega
 
-lemma int_le_int_add_floor_of_cast_le (z n : ℤ) (X : ℝ) (hX : 0 ≤ X)
+lemma intLe_int_add_floor_of_cast_le (z n : ℤ) (X : ℝ) (hX : 0 ≤ X)
     (h : (z : ℝ) ≤ (n : ℝ) + X) : z ≤ n + ⌊X⌋₊ := by
   by_cases hnn : 0 ≤ z - n
   · have hle : (z : ℝ) - (n : ℝ) ≤ X := by linarith
-    exact int_le_add_floor_of_toNat_le z n X hnn
+    exact intLe_add_floor_of_toNat_le z n X hnn
       (int_diff_toNat_le_floor z n X hX hnn hle)
   · have : z ≤ n := by omega
     have : (0 : ℤ) ≤ ⌊X⌋₊ := Int.natCast_nonneg _
@@ -1054,7 +1054,7 @@ lemma E2_X_nonneg (X : ℝ) (p : ℕ+ × ℤ) (hp : p ∈ E2Set X) : 0 ≤ X := 
   linarith
 
 lemma E2_ysq_le_x11_add_floor (X : ℝ) (p : ℕ+ × ℤ) (hp : p ∈ E2Set X) :
-    p.2 ^ 2 ≤ (↑p.1 : ℤ) ^ 11 + ⌊X⌋₊ := int_le_int_add_floor_of_cast_le
+    p.2 ^ 2 ≤ (↑p.1 : ℤ) ^ 11 + ⌊X⌋₊ := intLe_int_add_floor_of_cast_le
     (p.2 ^ 2) ((↑p.1 : ℤ) ^ 11) X
     (E2_X_nonneg X p hp)
     (by exact_mod_cast E2_ysq_le_x11_add_X X p hp)
@@ -2258,7 +2258,7 @@ lemma target_subset_image_k1 (R : RamanujanTau) (X : ℝ) :
   obtain ⟨_, _, p, hp_prime, hp_eq, hp_bd⟩ := hℓ
   exact ⟨p, ⟨hp_prime, hp_bd⟩, hp_eq⟩
 
-lemma nat_le_floor_of_cast_le (B : ℝ) (x : ℕ) (hx : (x : ℝ) ≤ B) : x ≤ ⌊B⌋₊ := by
+lemma natLe_floor_of_cast_le (B : ℝ) (x : ℕ) (hx : (x : ℝ) ≤ B) : x ≤ ⌊B⌋₊ := by
   by_contra h
   push Not at h
   have hlt : B < ↑(⌊B⌋₊ + 1) := by exact_mod_cast Nat.lt_floor_add_one B
@@ -2281,7 +2281,7 @@ lemma witness_set_subset_bounded (X : ℝ) :
     {p : ℕ+ | (p : ℕ) ≤ ⌊X ^ ((2 : ℝ) / 11)⌋₊} := by
   intro p hp
   simp only [Set.mem_setOf_eq] at hp ⊢
-  exact nat_le_floor_of_cast_le _ _ hp.2
+  exact natLe_floor_of_cast_le _ _ hp.2
 
 lemma witness_set_finite_k1 (X : ℝ) :
     {p : ℕ+ | (p : ℕ).Prime ∧ (p : ℝ) ≤ X ^ ((2 : ℝ) / 11)}.Finite := by
@@ -5136,7 +5136,7 @@ lemma y_sq_le_real_of_E2_cond (x : ℕ+) (y : ℤ) (X : ℝ)
     linarith
   exact h5
 
-lemma pnat_le_ceil_of_le (x : ℕ+) (B : ℝ) (_hB : 0 < B) (hx : (x : ℝ) ≤ B) :
+lemma pnatLe_ceil_of_le (x : ℕ+) (B : ℝ) (_hB : 0 < B) (hx : (x : ℝ) ≤ B) :
     (x : ℕ) ≤ ⌈B⌉₊ := by
   have h_ceil : (B : ℝ) ≤ ⌈B⌉₊ := Nat.le_ceil B
   have h_x_le_ceil : (x : ℝ) ≤ (⌈B⌉₊ : ℝ) := by
@@ -5151,7 +5151,7 @@ lemma y_sq_le_ceil_pow_add (x : ℕ+) (y : ℤ) (X B : ℝ) (hB : 0 < B)
     (hx_le_B : (x : ℝ) ≤ B)
     (hy_sq : (y : ℝ) ^ 2 ≤ (↑↑x : ℝ) ^ 11 + X) :
     (y : ℝ) ^ 2 ≤ (↑⌈B⌉₊ : ℝ) ^ 11 + X := by
-  have hxN : (x : ℕ) ≤ ⌈B⌉₊ := pnat_le_ceil_of_le x B hB hx_le_B
+  have hxN : (x : ℕ) ≤ ⌈B⌉₊ := pnatLe_ceil_of_le x B hB hx_le_B
   have hxR : (↑↑x : ℝ) ≤ (↑⌈B⌉₊ : ℝ) := by exact_mod_cast hxN
   have hpow : (↑↑x : ℝ) ^ 11 ≤ (↑⌈B⌉₊ : ℝ) ^ 11 := by
     apply pow_le_pow_left₀ (by positivity) hxR
@@ -5249,7 +5249,7 @@ lemma pnat_nat_image_subset_Icc (X B : ℝ) (_hB : 0 < B)
   rw [Set.Finite.mem_toFinset] at hp_mem
   constructor
   · exact PNat.pos p.1
-  · exact nat_le_floor_of_cast_le B (p.1 : ℕ) (hxbound p hp_mem)
+  · exact natLe_floor_of_cast_le B (p.1 : ℕ) (hxbound p hp_mem)
 
 lemma Icc_card_le_floor_add_one (B : ℝ) :
     (Finset.Icc 1 ⌊B⌋₊).card ≤ ⌊B⌋₊ + 1 := by
@@ -5479,7 +5479,7 @@ lemma pnat_finset_card_le_floor_add_one (s : Finset ℕ+) (B : ℝ)
     rw [Finset.mem_image] at hn
     obtain ⟨x, hx_mem, rfl⟩ := hn
     rw [Finset.mem_range]
-    exact Nat.lt_add_one_iff.mpr (nat_le_floor_of_cast_le B x (hs x hx_mem))
+    exact Nat.lt_add_one_iff.mpr (natLe_floor_of_cast_le B x (hs x hx_mem))
 
 lemma E4_fst_image_card_le (X B : ℝ) (hB : 0 < B) (hfin : (E4Set X).Finite)
     (hx : ∀ p ∈ E4Set X, (p.1 : ℝ) ≤ B) :

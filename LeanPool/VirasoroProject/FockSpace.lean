@@ -257,7 +257,7 @@ instance (α : 𝕜) : HasCharge 𝕜 (ChargedFockSpace 𝕜 α) α :=
   ⟨fun v ↦ ChargedFockSpace.jgen_zero_smul 𝕜 α v⟩
 
 open Filter in
-lemma _root_.VirasoroProject.HeisenbergAlgebra.uea_eventually_commute_jgen
+lemma _root_.VirasoroProject.HeisenbergAlgebra.ueaEventually_commute_jgen
     (a : 𝓤 𝕜 (HeisenbergAlgebra 𝕜)) :
     ∀ᶠ k in atTop, Commute (ιUEA 𝕜 (HeisenbergAlgebra.jgen 𝕜 k)) a := by
   apply UniversalEnvelopingAlgebra.induction 𝕜 _
@@ -305,7 +305,7 @@ lemma _root_.VirasoroProject.ChargedFockSpace.eventually_jgen_smul_eq_zero
       {ChargedFockSpace.vacuum 𝕜 α} := by
     simp [ChargedFockSpace.vacuum_cyclic 𝕜 α]
   obtain ⟨a, hav⟩ := Submodule.mem_span_singleton.mp aux
-  filter_upwards [HeisenbergAlgebra.uea_eventually_commute_jgen _ a, Ioi_mem_atTop 0] with
+  filter_upwards [HeisenbergAlgebra.ueaEventually_commute_jgen _ a, Ioi_mem_atTop 0] with
     k hk k_pos
   -- `calcify`?
   rw [← hav, ← mul_smul]

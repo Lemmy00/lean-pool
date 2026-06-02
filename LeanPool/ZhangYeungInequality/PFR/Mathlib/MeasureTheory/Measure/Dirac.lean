@@ -8,6 +8,13 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Dirac
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Dirac
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Dirac`.
+-/
+
 public section
 
 namespace MeasureTheory.Measure

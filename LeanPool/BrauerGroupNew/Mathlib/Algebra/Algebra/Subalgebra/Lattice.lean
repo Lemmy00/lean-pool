@@ -6,6 +6,13 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Lattice
+
+Imported Lean Pool material for
+`LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Lattice`.
+-/
+
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 lemma Subalgebra.map_centralizer_le_centralizer_image (s : Set A) (f : A →ₐ[R] B) :

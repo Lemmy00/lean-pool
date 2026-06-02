@@ -11,6 +11,13 @@ public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.IdentDistrib
 public import LeanPool.ZhangYeungInequality.PFR.ForMathlib.FiniteRange.ConditionalProbability
 public import LeanPool.ZhangYeungInequality.PFR.ForMathlib.Pair
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.ForMathlib.ConditionalIndependence
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.ForMathlib.ConditionalIndependence`.
+-/
+
 @[expose] public section
 
 open MeasureTheory Measure Set
@@ -211,7 +218,7 @@ lemma _root_.ProbabilityTheory.condIndep_copies
     measurable_fst.comp measurable_fst, measurable_snd.comp measurable_fst,
     measurable_snd, ?_, ?_, ?_⟩
   · constructor
-    simp only [coe_finset_sum, Finset.sum_apply, ν]
+    simp only [coe_finsetSum, Finset.sum_apply, ν]
     have : ∑ y ∈ finY.toFinset, μ (Y ⁻¹' {y}) * 1 = 1 := by
       simp only [mul_one]
       rw [sum_measure_preimage_singleton]
@@ -248,7 +255,7 @@ lemma _root_.ProbabilityTheory.condIndep_copies
         simp only [smul_apply, MeasurableSet.singleton, dirac_apply', smul_eq_mul, mul_eq_zero,
           indicator_apply_eq_zero, Pi.one_apply,
           one_ne_zero, imp_false]; right; exact hx
-      simp only [coe_finset_sum, coe_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ν]
+      simp only [coe_finsetSum, coe_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ν]
       rw [Finset.sum_eq_single_of_mem y ?_]
       · rw [h3, ← mul_assoc, ENNReal.inv_mul_cancel hy'', one_mul]
         finiteness

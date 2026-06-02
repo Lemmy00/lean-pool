@@ -9,6 +9,12 @@ import LeanPool.QuasiBorelSpaces.MeasureTheory.Sigma
 import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import LeanPool.QuasiBorelSpaces.List.Encoding
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.List
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.List`.
+-/
+
 
 variable
   {A : Type*} [MeasurableSpace A]
@@ -68,7 +74,7 @@ end List.Encoding
 
 namespace MeasureTheory.List
 
-instance : MeasurableSpace (List A) :=
+instance instMeasurableSpaceListLeanPool : MeasurableSpace (List A) :=
   MeasurableSpace.comap List.Encoding.encode inferInstance
 
 @[fun_prop]

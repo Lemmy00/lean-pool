@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.Basic
 import LeanPool.QuasiBorelSpaces.Defs
 import LeanPool.QuasiBorelSpaces.OmegaQuasiBorelSpace
 
+/-!
+# LeanPool.QuasiBorelSpaces.Subtype
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Subtype`.
+-/
+
 
 namespace QuasiBorelSpace.Subtype
 

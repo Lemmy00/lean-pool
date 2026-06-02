@@ -900,7 +900,7 @@ theorem J_rr (r : ℕ) :
         · apply Measurable.pow measurable_fst measurable_const
       · apply Measurable.pow measurable_snd measurable_const
 
-theorem zeta_3 : J 0 0 = 2 * ∑' n : ℕ , 1 / ((n : ℝ) + 1) ^ 3 := by
+theorem zeta3 : J 0 0 = 2 * ∑' n : ℕ , 1 / ((n : ℝ) + 1) ^ 3 := by
   simp only [J_rr, one_div, zero_lt_one, Finset.Icc_eq_empty_of_lt, Finset.sum_empty, mul_zero,
     sub_zero]
 

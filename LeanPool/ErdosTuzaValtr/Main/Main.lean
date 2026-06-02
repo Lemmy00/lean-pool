@@ -12,6 +12,12 @@ import LeanPool.ErdosTuzaValtr.Main.Defs
 import LeanPool.ErdosTuzaValtr.Main.Lemmas.Default
 import LeanPool.ErdosTuzaValtr.Main.InductionStep
 
+/-!
+# LeanPool.ErdosTuzaValtr.Main.Main
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Main.Main`.
+-/
+
 noncomputable section
 
 variable {γ : Type _} [LinearOrder γ] (C : Config γ)

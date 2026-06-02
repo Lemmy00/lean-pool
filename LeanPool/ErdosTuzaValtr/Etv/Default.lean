@@ -8,3 +8,9 @@ import LeanPool.ErdosTuzaValtr.Etv.Defs
 import LeanPool.ErdosTuzaValtr.Etv.Label
 import LeanPool.ErdosTuzaValtr.Etv.Mirror
 import LeanPool.ErdosTuzaValtr.Etv.AlphaBeta
+
+/-!
+# LeanPool.ErdosTuzaValtr.Etv.Default
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Etv.Default`.
+-/

@@ -183,7 +183,7 @@ theorem mem_subfieldOf' (x : K_bar ⊗[K] A) : x ∈ intermediateTensor' K K_bar
 
 end
 
-namespace lemma_tto
+namespace lemmaTto
 
 variable (n : ℕ) [NeZero n] (k k_bar A : Type u) [Field k] [Field k_bar] [Algebra k k_bar]
   [IsAlgClosure k k_bar] [Ring A] [Algebra k A] [FiniteDimensional k A]
@@ -217,22 +217,25 @@ def f (i : Fin n × Fin n) : subfieldOf k k_bar A (e i) →ₐ[k] ℒ :=
   subfieldOf k k_bar A (e i)|>.inclusion (le_sSup ⟨i, rfl⟩)
 
 /-- The pulled-back basis vector, regarded in the `ℒ`-linear intermediate tensor submodule. -/
-def e_hat' (i : Fin n × Fin n) : intermediateTensor' k k_bar A ℒ :=
+def eHat' (i : Fin n × Fin n) : intermediateTensor' k k_bar A ℒ :=
   ⟨e i, by
     rw [← mem_intermediateTensor_iff_mem_intermediateTensor']
     exact intermediateTensor_mono k k_bar A (le_sSup (by simp)) <| mem_subfieldOf k k_bar A (e i)⟩
 
-local notation "e^'" => e_hat' n k k_bar A iso
+local notation "e^'" => eHat' n k k_bar A iso
 local notation "k⁻" => k_bar
 
 omit [NeZero n] [FiniteDimensional k A] in
-theorem e_hat_linear_independent : LinearIndependent ℒ e^' := by
+theorem eHat_linear_independent : LinearIndependent ℒ e^' := by
   rw [linearIndependent_iff']
   intro s g h
   have h' : ∑ i ∈ s, algebraMap ℒ k⁻ (g i) • e i = 0 := by
     apply_fun Submodule.subtype _ at h
-    simpa only [IntermediateField.algebraMap_apply, map_sum, map_smul, Submodule.coe_subtype,
-      map_zero] using h
+    convert h using 1
+    simp only [map_sum, map_smul, Submodule.coe_subtype, eHat']
+    apply Finset.sum_congr rfl
+    intro x hx
+    rfl
   have H := (linearIndependent_iff'.1 <| e |>.linearIndependent) s (algebraMap ℒ k⁻ ∘ g) h'
   intro i hi
   simpa using H i hi
@@ -251,11 +254,11 @@ theorem dim_ℒ_eq : Module.finrank ℒ (intermediateTensor' k k⁻ A ℒ) = n^2
     exact LinearEquiv.finrank_eq (intermediateTensorEquiv' k k_bar A ℒ)
 
 /-- The basis of the intermediate tensor submodule over `ℒ`. -/
-def e_hat : Basis (Fin n × Fin n) ℒ (intermediateTensor' k k_bar A ℒ) :=
-  basisOfLinearIndependentOfCardEqFinrank (e_hat_linear_independent n k k_bar A iso) <| by
+def eHat : Basis (Fin n × Fin n) ℒ (intermediateTensor' k k_bar A ℒ) :=
+  basisOfLinearIndependentOfCardEqFinrank (eHat_linear_independent n k k_bar A iso) <| by
     simp only [Fintype.card_prod, Fintype.card_fin, dim_ℒ_eq, pow_two]
 
-local notation "e^" => e_hat n k k_bar A iso
+local notation "e^" => eHat n k k_bar A iso
 
 /-- The restricted linear equivalence over the finite intermediate field `ℒ`. -/
 def isoRestrict' : ℒ ⊗[k] A ≃ₗ[ℒ] Matrix (Fin n) (Fin n) ℒ :=
@@ -316,18 +319,20 @@ lemma comm_square' :
     Basis.equiv (e^) (Matrix.stdBasis ℒ (Fin n) (Fin n)) (Equiv.refl _) := by
   apply Basis.ext (e^)
   intro i
-  conv_lhs => simp only [AlgEquiv.toLinearEquiv_toLinearMap, e_hat,
+  conv_lhs => simp only [AlgEquiv.toLinearEquiv_toLinearMap, eHat,
     basisOfLinearIndependentOfCardEqFinrank,
-    Basis.coe_mk, e_hat', LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coe_subtype,
+    Basis.coe_mk, eHat', LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coe_subtype,
     Function.comp_apply, AlgEquiv.toLinearMap_apply, LinearEquiv.coe_coe, AlgHom.toLinearMap_apply]
-  simp only [ee_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     Basis.equiv_apply, Equiv.refl_apply, AlgHom.toLinearMap_apply]
+  change iso (e i) = (inclusion' n k k_bar A iso) ((Matrix.stdBasis ℒ (Fin n) (Fin n)) i)
+  rw [ee_apply n k k_bar A iso i]
+  rw [Matrix.stdBasis_eq_single]
+  rw [Matrix.stdBasis_eq_single]
   ext a b
   simp only [inclusion']
   simp only [Algebra.ofId]
-  rw [Matrix.stdBasis_eq_single]
-  erw [Matrix.stdBasis_eq_single]
-  simp only [Matrix.single]
+  simp only [AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.single]
   change (if i.1 = a ∧ i.2 = b then 1 else 0) =
     algebraMap ℒ k_bar ((if i.1 = a ∧ i.2 = b then 1 else 0) : ℒ)
   simp
@@ -399,15 +404,26 @@ lemma isoRestrict_map_mul (x y : ℒ ⊗[k] A) :
   have eq₁ := congr($(comm_square n k k_bar A iso) x)
   have eq₂ := congr($(comm_square n k k_bar A iso) y)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, AlgHom.toLinearMap_apply,
-    AlgEquiv.toLinearEquiv_toLinearMap, LinearMap.coe_restrictScalars,
-    AlgEquiv.toLinearMap_apply] at eq₁ eq₂
-  rw [← eq₁, ← eq₂, ← _root_.map_mul] at eq
-  refine inclusion'_injective n k k_bar A iso (eq.trans ?_)
-  rw [_root_.map_mul]
+    AlgEquiv.toLinearEquiv_toLinearMap, LinearMap.coe_restrictScalars] at eq₁ eq₂
+  apply inclusion'_injective n k k_bar A iso
+  calc
+    (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) (x * y)) =
+        iso ((inclusion n k k_bar A iso) x) * iso ((inclusion n k k_bar A iso) y) := by
+      change
+        ((inclusion' n k k_bar A iso).toLinearMap ∘ₗ ↑(isoRestrict' n k k_bar A iso)) (x * y) =
+          iso ((inclusion n k k_bar A iso) x) * iso ((inclusion n k k_bar A iso) y)
+      exact eq
+    _ = (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) x) *
+        (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) y) := by
+      rw [eq₁, eq₂]
+      rfl
+    _ = (inclusion' n k k_bar A iso)
+        ((isoRestrict' n k k_bar A iso) x * (isoRestrict' n k k_bar A iso) y) := by
+      rw [_root_.map_mul]
 
 /-- The restricted algebra equivalence over the finite intermediate field `ℒ`. -/
 def isoRestrict : ℒ ⊗[k] A ≃ₐ[ℒ] Matrix (Fin n) (Fin n) ℒ :=
   AlgEquiv.ofLinearEquiv (isoRestrict' n k k⁻ A iso)
     (isoRestrict_map_one n k k⁻ A iso) (isoRestrict_map_mul n k k⁻ A iso)
 
-end lemma_tto
+end lemmaTto

@@ -10,6 +10,12 @@ import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Analysis.Quaternion
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
+/-!
+# LeanPool.BrauerGroupNew.FrobeniusTheorem
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.FrobeniusTheorem`.
+-/
+
 suppress_compilation
 
 open FiniteDimensional Module TensorProduct

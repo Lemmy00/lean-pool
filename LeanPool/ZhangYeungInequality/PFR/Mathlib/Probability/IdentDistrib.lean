@@ -10,6 +10,13 @@ public import Mathlib.Probability.IdentDistrib
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Constructions.Pi
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Independence.Basic
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.IdentDistrib
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.IdentDistrib`.
+-/
+
 public section
 
 -- TODO: Change `ae_snd` to assume `Measurable p`
@@ -79,12 +86,25 @@ protected lemma _root_.ProbabilityTheory.IdentDistrib.cond
       (hfg.comp measurable_fst).aemeasurable_snd.mono_ac cond_absolutelyContinuous)
       ht.nullMeasurableSet, cond_apply (hg' hs), cond_apply (hf' hs)]
     congr
-    · simpa only [map_apply₀ (hfg.comp measurable_snd).aemeasurable_fst hs.nullMeasurableSet,
-        map_apply₀ (hfg.comp measurable_snd).aemeasurable_snd hs.nullMeasurableSet]
+    · have hfs : (Prod.snd ∘ fun a ↦ (f a, f' a)) ⁻¹' s = f' ⁻¹' s := by
+        ext a
+        rfl
+      have hgs : (Prod.snd ∘ fun b ↦ (g b, g' b)) ⁻¹' s = g' ⁻¹' s := by
+        ext b
+        rfl
+      simpa [hfs, hgs, map_apply₀
+          (hfg.comp measurable_snd).aemeasurable_fst hs.nullMeasurableSet,
+          map_apply₀ (hfg.comp measurable_snd).aemeasurable_snd hs.nullMeasurableSet]
         using congr_fun (congr_arg (⇑) (hfg.comp measurable_snd).map_eq) s
     · rw [inter_comm, inter_comm (g' ⁻¹' _)]
-      simpa only [map_apply₀ hfg.aemeasurable_fst (ht.prod hs).nullMeasurableSet,
-        map_apply₀ hfg.aemeasurable_snd (ht.prod hs).nullMeasurableSet]
+      have hfts : (fun a ↦ (f a, f' a)) ⁻¹' (t ×ˢ s) = f ⁻¹' t ∩ f' ⁻¹' s := by
+        ext a
+        rfl
+      have hgts : (fun b ↦ (g b, g' b)) ⁻¹' (t ×ˢ s) = g ⁻¹' t ∩ g' ⁻¹' s := by
+        ext b
+        rfl
+      simpa [hfts, hgts, map_apply₀ hfg.aemeasurable_fst (ht.prod hs).nullMeasurableSet,
+          map_apply₀ hfg.aemeasurable_snd (ht.prod hs).nullMeasurableSet]
         using congr_fun (congr_arg (⇑) hfg.map_eq) (t ×ˢ s)
 
 /-- A function is identically distributed to itself composed with a measurable embedding

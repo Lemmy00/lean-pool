@@ -537,7 +537,7 @@ lemma exists_log_of_analytic_nonzero_on_ball (f : ℂ → ℂ)
           convert this.comp t (HasDerivAt.const_mul z (hasDerivAt_id t |>
             HasDerivAt.ofReal_comp)) using 1
           · norm_num [mul_assoc, mul_comm, mul_left_comm, Function.comp_def]
-          · push_cast; ring
+          · push_cast; ring_nf
         · exact (ContinuousOn.intervalIntegrable (by rw [continuousOn_congr fun t ht =>
             by rw [hH_const _ (h_path t <| by simpa using ht)]]; exact continuousOn_const)) ..
       have h_zero : ∫ t in (0 : ℝ)..1, deriv H (t • z) * z = 0 := by

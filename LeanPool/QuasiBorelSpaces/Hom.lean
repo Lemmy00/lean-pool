@@ -130,12 +130,12 @@ lemma isHom_iff (f : A → B →𝒒 C) : IsHom f ↔ IsHom (fun x : A × B ↦ 
     apply isHom_mk hf
 
 /-- Currying for `QuasiBorelHom`s. -/
-@[expose, simps -fullyApplied]
+@[simps -fullyApplied]
 def curry (f : A × B →𝒒 C) : A →𝒒 B →𝒒 C where
   toFun x := { toFun y := f (x, y) }
 
 /-- Uncurrying for `QuasiBorelHom`s. -/
-@[expose, simps -fullyApplied]
+@[simps -fullyApplied]
 def uncurry (f : A →𝒒 B →𝒒 C) : A × B →𝒒 C where
   toFun x := f x.1 x.2
 
@@ -146,7 +146,7 @@ lemma curry_uncurry (f : A →𝒒 B →𝒒 C) : curry (uncurry f) = f := rfl
 lemma uncurry_curry (f : A × B →𝒒 C) : uncurry (curry f) = f := rfl
 
 /-- The identity morphism. -/
-@[expose, simps -fullyApplied]
+@[simps -fullyApplied]
 def id : A →𝒒 A where
   toFun x := x
 
@@ -155,7 +155,7 @@ lemma eq_id : (.mk fun x : A ↦ x) = id := by
   rfl
 
 /-- Morphism composition. -/
-@[expose, simps -fullyApplied]
+@[simps -fullyApplied]
 def comp (f : B →𝒒 C) (g : A →𝒒 B) : A →𝒒 C where
   toFun x := f (g x)
 

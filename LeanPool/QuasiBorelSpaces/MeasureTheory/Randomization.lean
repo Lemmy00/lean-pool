@@ -14,6 +14,12 @@ import LeanPool.QuasiBorelSpaces.MeasureTheory.Measure
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Option
 import LeanPool.QuasiBorelSpaces.MeasureTheory.StandardBorelSpace
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Randomization
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Randomization`.
+-/
+
 
 open scoped unitInterval
 
@@ -39,7 +45,8 @@ lemma injective_normalize (r) : Function.Injective (normalize (r := r)) := by
     exact hi
   · grind
 
-noncomputable instance (r : ℝ) : MeasureSpace (Set.Ico 0 r) where
+noncomputable instance instMeasureSpaceElemRealIcoOfNatLeanPool (r : ℝ) :
+    MeasureSpace (Set.Ico 0 r) where
   volume := ENNReal.ofReal r • volume.comap normalize
 
 instance : IsEmpty (Set.Ico 0 (0 : ℝ)) := by simp
@@ -80,7 +87,7 @@ lemma measurableEmbedding_normalize (r) : MeasurableEmbedding (normalize (r := r
 @[simp]
 lemma range_normalize {r} (hr : 0 < r) : Set.range (normalize (r := r)) = Set.Ico 0 1 := by
   ext x
-  simp only [Set.mem_range, normalize, Subtype.exists, Set.mem_Ico, zero_le', true_and]
+  simp only [Set.mem_range, normalize, Subtype.exists, Set.mem_Ico, zero_le, true_and]
   refine ⟨?_, ?_⟩
   · rintro ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
     rw [Subtype.mk_lt_mk, Set.Icc.coe_one, div_lt_one] <;> grind

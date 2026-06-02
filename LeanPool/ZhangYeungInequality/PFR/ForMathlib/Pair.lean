@@ -9,6 +9,12 @@ module
 public import Mathlib.Util.Notation3
 public import Mathlib.Tactic.Basic
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.ForMathlib.Pair
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.PFR.ForMathlib.Pair`.
+-/
+
 public section
 
 /-- The pair of two random variables -/

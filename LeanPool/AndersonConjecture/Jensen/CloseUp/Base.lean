@@ -45,10 +45,10 @@ lemma eq_of_prime_le_prime_height_le_one
   have hbot_fin : (⊥ : Ideal S).FiniteHeight :=
     ⟨Or.inr (by simp [Ideal.height_bot])⟩
   have h0 : (⊥ : Ideal S).height < P.height :=
-    @Ideal.height_strict_mono_of_is_prime S _ (⊥ : Ideal S) P Ideal.isPrime_bot
+    @Ideal.height_strict_mono_of_isPrime S _ (⊥ : Ideal S) P Ideal.isPrime_bot
       hbot_lt_P hbot_fin
   rw [Ideal.height_bot] at h0
-  rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hP_height
+  rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hP_height
   rw [hP_height] at h0
   exact lt_irrefl _ h0
 

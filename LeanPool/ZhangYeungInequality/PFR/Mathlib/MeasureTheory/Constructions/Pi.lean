@@ -8,6 +8,13 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.Pi
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Constructions.Pi
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Constructions.Pi`.
+-/
+
 public section
 
 open Function Set

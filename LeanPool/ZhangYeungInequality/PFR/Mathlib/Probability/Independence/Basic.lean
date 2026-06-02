@@ -10,6 +10,13 @@ public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.Probability.Independence.Basic
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Independence.Kernel.IndepFun
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Independence.Basic
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Independence.Basic`.
+-/
+
 public section
 
 open Function MeasureTheory MeasurableSpace Measure Set
@@ -108,13 +115,13 @@ lemma _root_.ProbabilityTheory.IndepFun.finsetSum
   let S : Bool → Finset ι := fun b => if b then s else t
   have h_disjoint : Set.PairwiseDisjoint Set.univ S := by
     intro b _ c _ hbc
-    by_cases hb : b
-    · by_cases hc : c
-      · exfalso; exact hbc (hb ▸ hc.symm)
-      · simpa [hb, hc] using h_disj
-    · by_cases hc : c
-      · simpa [hb, hc] using h_disj.symm
-      · exfalso; exact hbc (eq_false_of_ne_true hb ▸ (eq_false_of_ne_true hc).symm)
+    cases b <;> cases c
+    · exact False.elim (hbc rfl)
+    · change Disjoint t s
+      exact h_disj.symm
+    · change Disjoint s t
+      exact h_disj
+    · exact False.elim (hbc rfl)
   have hindep := iIndepFun.finsetSum S h_disjoint hf_Indep hf_meas
   have h_true : S true = s := by simp [S]
   have h_false : S false = t := by simp [S]
@@ -151,8 +158,10 @@ lemma _root_.ProbabilityTheory.iIndepFun.finsets_comp' {f : ∀ i,
   | 0 => hφ
   | 1 => hφ'
   have hneq : (0:Fin 2) ≠ (1:Fin 2) := by simp
-  simpa [φ₂] using (iIndepFun.finsets_comp S₂ h_disjoint₂ hf_Indep hf_meas φ₂
-    hφ₂).indepFun hneq
+  have hindep := (iIndepFun.finsets_comp S₂ h_disjoint₂ hf_Indep hf_meas φ₂ hφ₂).indepFun hneq
+  change IndepFun (fun a ↦ φ (fun (i : S) ↦ f i a))
+    (fun a ↦ φ' (fun (i : S') ↦ f i a)) μ at hindep
+  exact hindep
 
 end iIndepFun
 

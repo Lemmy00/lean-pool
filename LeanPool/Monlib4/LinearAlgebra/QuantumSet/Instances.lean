@@ -7,6 +7,12 @@ import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import LeanPool.Monlib4.LinearAlgebra.Ips.MatIps
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Pi
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.DeltaForm
+
+/-!
+# LeanPool.Monlib4.LinearAlgebra.QuantumSet.Instances
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.QuantumSet.Instances`.
+-/
 -- import LeanPool.Monlib4.LinearAlgebra.Ips.Frob
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {φ : Module.Dual ℂ (Matrix n n ℂ)}
@@ -131,8 +137,8 @@ by
       Units.zero_lt]⟩
   use Units.mk0 ⟨RCLike.re r, le_of_lt (RCLike.pos_def.mp h).1⟩
     (ne_of_gt (RCLike.pos_def.mp h).1)
-  simpa [Units.val_mk0, NNReal.coe_mk] using
-    (RCLike.conj_eq_iff_re.mp (RCLike.conj_eq_iff_im.mpr (RCLike.pos_def.mp h).2)).symm
+  change r = ((RCLike.re r : ℝ) : 𝕜)
+  exact (RCLike.conj_eq_iff_re.mp (RCLike.conj_eq_iff_im.mpr (RCLike.pos_def.mp h).2)).symm
 theorem _root_.RCLike.nonneg_toNNReal {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) :
   0 ≤ r ↔ ∃ s : NNReal, r = (((s : NNReal) : ℝ) : 𝕜) :=
 by
@@ -246,7 +252,7 @@ by
     rw [posSemidefOne_smul_rpow]
     simp only [RCLike.ofReal_re]
 
-theorem _root_.Matrix.smul_one_inv {𝕜 : Type*} [RCLike 𝕜]
+theorem _root_.Matrix.smulOneInv {𝕜 : Type*} [RCLike 𝕜]
   {n : Type _} [Fintype n] [DecidableEq n] {s : NNRealˣ} :
     ((((s : NNReal) : ℝ) : 𝕜) • (1 : Matrix n n 𝕜))⁻¹
       = (((s⁻¹ : NNReal) : ℝ) : 𝕜) • 1 :=
@@ -439,8 +445,8 @@ def Module.Dual.IsFaithfulPosMap.quantumSet [hφ : φ.IsFaithfulPosMap] :
       PosDef.rpow_one_eq_self, PosDef.rpow_neg_one_eq_inv_self]
     rfl
   n := n × n
-  n_isFintype := by infer_instance
-  n_isDecidableEq := by infer_instance
+  nIsFintype := by infer_instance
+  nIsDecidableEq := by infer_instance
   onb := hφ.orthonormalBasis }
 
 /-- Elaborate a term using the matrix quantum-set structure induced by a faithful
@@ -458,7 +464,7 @@ macro_rules
         $p)
 
   -- map_one' := rfl
-  -- map_mul' x y := _root_.map_mul _ _ _
+  -- mapMul' x y := _root_.map_mul _ _ _
   -- map_zero' := _root_.map_zero _
   -- map_add' := _root_.map_add _
   -- commutes' := Algebra.commutes
@@ -655,8 +661,8 @@ noncomputable instance Module.Dual.pi.IsFaithfulPosMap.quantumSet
         star_eq_conjTranspose]
       exact Module.Dual.IsFaithfulPosMap.inner_right_conj (hψ i) (x i) (y i) (z i)
     n := Σ i, (s i) × (s i)
-    n_isFintype := by infer_instance
-    n_isDecidableEq := by infer_instance
+    nIsFintype := by infer_instance
+    nIsDecidableEq := by infer_instance
     onb := Module.Dual.pi.IsFaithfulPosMap.orthonormalBasis hψ }
 
 /-- Elaborate a term using the product quantum-set structure induced by faithful

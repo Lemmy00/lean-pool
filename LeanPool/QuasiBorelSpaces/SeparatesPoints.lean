@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.Prop
 import LeanPool.QuasiBorelSpaces.Sigma
 import LeanPool.QuasiBorelSpaces.Sum
 
+/-!
+# LeanPool.QuasiBorelSpaces.SeparatesPoints
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.SeparatesPoints`.
+-/
+
 variable
   {A : Type*} [QuasiBorelSpace A]
   {B : Type*} [QuasiBorelSpace B]

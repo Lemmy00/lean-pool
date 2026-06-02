@@ -11,6 +11,12 @@ import Mathlib.Algebra.Central.Defs
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.HopkinsLevitzki
 
+/-!
+# LeanPool.BrauerGroupNew.Wedderburn
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Wedderburn`.
+-/
+
 variable (A : Type*) [Ring A]
 
 open Matrix MulOpposite
@@ -25,29 +31,29 @@ variable (ι : Type) [Fintype ι]
 If `I` is a two-sided-ideal of `A`, then `Mₙ(I) := {(xᵢⱼ) | ∀ i j, xᵢⱼ ∈ I}` is a two-sided-ideal of
 `Mₙ(A)`.
 -/
-@[simps]
-def TwoSidedIdeal.mapMatrix (I : TwoSidedIdeal A) : TwoSidedIdeal M[ι, A] := .mk
-{
-  r := fun X Y => ∀ i j, I.ringCon (X i j) (Y i j)
-  iseqv :=
-  { refl := fun X i j ↦ I.ringCon.refl (X i j)
-    symm := fun h i j ↦ I.ringCon.symm (h i j)
-    trans := fun h1 h2 i j ↦ I.ringCon.trans (h1 i j) (h2 i j) }
-  mul' := by
-    intro _ _ _ _ h h' i j
-    rw [Matrix.mul_apply, Matrix.mul_apply]
-    rw [TwoSidedIdeal.rel_iff, ← Finset.sum_sub_distrib]
-    apply I.finsetSum_mem
-    rintro k -
-    rw [← TwoSidedIdeal.rel_iff]
-    apply I.ringCon.mul (h _ _) (h' _ _)
-  add' := fun {X X' Y Y'} h h' i j ↦ by
-    simpa only [Matrix.add_apply] using I.ringCon.add (h _ _) (h' _ _)
-}
+def TwoSidedIdeal.mapMatrix (I : TwoSidedIdeal A) : TwoSidedIdeal M[ι, A] :=
+  TwoSidedIdeal.mk' {X | ∀ i j, X i j ∈ I}
+    (by intro i j; exact I.zero_mem)
+    (by
+      intro X Y hX hY i j
+      simpa only [Matrix.add_apply] using I.add_mem (hX i j) (hY i j))
+    (by
+      intro X hX i j
+      simpa only [Matrix.neg_apply] using I.neg_mem (hX i j))
+    (by
+      classical
+      intro X Y hY i j
+      rw [Matrix.mul_apply]
+      exact I.finsetSum_mem _ _ fun k _ ↦ I.mul_mem_left (X i k) (Y k j) (hY k j))
+    (by
+      classical
+      intro X Y hX i j
+      rw [Matrix.mul_apply]
+      exact I.finsetSum_mem _ _ fun k _ ↦ I.mul_mem_right (X i k) (Y k j) (hX i k))
 
 @[simp] lemma TwoSidedIdeal.mem_mapMatrix (I : TwoSidedIdeal A) (x) : x ∈ I.mapMatrix A ι ↔
     ∀ i j, x i j ∈ I :=
-  Iff.rfl
+  TwoSidedIdeal.mem_mk' _ _ _ _ _ _ _
 
 /--
 The two-sided-ideals of `A` corresponds bijectively to that of `Mₙ(A)`.
@@ -113,7 +119,7 @@ def TwoSidedIdeal.equivRingConMatrix (oo : ι) : TwoSidedIdeal A ≃ TwoSidedIde
     · intro h
       choose y hy1 hy2 using h
       simp only [sub_zero] at hy2
-      exact hy2 ▸ hy1 _ _
+      exact hy2 ▸ (TwoSidedIdeal.mem_mapMatrix A ι I y).1 hy1 oo oo
     · intro h
       exact ⟨of fun _ _ => x, by simp [h], by simp⟩
 
@@ -269,7 +275,7 @@ lemma minimal_ideal_isSimpleModule {A : Type u} [Ring A]
     exists_eq_right] at hx
   exact hx.1
 
-lemma Wedderburn_Artin.aux.one_eq
+lemma WedderburnArtin.aux.one_eq
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∃ (n : ℕ) (x : Fin n → A) (i : Fin n → I), ∑ j : Fin n, i j * x j = 1 := by
@@ -290,47 +296,47 @@ lemma Wedderburn_Artin.aux.one_eq
 
 /-- The minimal number of summands representing `1` from a nontrivial ideal in the
 Wedderburn-Artin proof. -/
-noncomputable abbrev Wedderburn_Artin.aux.n
+noncomputable abbrev WedderburnArtin.aux.n
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) : ℕ := by
   classical
-  exact Nat.find <| Wedderburn_Artin.aux.one_eq I I_nontrivial
+  exact Nat.find <| WedderburnArtin.aux.one_eq I I_nontrivial
 
 /-- The right factors in the chosen minimal representation of `1`. -/
-noncomputable abbrev Wedderburn_Artin.aux.x
+noncomputable abbrev WedderburnArtin.aux.x
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
-    Fin (Wedderburn_Artin.aux.n I I_nontrivial) → A  := by
+    Fin (WedderburnArtin.aux.n I I_nontrivial) → A  := by
   classical
-  exact (Nat.find_spec <| Wedderburn_Artin.aux.one_eq I I_nontrivial).choose
+  exact (Nat.find_spec <| WedderburnArtin.aux.one_eq I I_nontrivial).choose
 
 /-- The ideal-valued left factors in the chosen minimal representation of `1`. -/
-noncomputable abbrev Wedderburn_Artin.aux.i
+noncomputable abbrev WedderburnArtin.aux.i
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
-    Fin (Wedderburn_Artin.aux.n I I_nontrivial) → I := by
+    Fin (WedderburnArtin.aux.n I I_nontrivial) → I := by
   classical
-  exact (Nat.find_spec <| Wedderburn_Artin.aux.one_eq I I_nontrivial).choose_spec.choose
+  exact (Nat.find_spec <| WedderburnArtin.aux.one_eq I I_nontrivial).choose_spec.choose
 
-open Wedderburn_Artin.aux in
+open WedderburnArtin.aux in
 /-- The chosen representation of `1` by the auxiliary Wedderburn-Artin data. -/
-lemma Wedderburn_Artin.aux.nxi_spec
+lemma WedderburnArtin.aux.nxi_spec
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∑ j : Fin (n I I_nontrivial), (i I I_nontrivial j) * (x I I_nontrivial j) = 1 := by
   classical
-  exact (Nat.find_spec <| Wedderburn_Artin.aux.one_eq I I_nontrivial).choose_spec.choose_spec
+  exact (Nat.find_spec <| WedderburnArtin.aux.one_eq I I_nontrivial).choose_spec.choose_spec
 
-lemma Wedderburn_Artin.aux.n_ne_zero
+lemma WedderburnArtin.aux.n_ne_zero
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
-    Wedderburn_Artin.aux.n I I_nontrivial ≠ 0 := by
+    WedderburnArtin.aux.n I I_nontrivial ≠ 0 := by
   rintro hn
-  let n : ℕ := Wedderburn_Artin.aux.n I I_nontrivial
-  let x : Fin n → A := Wedderburn_Artin.aux.x I I_nontrivial
-  let i : Fin n → I := Wedderburn_Artin.aux.i I I_nontrivial
+  let n : ℕ := WedderburnArtin.aux.n I I_nontrivial
+  let x : Fin n → A := WedderburnArtin.aux.x I I_nontrivial
+  let i : Fin n → I := WedderburnArtin.aux.i I I_nontrivial
   have one_eq : ∑ j : Fin n, (i j) * (x j) = 1 :=
-    Wedderburn_Artin.aux.nxi_spec I I_nontrivial
+    WedderburnArtin.aux.nxi_spec I I_nontrivial
   let e : Fin n ≃ Fin 0 := Fin.castOrderIso hn
   simpa using calc 1
     _ = _ := one_eq.symm
@@ -338,16 +344,16 @@ lemma Wedderburn_Artin.aux.n_ne_zero
         Fintype.sum_bijective e e.bijective _ _ (fun _ ↦ rfl)
     _ = 0 := by simp
 
-open Wedderburn_Artin.aux in
-lemma Wedderburn_Artin.aux.nxi_ne_zero {A : Type u} [Ring A] [simple : IsSimpleRing A]
+open WedderburnArtin.aux in
+lemma WedderburnArtin.aux.nxi_ne_zero {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∀ j, x I I_nontrivial j ≠ 0 ∧ i I I_nontrivial j ≠ 0 := by
   classical
-  let n : ℕ := Wedderburn_Artin.aux.n I I_nontrivial
-  have n_ne : n ≠ 0 := Wedderburn_Artin.aux.n_ne_zero I I_nontrivial
-  let x : Fin n → A := Wedderburn_Artin.aux.x I I_nontrivial
-  let i : Fin n → I := Wedderburn_Artin.aux.i I I_nontrivial
-  have one_eq : ∑ j : Fin n, i j * x j = 1 := Wedderburn_Artin.aux.nxi_spec I I_nontrivial
+  let n : ℕ := WedderburnArtin.aux.n I I_nontrivial
+  have n_ne : n ≠ 0 := WedderburnArtin.aux.n_ne_zero I I_nontrivial
+  let x : Fin n → A := WedderburnArtin.aux.x I I_nontrivial
+  let i : Fin n → I := WedderburnArtin.aux.i I I_nontrivial
+  have one_eq : ∑ j : Fin n, i j * x j = 1 := WedderburnArtin.aux.nxi_spec I I_nontrivial
   by_contra! H
   obtain ⟨j, (hj : x j ≠ 0 → i j = 0)⟩ := H
   refine Nat.find_min (aux.one_eq I I_nontrivial) (m := n - 1)
@@ -365,17 +371,17 @@ lemma Wedderburn_Artin.aux.nxi_ne_zero {A : Type u} [Ring A] [simple : IsSimpleR
   then rw [xj_eq, mul_zero, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
   else erw [hj xj_eq, Submodule.coe_zero, zero_mul, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
 
-lemma Wedderburn_Artin.aux.equivIdeal
+lemma WedderburnArtin.aux.equivIdeal
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) (I_minimal : ∀ J : Ideal A, J ≠ ⊥ → ¬ J < I) :
     ∃ n ≠ 0, Nonempty ((Fin n → I) ≃ₗ[A] A) := by
   classical
-  letI n : ℕ := Wedderburn_Artin.aux.n I I_nontrivial
-  have n_ne : n ≠ 0 := Wedderburn_Artin.aux.n_ne_zero I I_nontrivial
-  letI x : Fin n → A := Wedderburn_Artin.aux.x I I_nontrivial
-  letI i : Fin n → I := Wedderburn_Artin.aux.i I I_nontrivial
+  letI n : ℕ := WedderburnArtin.aux.n I I_nontrivial
+  have n_ne : n ≠ 0 := WedderburnArtin.aux.n_ne_zero I I_nontrivial
+  letI x : Fin n → A := WedderburnArtin.aux.x I I_nontrivial
+  letI i : Fin n → I := WedderburnArtin.aux.i I I_nontrivial
   have one_eq : ∑ j : Fin n, (i j) * (x j) = 1 :=
-    Wedderburn_Artin.aux.nxi_spec I I_nontrivial
+    WedderburnArtin.aux.nxi_spec I I_nontrivial
   haveI : IsSimpleModule A I := minimal_ideal_isSimpleModule I I_nontrivial I_minimal
   letI g : (Fin n → I) →ₗ[A] A :=
   { toFun := fun v ↦ ∑ j : Fin n, v j * x j
@@ -419,7 +425,7 @@ lemma Wedderburn_Artin.aux.equivIdeal
       Fin.cast_eq_self, hr', zero_mul, finSuccEquiv'_symm_some, zero_add, e] at one_eq'
     set f := _
     change 1 = ∑ k : Fin (n - 1), (i ∘ f - (r • y) ∘ f) k * (x ∘ f) k at one_eq'
-    exact Nat.find_min (Wedderburn_Artin.aux.one_eq I I_nontrivial) (m := n - 1)
+    exact Nat.find_min (WedderburnArtin.aux.one_eq I I_nontrivial) (m := n - 1)
       (show n - 1 < n by omega) ⟨_, _, one_eq'.symm⟩
   exact ⟨n, n_ne, ⟨LinearEquiv.ofBijective g ⟨g_inj, g_surj⟩⟩⟩
 
@@ -430,7 +436,7 @@ def endPowEquivMatrix (A : Type*) [Ring A]
     Module.End A (Fin n → M) ≃+* Matrix (Fin n) (Fin n) (Module.End A M) :=
   endVecAlgEquivMatrixEnd (Fin n) ℤ A M
 
-theorem Wedderburn_Artin_ideal_version
+theorem WedderburnArtin_ideal_version
     (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
     ∃ n ≠ 0, ∃ (I : Ideal A) (_ : IsSimpleModule A I), Nonempty ((Fin n → I) ≃ₗ[A] A) := by
   classical
@@ -438,10 +444,10 @@ theorem Wedderburn_Artin_ideal_version
       IsArtinian.set_has_minimal (R := A) (M := A) {I | I ≠ ⊥}
     ⟨⊤, show ⊤ ≠ ⊥ by aesop⟩
   haveI : IsSimpleModule A I := minimal_ideal_isSimpleModule I I_nontrivial I_minimal
-  obtain ⟨n, hn, ⟨e⟩⟩ := Wedderburn_Artin.aux.equivIdeal I I_nontrivial I_minimal
+  obtain ⟨n, hn, ⟨e⟩⟩ := WedderburnArtin.aux.equivIdeal I I_nontrivial I_minimal
   exact ⟨n, hn, I, inferInstance, ⟨e⟩⟩
 
-theorem Wedderburn_Artin (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
+theorem WedderburnArtin (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
     ∃ n ≠ 0, ∃ (I : Ideal A) (_ : IsSimpleModule A I),
       Nonempty (A ≃+* M[Fin n, (Module.End A I)ᵐᵒᵖ]) := by
   classical
@@ -449,7 +455,7 @@ theorem Wedderburn_Artin (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSi
       IsArtinian.set_has_minimal (R := A) (M := A) {I | I ≠ ⊥}
     ⟨⊤, show ⊤ ≠ ⊥ by aesop⟩
   haveI : IsSimpleModule A I := minimal_ideal_isSimpleModule I I_nontrivial I_minimal
-  obtain ⟨n, hn, ⟨e⟩⟩ := Wedderburn_Artin.aux.equivIdeal I I_nontrivial I_minimal
+  obtain ⟨n, hn, ⟨e⟩⟩ := WedderburnArtin.aux.equivIdeal I I_nontrivial I_minimal
   let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) :=
   { toFun := fun f ↦ e.symm ∘ₗ f ∘ₗ e
     invFun := fun f ↦ e ∘ₗ f ∘ₗ e.symm
@@ -460,13 +466,13 @@ theorem Wedderburn_Artin (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSi
   refine ⟨n, hn, I, inferInstance, ⟨(equivEndMop A).trans <| endEquiv.op.trans <|
     (endPowEquivMatrix A I n).op.trans <| (matrixEquivMatrixMop n (Module.End A ↥I)).symm⟩⟩
 
-theorem Wedderburn_Artin' (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
+theorem WedderburnArtin' (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
     ∃ n ≠ 0, ∃ (S : Type u) (_ : DivisionRing S), Nonempty (A ≃+* (M[Fin n, S])) := by
   classical
-  obtain ⟨n, hn, I, inst, e⟩ := Wedderburn_Artin A
+  obtain ⟨n, hn, I, inst, e⟩ := WedderburnArtin A
   exact ⟨n, hn, (Module.End A I)ᵐᵒᵖ, inferInstance, e⟩
 
--- theorem Wedderburn_Artin_divisionRing_unique
+-- theorem WedderburnArtin_divisionRing_unique
 --     (D E : Type u) [DivisionRing D] [DivisionRing E] (m n : ℕ) [hm : NeZero m] [hn : NeZero n]
 --     (iso : M[Fin m, D] ≃+* M[Fin n, E]) : Nonempty <| D ≃+* E := by
 --   classical
@@ -508,7 +514,8 @@ def algebraMapEndIdealMop (I : Ideal B) : K →+* (Module.End B I)ᵐᵒᵖ wher
   map_zero' := unop_injective <| by ext; simp
   map_add' _ _ := unop_injective <| by ext; simp [add_smul]
 
-instance (I : Ideal B) : Algebra K (Module.End B I)ᵐᵒᵖ where
+instance instAlgebraMulOppositeEndSubtypeMemIdealLeanPool (I : Ideal B) :
+    Algebra K (Module.End B I)ᵐᵒᵖ where
   algebraMap := algebraMapEndIdealMop K I
   commutes' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>
     Subtype.ext <| show (x (r • ⟨i, hi⟩)).1 = r • (x ⟨i, hi⟩).1 by
@@ -522,12 +529,12 @@ omit [FiniteDimensional K B] in
 lemma algebraEndIdealMop.algebraMap_eq (I : Ideal B) :
     algebraMap K (Module.End B I)ᵐᵒᵖ = algebraMapEndIdealMop K I := rfl
 
-lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [Ring A]
+lemma WedderburnArtin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [Ring A]
     [sim : IsSimpleRing A] [Algebra R A] [hA : IsArtinianRing A] :
     ∃ n ≠ 0, ∃ (S : Type v) (_ : DivisionRing S) (_ : Algebra R S),
     Nonempty (A ≃ₐ[R] (M[Fin n, S])) := by
   classical
-  obtain ⟨n, hn, I, inst_I, ⟨e⟩⟩ := Wedderburn_Artin_ideal_version A
+  obtain ⟨n, hn, I, inst_I, ⟨e⟩⟩ := WedderburnArtin_ideal_version A
   let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) :=
   { toFun := fun f ↦ e.symm ∘ₗ f ∘ₗ e
     invFun := fun f ↦ e ∘ₗ f ∘ₗ e.symm
@@ -571,13 +578,13 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
     rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
 
-lemma Wedderburn_Artin_algebra_version
+lemma WedderburnArtin_algebra_version
     [sim : IsSimpleRing B] :
     ∃ n ≠ 0, ∃ (S : Type v) (_ : DivisionRing S) (_ : Algebra K S),
       Nonempty (B ≃ₐ[K] (M[Fin n, S])) := by
   classical
   have hB : IsArtinianRing B := .of_finite K B
-  exact Wedderburn_Artin_algebra_version' K B
+  exact WedderburnArtin_algebra_version' K B
 
 omit [FiniteDimensional K B] in
 theorem is_central_of_wdb [hctr : Algebra.IsCentral K B]
@@ -599,8 +606,9 @@ theorem is_central_of_wdb [hctr : Algebra.IsCentral K B]
     rw [Subalgebra.mem_center_iff] at hx' ⊢
     exact fun b ↦ Wdb.injective <| by simpa using hx' (Wdb b)
   obtain ⟨s, (hs : algebraMap _ _ s = _)⟩ := hctr.out hx''
-  exact ⟨s, show algebraMap _ _ _ = _ by
-    simpa using Matrix.ext_iff.2 congr(Wdb $hs) 0 0⟩
+  exact ⟨s, by
+    have hentry := Matrix.ext_iff.2 congr(Wdb $hs) 0 0
+    simpa [Matrix.algebraMap_matrix_apply] using hentry⟩
 
 theorem is_fin_dim_of_wdb {n : ℕ} (hn : n ≠ 0) (S : Type*) [h : DivisionRing S] [Algebra K S]
     (Wdb : B ≃ₐ[K] M[Fin n, S]) : FiniteDimensional K S := by
@@ -617,7 +625,7 @@ theorem is_fin_dim_of_wdb {n : ℕ} (hn : n ≠ 0) (S : Type*) [h : DivisionRing
 
 theorem simple_eq_matrix_algClosed [IsAlgClosed K] [IsSimpleRing B] :
     ∃ n ≠ 0, Nonempty (B ≃ₐ[K] M[Fin n, K]) := by
-  rcases Wedderburn_Artin_algebra_version K B with ⟨n, hn, S, ins1, ins2, ⟨e⟩⟩
+  rcases WedderburnArtin_algebra_version K B with ⟨n, hn, S, ins1, ins2, ⟨e⟩⟩
   have := is_fin_dim_of_wdb K B hn S e
   exact ⟨n, hn, ⟨e.trans <| .mapMatrix <| .symm <|
     .ofBijective (Algebra.ofId _ _) IsAlgClosed.algebraMap_bijective_of_isIntegral⟩⟩

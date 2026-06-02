@@ -9,6 +9,12 @@ import LeanPool.QuasiBorelSpaces.Nat
 import LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Option
 import LeanPool.QuasiBorelSpaces.Sum
 
+/-!
+# LeanPool.QuasiBorelSpaces.Option
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Option`.
+-/
+
 namespace QuasiBorelSpace.Option
 
 variable {A B C : Type*} [QuasiBorelSpace A] [QuasiBorelSpace B] [QuasiBorelSpace C]

@@ -6,6 +6,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 
 import LeanPool.QuasiBorelSpaces.OmegaHom
 
+/-!
+# LeanPool.QuasiBorelSpaces.Cont
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Cont`.
+-/
+
 open QuasiBorelSpace
 open OmegaCompletePartialOrder
 

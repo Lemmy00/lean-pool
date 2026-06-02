@@ -6,6 +6,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 
 import Mathlib.Order.OmegaCompletePartialOrder
 
+/-!
+# LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Const
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Const`.
+-/
+
 
 namespace OmegaCompletePartialOrder.Chain
 

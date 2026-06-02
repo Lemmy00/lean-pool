@@ -7,3 +7,9 @@ Authors: Jineon Baek
 import LeanPool.ErdosTuzaValtr.Lib.List.Defs
 import LeanPool.ErdosTuzaValtr.Lib.List.Chain3
 import LeanPool.ErdosTuzaValtr.Lib.List.Lemmas
+
+/-!
+# LeanPool.ErdosTuzaValtr.Lib.List.Default
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Lib.List.Default`.
+-/

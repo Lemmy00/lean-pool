@@ -6,6 +6,12 @@ Authors: Jiazhen Xia
 
 import Mathlib.Topology.UnitInterval
 
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.UnitInterval
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.UnitInterval`.
+-/
+
 
 namespace unitInterval
 

@@ -38,7 +38,7 @@ by
   simp_rw [map_sum, LinearMap.sum_apply, inner_sum]
   congr
   ext1 i
-  simp_rw [QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply, ContinuousLinearMap.coe_coe,
+  simp_rw [QuantumSet.Psi_apply, QuantumSet.PsiToFun_apply, ContinuousLinearMap.coe_coe,
     rankOne_apply, inner_smul_right, Algebra.TensorProduct.one_def, TensorProduct.inner_tmul,
     ← MulOpposite.op_one, MulOpposite.inner_eq', starAlgebra.modAut_star,
     ← AlgEquiv.toLinearMap_apply, ← LinearMap.adjoint_inner_left,

@@ -10,6 +10,12 @@ import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Limits
 
+/-!
+# LeanPool.WhiteheadTheorem.Compressible.Defs
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Compressible.Defs`.
+-/
+
 
 open CategoryTheory unitInterval
 

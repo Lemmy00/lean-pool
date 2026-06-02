@@ -161,7 +161,7 @@ lemma coveredPartwise_exists (F : Dihomotopy f g) (hX : X₀ ∪ X₁ = univ) (X
     rcases hin with h | h
     · exact ⟨0, h⟩
     · exact ⟨1, h⟩
-  rcases (lebesgue_number_lemma_unit_square h₁ h₂) with ⟨n, hn⟩
+  rcases (lebesgue_number_lemma_unitSquare h₁ h₂) with ⟨n, hn⟩
   refine ⟨n, n, ?_⟩
   intros i j hi hj
   obtain ⟨ι, hι⟩ := hn i j hi hj

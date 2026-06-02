@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.Basic
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.Data.DFinsupp.Submonoid
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Mathlib.Data.DFinsupp.Submonoid`.
+-/
+
 variable {ι γ β : Type*}
 
 open Finsupp

@@ -729,10 +729,8 @@ def sigmaProdSigma {α β : Type _} {ζ : α → Type _} {℘ : β → Type _} :
     <;> rfl
   right_inv x :=
     by
-    ext
-    <;> simp only [Equiv.sigmaProdDistrib'_apply_fst, Equiv.coe_fn_mk, Equiv.sigmaProdDistrib,
-      Equiv.coe_fn_mk]
-    simp only [Prod.mk.eta, heq_iff_eq]
+    rcases x with ⟨i, j, z, p⟩
+    rfl
 
 namespace IsBlockDiagonal
 

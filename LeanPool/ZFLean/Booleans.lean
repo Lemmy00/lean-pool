@@ -91,8 +91,8 @@ lemma _root_.ZFSet.ZFBool.𝔹.nonempty : ZFSet.𝔹 ≠ ∅ := by
 abbrev false : ZFBool := ⟨zffalse, zffalse_mem_𝔹⟩
 /-- True value, lifted on `ZFBool`. -/
 abbrev true : ZFBool := ⟨zftrue, zftrue_mem_𝔹⟩
-instance Bool_top : Top ZFBool := ⟨true⟩
-instance Bool_bot : Bot ZFBool := ⟨false⟩
+instance BoolTop : Top ZFBool := ⟨true⟩
+instance BoolBot : Bot ZFBool := ⟨false⟩
 theorem top_eq_true : ⊤ = true := rfl
 @[simp] theorem bot_eq_false : ⊥ = false := rfl
 theorem true_ne_false : (⊤ : ZFBool) ≠ ⊥ := by

@@ -7,7 +7,20 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Abel
 import LeanPool.Apportionment.Utils
 
 /-!
@@ -78,7 +91,7 @@ namespace Election
 /-- Create a new election by permuting the vote distribution of parties according to permutation
 `σ`. -/
 @[simp]
-def mk_by_perm {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin n)) : Election n :=
+def mkByPerm {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin n)) : Election n :=
   { votes := Vector.ofFn fun i => election.votes[σ i]
     houseSize := election.houseSize
     votes_sum_pos := by
@@ -91,7 +104,7 @@ def mk_by_perm {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin n)) : Ele
 
 /-- Create a new election by scaling all votes by a positive constant `k`. -/
 @[simp]
-def mk_by_scale {n : ℕ} (election : Election n) (k : ℕ+) : Election n :=
+def mkByScale {n : ℕ} (election : Election n) (k : ℕ+) : Election n :=
   { votes := Vector.ofFn fun i => k * election.votes[i]
     houseSize := election.houseSize
     votes_sum_pos := by
@@ -131,7 +144,7 @@ the same way. -/
 class IsAnonymous (rule : Rule) : Prop where
   /-- Permuting the votes by `σ` permutes the resulting apportionments by `σ`. -/
   anonymous {n : ℕ} (election : Election n) (σ : Equiv.Perm (Fin n)) :
-    let election' : Election n := election.mk_by_perm σ
+    let election' : Election n := election.mkByPerm σ
     ∀ App, App ∈ rule.res election' ↔
       ∃ App' ∈ rule.res election, ∀ i, App[i] = App'[σ i]
 
@@ -156,7 +169,7 @@ does not change the apportionment. -/
 class IsDecent (rule : Rule) : Prop where
   /-- Scaling all vote counts by a positive integer leaves the apportionment unchanged. -/
   decent {n : ℕ} (election : Election n) (k : ℕ+) :
-    let election' : Election n := election.mk_by_scale k
+    let election' : Election n := election.mkByScale k
     rule.res election' = rule.res election
 
 /-- A rule is *weakly exact* if every `Apportionment`, when viewed as an input vote distribution
@@ -202,7 +215,7 @@ lemma IsConcordant_of_IsPopulationMonotone (rule : Rule) [h_anon : IsAnonymous r
   constructor
   intro n e i j h_votes App h_App
   let σ : Equiv.Perm (Fin n) := Equiv.swap i j
-  let e' : Election n := e.mk_by_perm σ
+  let e' : Election n := e.mkByPerm σ
   let App' := Vector.ofFn fun r => App[σ r]
   replace h_anon := h_anon.anonymous e σ App'
   have h_App' : App' ∈ rule.res e' := by
@@ -238,6 +251,9 @@ theorem balinski_young (rule : Rule) [IsAnonymous rule] [h_quota : IsQuotaRule r
     have := h_quota.quota_rule e 3 App h_App
     simp only [e] at this
     norm_num at this
+    change ↑App[3] = ⌊(6220 * 8 : ℚ) / 10000⌋ ∨
+      ↑App[3] = ⌈(6220 * 8 : ℚ) / 10000⌉ at this
+    norm_num at this
     omega
   have m1_eq_1 : App[1] = 1 := by
     have := h_quota.quota_rule e 1 App h_App
@@ -258,6 +274,9 @@ theorem balinski_young (rule : Rule) [IsAnonymous rule] [h_quota : IsQuotaRule r
   have m3_ge_6' : App'[3] ≥ 6 := by
     have := h_quota.quota_rule e' 3 App' h_App'
     simp only [e'] at this
+    norm_num at this
+    change ↑App'[3] = ⌊(6200 * 8 : ℚ) / 8255⌋ ∨
+      ↑App'[3] = ⌈(6200 * 8 : ℚ) / 8255⌉ at this
     norm_num at this
     omega
   have m1_eq_0' : App'[1] = 0 := by

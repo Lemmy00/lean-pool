@@ -163,7 +163,7 @@ lemma isHom_getElem_opt
     induction f x generalizing n with
     | nil =>
       simp only [
-        List.length_nil, not_lt_zero', not_false_eq_true, getElem?_neg,
+        List.length_nil, not_lt_zero, not_false_eq_true, getElem?_neg,
         List.foldr_nil, QuasiBorelHom.coe_mk]
     | cons head tail ih =>
       cases n with
@@ -212,7 +212,7 @@ lemma isHom_get
       cases f x with
       | nil => rfl
       | cons head _ => exact absurd ⟨head⟩ hB
-    simp only [this, List.length_nil, not_lt_zero'] at h
+    simp only [this, List.length_nil, not_lt_zero] at h
     exact absurd (h (p 0)) (by simp)
 
 /-- `ofFn` is a homomorphism. -/

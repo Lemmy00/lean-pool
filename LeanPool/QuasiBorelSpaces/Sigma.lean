@@ -56,7 +56,7 @@ attribute [fun_prop] measurable_index
 Since every `Var` represents a variable, each `Var` induces a function
 `ℝ → Σi, P i`.
 -/
-@[expose, simps]
+@[simps]
 def apply (x : Var I P) (r : ℝ) : Sigma P where
   fst := x.embed (x.index r)
   snd := x.var (x.index r) r
@@ -256,21 +256,23 @@ noncomputable def chain [∀ i, Preorder (P i)] (φ : Chain (Var I P)) : Var I f
           · intro ψ hψ
             simp only [isVar_iff_isHom, Subtype.isHom_def, isHom_ofMeasurableSpace] at ⊢ hψ
             apply Measurable.comp (g := id)
-            · change Measurable[_, ⊤] _
-              apply Measurable.le
-              · change ⊤ ≤ _
-                simp only [top_le_iff]
-                ext
-                simp only [MeasurableSpace.measurableSet_top, iff_true]
-                apply MeasurableSet.of_subtype_image
-                simp only [MeasurableSpace.measurableSet_top]
-              · apply measurable_id
+            · have hid :
+                  @Measurable { j // (φ n).embed j = i } { j // (φ n).embed j = i }
+                    inferInstance ⊤ id := by
+                apply Measurable.le
+                · rw [top_le_iff]
+                  ext
+                  simp only [MeasurableSpace.measurableSet_top, iff_true]
+                  apply MeasurableSet.of_subtype_image
+                  simp only [MeasurableSpace.measurableSet_top]
+                · apply measurable_id
+              exact hid
             · apply Measurable.subtype_mk hψ
         · rintro ⟨m, rfl⟩
           apply isHom_comp'
           · apply (φ n).isHom_var
           · apply Subtype.isHom_val
-            simp only [isHom_id']
+            exact isHom_id'
       · fun_prop)
     (measurable_index := by
       let : MeasurableSpace I := ⊤
@@ -293,7 +295,7 @@ lemma chain_apply [∀ i, Preorder (P i)] (φ : Chain (Var I P)) (r)
   apply Chain.ext
   funext n
   have hfst : (φ 0).embed ((φ 0).index r) = (φ n).embed ((φ n).index r) := by
-    have := (OrderHomClass.mono φ) (zero_le n) r
+    have := (OrderHomClass.mono φ) (Nat.zero_le n) r
     simp only [Sigma.le_def, apply_fst, apply_snd] at this
     exact this.fst
   change (if h : (φ 0).embed ((φ 0).index r) = (φ n).embed ((φ n).index r) then _ else _) = _

@@ -9,6 +9,12 @@ import LeanPool.QuasiBorelSpaces.Nat
 import LeanPool.QuasiBorelSpaces.Pi
 import LeanPool.QuasiBorelSpaces.Subtype
 
+/-!
+# LeanPool.QuasiBorelSpaces.Functor
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Functor`.
+-/
+
 namespace QuasiBorelSpace
 
 /--

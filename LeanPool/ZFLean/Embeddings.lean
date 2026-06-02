@@ -6,6 +6,12 @@ Authors: Vincent Trélat
 
 import LeanPool.ZFLean.Functions
 
+/-!
+# LeanPool.ZFLean.Embeddings
+
+Imported Lean Pool material for `LeanPool.ZFLean.Embeddings`.
+-/
+
 namespace ZFSet
 /-- Imported ZFLean declaration. -/
 def hasEmbedding (A B : ZFSet) : Prop :=

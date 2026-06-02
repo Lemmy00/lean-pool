@@ -8,6 +8,12 @@ import LeanPool.BrauerGroupNew.BrauerGroup
 import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.Morita.ChangeOfRings
 
+/-!
+# LeanPool.BrauerGroupNew.Azumaya.Basic
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Azumaya.Basic`.
+-/
+
 universe u v
 
 open Module TensorProduct
@@ -114,7 +120,7 @@ theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDim
         exact FaithfulSMul.algebraMap_injective _ _ ha
       fg_top := fin.1
       bij := bijective_of_dim_eq_of_isCentralSimple K _ _
-        (AlgHom.mulLeftRight K A) <| tensor_self_op.dim_eq _ _
+        (AlgHom.mulLeftRight K A) <| tensorSelfOp.dim_eq _ _
     }⟩
 
 /-- The canonical equivalence `Fin (n * m) ≃ Fin (m * n)` induced by commutativity. -/
@@ -131,8 +137,8 @@ lemma IsMorita_iff_IsBrauer' (R : Type u) [CommRing R] (A B : Type v) [Ring A] [
     IsMoritaEquivalent R A B ↔ ∃(n m : ℕ), n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <|
     Matrix (Fin n) (Fin n) A ≃ₐ[R] Matrix (Fin m) (Fin m) B) := ⟨fun hAB ↦
   by
-    obtain ⟨n, hn, D, _, _, ⟨e⟩⟩ := Wedderburn_Artin_algebra_version' R A
-    obtain ⟨m, hm, E, _, _, ⟨e'⟩⟩ := Wedderburn_Artin_algebra_version' R B
+    obtain ⟨n, hn, D, _, _, ⟨e⟩⟩ := WedderburnArtin_algebra_version' R A
+    obtain ⟨m, hm, E, _, _, ⟨e'⟩⟩ := WedderburnArtin_algebra_version' R B
     letI e1 := MoritaEquivalence.ofAlgEquiv e
     letI e2 := MoritaEquivalence.ofAlgEquiv e'
     have : NeZero m := ⟨hm⟩

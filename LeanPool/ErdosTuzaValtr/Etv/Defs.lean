@@ -6,6 +6,12 @@ Authors: Jineon Baek
 
 import LeanPool.ErdosTuzaValtr.Config.Default
 
+/-!
+# LeanPool.ErdosTuzaValtr.Etv.Defs
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Etv.Defs`.
+-/
+
 variable {α : Type _} [LinearOrder α] (C : Config α)
 
 namespace Config

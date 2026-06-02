@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Cases
 import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Sigma
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Sigma`.
+-/
+
 
 namespace MeasureTheory.Sigma
 

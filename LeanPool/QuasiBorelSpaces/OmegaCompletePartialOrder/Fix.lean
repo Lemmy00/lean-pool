@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import Mathlib.Order.OmegaCompletePartialOrder
 import LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Fix
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Fix`.
+-/
+
 
 namespace OmegaCompletePartialOrder
 

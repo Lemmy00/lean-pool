@@ -10,7 +10,13 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import LeanPool.Monlib4.LinearAlgebra.Nacgor
 import LeanPool.Monlib4.LinearAlgebra.Ips.TensorHilbert
 import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
-import LeanPool.Monlib4.LinearAlgebra.Mul''
+import LeanPool.Monlib4.LinearAlgebra.MulPrimePrime
+
+/-!
+# LeanPool.Monlib4.LinearAlgebra.Coalgebra.FiniteDimensional
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.Coalgebra.FiniteDimensional`.
+-/
 
 variable {R A : Type*}
 local notation "lT" => LinearMap.lTensor
@@ -275,7 +281,7 @@ Coalgebra.lTensor_mul_comp_rTensor_comul_of h
 
 /-- Construct the Frobenius algebra structure from finite-dimensional Hilbert-algebra data. -/
 @[reducible]
-noncomputable def FiniteDimensionalCoAlgebra_isFrobeniusAlgebra_of
+noncomputable def FiniteDimensionalCoAlgebraIsFrobeniusAlgebraOf
   [RCLike R] [NormedAddCommGroupOfRing A] [InnerProductSpace R A]
   [SMulCommClass R A A] [IsScalarTower R A A] [FiniteDimensional R A]
   (h : ∃ σ : A → A, ∀ x y z : A, ⟪x * y, z⟫_R = ⟪y, σ x * z⟫_R) :
@@ -321,7 +327,7 @@ lemma AlgEquiv.isAlgHom
   [Semiring B] [Algebra R A] [Algebra R B]
   (x : A ≃ₐ[R] B) :
   x.toLinearMap.IsAlgHom :=
-AlgHom.isAlgHom _
+AlgHom.isAlgHom x.toAlgHom
 
 variable {B : Type*} [RCLike R] [NormedAddCommGroupOfRing A] [NormedAddCommGroupOfRing B]
   [InnerProductSpace R A] [InnerProductSpace R B]

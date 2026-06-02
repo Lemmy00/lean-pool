@@ -7,7 +7,6 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Cases
 import Mathlib.Data.Real.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Instances
 
@@ -116,7 +115,7 @@ Every `QuasiBorelSpace` induces a `MeasurableSpace`.
 
 See [HeunenKSY17], Proposition 14.
 -/
-@[reducible] def toMeasurableSpace [QuasiBorelSpace A] : MeasurableSpace A where
+@[reducible] def toMeasurableSpace : MeasurableSpace A where
   MeasurableSet' X := ∀{φ : ℝ → A}, IsHom φ → MeasurableSet (φ ⁻¹' X)
   measurableSet_empty hφ := by
     simp only [Set.preimage_empty, MeasurableSet.empty]
@@ -132,7 +131,7 @@ See [HeunenKSY17], Proposition 14.
     apply hφ
 
 /-- We can lift a `QuasiBorelSpace` from one type to another. -/
-@[reducible] def lift [QuasiBorelSpace A] (f : B → A) : QuasiBorelSpace B where
+@[reducible] def lift (f : B → A) : QuasiBorelSpace B where
   IsVar φ := IsVar fun x ↦ f (φ x)
   isVar_const x := isVar_const (f x)
   isVar_comp := isVar_comp

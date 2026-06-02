@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Basic`.
+-/
+
 namespace Subalgebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {L S T U : Subalgebra R A}
 

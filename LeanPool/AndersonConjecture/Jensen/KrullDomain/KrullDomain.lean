@@ -74,15 +74,15 @@ private def intersection_close_up_proof_ker_pf₁
     have hQ_ht_le : Q.height ≤ 1 := le_trans (Ideal.height_mono hQ_le_P) hP_ht
     have hQ_fin : Q.FiniteHeight := ⟨Or.inr (by
       exact ne_top_of_le_ne_top (by norm_cast) hQ_ht_le)⟩
-    have hQ_ht_lt := @Ideal.height_strict_mono_of_is_prime T _ Q P hQ_prime hQ_strict hQ_fin
+    have hQ_ht_lt := @Ideal.height_strict_mono_of_isPrime T _ Q P hQ_prime hQ_strict hQ_fin
     have hbot_lt : (⊥ : Ideal T) < Q := bot_lt_iff_ne_bot.mpr hQ_ne_bot
     have hbot_fin : (⊥ : Ideal T).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
-    have h0 := @Ideal.height_strict_mono_of_is_prime T _
+    have h0 := @Ideal.height_strict_mono_of_isPrime T _
       (⊥ : Ideal T) Q Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
     exact absurd h0 (not_lt.mpr (le_of_eq
-      (ENat.lt_one_iff_eq_zero.mp (lt_of_lt_of_le hQ_ht_lt hP_ht))))
+      (Order.lt_one_iff.mp (lt_of_lt_of_le hQ_ht_lt hP_ht))))
   have hP_ass : P ∈ associatedPrimes T (T ⧸ Ideal.span {(↑p : T)}) := by
     apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
     rwa [Ideal.annihilator_quotient]
@@ -106,10 +106,10 @@ private def intersection_close_up_proof_ker_pf₁
     have hbot_lt := bot_lt_iff_ne_bot.mpr hspan_ne
     have hbot_fin : (⊥ : Ideal R.carrier).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
-    have h0 := @Ideal.height_strict_mono_of_is_prime R.carrier _
+    have h0 := @Ideal.height_strict_mono_of_isPrime R.carrier _
       (⊥ : Ideal R.carrier) (Ideal.span {p}) Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
-    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hspan_ht
+    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hspan_ht
     rw [hspan_ht] at h0
     exact lt_irrefl _ h0
   -- fbar ≠ 0 in (T/P)[X]: if fbar = 0 then all coefficients lie in P ∩ R = (p), so p | f
@@ -252,15 +252,15 @@ include T in theorem intersection_close_up_ker_pf₂
     have hQ_ht_le : Q.height ≤ 1 := le_trans (Ideal.height_mono hQ_le_P) hP_ht
     have hQ_fin : Q.FiniteHeight := ⟨Or.inr (by
       exact ne_top_of_le_ne_top (by norm_cast) hQ_ht_le)⟩
-    have hQ_ht_lt := @Ideal.height_strict_mono_of_is_prime T _ Q P hQ_prime hQ_strict hQ_fin
+    have hQ_ht_lt := @Ideal.height_strict_mono_of_isPrime T _ Q P hQ_prime hQ_strict hQ_fin
     have hbot_lt : (⊥ : Ideal T) < Q := bot_lt_iff_ne_bot.mpr hQ_ne_bot
     have hbot_fin : (⊥ : Ideal T).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
-    have h0 := @Ideal.height_strict_mono_of_is_prime T _
+    have h0 := @Ideal.height_strict_mono_of_isPrime T _
       (⊥ : Ideal T) Q Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
     exact absurd h0 (not_lt.mpr (le_of_eq
-      (ENat.lt_one_iff_eq_zero.mp (lt_of_lt_of_le hQ_ht_lt hP_ht))))
+      (Order.lt_one_iff.mp (lt_of_lt_of_le hQ_ht_lt hP_ht))))
   have hP_ass : P ∈ associatedPrimes T (T ⧸ Ideal.span {(↑p : T)}) := by
     apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
     rwa [Ideal.annihilator_quotient]
@@ -284,10 +284,10 @@ include T in theorem intersection_close_up_ker_pf₂
     have hbot_lt := bot_lt_iff_ne_bot.mpr hspan_ne
     have hbot_fin : (⊥ : Ideal R.carrier).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
-    have h0 := @Ideal.height_strict_mono_of_is_prime R.carrier _
+    have h0 := @Ideal.height_strict_mono_of_isPrime R.carrier _
       (⊥ : Ideal R.carrier) (Ideal.span {p}) Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
-    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hspan_ht
+    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hspan_ht
     rw [hspan_ht] at h0
     exact lt_irrefl _ h0
   -- fbar ≠ 0 mod P since p ∤ f and (p)R = P ∩ R

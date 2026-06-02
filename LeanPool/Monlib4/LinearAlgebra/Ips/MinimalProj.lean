@@ -11,7 +11,7 @@ import LeanPool.Monlib4.LinearAlgebra.KroneckerToTensor
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import LeanPool.Monlib4.LinearAlgebra.Ips.RankOne
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
-import LeanPool.Monlib4.LinearAlgebra.IsProj'
+import LeanPool.Monlib4.LinearAlgebra.IsProjPrime
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
@@ -220,10 +220,15 @@ lemma ker_to_clm
 
 lemma subtype_compL_ker [InnerProductSpace 𝕜 E] (U : Submodule 𝕜 E)
   (f : E →L[𝕜] U) :
-    (U.subtypeL ∘L f).ker = f.ker :=
-  by
-  simp only [coe_comp, Submodule.coe_subtypeL, LinearMap.ker_comp,
-    Submodule.ker_subtype, Submodule.comap_bot]
+    (U.subtypeL ∘L f).ker = f.ker := by
+  ext x
+  change U.subtypeL (f x) = 0 ↔ f x = 0
+  constructor
+  · intro h
+    exact Subtype.ext h
+  · intro h
+    rw [h]
+    simp
 
 
 lemma orthogonalProjection.isOrthogonalProjection [InnerProductSpace 𝕜 E]
@@ -305,10 +310,12 @@ theorem sub_of_isOrthogonalProjection [InnerProductSpace ℂ E] [CompleteSpace E
         (p : E →ₗ[ℂ] E) ∘ₗ (q : E →ₗ[ℂ] E) = p ∧
           (q : E →ₗ[ℂ] E) ∘ₗ (p : E →ₗ[ℂ] E) = p := by
       constructor
-      · simpa [ContinuousLinearMap.coe_comp] using
-          congrArg ContinuousLinearMap.toLinearMap ((h2.mpr h))
-      · simpa [ContinuousLinearMap.coe_comp] using
-          congrArg ContinuousLinearMap.toLinearMap h
+      · change U.starProjection.toLinearMap ∘ₗ V.starProjection.toLinearMap =
+          U.starProjection.toLinearMap
+        exact congrArg ContinuousLinearMap.toLinearMap ((h2.mpr h))
+      · change V.starProjection.toLinearMap ∘ₗ U.starProjection.toLinearMap =
+          U.starProjection.toLinearMap
+        exact congrArg ContinuousLinearMap.toLinearMap h
     rw [LinearMap.commutes_iff_isIdempotentElem (IsIdempotentElem.clm_to_lm.mp hp)
         (IsIdempotentElem.clm_to_lm.mp hq),
       ← coe_sub, ← IsIdempotentElem.clm_to_lm] at h_and
@@ -345,7 +352,8 @@ local notation "L(" x "," y ")" => x →L[y] x
 local notation "l(" x "," y ")" => x →ₗ[y] x
 
 open scoped ComplexOrder
-instance {𝕜 E : Type _} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] :
+instance instPartialOrderLinearMapIdLeanPool {𝕜 E : Type _} [RCLike 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] :
     PartialOrder (E →ₗ[𝕜] E) where
   le := fun u v => LinearMap.IsPositive' (v - u : E →ₗ[𝕜] E)
   lt := fun u v =>
@@ -760,7 +768,7 @@ theorem orthogonal_projection_iff [InnerProductSpace 𝕜 E] [FiniteDimensional 
     have hp' : p' = isProj' hp := rfl
     simp_rw [ContinuousLinearMap.ext_iff, ← ContinuousLinearMap.coe_coe, ← isProj'_apply hp,
       orthogonalProjection'_eq_linear_proj', ← hp']
-    rw [← LinearMap.linearProjOfIsCompl_of_proj p' (isProj'_eq hp)]
+    rw [← LinearMap.projectionOnto_of_proj p' (isProj'_eq hp)]
     use W
     · intro x
       simp_rw [LinearMap.coe_comp, Submodule.coe_subtype]
@@ -817,7 +825,7 @@ theorem orthogonal_projection_iff' [InnerProductSpace 𝕜 E] [FiniteDimensional
     let p' := isProj' hp
     have hp' : p' = isProj' hp := rfl
     simp_rw [← isProj'_apply hp, ← hp']
-    rw [← LinearMap.linearProjOfIsCompl_of_proj p' (isProj'_eq hp)]
+    rw [← LinearMap.projectionOnto_of_proj p' (isProj'_eq hp)]
     simp_rw [LinearMap.coe_comp, Submodule.coe_subtype]
     intro x
     suffices this : LinearMap.ker p' = Uᗮ
@@ -993,7 +1001,7 @@ theorem orthogonalProjection'_isProj {R M : Type*} [RCLike R] [NormedAddCommGrou
   LinearMap.IsProj U (orthogonalProjection' U) :=
 by
   constructor <;>
-  simp only [orthogonalProjection'_eq, coe_comp', Submodule.coe_subtypeL', Submodule.coe_subtype,
+  simp only [orthogonalProjection'_eq, coe_comp', Submodule.coe_subtypeL, Submodule.coe_subtype,
     Function.comp_apply, SetLike.coe_mem, implies_true,
     orthogonalProjection_eq_self_iff, imp_self, implies_true]
 

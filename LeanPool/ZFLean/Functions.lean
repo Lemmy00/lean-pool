@@ -8,6 +8,12 @@ import LeanPool.ZFLean.Rationals
 import LeanPool.ZFLean.Booleans
 import LeanPool.ZFLean.Tactics
 
+/-!
+# LeanPool.ZFLean.Functions
+
+Imported Lean Pool material for `LeanPool.ZFLean.Functions`.
+-/
+
 namespace ZFSet
 
 -- syntax "zrel" : tactic
@@ -701,24 +707,36 @@ theorem _root_.ZFSet.IsInjective.apply_inj
   unfold fapply at h
   injection h with h
   generalize_proofs hpf hpf' at h
-  have choose_eq {z} (z_dom : z ∈ f.Dom) :
-      Classical.choose (hf.right z (is_func_dom_eq hf ▸ z_dom)) =
-      Classical.choose (fapply._proof_1 f (is_func_is_pfunc hf) z z_dom) := by
+  have choose_eq_x :
+      Classical.choose (hf.right x x_A) = Classical.choose hpf := by
     congr
     funext w
     rw [propext_iff]
     constructor
-    · rintro ⟨pair_z_w, unq_w⟩
-      obtain ⟨_,_,_,l,eq⟩ := mem_prod.mp <| hf.left pair_z_w
+    · rintro ⟨pair_x_w, unq_w⟩
+      obtain ⟨_, _, _, l, eq⟩ := mem_prod.mp <| hf.left pair_x_w
       rcases pair_inj.mp eq with ⟨rfl, rfl⟩
-      exact ⟨l, pair_z_w⟩
-    · rintro ⟨_, pair_z_w⟩
-      obtain ⟨a,pair_z_a,unq_a⟩ := hf.right z (is_func_dom_eq hf ▸ z_dom)
-      exact ⟨pair_z_w, by intro w' pair_x_w'; rw [unq_a w' pair_x_w', unq_a w pair_z_w]⟩
+      exact ⟨l, pair_x_w⟩
+    · rintro ⟨_, pair_x_w⟩
+      obtain ⟨a, pair_x_a, unq_a⟩ := hf.right x x_A
+      exact ⟨pair_x_w, by intro w' pair_x_w'; rw [unq_a w' pair_x_w', unq_a w pair_x_w]⟩
+  have choose_eq_y :
+      Classical.choose (hf.right y y_A) = Classical.choose hpf' := by
+    congr
+    funext w
+    rw [propext_iff]
+    constructor
+    · rintro ⟨pair_y_w, unq_w⟩
+      obtain ⟨_, _, _, l, eq⟩ := mem_prod.mp <| hf.left pair_y_w
+      rcases pair_inj.mp eq with ⟨rfl, rfl⟩
+      exact ⟨l, pair_y_w⟩
+    · rintro ⟨_, pair_y_w⟩
+      obtain ⟨a,pair_y_a,unq_a⟩ := hf.right y y_A
+      exact ⟨pair_y_w, by intro w' pair_y_w'; rw [unq_a w' pair_y_w', unq_a w pair_y_w]⟩
   apply inj x y (Classical.choose <| hf.right x x_A) x_A y_A
-  · exact choose_eq x_dom ▸ fapply_mem_range (is_func_is_pfunc hf) x_dom
+  · exact choose_eq_x ▸ fapply_mem_range (is_func_is_pfunc hf) x_dom
   · exact pair_x_ε
-  · rw [choose_eq x_dom, h, ← choose_eq y_dom]
+  · rw [choose_eq_x, h, ← choose_eq_y]
     exact pair_y_ε
 
 theorem _root_.ZFSet.IsPFunc.exists_unique_of_mem_dom {f A B : ZFSet}
@@ -1654,7 +1672,7 @@ theorem _root_.ZFSet.IsFunc.range_eq_of_surjective {f A B : ZFSet} (hf : IsFunc 
 
 /-- The inherited preorder on the elements of a finite von Neumann ordinal. -/
 @[reducible]
-def preorder_mem_Nat {n : ZFSet} (hn : n ∈ Nat) : Preorder {x // x ∈ n} where
+def preorderMemNat {n : ZFSet} (hn : n ∈ Nat) : Preorder {x // x ∈ n} where
   le := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦
     (⟨a, ZFNat.mem_Nat_of_mem_mem_Nat hn ha⟩ : ZFNat) ≤
     (⟨b, ZFNat.mem_Nat_of_mem_mem_Nat hn hb⟩ : ZFNat)
@@ -2303,7 +2321,7 @@ theorem _root_.ZFSet.Card.empty_iff {S : ZFFinSet} : Card S = 0 ↔ S = ⟨∅, 
       obtain ⟨f, hn, hf, bij⟩ := Classical.choose_spec ex_bij
       refold_let n at *
       have : n = ∅ := by
-        rwa [ZFNat.nat_zero_eq, ←Subtype.val_inj] at h
+        rwa [ZFNat.natZero_eq, ←Subtype.val_inj] at h
       rw [this, mem_funs, IsFunc] at hf
       obtain ⟨w, hw, w_unq⟩ := hf.2 s hs
       nomatch notMem_empty _ <| And.right <| pair_mem_prod.mp <| hf.1 hw
@@ -2338,7 +2356,7 @@ theorem _root_.ZFSet.Card.singleton (x : ZFSet) : Card ⟨{x}, IsFinite.singleto
         rw [eq, mem_insert_iff] at this
         rcases this with rfl | this
         · rw [←@ZFNat.zero_add 1, ←ZFNat.add_one_eq_succ,
-            ZFNat.add_right_cancel, ZFNat.nat_zero_eq, Subtype.ext_iff]
+            ZFNat.add_right_cancel, ZFNat.natZero_eq, Subtype.ext_iff]
           dsimp
           symm
           apply k_unq

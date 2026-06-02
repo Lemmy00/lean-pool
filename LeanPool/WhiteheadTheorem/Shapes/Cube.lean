@@ -8,6 +8,12 @@ import LeanPool.WhiteheadTheorem.Auxiliary
 import LeanPool.WhiteheadTheorem.Shapes.UnitInterval
 import Mathlib.Topology.Homotopy.HomotopyGroup
 
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.Cube
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.Cube`.
+-/
+
 
 open scoped unitInterval Topology Topology.Homotopy
 
@@ -456,10 +462,9 @@ abbrev sides (n : ℕ) : Set (∂𝕀 (n + 1)) :=
 lemma cubeInclToBotOrTop_mem_botOrTop
     {n : ℕ} (t : unitInterval.zeroOne) (y : 𝕀 n) :
     cubeInclToBotOrTop t y ∈ botOrTop n t := by
-  simp only [cubeInclToBotOrTop, Cube.splitAtLast, ne_eq, ContinuousMap.coe_mk,
-    Homeomorph.symm_trans_apply, Homeomorph.prodCongr_symm, Homeomorph.refl_symm,
-    Homeomorph.symm_symm, Homeomorph.coe_prodCongr, Homeomorph.refl_apply, Prod.map_apply, id_eq,
-    Set.mem_setOf_eq, Homeomorph.funSplitAt_symm_apply, ↓reduceDIte]
+  change (Cube.splitAtLast.symm (unitInterval.zeroOneIncl t, y.down)) (Fin.last n) =
+    unitInterval.zeroOneIncl t
+  rw [Cube.splitAtLast_symm_apply_last]
 
 /-- Given a point on the boundary of the `n`-dimensional cube,
 cast it as a point on the boundary of the `(n + 1)`-dimensional cube

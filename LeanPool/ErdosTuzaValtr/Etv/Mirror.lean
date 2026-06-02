@@ -7,6 +7,12 @@ Authors: Jineon Baek
 import LeanPool.ErdosTuzaValtr.Config.Default
 import LeanPool.ErdosTuzaValtr.Etv.Defs
 
+/-!
+# LeanPool.ErdosTuzaValtr.Etv.Mirror
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Etv.Mirror`.
+-/
+
 open OrderDual
 
 variable {α : Type _} [LinearOrder α] {C : Config α}

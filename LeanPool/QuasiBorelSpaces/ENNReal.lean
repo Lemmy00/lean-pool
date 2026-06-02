@@ -9,6 +9,12 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import LeanPool.QuasiBorelSpaces.Defs
 import LeanPool.QuasiBorelSpaces.OmegaQuasiBorelSpace
 
+/-!
+# LeanPool.QuasiBorelSpaces.ENNReal
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.ENNReal`.
+-/
+
 
 namespace QuasiBorelSpace.ENNReal
 

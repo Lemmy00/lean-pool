@@ -19,14 +19,14 @@ noncomputable section
 
 open MvPowerSeries in
 /-- The ideal (x² - yz) in ℂ[[x,y,z]] where x = X 0, y = X 1, z = X 2. -/
-def conj_I : Ideal (MvPowerSeries (Fin 3) ℂ) :=
+def conjI : Ideal (MvPowerSeries (Fin 3) ℂ) :=
   Ideal.span {(X 0) ^ 2 - (X 1) * (X 2)}
 
 /-- T = ℂ[[x,y,z]]/(x²-yz), the main complete local domain. -/
-abbrev T := MvPowerSeries (Fin 3) ℂ ⧸ conj_I
+abbrev T := MvPowerSeries (Fin 3) ℂ ⧸ conjI
 
 open MvPowerSeries in
-theorem conj_I_ne_top : conj_I ≠ ⊤ := by
+theorem conjI_ne_top : conjI ≠ ⊤ := by
   apply Ideal.span_singleton_ne_top
   rw [MvPowerSeries.isUnit_iff_constantCoeff]
   change ¬IsUnit (MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ)
@@ -40,30 +40,30 @@ open MvPowerSeries
 
 /-- The substitution map ψ : ℂ[[x,y,z]] → ℂ[[u,v]] defined by
   x ↦ u·v, y ↦ u², z ↦ v². -/
-noncomputable def ψ_map : Fin 3 → MvPowerSeries (Fin 2) ℂ :=
+noncomputable def ψMap : Fin 3 → MvPowerSeries (Fin 2) ℂ :=
   fun i => match i with
   | 0 => X 0 * X 1
   | 1 => (X 0) ^ 2
   | 2 => (X 1) ^ 2
 
-lemma ψ_hasSubst : HasSubst (a := ψ_map) := by
+lemma ψ_hasSubst : HasSubst (a := ψMap) := by
   apply hasSubst_of_constantCoeff_zero
   intro s
-  fin_cases s <;> simp [ψ_map, constantCoeff_X]
+  fin_cases s <;> simp [ψMap, constantCoeff_X]
 
 /-- The algebra hom `ℂ[[x,y,z]] → ℂ[[u,v]]` induced by the substitution
-`ψ_map` (`x ↦ uv`, `y ↦ u²`, `z ↦ v²`). -/
-noncomputable def ψ_hom :
+`ψMap` (`x ↦ uv`, `y ↦ u²`, `z ↦ v²`). -/
+noncomputable def ψHom :
     MvPowerSeries (Fin 3) ℂ →ₐ[ℂ] MvPowerSeries (Fin 2) ℂ :=
   MvPowerSeries.substAlgHom ψ_hasSubst
 
-lemma ψ_kills_gen : ψ_hom ((X 0) ^ 2 - (X 1) * (X 2)) = 0 := by
-  simp only [map_sub, map_pow, map_mul, ψ_hom, MvPowerSeries.substAlgHom_X]
-  simp [ψ_map]
+lemma ψ_kills_gen : ψHom ((X 0) ^ 2 - (X 1) * (X 2)) = 0 := by
+  simp only [map_sub, map_pow, map_mul, ψHom, MvPowerSeries.substAlgHom_X]
+  simp [ψMap]
   ring
 
-lemma conj_I_le_ker_ψ : conj_I ≤ RingHom.ker ψ_hom.toRingHom := by
-  rw [show conj_I = Ideal.span {(X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ^ 2 -
+lemma conjI_le_ker_ψ : conjI ≤ RingHom.ker ψHom.toRingHom := by
+  rw [show conjI = Ideal.span {(X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ^ 2 -
     X 1 * X 2} from rfl, Ideal.span_le]
   intro x hx
   simp only [Set.mem_singleton_iff] at hx
@@ -96,9 +96,9 @@ lemma anderson_gen_ne_zero : (X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ^ 2 -
   norm_num at h1
 
 /-- The factored map ψbar : T → ℂ[[u,v]]. -/
-noncomputable def ψ_bar : T →+* MvPowerSeries (Fin 2) ℂ :=
-  Ideal.Quotient.lift conj_I ψ_hom.toRingHom (fun x hx =>
-    (conj_I_le_ker_ψ hx : x ∈ RingHom.ker ψ_hom.toRingHom))
+noncomputable def ψBar : T →+* MvPowerSeries (Fin 2) ℂ :=
+  Ideal.Quotient.lift conjI ψHom.toRingHom (fun x hx =>
+    (conjI_le_ker_ψ hx : x ∈ RingHom.ker ψHom.toRingHom))
 
 /-- Construct a `Fin 3 →₀ ℕ` from three natural numbers. -/
 def mkFin3 (a b c : ℕ) : Fin 3 →₀ ℕ :=
@@ -126,12 +126,12 @@ def divQ (f : MvPowerSeries (Fin 3) ℂ) : MvPowerSeries (Fin 3) ℂ :=
     f (mkFin3 (n 0 + 2 + 2 * k) (n 1 - k) (n 2 - k))
 
 /-- Key coefficient relation: the sum Σ_{k=0}^{min(m₁,m₂)} f(m₀+2k, m₁-k, m₂-k)
-  equals a coefficient of ψ_hom(f) at the monomial u^{m₀+2m₁} v^{m₀+2m₂}. -/
-lemma ψ_map_prod_eq (d : Fin 3 →₀ ℕ) :
-    d.prod (fun s n => ψ_map s ^ n) =
+  equals a coefficient of ψHom(f) at the monomial u^{m₀+2m₁} v^{m₀+2m₂}. -/
+lemma ψMap_prod_eq (d : Fin 3 →₀ ℕ) :
+    d.prod (fun s n => ψMap s ^ n) =
     MvPowerSeries.monomial (mkFin2 (d 0 + 2 * d 1) (d 0 + 2 * d 2)) (1 : ℂ) := by
-  have hprod : d.prod (fun s n => ψ_map s ^ n) =
-      (ψ_map 0 ^ (d 0)) * (ψ_map 1 ^ (d 1)) * (ψ_map 2 ^ (d 2)) := by
+  have hprod : d.prod (fun s n => ψMap s ^ n) =
+      (ψMap 0 ^ (d 0)) * (ψMap 1 ^ (d 1)) * (ψMap 2 ^ (d 2)) := by
     rw [Finsupp.prod]
     rw [Finset.prod_subset (Finset.subset_univ _) (fun i _ hi => by
       simp only [Finsupp.mem_support_iff, ne_eq, not_not] at hi
@@ -199,17 +199,17 @@ lemma ψ_fiber_char (m₀ m₁ m₂ : ℕ) (hm₀ : m₀ ≤ 1) (d : Fin 3 →�
     simp only [mkFin3_zero, mkFin3_one, mkFin3_two]
     constructor <;> omega
 
-lemma ψ_hom_coeff_sum
+lemma ψHom_coeff_sum
     (f : MvPowerSeries (Fin 3) ℂ) (m₀ m₁ m₂ : ℕ) (hm₀ : m₀ ≤ 1) :
     ∑ k ∈ Finset.range (min m₁ m₂ + 1),
       f (mkFin3 (m₀ + 2 * k) (m₁ - k) (m₂ - k)) =
-    MvPowerSeries.coeff (mkFin2 (m₀ + 2 * m₁) (m₀ + 2 * m₂)) (ψ_hom f) := by
+    MvPowerSeries.coeff (mkFin2 (m₀ + 2 * m₁) (m₀ + 2 * m₂)) (ψHom f) := by
   set e := mkFin2 (m₀ + 2 * m₁) (m₀ + 2 * m₂) with he_def
-  -- Step 1: rewrite ψ_hom as subst and expand
-  rw [show ψ_hom f = MvPowerSeries.subst ψ_map f from by
-    rw [ψ_hom, MvPowerSeries.coe_substAlgHom]]
+  -- Step 1: rewrite ψHom as subst and expand
+  rw [show ψHom f = MvPowerSeries.subst ψMap f from by
+    rw [ψHom, MvPowerSeries.coe_substAlgHom]]
   rw [MvPowerSeries.coeff_subst ψ_hasSubst]
-  simp_rw [ψ_map_prod_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp_rw [ψMap_prod_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one, mul_zero]
   set g : (Fin 3 →₀ ℕ) → ℂ := fun d =>
     if e = mkFin2 (d 0 + 2 * d 1) (d 0 + 2 * d 2)
     then MvPowerSeries.coeff d f else 0
@@ -249,22 +249,22 @@ lemma ψ_hom_coeff_sum
   rw [if_pos hcond]
   rfl
 
-/-- Key lemma: ψbar is injective. This is equivalent to ker ψ_hom = conj_I.
+/-- Key lemma: ψbar is injective. This is equivalent to ker ψHom = conjI.
 
 **Proof sketch:** View ℂ[[x,y,z]] ≅ ℂ[[y,z]][[x]] via the ring equiv.
 Under this decomposition, every f can be written uniquely as q·(x²-yz) + (a + bx).
 If ψ(f) = 0 then ψ(a + bx) = a(u²,v²) + b(u²,v²)·uv = 0.
 The terms a(u²,v²) use only even-even degree monomials while b(u²,v²)·uv uses
 only odd-odd degree monomials, so both must be zero. Since g ↦ g(u²,v²) is
-injective, a = b = 0, hence f = q·(x²-yz) ∈ conj_I. -/
-lemma ψ_bar_injective : Function.Injective ψ_bar := by
+injective, a = b = 0, hence f = q·(x²-yz) ∈ conjI. -/
+lemma ψBar_injective : Function.Injective ψBar := by
   apply RingHom.lift_injective_of_ker_le_ideal
   intro f hf
   rw [RingHom.mem_ker] at hf
-  rw [conj_I, Ideal.mem_span_singleton]
+  rw [conjI, Ideal.mem_span_singleton]
   -- Need: (X 0 ^ 2 - X 1 * X 2) ∣ f
   refine ⟨divQ f, ?_⟩
-  have hψ0 : ψ_hom f = 0 := hf
+  have hψ0 : ψHom f = 0 := hf
   -- Write gen = X₀² - X₁X₂ as difference of monomials
   set d₀ := Finsupp.single (0 : Fin 3) 2
   set d₁₂ := Finsupp.single (1 : Fin 3) 1 + Finsupp.single (2 : Fin 3) 1
@@ -286,7 +286,7 @@ lemma ψ_bar_injective : Function.Injective ψ_bar := by
   rw [hgen_eq, sub_mul]
   simp only [map_sub, MvPowerSeries.coeff_monomial_mul, one_mul]
   have hd₀_iff : d₀ ≤ m ↔ 2 ≤ m 0 := by
-    simp only [d₀, Finsupp.le_iff, Finsupp.support_single_ne_zero _ (by omega : (2 : ℕ) ≠ 0),
+    simp only [d₀, Finsupp.le_iff, Finsupp.support_single _ (by omega : (2 : ℕ) ≠ 0),
       Finset.mem_singleton, forall_eq, Finsupp.single_eq_same]
   have hd₁₂_iff : d₁₂ ≤ m ↔ 1 ≤ m 1 ∧ 1 ≤ m 2 := by
     constructor
@@ -370,7 +370,7 @@ lemma ψ_bar_injective : Function.Injective ψ_bar := by
     simp only [zero_sub]
     have hψ_sum : ∑ k ∈ Finset.range (min (m 1) (m 2) + 1),
         f (mkFin3 (m 0 + 2 * k) (m 1 - k) (m 2 - k)) = 0 := by
-      rw [ψ_hom_coeff_sum f (m 0) (m 1) (m 2) hm0', hψ0, map_zero]
+      rw [ψHom_coeff_sum f (m 0) (m 1) (m 2) hm0', hψ0, map_zero]
     by_cases hm12 : 1 ≤ m 1 ∧ 1 ≤ m 2
     · rw [if_pos (hd₁₂_iff.mpr hm12)]
       change f m = -(divQ f (m - d₁₂))
@@ -416,10 +416,10 @@ lemma ψ_bar_injective : Function.Injective ψ_bar := by
 end T_isDomain_proof
 
 instance T_isDomain : IsDomain T :=
-  letI : Nontrivial T := Ideal.Quotient.nontrivial_iff.mpr conj_I_ne_top
+  letI : Nontrivial T := Ideal.Quotient.nontrivial_iff.mpr conjI_ne_top
   letI : NoZeroDivisors T := ⟨fun {a b} hab => by
-    have hinj := ψ_bar_injective
-    have h1 : ψ_bar (a * b) = 0 := by rw [hab, map_zero]
+    have hinj := ψBar_injective
+    have h1 : ψBar (a * b) = 0 := by rw [hab, map_zero]
     rw [map_mul] at h1
     rcases eq_zero_or_eq_zero_of_mul_eq_zero h1 with h | h
     · left

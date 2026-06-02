@@ -18,12 +18,12 @@ fourfold tensor shuffle used by the Monlib4 quantum-set tensor product.
 open scoped TensorProduct
 
 /-- The Mathlib tensor-product factor swap agrees with Monlib4's tensor shuffle. -/
-lemma TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_eq_swap_middle_tensor
+lemma TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_eq_swapMiddleTensor
   {R A B C D : Type*} [CommSemiring R]
   [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
   [Module R A] [Module R B] [Module R C] [Module R D] :
   (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R R R A B C D) =
-    swap_middle_tensor R A B C D :=
+    swapMiddleTensor R A B C D :=
 by
   rw [← LinearEquiv.toLinearMap_inj]
   apply TensorProduct.ext_fourfold'
@@ -44,11 +44,11 @@ theorem TensorProduct.map_schurMul {A B C D : Type*}
   (map f g) •ₛ (map h k) = map (f •ₛ h) (g •ₛ k) :=
 by
   rw [schurMul_apply_apply, TensorProduct.comul_def, LinearMap.mul'_tensorProduct,
-    TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_eq_swap_middle_tensor]
+    TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_eq_swapMiddleTensor]
   simp only [LinearMap.comp_assoc]
-  rw [← LinearMap.comp_assoc _ _ (swap_middle_tensor _ _ _ _ _).toLinearMap]
-  nth_rw 2 [← LinearMap.comp_assoc, LinearMap.comp_assoc, ← swap_middle_tensor_symm]
-  rw [swap_middle_tensor_map_conj]
+  rw [← LinearMap.comp_assoc _ _ (swapMiddleTensor _ _ _ _ _).toLinearMap]
+  nth_rw 2 [← LinearMap.comp_assoc, LinearMap.comp_assoc, ← swapMiddleTensor_symm]
+  rw [swapMiddleTensor_map_conj]
   simp only [← LinearMap.comp_assoc, ← TensorProduct.map_comp,
     TensorProduct.AlgebraTensorModule.map_eq]
   rfl

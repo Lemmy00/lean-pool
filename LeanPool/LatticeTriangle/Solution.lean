@@ -1150,7 +1150,7 @@ lemma snd_lt_half_of_mem_truncatedObtuseRegion_fb (n : ℕ) (η : ℝ)
     linarith
   exact h₃
 
-lemma int_le_half_of_real_lt_half_fb (n : ℕ) (q : ℤ) (hq : (q : ℝ) < (n : ℝ) / 2) :
+lemma intLe_half_of_real_lt_half_fb (n : ℕ) (q : ℤ) (hq : (q : ℝ) < (n : ℝ) / 2) :
     q ≤ ↑n / 2 := by
   have h₂ : (2 : ℝ) * (q : ℝ) < (n : ℝ) := by
     linarith
@@ -1240,7 +1240,7 @@ lemma fiber_subset_range (n : ℕ) (η : ℝ) (hη_pos : 0 < η) (q : ℤ) :
   refine Set.mem_Ico.mpr ⟨le_of_lt hp_pos, ?_⟩
   have hq_ge_one : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast hq_pos
   have hp1_lt : ((p + 1 : ℤ) : ℝ) < (n : ℝ) / 2 := by push_cast; linarith
-  have hp1_le : p + 1 ≤ ↑n / 2 := int_le_half_of_real_lt_half_fb n (p + 1) hp1_lt
+  have hp1_le : p + 1 ≤ ↑n / 2 := intLe_half_of_real_lt_half_fb n (p + 1) hp1_lt
   linarith
 
 lemma fiber_finite (n : ℕ) (η : ℝ) (hη_pos : 0 < η) (q : ℤ) :
@@ -8448,7 +8448,7 @@ lemma snd_lt_half_of_mem_truncatedObtuseRegion' (n : ℕ) (η : ℝ)
   have h₂ : 0 < (pq.1 : ℝ) := by exact_mod_cast hp_pos
   linarith
 
-lemma int_le_half_of_real_lt_half (n : ℕ) (q : ℤ) (hq : (q : ℝ) < (n : ℝ) / 2) :
+lemma intLe_half_of_real_lt_half (n : ℕ) (q : ℤ) (hq : (q : ℝ) < (n : ℝ) / 2) :
     q ≤ ↑n / 2 := by
   have h₂ : (2 : ℝ) * (q : ℝ) < (n : ℝ) := by linarith
   have h₃ : (2 : ℤ) * q < (n : ℤ) := by norm_cast at h₂ ⊢
@@ -8465,7 +8465,7 @@ lemma snd_mem_Icc_of_mem_residueBadPairs (n : ℕ) (η : ℝ) (hη : 0 < η) (_h
   have hp_pos : 0 < pq.1 := pos_of_mem_truncatedObtuseRegion_fst n η hη pq htor
   have hq_lt : (pq.2 : ℝ) < (n : ℝ) / 2 :=
     snd_lt_half_of_mem_truncatedObtuseRegion' n η pq htor hp_pos
-  have h2 : pq.2 ≤ ↑n / 2 := int_le_half_of_real_lt_half n pq.2 hq_lt
+  have h2 : pq.2 ≤ ↑n / 2 := intLe_half_of_real_lt_half n pq.2 hq_lt
   exact Finset.mem_Icc.mpr ⟨h1, h2⟩
 
 lemma fiber_pair_ncard_le (S : Set (ℤ × ℤ)) (q : ℤ) :

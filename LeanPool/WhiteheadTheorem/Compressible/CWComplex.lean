@@ -386,8 +386,8 @@ theorem relCWComplex_of_diskBoundaryIncl
       { pt := B
         ι := NatTrans.ofSequence (fun n ↦ (F n).f)
           (fun n ↦ by
-            simp only [Functor.ofSequence_obj, Functor.const_obj_obj, homOfLE_leOfHom,
-              Functor.ofSequence_map_homOfLE_succ, Functor.const_obj_map, Category.comp_id]
+            simp only [homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ,
+              Functor.const_obj_map]
             exact (F n).l.fac_left ) }
     let L : X.toTopCat ⟶ B :=
       Limits.colimit.desc (Functor.ofSequence X.skInclSucc) ccL
@@ -395,13 +395,14 @@ theorem relCWComplex_of_diskBoundaryIncl
       { pt := TopCat.of C(I, Y)
         ι := NatTrans.ofSequence (fun n ↦ ofHom (H n).toContinuousMap.argSwap.curry)
           (fun n ↦ by
-            simp only [Functor.ofSequence_obj, Functor.const_obj_obj, homOfLE_leOfHom,
+            simp only [homOfLE_leOfHom,
               Functor.ofSequence_map_homOfLE_succ, ContinuousMap.argSwap, hom_comp,
-              ContinuousMap.coe_mk, Functor.const_obj_map, Category.comp_id]
-            ext x t
-            simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.curry_apply,
-              ContinuousMap.prodSwap_apply, ContinuousMap.Homotopy.coe_toContinuousMap]
-            apply IsCompressible.relCWComplex.H_skInclSucc ) }
+              ContinuousMap.coe_mk, Functor.const_obj_map]
+            ext x
+            apply ContinuousMap.ext
+            intro t
+            simp only [hom_comp, ContinuousMap.comp_apply]
+            exact IsCompressible.relCWComplex.H_skInclSucc jcom_sk sq n 0 n (by omega) x t ) }
     let H' : X.toTopCat ⟶ TopCat.of C(I, Y) :=
       Limits.colimit.desc (Functor.ofSequence X.skInclSucc) ccH
     refine ⟨Nonempty.intro <| LiftStructUpToRelHomotopy.curriedMk L ?_ H' ?_ ?_ fun t ↦ ?_⟩
@@ -412,28 +413,26 @@ theorem relCWComplex_of_diskBoundaryIncl
       simp only [H']
       refine (Limits.colimit.ι_desc_assoc ccH n _).trans ?_
       unfold ccH
-      simp only [Functor.ofSequence_obj, ContinuousMap.argSwap, hom_comp, ContinuousMap.coe_mk,
+      simp only [ContinuousMap.argSwap, hom_comp, ContinuousMap.coe_mk,
         NatTrans.ofSequence_app]
       ext x
-      simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
-        ContinuousMap.curry_apply, ContinuousMap.prodSwap_apply,
-        ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.apply_zero]
-      rfl
+      simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk]
+      exact (H n).map_zero_left x
     · -- refine_3: H' ≫ eval₁ = L ≫ j
       apply Limits.colimit.hom_ext
       intro n
       simp only [H']
       refine (Limits.colimit.ι_desc_assoc ccH n _).trans ?_
       unfold ccH
-      simp only [Functor.ofSequence_obj, ContinuousMap.argSwap, hom_comp, ContinuousMap.coe_mk,
+      simp only [ContinuousMap.argSwap, hom_comp, ContinuousMap.coe_mk,
         NatTrans.ofSequence_app]
       simp only [L]
       refine Eq.trans ?_ (Limits.colimit.ι_desc_assoc ccL n j).symm
       ext x
-      simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
-        ContinuousMap.curry_apply, ContinuousMap.prodSwap_apply,
-        ContinuousMap.Homotopy.coe_toContinuousMap, ContinuousMap.Homotopy.apply_one]
-      change (X.skIncl n ≫ (F n).F).hom _ = ((F n).f ≫ j).hom _
+      simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk]
+      change (H n).toFun (1, x) = (Hom.hom j) ((Hom.hom (ccL.ι.app n)) x)
+      rw [(H n).map_one_left x]
+      change (X.skIncl n ≫ (F n).F).hom x = ((F n).f ≫ j).hom x
       congr 2
       rw [(F n).sq.w, ← Category.assoc, X.skInclSucc_skIncl_eq]
     · -- refine_4: X.skIncl 0 ≫ H' ≫ evalAt Y t = X.skIncl 0 ≫ F₀
@@ -442,12 +441,10 @@ theorem relCWComplex_of_diskBoundaryIncl
       simp only [H']
       refine (Limits.colimit.ι_desc_assoc ccH 0 _).trans ?_
       unfold ccH
-      simp only [ContinuousMap.argSwap, hom_comp, ContinuousMap.coe_mk, Functor.ofSequence_obj,
+      simp only [ContinuousMap.argSwap, hom_comp, ContinuousMap.coe_mk,
         NatTrans.ofSequence_app]
       ext x
-      simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
-        ContinuousMap.curry_apply, ContinuousMap.prodSwap_apply,
-        ContinuousMap.Homotopy.coe_toContinuousMap]
+      simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk]
       rfl
 
 end IsCompressible

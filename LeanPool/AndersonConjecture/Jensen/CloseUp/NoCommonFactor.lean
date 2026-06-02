@@ -49,17 +49,17 @@ include T in theorem prime_height_le_one_mem_assoc
         (hQ_le_span (Ideal.subset_span (Set.mem_singleton _))))
     have hQ_lt_P : Q < P := lt_of_le_of_ne hQ_le_P hQ_ne_P
     have h_bot_lt_Q : (⊥ : Ideal T) < Q := bot_lt_iff_ne_bot.mpr hQ_ne_bot
-    have h1 := @Ideal.primeHeight_add_one_le_of_lt T _ ⊥ Q
+    have h1 := @Ideal.height_add_one_le_of_lt_of_isPrime T _ ⊥ Q
       Ideal.isPrime_bot hQ_prime h_bot_lt_Q
-    have h2 := @Ideal.primeHeight_add_one_le_of_lt T _ Q P
+    have h2 := @Ideal.height_add_one_le_of_lt_of_isPrime T _ Q P
       hQ_prime hP_prime hQ_lt_P
-    rw [Ideal.height_eq_primeHeight] at hP_ht
-    have h4 : (2 : ℕ∞) ≤ P.primeHeight :=
+    have h4 : (2 : ℕ∞) ≤ P.height :=
       calc (2 : ℕ∞) = 0 + 1 + 1 := by norm_num
-        _ ≤ (⊥ : Ideal T).primeHeight + 1 + 1 := by gcongr
-                                                    exact zero_le _
-        _ ≤ Q.primeHeight + 1 := by gcongr
-        _ ≤ P.primeHeight := h2
+        _ ≤ (⊥ : Ideal T).height + 1 + 1 := by
+          gcongr
+          exact zero_le
+        _ ≤ Q.height + 1 := by gcongr
+        _ ≤ P.height := h2
     exact not_lt.mpr h4 (by exact_mod_cast hP_ht.trans_lt (by norm_num))
   have hP_assoc : P ∈ associatedPrimes T (T ⧸ Ideal.span {(r₀ : T)}) := by
     open Module.associatedPrimes in
@@ -73,7 +73,6 @@ include T in theorem prime_height_le_one_mem_assoc
 -- Helper: I_s' ⊄ P for associated primes P when no common prime divides s'.
 include T in theorem no_common_I_not_le_assoc
     {R : NSubring T}
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
     [DecidableEq R.carrier]
     {a : R.carrier} {s : Finset R.carrier}
     (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
@@ -138,7 +137,6 @@ private def close_up_aux_no_common_nonzero_proof
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
     [DecidableEq R.carrier]
     {a : R.carrier} {s : Finset R.carrier}
     (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
@@ -640,7 +638,6 @@ include T in theorem close_up_aux_no_common_nonzero
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
     [DecidableEq R.carrier]
     {a : R.carrier} {s : Finset R.carrier}
     (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
@@ -681,7 +678,6 @@ include T in theorem close_up_aux_no_common
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
     [DecidableEq R.carrier]
     {a : R.carrier} {s : Finset R.carrier}
     (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)

@@ -7,6 +7,12 @@ Authors: Jiazhen Xia
 import LeanPool.WhiteheadTheorem.RelHomotopyGroup.Defs
 import LeanPool.WhiteheadTheorem.HEP.Retract
 
+/-!
+# LeanPool.WhiteheadTheorem.RelHomotopyGroup.Compression
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.RelHomotopyGroup.Compression`.
+-/
+
 open scoped unitInterval Topology Topology.Homotopy
 open ContinuousMap
 

@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.Prop
 import LeanPool.QuasiBorelSpaces.Sum
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
+/-!
+# LeanPool.QuasiBorelSpaces.IsHomDiagonal
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.IsHomDiagonal`.
+-/
+
 namespace QuasiBorelSpace
 
 variable
@@ -29,7 +35,7 @@ lemma isHom_eq'
 
 instance
     [Countable A] [MeasurableSpace A]
-    [QuasiBorelSpace A] [DiscreteQuasiBorelSpace A]
+    [DiscreteQuasiBorelSpace A]
     : IsHomDiagonal A where
   isHom_eq := by simp only [isHom_of_discrete_countable]
 

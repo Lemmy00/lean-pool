@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.Hom
 import LeanPool.QuasiBorelSpaces.Prod
 import LeanPool.QuasiBorelSpaces.Defs
 
+/-!
+# LeanPool.QuasiBorelSpaces.Quotient
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Quotient`.
+-/
+
 
 namespace QuasiBorelSpace.Quotient
 

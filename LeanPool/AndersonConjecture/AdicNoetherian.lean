@@ -171,7 +171,7 @@ variable (R : Type*) [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
 omit [IsLocalRing R] [IsNoetherianRing R] in
 /-- Generic helper: build a recursive sequence with proof-carrying data.
 This is a standalone `def` so its elaboration budget is independent. -/
-noncomputable def buildSeq {α : Type*} {P : ℕ → α → Prop}
+noncomputable def buildAdicSeq {α : Type*} {P : ℕ → α → Prop}
     (base : { a // P 0 a })
     (step : ∀ K, { a // P K a } → { a // P (K + 1) a }) :
     ∀ K, { a // P K a } :=
@@ -573,7 +573,7 @@ private def adicCompletion_ideal_fg_proof : PLift (
           by rw [show x - (y_K + δ) = (x - y_K) - δ from by abel]
              exact hδ.2.2,
           J.sub_mem hx (hI0_le_J (I₀.add_mem hy_K_I hδ.1))⟩
-      let seqAll := buildSeq baseData stepData
+      let seqAll := buildAdicSeq baseData stepData
       set ySeq : ℕ → AdicCompletion Mi R := fun K => (seqAll K).1
       have hySeq_I₀ : ∀ K, ySeq K ∈ I₀ := fun K => (seqAll K).2.1
       have hySeq_err : ∀ K, x - ySeq K ∈ Mhat ^ (n0 + K) := fun K => (seqAll K).2.2.1
@@ -646,7 +646,7 @@ private def adicCompletion_ideal_fg_proof : PLift (
           sumG d ∈ I₀ :=
         fun d => Ideal.sum_mem _ (fun g hg =>
           I₀.mul_mem_left (d g) (Ideal.subset_span (Finset.mem_coe.mpr hg)))
-      -- Step 3: Build recursive coefficient sequence via buildSeq
+      -- Step 3: Build recursive coefficient sequence via buildAdicSeq
       let CSDPred (K : ℕ) (c : AdicCompletion Mi R → AdicCompletion Mi R) :=
         (x - y₀ - sumG c) ∈ Mhat ^ (n0 + K) ∧ (x - y₀ - sumG c) ∈ J
       have hsum_zero : sumG (fun _ => (0 : AdicCompletion Mi R)) = 0 := by
@@ -674,7 +674,7 @@ private def adicCompletion_ideal_fg_proof : PLift (
                     exact hd.2,
             by rw [hrw]
                exact J.sub_mem hJK (hI0_le_J (hsum_in_I₀ d))⟩⟩
-      let csdAll := buildSeq csd0 csdS
+      let csdAll := buildAdicSeq csd0 csdS
       let pc : ℕ → AdicCompletion Mi R → AdicCompletion Mi R := fun K => (csdAll K).1
       -- Step 4: Per-step bound: pc(K+1)(g) - pc(K)(g) ∈ Mhat^K
       have hpc_diff : ∀ K g, g ∈ genS →

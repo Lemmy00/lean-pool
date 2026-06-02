@@ -73,16 +73,16 @@ theorem _root_.LinearMap.IsPositive'.inner_nonneg_right {T : E →ₗ[𝕜] E}
 /-- a linear projection onto `U` along its complement `V` is positive if
 and only if `U` and `V` are pairwise orthogonal -/
 theorem linear_proj_IsPositive'_iff {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
-    (U.subtype.comp (U.linearProjOfIsCompl V hUV)).IsPositive' ↔ U ⟂ V :=
+    (U.subtype.comp (U.projectionOnto V hUV)).IsPositive' ↔ U ⟂ V :=
   by
   constructor
   · intro h u hu v hv
     rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv, ←
-      Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← Submodule.subtype_apply (p := U), ←
-      comp_apply, ← h.1 _ _, comp_apply, Submodule.linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
+      Submodule.projectionOnto_apply_left hUV ⟨u, hu⟩, ← Submodule.subtype_apply (p := U), ←
+      comp_apply, ← h.1 _ _, comp_apply, Submodule.projectionOnto_apply_right hUV ⟨v, hv⟩,
       map_zero, inner_zero_left]
   · intro h
-    have : (U.subtype.comp (U.linearProjOfIsCompl V hUV)).IsSymmetric :=
+    have : (U.subtype.comp (U.projectionOnto V hUV)).IsSymmetric :=
       by
       intro x y
       nth_rw 1 [← Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hUV y]
@@ -93,13 +93,13 @@ theorem linear_proj_IsPositive'_iff {U V : Submodule 𝕜 E} (hUV : IsCompl U V)
         inner_eq_zero_symm.mp (h _ (SetLike.coe_mem _) _ (SetLike.coe_mem _))]
     refine ⟨this, ?_⟩
     intro x
-    let p : E →ₗ[𝕜] E := U.subtype.comp (U.linearProjOfIsCompl V hUV)
+    let p : E →ₗ[𝕜] E := U.subtype.comp (U.projectionOnto V hUV)
     change 0 ≤ ⟪x, p x⟫
     have hp : p (p x) = p x := by
       change
-        ((U.subtype.comp (U.linearProjOfIsCompl V hUV)) *
-            (U.subtype.comp (U.linearProjOfIsCompl V hUV))) x =
-          (U.subtype.comp (U.linearProjOfIsCompl V hUV)) x
+        ((U.subtype.comp (U.projectionOnto V hUV)) *
+            (U.subtype.comp (U.projectionOnto V hUV))) x =
+          (U.subtype.comp (U.projectionOnto V hUV)) x
       rw [Submodule.linearProjOfIsCompl_idempotent hUV]
     rw [← hp, ← this x (p x)]
     exact inner_self_nonneg'
@@ -370,7 +370,7 @@ theorem _root_.LinearMap.norm_of_sqrt_adjoint_mul_self_eq (T : E →ₗ[𝕜] E)
   simp_rw [mul_apply, adjoint_inner_right]
   exact inner_self_nonneg'
 
-theorem _root_.LinearMap.invertible_iff_inner_map_self_pos
+theorem _root_.LinearMap.invertibleIff_inner_map_self_pos
     (hT : T.IsPositive') : Function.Bijective T ↔ ∀ v : E, v ≠ 0 → 0 < ⟪T v, v⟫ :=
   by
   constructor
@@ -408,7 +408,7 @@ theorem _root_.LinearMap.invertiblePos (T : E →ₗ[𝕜] E) [hTi : Invertible 
     refine (Module.End.isUnit_iff T).mp ?_
     exact isUnit_of_invertible T
   have t1 := this
-  rw [invertible_iff_inner_map_self_pos T hT] at this
+  rw [invertibleIff_inner_map_self_pos T hT] at this
   constructor
   · intro u v
     rw [← adjoint_inner_left]
@@ -462,7 +462,7 @@ theorem _root_.LinearMap.isPositive'_and_invertible_pos_eigenvalues
   obtain ⟨v, hv, gh⟩ :=
     Module.End.has_eigenvector_iff_hasEigenvalue.mpr
       (@LinearMap.IsSymmetric.hasEigenvalue_eigenvalues 𝕜 _ E _ _ T _ _ hT.1 rfl i)
-  have ugh := (LinearMap.invertible_iff_inner_map_self_pos T hT).mp fs v gh
+  have ugh := (LinearMap.invertibleIff_inner_map_self_pos T hT).mp fs v gh
   rw [hv, inner_smul_real_left, inner_self_eq_norm_sq_to_K, ← ofReal_pow, real_smul_ofReal,
     ← ofReal_mul, zero_lt_real, mul_pos_iff] at ugh
   simp_rw [not_lt_of_ge (sq_nonneg _), and_false, or_false] at ugh

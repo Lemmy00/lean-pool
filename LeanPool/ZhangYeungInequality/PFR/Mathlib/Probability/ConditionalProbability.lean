@@ -8,6 +8,13 @@ module
 
 public import Mathlib.Probability.ConditionalProbability
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.ConditionalProbability
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.ConditionalProbability`.
+-/
+
 public section
 
 open MeasureTheory

@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.StandardBorelSpace
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.StandardBorelSpace`.
+-/
+
 
 namespace MeasureTheory
 

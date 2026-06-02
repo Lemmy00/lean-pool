@@ -328,7 +328,7 @@ private lemma abs_mertensPartialSum_pred_sub_log_le {C : ℝ}
             · exact abs_log_natPred_sub_log_le_log_two hy
 
 /-- The tail kernel decays to `0` along the naturals. -/
-private lemma tendsto_tailKernel_nat_zero {m : ℕ} (hm : 1 ≤ m) :
+private lemma tendsto_tailKernel_natZero {m : ℕ} (hm : 1 ≤ m) :
     Tendsto (fun n : ℕ => tailKernel m n) atTop (𝓝 0) := by
   have hm_pos : 0 < (m : ℝ) := by
     exact_mod_cast lt_of_lt_of_le Nat.zero_lt_one hm
@@ -348,7 +348,7 @@ private lemma tendsto_tailKernel_mul_mertensError_zero {m : ℕ} (hm : 1 ≤ m) 
       (fun n : ℕ => tailKernel m n * (mertensPartialSum n - Real.log (n : ℝ)))
       atTop (𝓝 0) := by
   have hkernel : Tendsto (fun n : ℕ => C * tailKernel m n) atTop (𝓝 0) := by
-    simpa using (tendsto_tailKernel_nat_zero hm).const_mul C
+    simpa using (tendsto_tailKernel_natZero hm).const_mul C
   have hbound :
       ∀ᶠ n : ℕ in atTop,
         |tailKernel m n * (mertensPartialSum n - Real.log (n : ℝ))| ≤ C * tailKernel m n := by
@@ -443,7 +443,7 @@ private lemma tendsto_tailKernel_mul_mertensTail_zero {m y : ℕ} (hm : 1 ≤ m)
       (tendsto_tailKernel_mul_log_sub_log_zero_aux hm hy).comp tendsto_natCast_atTop_atTop
   have h₃ : Tendsto (fun n : ℕ => tailKernel m n * (Real.log (y : ℝ) - mertensPartialSum (y - 1)))
       atTop (𝓝 0) := by
-    simpa [mul_comm] using (tendsto_tailKernel_nat_zero hm).const_mul
+    simpa [mul_comm] using (tendsto_tailKernel_natZero hm).const_mul
       (Real.log (y : ℝ) - mertensPartialSum (y - 1))
   simpa [sub_eq_add_neg, add_assoc, add_left_comm, add_comm, mul_add, Pi.add_apply] using
     (h₁.add h₂).add h₃

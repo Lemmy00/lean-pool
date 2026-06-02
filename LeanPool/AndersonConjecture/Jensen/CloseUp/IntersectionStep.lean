@@ -44,22 +44,22 @@ private def close_up_aux_factor_intersection_proof
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (rest : Finset R.carrier)
     (hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
     {b : R.carrier} (hb_rest : b ∈ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     {q' : R.carrier} (hq' : Prime q')
     (hq'_dvd : ∀ x ∈ rest, q' ∣ x)
     (hq'_na : ¬q' ∣ a)
@@ -280,22 +280,22 @@ theorem close_up_aux_factor_intersection
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (rest : Finset R.carrier)
     (hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
     {b : R.carrier} (hb_rest : b ∈ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     {q' : R.carrier} (hq' : Prime q')
     (hq'_dvd : ∀ x ∈ rest, q' ∣ x)
     (hq'_na : ¬q' ∣ a)
@@ -338,30 +338,30 @@ theorem close_up_aux_factor_no_factor
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     (ih_a : ∀ (y : R.carrier), DvdNotUnit y a →
       ∀ (s : Finset R.carrier),
-      gcd_complexity s ≤ m →
+      gcdComplexity s ≤ m →
       s.card = n'' + 1 + 1 + 1 → y ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (rest : Finset R.carrier)
     (hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
     {b : R.carrier} (hb_rest : b ∈ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     {c_n : R.carrier}
     (h_factor : ∀ (q' : R.carrier), Prime q' →
       (∀ x ∈ rest, q' ∣ x) → ¬q' ∣ a ∧ ¬q' ∣ c_n)

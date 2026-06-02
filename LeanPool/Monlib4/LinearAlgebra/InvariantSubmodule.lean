@@ -40,17 +40,17 @@ theorem invariantUnder_iff (U : Submodule R E) (T : E →ₗ[R] E) : U.Invariant
 
 variable (U V : Submodule R E) (hUV : IsCompl U V) (T : E →ₗ[R] E)
 
-local notation "pᵤ" => Submodule.linearProjOfIsCompl U V hUV
+local notation "pᵤ" => Submodule.projectionOnto U V hUV
 
-local notation "pᵥ" => Submodule.linearProjOfIsCompl V U hUV.symm
+local notation "pᵥ" => Submodule.projectionOnto V U hUV.symm
 
 /-- Projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 theorem linearProjOfIsCompl_eq_self_iff {p q : Submodule R E} (hpq : IsCompl p q) (x : E) :
-    (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p :=
+    (p.projectionOnto q hpq x : E) = x ↔ x ∈ p :=
   by
   constructor <;> intro H
   · rw [← H]; exact Submodule.coe_mem _
-  · exact congr_arg _ (Submodule.linearProjOfIsCompl_apply_left hpq ⟨x, H⟩)
+  · exact congr_arg _ (Submodule.projectionOnto_apply_left hpq ⟨x, H⟩)
 
 namespace InvariantUnder
 
@@ -72,27 +72,27 @@ theorem invariantUnder_iff_linear_proj_comp_self_eq :
     invariantUnderOfLinearProjCompSelfEq U V hUV T⟩
 
 theorem linearProjOfIsCompl_eq_self_sub_linear_proj {p q : Submodule R E} (hpq : IsCompl p q)
-    (x : E) : (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) :=
+    (x : E) : (q.projectionOnto p hpq.symm x : E) = x - (p.projectionOnto q hpq x : E) :=
   by
-  change Submodule.IsCompl.projection hpq.symm x = x - Submodule.IsCompl.projection hpq x
-  exact Submodule.IsCompl.projection_eq_self_sub_projection hpq x
+  change q.projection p hpq.symm x = x - p.projection q hpq x
+  exact Submodule.projection_eq_self_sub_projection hpq x
 
 theorem linear_proj_add_linearProjOfIsCompl_eq_self {p q : Submodule R E} (hpq : IsCompl p q)
     (x : E) :
-    (p.linearProjOfIsCompl q hpq x : E) + (q.linearProjOfIsCompl p hpq.symm x : E) = x := by
+    (p.projectionOnto q hpq x : E) + (q.projectionOnto p hpq.symm x : E) = x := by
   rw [linearProjOfIsCompl_eq_self_sub_linear_proj hpq, add_comm, sub_add_cancel]
 
 theorem linearProjOfIsCompl_idempotent {p q : Submodule R E} (hpq : IsCompl p q) :
-    (p.subtype.comp (p.linearProjOfIsCompl q hpq)) *
-        (p.subtype.comp (p.linearProjOfIsCompl q hpq)) =
-      p.subtype.comp (p.linearProjOfIsCompl q hpq) :=
-  IsIdempotentElem.eq (Submodule.IsCompl.projection_isIdempotentElem hpq)
+    (p.subtype.comp (p.projectionOnto q hpq)) *
+        (p.subtype.comp (p.projectionOnto q hpq)) =
+      p.subtype.comp (p.projectionOnto q hpq) :=
+  IsIdempotentElem.eq (Submodule.isIdempotentElem_projection hpq)
 
 /-- `V` is invariant under `T` iff `pᵤ ∘ₗ (T ∘ₗ pᵤ) = pᵤ ∘ₗ T`. -/
 theorem invariant_under'_iff_linear_proj_comp_self_comp_linear_proj_eq :
     V.InvariantUnder T ↔ ∀ x : E, (pᵤ (T (pᵤ x)) : E) = pᵤ (T x) := by
   simp_rw [invariantUnder_iff_linear_proj_comp_self_eq _ _ hUV.symm,
-    (LinearMap.range_eq_top.1 (linearProjOfIsCompl_range hUV.symm)).forall,
+    (LinearMap.range_eq_top.1 (Submodule.range_projectionOnto hUV.symm)).forall,
     linearProjOfIsCompl_eq_self_sub_linear_proj hUV, map_sub, sub_eq_self, Submodule.coe_sub,
     sub_eq_zero, eq_comm]
 

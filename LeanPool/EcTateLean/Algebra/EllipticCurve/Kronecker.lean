@@ -11,6 +11,12 @@ import Mathlib.Tactic.Common
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.ModEq
 
+/-!
+# LeanPool.EcTateLean.Algebra.EllipticCurve.Kronecker
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Algebra.EllipticCurve.Kronecker`.
+-/
+
 open Nat
 
 section Obvious
@@ -42,12 +48,12 @@ lemma div2_succ_le_self (x : ℕ) : Nat.succ x / 2 ≤ x := by
     exact (div_succ_le_succ_div (Nat.succ x) 1).trans (succ_le_of_lt (div2_lt_self (succ_pos x)))
 
 
-/-- The 2-adic valuation and odd part of a natural number: `val_bin_nat x = (v, r)`
+/-- The 2-adic valuation and odd part of a natural number: `valBinNat x = (v, r)`
 where `x = 2 ^ v * r` with `r` odd (and `(0, 0)` for `x = 0`). -/
-def val_bin_nat (x : ℕ) : ℕ × ℕ :=
+def valBinNat (x : ℕ) : ℕ × ℕ :=
   if h : 0 < x ∧ x % 2 = 0 then
     have decr := div2_lt_self h.left;
-    let vbn_half := val_bin_nat (x / 2);
+    let vbn_half := valBinNat (x / 2);
     (vbn_half.fst + 1, vbn_half.snd)
   else if 0 < x then
     (0, x)
@@ -57,27 +63,27 @@ termination_by x
 decreasing_by
   exact div2_lt_self h.left
 
-lemma val_bin_nat_even {x : ℕ} (h : 0 < x ∧ x % 2 = 0) :
-    val_bin_nat x = ((val_bin_nat (x / 2)).1 + 1, (val_bin_nat (x / 2)).2) := by
-  conv_lhs => rw [val_bin_nat]
+lemma valBinNat_even {x : ℕ} (h : 0 < x ∧ x % 2 = 0) :
+    valBinNat x = ((valBinNat (x / 2)).1 + 1, (valBinNat (x / 2)).2) := by
+  conv_lhs => rw [valBinNat]
   rw [dif_pos h]
 
-/-- The 2-adic valuation and signed odd part of an integer: `val_bin x = (v, r)`
+/-- The 2-adic valuation and signed odd part of an integer: `valBin x = (v, r)`
 where `x = 2 ^ v * r` with `|r|` odd. -/
-def val_bin (x : ℤ) : ℕ × ℤ :=
-  let (v, r) := val_bin_nat (natAbs x);
+def valBin (x : ℤ) : ℕ × ℤ :=
+  let (v, r) := valBinNat (natAbs x);
   (v, sign x * r)
 
 
 
-lemma odd_part_le_self_nat (x : ℕ) : (val_bin_nat x).2 ≤ x := by
-  have acc : ∀ y, y ≤ x → (val_bin_nat y).2 ≤ x := by
+lemma odd_part_le_self_nat (x : ℕ) : (valBinNat x).2 ≤ x := by
+  have acc : ∀ y, y ≤ x → (valBinNat y).2 ≤ x := by
     induction x with
     | zero =>
       intro y h
       rw [le_zero_eq] at h
       subst h
-      simp [val_bin_nat]
+      simp [valBinNat]
     | succ x ih =>
       intro y y_le_sx
       cases y_le_sx with
@@ -86,26 +92,26 @@ lemma odd_part_le_self_nat (x : ℕ) : (val_bin_nat x).2 ≤ x := by
         | inl even =>
           have h : 0 < Nat.succ x ∧ Nat.succ x % 2 = 0 :=
           And.intro (zero_lt_succ x) even;
-          rw [val_bin_nat_even h]
+          rw [valBinNat_even h]
           have h' := ih (Nat.succ x / 2) (div2_succ_le_self x);
           exact le_trans h' (le_succ x)
         | inr odd =>
           have not_even : Nat.succ x % 2 ≠ 0 := by
             rw [odd]
             simp
-          rw [val_bin_nat, dif_neg (not_and_of_not_right (0 < Nat.succ x) not_even),
+          rw [valBinNat, dif_neg (not_and_of_not_right (0 < Nat.succ x) not_even),
             if_pos (zero_lt_succ x)]
       | step y_le_x => exact le_trans (ih y y_le_x) (le_succ x);
   exact acc x (le_refl x)
 
-lemma odd_part_succ_pos (x : ℕ) : 0 < (val_bin_nat (Nat.succ x)).2 := by
-  have acc : ∀ y, (y ≤ x → 0 < (val_bin_nat (Nat.succ y)).2) := by
+lemma odd_part_succ_pos (x : ℕ) : 0 < (valBinNat (Nat.succ x)).2 := by
+  have acc : ∀ y, (y ≤ x → 0 < (valBinNat (Nat.succ y)).2) := by
     induction x with
     | zero =>
       intro y y_le_x
       rw [le_zero_eq] at y_le_x
       subst y_le_x
-      simp [val_bin_nat]
+      simp [valBinNat]
     | succ x ih =>
       intro y y_le_sx
       cases y_le_sx with
@@ -114,19 +120,19 @@ lemma odd_part_succ_pos (x : ℕ) : 0 < (val_bin_nat (Nat.succ x)).2 := by
         | inl even =>
           have h : 0 < Nat.succ (Nat.succ x) ∧ Nat.succ (Nat.succ x) % 2 = 0 :=
           And.intro (zero_lt_succ (Nat.succ x)) even;
-          rw [val_bin_nat_even h, div2_succ_succ_eq_succ_div2]
+          rw [valBinNat_even h, div2_succ_succ_eq_succ_div2]
           exact ih (x / 2) (Nat.div_le_self x 2)
         | inr odd =>
           have not_even : Nat.succ (Nat.succ x) % 2 ≠ 0 := by
             rw [odd]
             simp
-          rw [val_bin_nat, dif_neg (not_and_of_not_right (0 < Nat.succ (Nat.succ x)) not_even),
+          rw [valBinNat, dif_neg (not_and_of_not_right (0 < Nat.succ (Nat.succ x)) not_even),
             if_pos (zero_lt_succ (Nat.succ x))]
           exact zero_lt_succ (Nat.succ x)
       | step y_le_x => exact ih y y_le_x;
   exact acc x (le_refl x)
 
-lemma odd_part_nat_pos (x : ℕ) : x ≠ 0 → 0 < (val_bin_nat x).2 := by
+lemma odd_part_nat_pos (x : ℕ) : x ≠ 0 → 0 < (valBinNat x).2 := by
   cases x with
   | zero =>
     intro absurd
@@ -146,13 +152,13 @@ def kronecker_2 (x : ℕ) : ℤ := match x % 8 with
 /-- Auxiliary recursion computing the Kronecker symbol `(a / b)` for odd `b`,
 carrying an accumulated sign `k`; it strips powers of two from `a` via quadratic
 reciprocity until `a` is reduced. -/
-def kronecker_odd (k : ℤ) (a b : ℕ) : ℤ :=
+def kroneckerOdd (k : ℤ) (a b : ℕ) : ℤ :=
   -- b is odd and a, b ≥ 0
   if a = 0 then if b > 1 then 0 else k else
-  let v_r := val_bin_nat a;
+  let v_r := valBinNat a;
   let k' := if v_r.fst % 2 = 0 then k else k * (kronecker_2 b);
   let k'' := if v_r.snd % 4 = 3 ∧ b % 4 = 3 then -k' else k';
-  kronecker_odd k'' (b % v_r.snd) v_r.snd
+  kroneckerOdd k'' (b % v_r.snd) v_r.snd
 termination_by a
 decreasing_by
   apply lt_of_lt_of_le _ (odd_part_le_self_nat _)
@@ -165,22 +171,22 @@ decreasing_by
 def kronecker (a b : ℤ) : ℤ :=
   if b = 0 then if natAbs a = 1 then 1 else 0 else
   if b % 2 = 0 ∧ a % 2 = 0 then 0 else
-  let (v2b, b') := val_bin b;
+  let (v2b, b') := valBin b;
   let k := if v2b % 2 = 0 then 1 else kronecker_2 (natAbs a);
   let k' := if b' < 0 ∧ a < 0 then -k else k;
   let abs_b' := natAbs b';
   let a_residue := natAbs ((a % ofNat abs_b' + abs_b') % ofNat abs_b');
-  kronecker_odd k' a_residue abs_b'
+  kroneckerOdd k' a_residue abs_b'
 
 /-- Decides, via the Kronecker symbol, whether the quadratic `a x ^ 2 + b x + c`
 has a root modulo `p`. This naive version fails for `p = 2`. -/
-def ex_root_quad (a b c p : ℤ) : Bool :=
+def exRootQuad (a b c p : ℤ) : Bool :=
   let (a', b', c') := (a % p, b % p, c % p);
   kronecker ((b' * b' - 4 * a' * c') % p) p = 1
 
 /-- Decides whether the quadratic `a x ^ 2 + b x + c` has a root in `ℤ / p ℤ`,
 assuming `p > 1` and `p ∤ a`. -/
-def quad_root_in_ZpZ (a b c : ℤ) (p : ℕ) : Bool :=
+def quadRootInZpZ (a b c : ℤ) (p : ℕ) : Bool :=
 match p with
   | 0 => unreachable!
   | 1 => unreachable!

@@ -9,6 +9,12 @@ import Mathlib.Data.Finset.Basic
 import LeanPool.ErdosTuzaValtr.Lib.List.Default
 import LeanPool.ErdosTuzaValtr.Lib.Core.Rel3
 
+/-!
+# LeanPool.ErdosTuzaValtr.Config.Defs
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Config.Defs`.
+-/
+
 
 /-- A configuration: a decidable ternary "cup" relation on a linearly ordered type. -/
 structure Config (α : Type _) [LinearOrder α] where

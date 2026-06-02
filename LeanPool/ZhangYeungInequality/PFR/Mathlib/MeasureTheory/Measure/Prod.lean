@@ -8,6 +8,13 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Prod
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Prod
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Prod`.
+-/
+
 public section
 
 open Function

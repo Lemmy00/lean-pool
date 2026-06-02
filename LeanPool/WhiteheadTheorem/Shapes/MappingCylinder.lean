@@ -13,6 +13,12 @@ import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.MappingCylinder
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.MappingCylinder`.
+-/
+
 open CategoryTheory
 open scoped unitInterval ContinuousMap
 
@@ -50,7 +56,7 @@ abbrev top : Set (MapCyl f) := Set.range (domIncl f)
 
 
 lemma domIncl_hom_eq_pushoutInr'_comp :
-    (domIncl f).hom = (pushoutInr' _ _).comp (Cyl.i₁_to_compl_range_i₀ X) := by
+    (domIncl f).hom = (pushoutInr' _ _).comp (Cyl.i₁ToComplRangeI₀ X) := by
   ext x
   simp_all only [hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk]
   rfl
@@ -61,8 +67,8 @@ theorem isEmbedding_domIncl : Topology.IsEmbedding (domIncl f) := by
   have em_inr : Topology.IsOpenEmbedding (pushoutInr' f (Cyl.i₀ X)) := by
     apply isOpenEmbedding_pushoutInr'
     apply Cyl.isClosed_range_i₀
-  have em_i₁ : Topology.IsClosedEmbedding (Cyl.i₁_to_compl_range_i₀ X) := by
-    apply Cyl.isClosedEmbedding_i₁_to_compl_range_i₀
+  have em_i₁ : Topology.IsClosedEmbedding (Cyl.i₁ToComplRangeI₀ X) := by
+    apply Cyl.isClosedEmbedding_i₁ToComplRangeI₀
   convert em_inr.toIsEmbedding.comp em_i₁.toIsEmbedding
 
 /-- The domain `X` of a continuous map `f` is homeomorphic to the top surface of

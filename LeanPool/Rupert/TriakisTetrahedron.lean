@@ -11,6 +11,12 @@ import LeanPool.Rupert.MatrixSimps
 import LeanPool.Rupert.Quaternion
 import LeanPool.Rupert.Equivalences.RupertEquivRupertPrime
 
+/-!
+# LeanPool.Rupert.TriakisTetrahedron
+
+Imported Lean Pool material for `LeanPool.Rupert.TriakisTetrahedron`.
+-/
+
 namespace TriakisTetrahedron
 
 open scoped Matrix
@@ -27,31 +33,31 @@ noncomputable def vertices : Fin 8 → ℝ³ :=
     !₂[-3/5, -3/5, -3/5]]
 
 /-- Quaternion certificate for the inner rotation. -/
-def inner_quat : Quaternion ℝ := ⟨0.144873924, 0.365747659, -0.854692880, -0.338733344⟩
+def innerQuat : Quaternion ℝ := ⟨0.144873924, 0.365747659, -0.854692880, -0.338733344⟩
 
 /-- Translation offset for the inner shadow. -/
-def inner_offset : ℝ² := !₂[8.5629464761e-05, 8.9387250451e-05]
+def innerOffset : ℝ² := !₂[8.5629464761e-05, 8.9387250451e-05]
 
 /-- Quaternion certificate for the outer rotation. -/
-def outer_quat : Quaternion ℝ := ⟨0.858732110, -0.148912807, -0.352436516, -0.340870417⟩
+def outerQuat : Quaternion ℝ := ⟨0.858732110, -0.148912807, -0.352436516, -0.340870417⟩
 
 /-- Rotation matrix for the inner triakis tetrahedron. -/
-noncomputable def inner_rot := matrix_of_quat inner_quat
+noncomputable def innerRot := matrixOfQuat innerQuat
 
-lemma inner_rot_so3 : inner_rot ∈ SO3 := by
-  have h : inner_quat.normSq ≠ 0 := by norm_num [inner_quat, Quaternion.normSq_def]
-  exact matrix_of_quat_is_s03 h
+lemma innerRot_so3 : innerRot ∈ SO3 := by
+  have h : innerQuat.normSq ≠ 0 := by norm_num [innerQuat, Quaternion.normSq_def]
+  exact matrixOfQuat_is_s03 h
 
 /-- Rotation matrix for the outer triakis tetrahedron. -/
-noncomputable def outer_rot := matrix_of_quat outer_quat
+noncomputable def outerRot := matrixOfQuat outerQuat
 
-lemma outer_rot_so3 : outer_rot ∈ SO3 := by
-  have h : outer_quat.normSq ≠ 0 := by norm_num [outer_quat, Quaternion.normSq_def]
-  exact matrix_of_quat_is_s03 h
+lemma outerRot_so3 : outerRot ∈ SO3 := by
+  have h : outerQuat.normSq ≠ 0 := by norm_num [outerQuat, Quaternion.normSq_def]
+  exact matrixOfQuat_is_s03 h
 
 lemma outer_ball_subset :
     Metric.ball 0 (0.006 : ℝ) ⊆
-      convexHull ℝ { proj_xy (outer_rot.toEuclideanLin (vertices i)) | i } := by
+      convexHull ℝ { projXy (outerRot.toEuclideanLin (vertices i)) | i } := by
   let ε₀ : ℝ := 0.006
   have hε₀ : ε₀ ∈ Set.Ioo 0 1 := by norm_num
   refine Convex.ball_in_hull_of_corners_in_hull hε₀ ?_ ?_ ?_ ?_ <;>
@@ -84,23 +90,23 @@ lemma outer_ball_subset :
           0]
   ]
   all_goals
-    use fun i ↦ proj_xy (outer_rot.toEuclideanLin (vertices i))
+    use fun i ↦ projXy (outerRot.toEuclideanLin (vertices i))
     refine ⟨?_, ?_, ?_, ?_⟩
     · apply all_fin_8_vec <;> norm_num
     · simp [Fin.sum_univ_eight]; norm_num
     · exact fun i ↦ ⟨i, rfl⟩
-    · simp only [proj_xy, outer_rot, matrix_of_quat, outer_quat, vertices,
+    · simp only [projXy, outerRot, matrixOfQuat, outerQuat, vertices,
                  Fin.sum_univ_eight, matrix_simps]
       ext i; fin_cases i <;> norm_num
 
 theorem rupert : IsRupert vertices := by
   rw [rupert_iff_rupert']
-  use inner_rot, inner_rot_so3, inner_offset, outer_rot, outer_rot_so3
-  intro inner_shadow outer_shadow
+  use innerRot, innerRot_so3, innerOffset, outerRot, outerRot_so3
+  intro inner_shadow outerShadow
   let ε₀ : ℝ := 0.006
   have hε₀ : ε₀ ∈ Set.Ioo 0 1 := by norm_num
-  have hb : Metric.ball 0 ε₀ ⊆ convexHull ℝ outer_shadow := by
-    simpa [ε₀, outer_shadow] using outer_ball_subset
+  have hb : Metric.ball 0 ε₀ ⊆ convexHull ℝ outerShadow := by
+    simpa [ε₀, outerShadow] using outer_ball_subset
   intro v hv
   let ε₁ : ℝ := 1e-11
   have hε₁ : ε₁ ∈ Set.Ioo 0 1 := by norm_num
@@ -182,14 +188,14 @@ theorem rupert : IsRupert vertices := by
           0]
   ]
   all_goals
-    use fun i ↦ (1 - ε₁) • (proj_xy (outer_rot.toEuclideanLin (vertices i)))
+    use fun i ↦ (1 - ε₁) • (projXy (outerRot.toEuclideanLin (vertices i)))
     refine ⟨?_, ?_, ?_, ?_⟩
     · apply all_fin_8_vec <;> norm_num
     · simp only [Fin.sum_univ_eight, matrix_simps]; norm_num
-    · exact fun i ↦ ⟨proj_xy (outer_rot.toEuclideanLin (vertices i)), by simp [outer_shadow]⟩
+    · exact fun i ↦ ⟨projXy (outerRot.toEuclideanLin (vertices i)), by simp [outerShadow]⟩
     · rw [←hy]
-      simp only [proj_xy, outer_rot, matrix_of_quat, outer_quat, vertices,
-        Fin.sum_univ_eight, inner_offset, inner_rot, inner_quat, ε₁, matrix_simps]
+      simp only [projXy, outerRot, matrixOfQuat, outerQuat, vertices,
+        Fin.sum_univ_eight, innerOffset, innerRot, innerQuat, ε₁, matrix_simps]
       ext i; fin_cases i <;> norm_num
 
 end TriakisTetrahedron

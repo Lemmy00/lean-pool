@@ -17,6 +17,12 @@ import LeanPool.QuasiBorelSpaces.MeasureTheory.Pack
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Measure
 import Mathlib.Analysis.SpecialFunctions.Sigmoid
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.ProbabilityMeasure
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.ProbabilityMeasure`.
+-/
+
 
 namespace MeasureTheory
 

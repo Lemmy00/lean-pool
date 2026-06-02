@@ -11,6 +11,12 @@ import LeanPool.QuasiBorelSpaces.MeasureTheory.Measure
 import LeanPool.QuasiBorelSpaces.MeasureTheory.ProbabilityMeasure
 import LeanPool.QuasiBorelSpaces.Prop
 
+/-!
+# LeanPool.QuasiBorelSpaces.PreProbabilityMeasure
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.PreProbabilityMeasure`.
+-/
+
 open MeasureTheory
 open scoped unitInterval
 
@@ -177,7 +183,7 @@ lemma lintegral_finset_sum {A}
     lintegral (fun a ↦ ∑ b ∈ s, f b a) μ = ∑ b ∈ s, lintegral (f b) μ := by
   rcases μ with ⟨eval, base⟩
   simp only [lintegral_mk]
-  rw [MeasureTheory.lintegral_finset_sum]
+  rw [MeasureTheory.lintegral_finsetSum]
   intro b hb
   have := isHom_comp' (hf b hb) eval.isHom_coe
   simp only [isHom_ofMeasurableSpace] at this
@@ -424,7 +430,7 @@ noncomputable def subbase (φ : ℝ → PreProbabilityMeasure A) : ℝ → Proba
   then (Classical.choose ((isVar_iff_isHom _).2 hφ)).base
   else fun _ ↦ default
 
-@[simp, fun_prop, measurability]
+@[simp, fun_prop]
 lemma measurable_subbase (φ : ℝ → PreProbabilityMeasure A) : Measurable (subbase φ) := by
   by_cases hφ : IsHom φ
   · simp only [subbase, hφ, ↓reduceDIte]

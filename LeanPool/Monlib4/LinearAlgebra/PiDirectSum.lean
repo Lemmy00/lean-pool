@@ -10,6 +10,12 @@ import Mathlib.RingTheory.TensorProduct.Basic
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
 import LeanPool.Monlib4.LinearAlgebra.DirectSumFromTo
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.PiDirectSum
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.PiDirectSum`.
+-/
+
 open scoped TensorProduct
 
 local notation x " ⊗ₘ " y => TensorProduct.map x y

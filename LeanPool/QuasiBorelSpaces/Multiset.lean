@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.List
 import LeanPool.QuasiBorelSpaces.Quotient
 import LeanPool.QuasiBorelSpaces.IsHomDiagonal
 
+/-!
+# LeanPool.QuasiBorelSpaces.Multiset
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Multiset`.
+-/
+
 namespace QuasiBorelSpace.Multiset
 
 variable

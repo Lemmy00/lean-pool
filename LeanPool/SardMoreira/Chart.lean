@@ -182,7 +182,7 @@ theorem fderiv_implicitFunction_chartImplicitData_comp_inr {f : E × F → ℝ} 
   have := fderiv_implicitFunction_chartImplicitData_apply_mk_zero hfa hk hdf x
   exact this
 
-theorem fst_implicitFunction_chartImplicitData_eventuallyEq {f : E × F → ℝ} {a : E × F}
+theorem fst_implicitFunction_chartImplicitDataEventuallyEq {f : E × F → ℝ} {a : E × F}
     (hfa : ContDiffMoreiraHolderAt k α f a) (hk : k ≠ 0) (hdf : fderiv ℝ f a ∘L .inr ℝ E F ≠ 0) :
     Prod.fst ∘ (chartImplicitData f a hfa hk hdf).implicitFunction (f a)
       =ᶠ[𝓝 ((chartImplicitData f a hfa hk hdf).rightFun a)] Prod.fst := by
@@ -328,7 +328,7 @@ theorem exists_dim_lt_map_nhdsWithin_eq (hs : ¬IsLargeAt k α s a)
     simpa [ψ, hfa₀] using ψ.map_pt_mem_toOpenPartialHomeomorph_target
   have Hfst : ∀ᶠ x in 𝓝 (ψ.rightFun a), (g x).fst = x.fst := by
     simpa [g, ψ, EventuallyEq, hfa₀]
-      using fst_implicitFunction_chartImplicitData_eventuallyEq hfka hk hdf
+      using fst_implicitFunction_chartImplicitDataEventuallyEq hfka hk hdf
   have Hcomp_inr : ∀ᶠ x in 𝓝 (ψ.rightFun a), fderiv ℝ f (g x) ∘L .inr ℝ E F ≠ 0 := by
     apply Filter.Tendsto.eventually_ne _ hdf
     refine (ContinuousLinearMap.precomp _ (.inr ℝ E F)).continuous.tendsto _ |>.comp ?_

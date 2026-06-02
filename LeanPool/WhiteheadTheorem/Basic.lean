@@ -34,6 +34,12 @@ import LeanPool.WhiteheadTheorem.Shapes.Maps
 import LeanPool.WhiteheadTheorem.Shapes.Pushout
 import LeanPool.WhiteheadTheorem.Shapes.UnitInterval
 
+/-!
+# LeanPool.WhiteheadTheorem.Basic
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Basic`.
+-/
+
 
 open CategoryTheory
 
