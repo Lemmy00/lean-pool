@@ -9,6 +9,12 @@ import LeanPool.ZFLean.Booleans
 import LeanPool.ZFLean.Integers
 import LeanPool.ZFLean.Functions
 
+/-!
+# LeanPool.ZFLean.Sum
+
+Imported Lean Pool material for `LeanPool.ZFLean.Sum`.
+-/
+
 universe u v
 
 namespace ZFSet

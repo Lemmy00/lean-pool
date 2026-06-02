@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.Multiset
 import Mathlib.SetTheory.Cardinal.Order
 
+/-!
+# LeanPool.QuasiBorelSpaces.Finset
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Finset`.
+-/
+
 namespace QuasiBorelSpace.Finset
 
 variable

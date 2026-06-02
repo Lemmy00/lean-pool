@@ -5,6 +5,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Lattice
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Lattice`.
+-/
+
 namespace TwoSidedIdeal
 variable {R : Type*} [NonUnitalNonAssocRing R] {I J : TwoSidedIdeal R} {x : R}
 

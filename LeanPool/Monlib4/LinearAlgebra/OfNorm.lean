@@ -13,6 +13,12 @@ import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Convex.Extreme
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.OfNorm
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.OfNorm`.
+-/
+
 open scoped ComplexOrder
 
 section Ex4
@@ -488,12 +494,12 @@ by simp_rw [Set.mem_extremePoints_iff', mem_ball, dist_zero_right]
 lemma Metric.exists_mem_closed_unitBall_of_norm_one (𝕜 H : Type _) [RCLike 𝕜]
   [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Nontrivial H] :
   ∃ x : H, ‖x‖ = 1 ∧ x ∈ closedBall (0 : H) 1 := by
-obtain ⟨x, hx⟩ : ∃ x : H, x ≠ 0 := exists_ne 0
-use (1 / ‖x‖ : 𝕜) • x
-simp only [one_div, mem_closedBall, dist_zero_right, norm_smul, norm_inv]
-simp only [norm_ofReal, abs_norm]
-rw [inv_mul_cancel₀ (norm_ne_zero_iff.mpr hx)]
-exact ⟨rfl, le_rfl⟩
+  obtain ⟨x, hx⟩ : ∃ x : H, x ≠ 0 := exists_ne 0
+  use (1 / ‖x‖ : 𝕜) • x
+  simp only [one_div, mem_closedBall, dist_zero_right, norm_smul, norm_inv]
+  simp only [norm_ofReal, abs_norm]
+  rw [inv_mul_cancel₀ (norm_ne_zero_iff.mpr hx)]
+  exact ⟨rfl, le_rfl⟩
 
 lemma Metric.exists_mem_unitBall_of_norm_one (𝕜 H : Type _) [RCLike 𝕜]
   [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Nontrivial H] :

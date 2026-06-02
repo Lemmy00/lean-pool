@@ -6,6 +6,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Sum
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Sum`.
+-/
+
 open scoped MeasureTheory
 
 

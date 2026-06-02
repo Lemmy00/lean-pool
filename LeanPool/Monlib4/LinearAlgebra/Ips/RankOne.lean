@@ -5,7 +5,7 @@ Authors: Monica Omar
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
-import LeanPool.Monlib4.LinearAlgebra.IsProj'
+import LeanPool.Monlib4.LinearAlgebra.IsProjPrime
 
 /-!
 
@@ -212,14 +212,14 @@ theorem ContinuousLinearMap.rankOne_comp {E₃ : Type*} [NormedAddCommGroup E₃
 /-- rank one operators given by norm one vectors are automatically idempotent -/
 theorem rankOne_self_isIdempotentElem_of_normOne {x : E₁} (h : ‖x‖ = 1) :
   IsIdempotentElem (rankOne 𝕜 x x) := by
-simp_rw [IsIdempotentElem, ContinuousLinearMap.ext_iff, mul_def, rankOne.apply_rankOne,
-  inner_self_eq_norm_sq_to_K, h, RCLike.ofReal_one, one_pow, one_smul,
-  forall_const]
+  simp_rw [IsIdempotentElem, ContinuousLinearMap.ext_iff, mul_def, rankOne.apply_rankOne,
+    inner_self_eq_norm_sq_to_K, h, RCLike.ofReal_one, one_pow, one_smul,
+    forall_const]
 
 theorem rankOne_self_isSymmetric {x : E₁} :
   LinearMap.IsSymmetric ((rankOne 𝕜 x x) : E₁ →ₗ[𝕜] E₁) := by
-simp_rw [LinearMap.IsSymmetric, ContinuousLinearMap.coe_coe, rankOne_apply, inner_smul_left,
-  inner_smul_right, inner_conj_symm, mul_comm, forall₂_true_iff]
+  simp_rw [LinearMap.IsSymmetric, ContinuousLinearMap.coe_coe, rankOne_apply, inner_smul_left,
+    inner_smul_right, inner_conj_symm, mul_comm, forall₂_true_iff]
 
 /-- rank one operators are automatically self-adjoint -/
 @[simp]
@@ -236,11 +236,11 @@ by
 
 theorem rankOne_inner_left (x w : E₁) (y z : E₂) :
   ⟪rankOne 𝕜 x y z,w⟫_𝕜 = ⟪z,y⟫_𝕜 * ⟪x,w⟫_𝕜 := by
-rw [rankOne_apply, inner_smul_left, inner_conj_symm]
+  rw [rankOne_apply, inner_smul_left, inner_conj_symm]
 
 theorem rankOne_inner_right (x y : E₁) (z w : E₂) :
   ⟪x, rankOne 𝕜 y z w⟫_𝕜 = ⟪z,w⟫_𝕜 * ⟪x,y⟫_𝕜 := by
-rw [rankOne_apply, inner_smul_right]
+  rw [rankOne_apply, inner_smul_right]
 
 theorem ContinuousLinearMap.commutes_with_all_iff [CompleteSpace E₁] {T : E₁ →L[𝕜] E₁} :
     (∀ S, Commute S T) ↔ ∃ α : 𝕜, T = α • 1 :=

@@ -692,7 +692,7 @@ instance : OmegaCompletePartialOrder (ProbabilityMeasure A) where
   ωSup c := c 0
   le_ωSup c := by
     intro n
-    have := c.monotone' (zero_le n)
+    have := c.monotone' (Nat.zero_le n)
     exact this.symm
   ωSup_le c := by
     intro x h

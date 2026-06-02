@@ -43,10 +43,12 @@ theorem _root_.Matrix.eq_zero_iff {n : Type _} [Fintype n]
       constructor
       · intro h a
         specialize h (WithLp.toLp 2 a)
-        simpa [Matrix.toLpLin_apply, Matrix.dotProduct_eq_inner] using h
+        simpa [Matrix.toLpLin_toLp, PiLp.inner_apply, Matrix.dotProduct_eq_inner,
+          RCLike.inner_apply, Matrix.mulVec] using h
       · intro h a
         specialize h a.ofLp
-        simpa [Matrix.toLpLin_apply, Matrix.dotProduct_eq_inner] using h
+        simpa [Matrix.toLpLin_toLp, PiLp.inner_apply, Matrix.dotProduct_eq_inner,
+          RCLike.inner_apply, Matrix.mulVec] using h
 
 /-- The upstream Monlib order relation, now supplied by Mathlib under `MatrixOrder`. -/
 @[reducible]

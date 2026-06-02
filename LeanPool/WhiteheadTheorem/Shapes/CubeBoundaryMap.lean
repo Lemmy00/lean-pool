@@ -8,6 +8,12 @@ import LeanPool.WhiteheadTheorem.Shapes.Cube
 import LeanPool.WhiteheadTheorem.Auxiliary
 import LeanPool.WhiteheadTheorem.Shapes.UnitInterval
 
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.CubeBoundaryMap
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.CubeBoundaryMap`.
+-/
+
 
 open scoped Topology Topology.Homotopy CategoryTheory
 open unitInterval

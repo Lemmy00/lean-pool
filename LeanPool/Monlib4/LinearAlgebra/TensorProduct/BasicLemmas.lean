@@ -182,7 +182,7 @@ theorem zero_tmul_zero {R : Type _} [CommSemiring R] {M N : Type _} [AddCommGrou
     [AddCommGroup N] [Module R M] [Module R N] : (0 : M ⊗[R] N) = 0 ⊗ₜ 0 := by
   rw [TensorProduct.zero_tmul]
 
-theorem map_mul'_commute_iff {R M N : Type _} [CommSemiring R]
+theorem mapMul'_commute_iff {R M N : Type _} [CommSemiring R]
     [NonUnitalNonAssocSemiring M] [NonUnitalNonAssocSemiring N] [Module R M]
     [Module R N] [SMulCommClass R M M] [SMulCommClass R N N] [IsScalarTower R M M]
     [IsScalarTower R N N] {f : M →ₗ[R] N} :
@@ -200,7 +200,7 @@ theorem Algebra.TensorProduct.map_toLinearMap {R M N P Q : Type _} [CommSemiring
       _root_.TensorProduct.map (AlgHom.toLinearMap f) (AlgHom.toLinearMap g) :=
   rfl
 
-theorem AlgHom.commute_map_mul' {R M N : Type _} [CommSemiring R] [Semiring M]
+theorem AlgHom.commute_mapMul' {R M N : Type _} [CommSemiring R] [Semiring M]
     [Semiring N] [Algebra R M] [Algebra R N] (f : M →ₐ[R] N) :
     (LinearMap.mul' R N).comp (Algebra.TensorProduct.map f f).toLinearMap =
       f.toLinearMap.comp (LinearMap.mul' R M) := by
@@ -209,14 +209,14 @@ theorem AlgHom.commute_map_mul' {R M N : Type _} [CommSemiring R] [Semiring M]
   simp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, LinearMap.mul'_apply,
     Algebra.TensorProduct.map_tmul, _root_.map_mul]
 
-theorem AlgHom.commute_map_mul'_apply {R M N : Type _} [CommSemiring R] [Semiring M]
+theorem AlgHom.commute_mapMul'_apply {R M N : Type _} [CommSemiring R] [Semiring M]
     [Semiring N] [Algebra R M] [Algebra R N] (f : M →ₐ[R] N) (x : M ⊗[R] M) :
     (LinearMap.mul' R N) ((Algebra.TensorProduct.map f f) x) =
       f ((LinearMap.mul' R M) x) := by
   simp only [← LinearMap.comp_apply, ← AlgHom.toLinearMap_apply]
   revert x
   rw [← LinearMap.ext_iff]
-  exact AlgHom.commute_map_mul' _
+  exact AlgHom.commute_mapMul' _
 
 open TensorProduct
 

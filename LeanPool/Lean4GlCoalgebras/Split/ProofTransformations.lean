@@ -5,16 +5,17 @@ Authors: Madeleine Gignoux
 -/
 
 import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Sigma.Lex
 import LeanPool.Lean4GlCoalgebras.Split.Proof
 import LeanPool.Lean4GlCoalgebras.Split.CutProof
-
-namespace Ext
 
 /-! ## Defining GL-ext+pre proof system.
 
 Here we define the GL-ext+pre system. This system is different from the paper, where we build in
 how we connect non-axiomatic leaf nodes into `RuleApp` directly.
 -/
+
+namespace Ext
 
 /-- Rule applications for the GL-ext+pre proof system. -/
 inductive RuleApp {𝕏 : Split.Proof} (x : 𝕏.X) (τ : 𝕏.X → SplitSequent)
@@ -265,13 +266,13 @@ Defining the Proof Transformation as well as basic properties. -/
 
 open Classical in
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def dep_sum_seq_proj {α : Type} {β : α → Type} {f : ℕ → (a : α) × β a}
+noncomputable def depSumSeqProj {α : Type} {β : α → Type} {f : ℕ → (a : α) × β a}
   {Q : (a : α) → β a → β a → Prop}
   (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1, ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2))
   : ℕ → α × ℕ
   | 0 => ⟨(f (Nat.find (h 0) + 1)).1, Nat.find (h 0) + 1⟩
   | n + 1 => by
-      have ih := dep_sum_seq_proj h n
+      have ih := depSumSeqProj h n
       exact ⟨(f (Nat.find (h ih.2) + 1)).1, Nat.find (h ih.2) + 1⟩
 
 lemma sigmaMemOfMemMap {α : Type} {β : α → Type} {a : α} {xs : List (β a)}
@@ -355,21 +356,21 @@ lemma infinite_dep_sum_sequence_proj_eq
     {Q : (a : α) → β a → β a → Prop}
     (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
       ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2)) :
-    ∀ n, (f (dep_sum_seq_proj h n).2).1 = (dep_sum_seq_proj h n).1 := by
+    ∀ n, (f (depSumSeqProj h n).2).1 = (depSumSeqProj h n).1 := by
   intro n
-  cases n <;> simp [dep_sum_seq_proj] -- surprised how this works?
+  cases n <;> simp [depSumSeqProj] -- surprised how this works?
 
 lemma dep_sum_seq_proj_leq
     {α : Type} {β : α → Type} {f : ℕ → (a : α) × β a}
     {Q : (a : α) → β a → β a → Prop}
     (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
       ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2)) :
-    ∀ n, n ≤ (dep_sum_seq_proj h n).2 := by
+    ∀ n, n ≤ (depSumSeqProj h n).2 := by
   intro n
   induction n
   case zero => simp
   case succ n ih =>
-    simp [dep_sum_seq_proj]
+    simp [depSumSeqProj]
     grind
 
 open Classical in
@@ -377,8 +378,8 @@ lemma fst_same_in_range {α : Type} {β : α → Type} {f : ℕ → (a : α) × 
     {Q : (a : α) → β a → β a → Prop}
     (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
       ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2)) :
-    ∀ n, ∀ m, n ≤ Nat.find (h (dep_sum_seq_proj h m).2) →
-      n ≥ (dep_sum_seq_proj h m).2 → (f (dep_sum_seq_proj h m).2).1 = (f n).1 := by
+    ∀ n, ∀ m, n ≤ Nat.find (h (depSumSeqProj h m).2) →
+      n ≥ (depSumSeqProj h m).2 → (f (depSumSeqProj h m).2).1 = (f n).1 := by
   intro n m n_lt n_ge
   have n_le_m := dep_sum_seq_proj_leq h n
   induction n
@@ -387,7 +388,7 @@ lemma fst_same_in_range {α : Type} {β : α → Type} {f : ℕ → (a : α) × 
     simp [n_ge]
   case succ n ih =>
     have neq := Nat.find_spec (h (n + 1))
-    by_cases eq : n + 1 = (dep_sum_seq_proj h m).2
+    by_cases eq : n + 1 = (depSumSeqProj h m).2
     case pos => simp [eq]
     case neg =>
       have := ih (by grind) (by grind) (dep_sum_seq_proj_leq h n)
@@ -400,7 +401,7 @@ lemma fst_same_in_range {α : Type} {β : α → Type} {f : ℕ → (a : α) × 
         exfalso
         exact eq h
       have := @Nat.find_le _ _ _ (h n) ⟨by grind, this⟩
-      have : Nat.find (h (dep_sum_seq_proj h m).2) ≤ Nat.find (h n) := by
+      have : Nat.find (h (depSumSeqProj h m).2) ≤ Nat.find (h n) := by
         have g : ∀ n, ∀ m, n ≤ m → Nat.find (h n) ≤ Nat.find (h m) :=
           fun n m n_lt_m ↦ @Nat.find_le _ _ _ (h n) ⟨by grind, (Nat.find_spec (h m)).2⟩
         apply g
@@ -414,38 +415,38 @@ lemma infinite_dep_sum_chain
   (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
     ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2))
   (f_chain : ∀ n, Sigma.Lex R Q (f n) (f (n + 1))) :
-    ∀ n, R (dep_sum_seq_proj h n).1 (dep_sum_seq_proj h (n + 1)).1 := by
+    ∀ n, R (depSumSeqProj h n).1 (depSumSeqProj h (n + 1)).1 := by
   intro n
   rw [←infinite_dep_sum_sequence_proj_eq h n,
     ←infinite_dep_sum_sequence_proj_eq h (n + 1)]
-  simp only [dep_sum_seq_proj, ge_iff_le]
+  simp only [depSumSeqProj, ge_iff_le]
   have n_le_m := dep_sum_seq_proj_leq h n
-  have h1 := fst_same_in_range h (Nat.find (h (dep_sum_seq_proj h n).2)) n
+  have h1 := fst_same_in_range h (Nat.find (h (depSumSeqProj h n).2)) n
     (by simp) (by grind)
   rw [h1]
-  rcases Sigma.lex_iff.1 (f_chain (Nat.find (h (dep_sum_seq_proj h n).2))) with
+  rcases Sigma.lex_iff.1 (f_chain (Nat.find (h (depSumSeqProj h n).2))) with
     R_rel | ⟨eq, Q_rel⟩
   · exact R_rel
   · exfalso
-    apply (Nat.find_spec (h (dep_sum_seq_proj h n).2)).2 eq
+    apply (Nat.find_spec (h (depSumSeqProj h n).2)).2 eq
     convert Q_rel <;> simp
 
 open Classical in
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def infinite_dep_sum_chain_finite_subchain
+noncomputable def infiniteDepSumChainFiniteSubchain
   {α : Type} {β : α → Type} {f : ℕ → (a : α) × β a}
   {Q : (a : α) → β a → β a → Prop}
   (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
     ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2))
   (m : ℕ) :
-    Fin ((Nat.find (h (dep_sum_seq_proj h m).2) - (dep_sum_seq_proj h m).2) + 1) →
-      β (dep_sum_seq_proj h m).1 :=
+    Fin ((Nat.find (h (depSumSeqProj h m).2) - (depSumSeqProj h m).2) + 1) →
+      β (depSumSeqProj h m).1 :=
     fun ⟨n, n_prop⟩ ↦
-    have eq : (f ((dep_sum_seq_proj h m).2 + n)).fst = (dep_sum_seq_proj h m).1 := by
+    have eq : (f ((depSumSeqProj h m).2 + n)).fst = (depSumSeqProj h m).1 := by
       rw [←infinite_dep_sum_sequence_proj_eq h m]
       apply Eq.symm <|
-        fst_same_in_range h ((dep_sum_seq_proj h m).2 + n) m ?_ ?_ <;> grind
-    eq ▸ (f ((dep_sum_seq_proj h m).2 + n)).2
+        fst_same_in_range h ((depSumSeqProj h m).2 + n) m ?_ ?_ <;> grind
+    eq ▸ (f ((depSumSeqProj h m).2 + n)).2
 
 open Classical in
 lemma infinite_dep_sum_chain_finite_subchain_prop
@@ -454,19 +455,19 @@ lemma infinite_dep_sum_chain_finite_subchain_prop
   (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
     ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2))
   (m : ℕ) :
-    ∀ k : Fin (Nat.find (h (dep_sum_seq_proj h m).2) - (dep_sum_seq_proj h m).2),
-      Q (dep_sum_seq_proj h m).1
-        (infinite_dep_sum_chain_finite_subchain h m k.castSucc)
-        (infinite_dep_sum_chain_finite_subchain h m k.succ) := by
+    ∀ k : Fin (Nat.find (h (depSumSeqProj h m).2) - (depSumSeqProj h m).2),
+      Q (depSumSeqProj h m).1
+        (infiniteDepSumChainFiniteSubchain h m k.castSucc)
+        (infiniteDepSumChainFiniteSubchain h m k.succ) := by
     intro ⟨k, k_prop⟩
-    unfold infinite_dep_sum_chain_finite_subchain
+    unfold infiniteDepSumChainFiniteSubchain
     dsimp
-    have := @Nat.find_min _ _ (h (dep_sum_seq_proj h m).2)
-      ((dep_sum_seq_proj h m).2 + k) (by grind)
+    have := @Nat.find_min _ _ (h (depSumSeqProj h m).2)
+      ((depSumSeqProj h m).2 + k) (by grind)
     have this := by simpa using this
     convert this.2 using 1
     · rw [←infinite_dep_sum_sequence_proj_eq]
-      apply fst_same_in_range h ((dep_sum_seq_proj h m).2 + k) m ?_ ?_ <;> grind
+      apply fst_same_in_range h ((depSumSeqProj h m).2 + k) m ?_ ?_ <;> grind
     · simp
     · grind
 
@@ -476,13 +477,13 @@ lemma infinite_dep_sum_chain_inf
   (h : ∀ n, ∃ m ≥ n, ∀ h : (f m).1 = (f (m + 1)).1,
     ¬ Q (f m).1 (f m).2 (h ▸ (f (m + 1)).2))
   (p : α → Prop) (q : (a : α) × β a → Prop)
-  (inf : ∀ n, ∃ m, p (dep_sum_seq_proj h (n + m)).1)
-  (conv : ∀ n, p (dep_sum_seq_proj h n).1 → ∃ m, q (f ((dep_sum_seq_proj h n).2 + m))) :
+  (inf : ∀ n, ∃ m, p (depSumSeqProj h (n + m)).1)
+  (conv : ∀ n, p (depSumSeqProj h n).1 → ∃ m, q (f ((depSumSeqProj h n).2 + m))) :
     ∀ n, ∃ m, q (f (n + m)) := by
   intro n
   have ⟨m, m_prop⟩ := inf n
   have ⟨l, l_prop⟩ := conv (n + m) m_prop
-  use (dep_sum_seq_proj h (n + m)).2 - n + l
+  use (depSumSeqProj h (n + m)).2 - n + l
   convert l_prop using 2
   have := dep_sum_seq_proj_leq h (n + m)
   omega
@@ -822,14 +823,14 @@ private theorem proofTransformation_path {𝕏 : Proof} {σ}
   case pos =>
     simp only [proofTransformation_isBox]
     let g : ℕ → 𝕏.X := fun n ↦
-      (@dep_sum_seq_proj 𝕏.X (fun x ↦ (partialProof x).X) f
+      (@depSumSeqProj 𝕏.X (fun x ↦ (partialProof x).X) f
         (fun x ↦ Ext.edge (partialProof x).α) h n).1
     have g_prop : ∀ n, edge 𝕏.α (g n) (g (n + 1)) := by
       apply @infinite_dep_sum_chain
       exact lex_chain
     intro n
     have ⟨m, m_prop⟩ := inf_path_has_inf_boxes g g_prop
-      (@dep_sum_seq_proj 𝕏.X (fun x ↦ (partialProof x).X) f
+      (@depSumSeqProj 𝕏.X (fun x ↦ (partialProof x).X) f
         (fun x ↦ Ext.edge (partialProof x).α) h n).2
     apply @infinite_dep_sum_chain_inf 𝕏.X (fun x ↦ (partialProof x).X) f
       (fun x ↦ Ext.edge (partialProof x).α) h
@@ -838,18 +839,18 @@ private theorem proofTransformation_path {𝕏 : Proof} {σ}
       (inf_path_has_inf_boxes g g_prop) ?_
     intro n n_is_box
     simp only
-    let f_sub := @infinite_dep_sum_chain_finite_subchain 𝕏.X
+    let f_sub := @infiniteDepSumChainFiniteSubchain 𝕏.X
       (fun x ↦ (partialProof x).X) f
       (fun x ↦ Ext.edge (partialProof x).α) h n
     have f_sub_prop := @infinite_dep_sum_chain_finite_subchain_prop 𝕏.X
       (fun x ↦ (partialProof x).X) f
       (fun x ↦ Ext.edge (partialProof x).α) h n
     have ⟨⟨m, m_lt⟩, m_prop⟩ := box_prop _ n_is_box _ f_sub ?_ ?_ f_sub_prop
-    · unfold f_sub infinite_dep_sum_chain_finite_subchain at m_prop
+    · unfold f_sub infiniteDepSumChainFiniteSubchain at m_prop
       dsimp at m_prop
       have m_prop := by simpa using m_prop
       use m
-      let d := @dep_sum_seq_proj 𝕏.X (fun x ↦ (partialProof x).X) f
+      let d := @depSumSeqProj 𝕏.X (fun x ↦ (partialProof x).X) f
         (fun x ↦ Ext.edge (partialProof x).α) h n
       have first_eq :
           (f (d.2 + m)).fst = d.1 := by
@@ -867,23 +868,23 @@ private theorem proofTransformation_path {𝕏 : Proof} {σ}
         (ρ := fun a b ↦ (Ext.r (partialProof a).α b).isBox)
         (sigmaMkCastEq first_eq rfl).symm
         m_prop
-    · unfold f_sub infinite_dep_sum_chain_finite_subchain
-      cases n <;> dsimp [dep_sum_seq_proj]
+    · unfold f_sub infiniteDepSumChainFiniteSubchain
+      cases n <;> dsimp [depSumSeqProj]
       case zero =>
         exact transformedSuccessorRoot f_succ (Nat.find (h 0))
           (Nat.find_spec (h 0)).2
       case succ n =>
         let ih :=
-          (@dep_sum_seq_proj 𝕏.X (fun x ↦ (partialProof x).X) f
+          (@depSumSeqProj 𝕏.X (fun x ↦ (partialProof x).X) f
             (fun x ↦ Ext.edge (partialProof x).α) h n).2
         exact transformedSuccessorRoot f_succ (Nat.find (h ih))
           (Nat.find_spec (h ih)).2
-    · unfold f_sub infinite_dep_sum_chain_finite_subchain
+    · unfold f_sub infiniteDepSumChainFiniteSubchain
       let ih :=
-        (@dep_sum_seq_proj 𝕏.X (fun x ↦ (partialProof x).X) f
+        (@depSumSeqProj 𝕏.X (fun x ↦ (partialProof x).X) f
           (fun x ↦ Ext.edge (partialProof x).α) h n).2
       let d :=
-        @dep_sum_seq_proj 𝕏.X (fun x ↦ (partialProof x).X) f
+        @depSumSeqProj 𝕏.X (fun x ↦ (partialProof x).X) f
           (fun x ↦ Ext.edge (partialProof x).α) h n
       have fst_eq : d.1 = (f (Nat.find (h ih))).fst := by
         have dep_eq :=

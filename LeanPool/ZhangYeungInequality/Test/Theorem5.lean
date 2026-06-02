@@ -6,6 +6,12 @@ Authors: Christopher Boone
 
 import LeanPool.ZhangYeungInequality.Theorem5
 
+/-!
+# LeanPool.ZhangYeungInequality.Test.Theorem5
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.Test.Theorem5`.
+-/
+
 namespace ZhangYeungTest
 
 open MeasureTheory ProbabilityTheory
@@ -89,8 +95,8 @@ example
     let πe := MeasurableEquiv.piFinTwo S
     let π : (∀ j : Fin 2, S j) → S 0 × S 1 := πe
     have hXtuple : Measurable Xtuple := measurable_pi_lambda _ hX
-    change H[Xtuple; μ] = H[⟨X₁, X₂⟩; μ]
-    simpa [Xtuple, X, π, S] using (entropy_comp_of_injective μ hXtuple π πe.injective).symm
+    change H[Xtuple; μ] = H[π ∘ Xtuple; μ]
+    exact (entropy_comp_of_injective μ hXtuple π πe.injective).symm
   have hRaw :
       2 * I[U : Z; μ] - (I[U : Z | X₁; μ] + I[U : Z | X₂; μ]) - 2 * I[U : Z | X₁; μ]
         ≤ I[X₁ : ⟨U, Z⟩; μ] + H[X₁; μ] + H[X₂; μ]

@@ -8,6 +8,12 @@ import LeanPool.WhiteheadTheorem.Shapes.Cube
 import LeanPool.WhiteheadTheorem.RelHomotopyGroup.Algebra   -- IsPointedMap
 import Mathlib.Topology.Homotopy.HomotopyGroup
 
+/-!
+# LeanPool.WhiteheadTheorem.RelHomotopyGroup.Defs
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.RelHomotopyGroup.Defs`.
+-/
+
 open scoped unitInterval Topology Topology.Homotopy
 
 

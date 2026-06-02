@@ -9,6 +9,12 @@ import Mathlib.Tactic.TypeStar
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Fin.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.List.Encoding
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.List.Encoding`.
+-/
+
 
 namespace List
 
@@ -24,11 +30,9 @@ abbrev Encoding (A : Type*) :=
 namespace Encoding
 
 /-- The encoded version of `[]`. -/
-@[expose]
 def nil : Encoding A := ⟨0, Fin.elim0⟩
 
 /-- The encoded version of `· ∷ ·`. -/
-@[expose]
 def cons (x : A) (xs : Encoding A) : Encoding A :=
   ⟨xs.1 + 1, Fin.cases x xs.2⟩
 

@@ -7,11 +7,6 @@ Authors: Madeleine Gignoux
 import LeanPool.Lean4GlCoalgebras.Pdl.Game
 import LeanPool.Lean4GlCoalgebras.General.Proof
 
-/-- Auxiliary declaration used in the GL coalgebra development. -/
-abbrev Builder := Player.A
-/-- Auxiliary declaration used in the GL coalgebra development. -/
-abbrev Prover := Player.B
-
 /-! ## The GL-proof game.
 
 Builder-Prover game for constructive counter-models/proofs. Builder gets a rule application `R` and
@@ -19,6 +14,10 @@ plays an applicable sequent `Γ` in order to construct a counter-model. Prover g
 plays rule applications `R` in order to construct a proof.
 -/
 
+/-- Auxiliary declaration used in the GL coalgebra development. -/
+abbrev Builder := Player.A
+/-- Auxiliary declaration used in the GL coalgebra development. -/
+abbrev Prover := Player.B
 
 /-- The available rule applications for a sequent `Γ`. -/
 def Sequent.ruleApps (Γ : Sequent) : Finset RuleApp :=

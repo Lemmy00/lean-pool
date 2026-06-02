@@ -468,7 +468,7 @@ private def transfinite_construction_proof
               (fun _ => S₀))
           (fun hlim =>
             let hprelim := (Order.not_isSuccLimit_iff.mp hlim).resolve_left hmin
-            let hγ_ex := Order.not_isSuccPrelimit_iff.mp hprelim
+            let hγ_ex := Order.not_isSuccPrelimit_iff_succ_eq.mp hprelim
             let hγ_lt := lt_of_lt_of_eq (Order.lt_succ_of_not_isMax hγ_ex.choose_spec.1)
               hγ_ex.choose_spec.2
             (IH hγ_ex.choose hγ_lt).1))
@@ -497,7 +497,7 @@ private def transfinite_construction_proof
     · exact le_trans (le_trans hS₀_ext.card_le
         (max_le (le_refl _) hR₀_count)) (le_max_left ..)
     · let hprelim := (Order.not_isSuccLimit_iff.mp hlim).resolve_left hmin
-      let hγ_ex := Order.not_isSuccPrelimit_iff.mp hprelim
+      let hγ_ex := Order.not_isSuccPrelimit_iff_succ_eq.mp hprelim
       let hγ_lt := lt_of_lt_of_eq (Order.lt_succ_of_not_isMax hγ_ex.choose_spec.1)
         hγ_ex.choose_spec.2
       exact le_trans (IH hγ_ex.choose hγ_lt).2.2.2.2.2.2.2
@@ -562,7 +562,7 @@ private def transfinite_construction_proof
             (fun β hβ => (data β).2.2.2.2.2.2.2)).2.2.2.1 β hβ
         · simp only [dif_neg hlim]
           let hprelim := (Order.not_isSuccLimit_iff.mp hlim).resolve_left hmin
-          let hγ_ex := Order.not_isSuccPrelimit_iff.mp hprelim
+          let hγ_ex := Order.not_isSuccPrelimit_iff_succ_eq.mp hprelim
           let hγ_lt := lt_of_lt_of_eq
             (Order.lt_succ_of_not_isMax hγ_ex.choose_spec.1) hγ_ex.choose_spec.2
           rcases eq_or_lt_of_le (Order.lt_succ_iff_of_not_isMax
@@ -613,12 +613,12 @@ private def transfinite_construction_proof
                     (fun β hβ => (data β).2.2.2.2.2.2.2)).2.2.2.2
                   β₁ hβ₁_lt_α r hr hmem_u)
             · have h_prevF_eq : prevF α (fun γ hγ => data γ) = ring
-                  ((Order.not_isSuccPrelimit_iff.mp
+                  ((Order.not_isSuccPrelimit_iff_succ_eq.mp
                     ((Order.not_isSuccLimit_iff.mp hlim).resolve_left hmin)).choose) := by
                 simp only [prevF, dif_neg hmin, dif_neg hlim]
                 rfl
               let hprelim := (Order.not_isSuccLimit_iff.mp hlim).resolve_left hmin
-              let hγ_ex := Order.not_isSuccPrelimit_iff.mp hprelim
+              let hγ_ex := Order.not_isSuccPrelimit_iff_succ_eq.mp hprelim
               let hγ_lt := lt_of_lt_of_eq
                 (Order.lt_succ_of_not_isMax hγ_ex.choose_spec.1) hγ_ex.choose_spec.2
               have hmem_ring_γ : (r : T) ∈ (ring hγ_ex.choose).carrier := by

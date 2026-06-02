@@ -6,6 +6,12 @@ Authors: Christopher Boone
 
 import LeanPool.ZhangYeungInequality.Theorem3
 
+/-!
+# LeanPool.ZhangYeungInequality.Test.Theorem3
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.Test.Theorem3`.
+-/
+
 namespace ZhangYeungTest
 
 open MeasureTheory ProbabilityTheory

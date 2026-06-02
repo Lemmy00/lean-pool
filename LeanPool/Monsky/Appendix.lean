@@ -1,11 +1,32 @@
 /-
 Copyright (c) 2026 Dhyan Aranha and contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dhyan Aranha and contributors
+Authors: Dhyan Aranha, contributors
 -/
 
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Abel
+import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
+
+/-!
+# LeanPool.Monsky.Appendix
+
+Imported Lean Pool material for `LeanPool.Monsky.Appendix`.
+-/
 
 namespace LeanPool.Monsky
 
@@ -131,7 +152,7 @@ lemma lower_degree (B : Subring ℝ) (α : ℝ) (m n : ℕ) (H : α ∉ B ∧ α
     left
     constructor
     · rfl
-    · rw[coeff_add, coeff_C_ne_zero zero_lt_m, coeff_C_mul, ← two_eq_constant, coeff_C_mul]
+    · rw[coeff_add, coeff_C_of_ne_zero zero_lt_m, coeff_C_mul, ← two_eq_constant, coeff_C_mul]
       ring
   -- sum of monomials of degree n-k with as coefficient the k-th coefficient of q over k≤ n.
   -- proving a finite sum of polynomials is a polynomial
@@ -148,7 +169,7 @@ lemma lower_degree (B : Subring ℝ) (α : ℝ) (m n : ℕ) (H : α ∉ B ∧ α
       exact Nat.ne_of_lt lt_n
     exact Polynomial.coeff_monomial_of_ne (q.coeff (x + 1)) ne_n.symm
   have nth_coeff : q1.coeff n = q.coeff 0 := by
-    rw[Polynomial.finset_sum_coeff, Finset.sum_range_succ',
+    rw[Polynomial.finsetSum_coeff, Finset.sum_range_succ',
      Nat.sub_zero, coeff_monomial_same n (q.coeff 0), rest_zero]
     ring
   have hα0 : α ≠ 0 := fun h1 ↦ H.1 (h1 ▸ Subring.zero_mem B)
@@ -190,7 +211,7 @@ lemma lower_degree (B : Subring ℝ) (α : ℝ) (m n : ℕ) (H : α ∉ B ∧ α
     ring
   have coeff_erase_neq_zero : coeff (q1.erase n) 0 = (coeff q) n := by
     -- the constant term of q' is the n-th coefficient of q
-    rw[erase_ne q1 n 0 zero_lt_n.symm, finset_sum_coeff, Finset.sum_range_succ,
+    rw[erase_ne q1 n 0 zero_lt_n.symm, Polynomial.finsetSum_coeff, Finset.sum_range_succ,
                 Nat.sub_self, coeff_monomial_same 0 (q.coeff n), add_eq_right]
     apply Finset.sum_eq_zero
     intro x in_Finset
@@ -649,74 +670,74 @@ theorem valuation_on_reals : ∃(Γ₀ : Type) (_ : LinearOrderedCommGroupWithZe
 
 lemma odd_valuation (Γ₀ : Type) (_ : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (vhalf : v (1 / 2) > 1) : ∀ n : ℕ, Odd n → v (1/n) = 1 := by
-have vhalf' : v (2) < 1 := by
-  rw [Valuation.map_div, Valuation.map_one] at vhalf
-  refine (Valuation.val_lt_one_iff v ?_).mpr ?_
-  · norm_num
-  · simp_all only [map_inv₀, one_div, gt_iff_lt]
-have vind : ∀ (k : ℕ), k ≠ 0 →  v (2* k) < 1:= by
-  intro k
-  induction k
-  · tauto
-  · rename_i k kind
-    intro kpos
-    by_cases kpos' : k = 0
-    · rw [kpos']
-      simp only [zero_add, Nat.cast_one, mul_one]
-      apply vhalf'
-    · apply kind at kpos'
-      simp only [Nat.cast_add, Nat.cast_one, mul_add, mul_one]
-      have : v (2 * ↑k + 2) ≤ max (v (2 * ↑k)) (v 2) := by
-        apply Valuation.map_add
-      have this2 : v (2 * ↑k) ⊔ v 2 < 1 := by
-        have h1 : v (2 * ↑k) < 1 := kpos'
-        have h2 : v 2 < 1 := vhalf'
-        exact max_lt h1 h2
-      exact trans this this2
-have vind' : ∀ k : ℕ, k ≠ 0 →  v (2*k + 1) = 1 := by
-  intro n hn
-  have this : 2*n ≠ 1 := by
-    norm_num
-  have this2 : v (1) = 1 := by
-    rw [Valuation.map_one]
-  rw [Valuation.map_add_of_distinct_val]
-  · specialize vind n hn
-    simp_all only [one_div, map_inv₀, gt_iff_lt, ne_eq, mul_eq_one, OfNat.ofNat_ne_one, false_and,
-      not_false_eq_true, map_mul, map_one, sup_eq_right, ge_iff_le]
-    exact le_of_lt vind
-  · rw [this2]
-    specialize vind n hn
-    simp_all only [one_div, map_inv₀, gt_iff_lt, ne_eq, mul_eq_one, OfNat.ofNat_ne_one, false_and,
-      not_false_eq_true, map_one, map_mul]
-    apply Aesop.BuiltinRules.not_intro
-    intro a
-    simp_all only [lt_self_iff_false]
-intro n odd
-have odd' : ∃ k, 2 *k + 1 = n := by
-  rw [Odd] at odd
-  rcases odd with ⟨k, eq⟩
-  use k
-  rw [eq]
-rcases odd' with ⟨k, eq⟩
-specialize vind' k
-by_cases kpos : k = 0
-· rw [kpos] at eq
-  simp only [mul_zero, zero_add] at eq
-  simp only [one_div, map_inv₀, inv_eq_one]
-  rw [← eq]
-  rw [Nat.cast_one]
-  apply Valuation.map_one v
-· have kpos_val : v (2 * ↑k + 1) = 1 := vind' kpos
-  rw [eq.symm]
-  have : v (1 / ↑(2 * k + 1)) = v 1 / v (↑(2 * k + 1)) := by
-    apply Valuation.map_div
-  rw [this]
-  have : v (↑(2 * k + 1)) = 1 := by
-    rw [Nat.cast_add, Nat.cast_mul]
-    simp_all only [one_div, map_inv₀, gt_iff_lt, ne_eq, map_mul, not_false_eq_true, imp_self,
-      map_one, Nat.cast_ofNat, Nat.cast_one]
-  rw [this]
-  simp
+  have vhalf' : v (2) < 1 := by
+    rw [Valuation.map_div, Valuation.map_one] at vhalf
+    refine (Valuation.val_lt_one_iff v ?_).mpr ?_
+    · norm_num
+    · simp_all only [map_inv₀, one_div, gt_iff_lt]
+  have vind : ∀ (k : ℕ), k ≠ 0 →  v (2* k) < 1:= by
+    intro k
+    induction k
+    · tauto
+    · rename_i k kind
+      intro kpos
+      by_cases kpos' : k = 0
+      · rw [kpos']
+        simp only [zero_add, Nat.cast_one, mul_one]
+        apply vhalf'
+      · apply kind at kpos'
+        simp only [Nat.cast_add, Nat.cast_one, mul_add, mul_one]
+        have : v (2 * ↑k + 2) ≤ max (v (2 * ↑k)) (v 2) := by
+          apply Valuation.map_add
+        have this2 : v (2 * ↑k) ⊔ v 2 < 1 := by
+          have h1 : v (2 * ↑k) < 1 := kpos'
+          have h2 : v 2 < 1 := vhalf'
+          exact max_lt h1 h2
+        exact trans this this2
+  have vind' : ∀ k : ℕ, k ≠ 0 →  v (2*k + 1) = 1 := by
+    intro n hn
+    have this : 2*n ≠ 1 := by
+      norm_num
+    have this2 : v (1) = 1 := by
+      rw [Valuation.map_one]
+    rw [Valuation.map_add_of_distinct_val]
+    · specialize vind n hn
+      simp_all only [one_div, map_inv₀, gt_iff_lt, ne_eq, mul_eq_one, OfNat.ofNat_ne_one, false_and,
+        not_false_eq_true, map_mul, map_one, sup_eq_right, ge_iff_le]
+      exact le_of_lt vind
+    · rw [this2]
+      specialize vind n hn
+      simp_all only [one_div, map_inv₀, gt_iff_lt, ne_eq, mul_eq_one, OfNat.ofNat_ne_one, false_and,
+        not_false_eq_true, map_one, map_mul]
+      apply Aesop.BuiltinRules.not_intro
+      intro a
+      simp_all only [lt_self_iff_false]
+  intro n odd
+  have odd' : ∃ k, 2 *k + 1 = n := by
+    rw [Odd] at odd
+    rcases odd with ⟨k, eq⟩
+    use k
+    rw [eq]
+  rcases odd' with ⟨k, eq⟩
+  specialize vind' k
+  by_cases kpos : k = 0
+  · rw [kpos] at eq
+    simp only [mul_zero, zero_add] at eq
+    simp only [one_div, map_inv₀, inv_eq_one]
+    rw [← eq]
+    rw [Nat.cast_one]
+    apply Valuation.map_one v
+  · have kpos_val : v (2 * ↑k + 1) = 1 := vind' kpos
+    rw [eq.symm]
+    have : v (1 / ↑(2 * k + 1)) = v 1 / v (↑(2 * k + 1)) := by
+      apply Valuation.map_div
+    rw [this]
+    have : v (↑(2 * k + 1)) = 1 := by
+      rw [Nat.cast_add, Nat.cast_mul]
+      simp_all only [one_div, map_inv₀, gt_iff_lt, ne_eq, map_mul, not_false_eq_true, imp_self,
+        map_one, Nat.cast_ofNat, Nat.cast_one]
+    rw [this]
+    simp
 
 end
 end Monsky

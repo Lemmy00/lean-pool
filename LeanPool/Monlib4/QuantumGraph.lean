@@ -16,3 +16,9 @@ import LeanPool.Monlib4.QuantumGraph.PiMatFinTwo
 import LeanPool.Monlib4.QuantumGraph.QamA
 import LeanPool.Monlib4.QuantumGraph.QamAExample
 import LeanPool.Monlib4.QuantumGraph.ToProjections
+
+/-!
+# LeanPool.Monlib4.QuantumGraph
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph`.
+-/

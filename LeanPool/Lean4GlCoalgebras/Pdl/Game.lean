@@ -103,11 +103,11 @@ def Strategy (g : Game) (i : Player) : Type :=
   ∀ p : g.Pos, g.turn p = i → p.moves.Nonempty → p.moves
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def choose_move {g : Game} {p : g.Pos} : p.moves.Nonempty → p.moves :=
+noncomputable def chooseMove {g : Game} {p : g.Pos} : p.moves.Nonempty → p.moves :=
   Classical.choice ∘ Set.Nonempty.to_subtype
 
 /-- There is always some strategy. -/
-instance Strategy.instNonempty {g i} : Nonempty (Strategy g i) := ⟨fun _ _ => choose_move⟩
+instance Strategy.instNonempty {g i} : Nonempty (Strategy g i) := ⟨fun _ _ => chooseMove⟩
 
 /-- Winner of a game, if the given strategies are used.
 A player loses iff it is their turn and there are no moves.
@@ -167,19 +167,14 @@ theorem good_A_or_B {g : Game} (p : g.Pos) : good A p ∨ good B p := by
   cases i : g.turn p <;> cases det <;> simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def good_strat (i : Player) : Strategy g i := fun p turn nempty =>
+noncomputable def goodStrat (i : Player) : Strategy g i := fun p turn nempty =>
   have := Classical.dec
   if W : good i p
     then by
       unfold good at W
       have E := And.right <| W.resolve_right (not_and_of_not_left _ <| not_eq_other_eq_i.mpr turn)
       exact ⟨E.choose, E.choose_spec.choose⟩
-    else choose_move nempty
-
--- Use `#print good_strat` if this generated proof name changes.
--- (With Lean 4.19.0 it changed from `proof_1` to `_proof_20`.)
--- With Lean 4.20.1 it became `_proof_21`.
--- With Lean 4.22.0-rc2 it became `_proof_1`.
+    else chooseMove nempty
 
 /-! ## Cones -/
 
@@ -197,8 +192,8 @@ theorem inMyCone_trans {g i} {p q r : g.Pos} {s : Strategy g i} :
   | myStep _ _ _ ih => exact .myStep ih ..
   | oStep a turn h ih => exact .oStep ih turn h
 
-/-- The cone of the `good_strat` stays inside `good` positions. -/
-theorem good_cone {i} {g : Game} {p r : g.Pos} (W : good i p) (h : inMyCone (good_strat i) p r) :
+/-- The cone of the `goodStrat` stays inside `good` positions. -/
+theorem good_cone {i} {g : Game} {p r : g.Pos} (W : good i p) (h : inMyCone (goodStrat i) p r) :
     good i r := by
   induction h with
   | nil => exact W
@@ -206,12 +201,14 @@ theorem good_cone {i} {g : Game} {p r : g.Pos} (W : good i p) (h : inMyCone (goo
     unfold good at ih
     exact (ih.resolve_left (not_and_of_not_left _ <| not_eq_i_eq_other.mpr turn)).right _ h
   | @myStep q a nempty turn ih =>
-    unfold good_strat
-    if good i q
-      then
-        simp only [ih, ↓reduceDIte]
-        exact (good_strat._proof_1 i q turn (of_eq_true (eq_true ih))).choose_spec.choose_spec
-      else contradiction
+    unfold goodStrat
+    by_cases hq : good i q
+    · simp only [hq, ↓reduceDIte]
+      unfold good at hq
+      have E := And.right <| hq.resolve_right (not_and_of_not_left _ <| not_eq_other_eq_i.mpr turn)
+      exact E.choose_spec.choose_spec
+    · simp only [hq, ↓reduceDIte]
+      contradiction
 
 /-! ## Zermelo's Theorem -/
 
@@ -233,7 +230,7 @@ theorem surviving_is_winning {g i p} {sI : Strategy g i}
 termination_by p
 decreasing_by all_goals apply g.move_rel; exact Subtype.mem _
 
-theorem good_strat_winning {g : Game} {i} {p : g.Pos} (W : good i p) : winning (good_strat i) p :=
+theorem good_strat_winning {g : Game} {i} {p : g.Pos} (W : good i p) : winning (goodStrat i) p :=
   surviving_is_winning fun _ => good_is_surviving ∘ (good_cone W)
 
 /--
@@ -242,8 +239,8 @@ In every `Game` position one of the two players has a winning strategy.
 -/
 theorem gamedet (g : Game) (p : g.Pos) :
     (∃ s : Strategy g A, winning s p) ∨ (∃ s : Strategy g B, winning s p) := Or.imp
-    (⟨good_strat A, good_strat_winning ·⟩)
-    (⟨good_strat B, good_strat_winning ·⟩)
+    (⟨goodStrat A, good_strat_winning ·⟩)
+    (⟨goodStrat B, good_strat_winning ·⟩)
     <| good_A_or_B p
 
 /-! ## Additional Helper Theorems -/

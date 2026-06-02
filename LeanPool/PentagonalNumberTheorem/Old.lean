@@ -5,7 +5,9 @@ Authors: Weiyi Wang
 -/
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Combinatorics.Enumerative.Partition.Basic
+import Mathlib.Data.Set.Card
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Range
@@ -14,7 +16,20 @@ import Mathlib.Data.PNat.Interval
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.PowerSeries.PiTopology
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Abel
 
 /-!
 

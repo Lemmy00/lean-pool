@@ -42,7 +42,7 @@ theorem close_up_aux_wf
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m →
+      gcdComplexity s ≤ m →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
@@ -173,15 +173,15 @@ theorem close_up_aux_wf
                 _ = y := hy_eq.symm
             rw [show t_set = s.image div_p from rfl,
               Finset.card_image_of_injOn hinj, hs_eq]
-          have ht_gcd : gcd_complexity t_set ≤ m := le_trans (by
-            change gcd_complexity t_set ≤ gcd_complexity s
+          have ht_gcd : gcdComplexity t_set ≤ m := le_trans (by
+            change gcdComplexity t_set ≤ gcdComplexity s
             have hinj : Set.InjOn div_p ↑s := fun x hx y hy hxy => by
               have hx_eq := hdiv_spec x (Finset.mem_coe.mp hx)
               have hy_eq := hdiv_spec y (Finset.mem_coe.mp hy)
               calc x = p * div_p x := hx_eq
                 _ = p * div_p y := by rw [hxy]
                 _ = y := hy_eq.symm
-            exact gcd_complexity_div_le p hp s hp_dvd_all div_p hdiv_spec hinj) hs_gcd
+            exact gcdComplexity_div_le p hp s hp_dvd_all div_p hdiv_spec hinj) hs_gcd
           exact ih_a (div_p a) hdvd t_set ht_gcd ht_card ha'_mem c' hc'_mem
     · by_cases hgcd_factor :
           ∃ q : R.carrier, Prime q ∧ (∀ x ∈ s', q ∣ x) ∧ (q ∣ a ∨ q ∣ c)
@@ -243,7 +243,7 @@ theorem close_up_aux
         exact ⟨S, hAext, hle, by
           rw [Finset.coe_pair, Ideal.map_span, Set.image_pair]
           exact hcS⟩
-      · -- n >= 2: Heitmann general case via WF on (gcd_complexity, dvdNotUnit).
+      · -- n >= 2: Heitmann general case via WF on (gcdComplexity, dvdNotUnit).
         haveI : IsDomain R.carrier := NSubring.isDomain R
         haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
         have hs_ne : s.Nonempty := Finset.card_pos.mp (by omega)
@@ -253,13 +253,13 @@ theorem close_up_aux
             letI : IsDomain R.carrier := NSubring.isDomain R
             letI : UniqueFactorizationMonoid R.carrier := R.isUFD
             ∀ (a : R.carrier) (s : Finset R.carrier),
-            gcd_complexity s ≤ m →
+            gcdComplexity s ≤ m →
             s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
             (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
             ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
               (⟨(c : T), hle c.2⟩ : S.carrier) ∈
                 Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)) from
-          h_wf (gcd_complexity s) R hR_card a₀ s le_rfl hs_eq ha₀_mem c hc
+          h_wf (gcdComplexity s) R hR_card a₀ s le_rfl hs_eq ha₀_mem c hc
         exact close_up_aux_wf hM_not_assoc hAss_ht hT_card hT_aleph0 n'' ih
 
 /-- Heitmann Lemma 4 (main close-up theorem):

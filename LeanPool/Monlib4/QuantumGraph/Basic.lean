@@ -15,6 +15,12 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.Functional
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Subset
+
+/-!
+# LeanPool.Monlib4.QuantumGraph.Basic
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph.Basic`.
+-/
 -- import LeanPool.Monlib4.LinearAlgebra.QuantumSet.TensorProduct
 
 local notation x " ⊗ₘ " y => TensorProduct.map x y
@@ -55,7 +61,7 @@ by
     simp_rw [LinearMap.ext_iff, LinearMap.comp_apply, AlgEquiv.toLinearMap_apply] at hf hg
     simp only [symmMap_symm_apply,
       QuantumSet.Psi_apply, LinearMap.rankOne_comp, LinearMap.comp_rankOne,
-      QuantumSet.Psi_toFun_apply, TensorProduct.map_tmul,
+      QuantumSet.PsiToFun_apply, TensorProduct.map_tmul,
       QuantumSet.modAut_star, LinearMap.real_apply,
       LinearMap.op_apply,
       MulOpposite.unop_op, neg_neg, star_star, ← hf, ← hg, QuantumSet.modAut_star]
@@ -112,7 +118,7 @@ by
   rw [linearMap_map_Psi_of_commute_modAut, AlgEquiv.op_toLinearMap,
     LinearMap.op_unop, symmMap_apply, LinearMap.rankOne_comp',
     LinearMap.comp_rankOne]
-  · simp_rw [AlgEquiv.toLinearMap_apply, QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
+  · simp_rw [AlgEquiv.toLinearMap_apply, QuantumSet.Psi_apply, QuantumSet.PsiToFun_apply,
       QuantumSet.modAut_real, AlgEquiv.toLinearMap_apply, QuantumSet.modAut_apply_modAut, add_comm]
   · ext
     simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply,
@@ -300,7 +306,7 @@ by
   by
     intro a b
     simp_rw [Upsilon_rankOne, LinearEquiv.trans_apply, QuantumSet.Psi_apply,
-      rankOne_real, QuantumSet.Psi_toFun_apply,
+      rankOne_real, QuantumSet.PsiToFun_apply,
       LinearEquiv.TensorProduct.map_apply,
       TensorProduct.toIsBimoduleMap_apply_coe,
       rmulMapLmul_apply, TensorProduct.map_adjoint,
@@ -393,15 +399,15 @@ noncomputable def InnerProductAlgebra.mulOpposite {A :
     Type*} [starAlgebra A] [InnerProductAlgebra A] :
     InnerProductAlgebra (Aᵐᵒᵖ) where
   norm_smul_le c x := by
-    change ‖MulOpposite.op (c • x.unop)‖ ≤ ‖c‖ * ‖x.unop‖
-    simpa using InnerProductAlgebra.norm_smul_le c x.unop
+    change ‖c • x.unop‖ ≤ ‖c‖ * ‖x.unop‖
+    exact InnerProductAlgebra.norm_smul_le c x.unop
   norm_sq_eq_inner x := by
     rw [MulOpposite.inner_eq]
     change ‖x.unop‖ ^ 2 = RCLike.re ⟪x.unop, x.unop⟫_ℂ
     exact InnerProductAlgebra.norm_sq_eq_inner x.unop
   dist_eq x y := by
-    simpa only [MulOpposite.unop_neg, MulOpposite.unop_add] using
-      InnerProductAlgebra.dist_eq x.unop y.unop
+    change dist x.unop y.unop = ‖-x.unop + y.unop‖
+    exact InnerProductAlgebra.dist_eq x.unop y.unop
   conj_symm x y := by
     simp only [MulOpposite.inner_eq]
     exact InnerProductAlgebra.conj_symm x.unop y.unop
@@ -432,8 +438,8 @@ noncomputable instance QuantumSet.mulOpposite {A : Type*} [starAlgebra A] [Quant
     simp [kms.out]
     norm_num
   n := n A
-  n_isFintype := n_isFintype
-  n_isDecidableEq := n_isDecidableEq
+  nIsFintype := nIsFintype
+  nIsDecidableEq := nIsDecidableEq
   onb := onb.mulOpposite
 attribute [local instance] QuantumSet.mulOpposite
 noncomputable instance CoalgebraStruct.mulOpposite {A :
@@ -492,7 +498,7 @@ theorem QuantumSet.counit_op_isFaithful {A : Type*} [starAlgebra A] [QuantumSet 
   Module.Dual.IsFaithful (Coalgebra.counit (R := ℂ) (A := Aᵐᵒᵖ)) :=
 (Module.Dual.op_isFaithful_iff _).mp QuantumSet.counit_isFaithful
 
-noncomputable instance QuantumSet.tensorOp_self {A :
+noncomputable instance QuantumSet.tensorOpSelf {A :
     Type*} [starAlgebra A] [QuantumSet A] [kms : Fact (k A = -(1 / 2))] :
   QuantumSet (A ⊗[ℂ] Aᵐᵒᵖ) :=
 QuantumSet.tensorProduct (h := Fact.mk rfl)
@@ -515,7 +521,7 @@ by
   ext i
   rw [QuantumSet.toSubset_onb 0]
   simp only [zero_div, neg_zero, add_zero]
-  rw [← QuantumSet.toSubset_algEquiv_isReal]
+  rw [← QuantumSet.toSubsetAlgEquiv_isReal]
   simp only [← map_mul, TensorProduct.map_tmul, AlgEquiv.toLinearMap_apply,
     AlgEquiv.symm_apply_apply]
 
@@ -820,7 +826,7 @@ by
   rfl
 
 /-- Coordinates of a tensor as a product-indexed family of scalar-weighted basis pairs. -/
-noncomputable def TensorProduct.of_orthonormalBasis_prod
+noncomputable def TensorProduct.ofOrthonormalBasisProd
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] (x : TensorProduct 𝕜 E F)
   {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
@@ -839,7 +845,7 @@ theorem TensorProduct.of_othonormalBasis_prod_eq
   {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂]
   (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
   ∑ i : ι₁ × ι₂,
-    (x.of_orthonormalBasis_prod b₁ b₂ i).1 ⊗ₜ[𝕜] (x.of_orthonormalBasis_prod b₁ b₂ i).2
+    (x.ofOrthonormalBasisProd b₁ b₂ i).1 ⊗ₜ[𝕜] (x.ofOrthonormalBasisProd b₁ b₂ i).2
       = x :=
 by
   nth_rw 3 [TensorProduct.of_orthonormalBasis_eq_span x b₁ b₂]
@@ -852,7 +858,7 @@ theorem TensorProduct.of_othonormalBasis_prod_eq'
   {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂]
   (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
   ∑ i : ι₁ × ι₂,
-    (x.of_orthonormalBasis_prod b₁ b₂ i).1 ⊗ₜ[𝕜] b₂ i.2
+    (x.ofOrthonormalBasisProd b₁ b₂ i).1 ⊗ₜ[𝕜] b₂ i.2
       = x :=
 by
   nth_rw 2 [TensorProduct.of_orthonormalBasis_eq_span x b₁ b₂]
@@ -866,7 +872,7 @@ theorem
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   let b := hA.onb
   let a := fun (x : A ⊗[ℂ] A) =>
-    fun i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
+    fun i : (n A) × (n A) => (x.ofOrthonormalBasisProd b b i).1
   f = ∑ i, ∑ j, ⟪(u i : A ⊗[ℂ] A), 1⟫_ℂ
     • rankOne ℂ (b j.2) (modAut (-1) (star (a (u i : A ⊗[ℂ] A) j))) :=
 by
@@ -891,7 +897,7 @@ theorem
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   let b := hA.onb
   let a := fun (x : A ⊗[ℂ] A) =>
-    fun i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
+    fun i : (n A) × (n A) => (x.ofOrthonormalBasisProd b b i).1
   f = ∑ i, ∑ j, ⟪1, (u i : A ⊗[ℂ] A)⟫_ℂ
     • rankOne ℂ (star (b j.2)) (a (u i : A ⊗[ℂ] A) j) :=
 by
@@ -906,7 +912,7 @@ by
   rfl
 
 /-- Linear map sending a tensor to its first-coordinate orthonormal-basis expansion data. -/
-noncomputable def TensorProduct.of_orthonormalBasis_prod₁_lm
+noncomputable def TensorProduct.ofOrthonormalBasisProd₁Lm
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
   {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
@@ -916,31 +922,31 @@ by
   letI := Module.Basis.finiteDimensional_of_finite b₁.toBasis
   letI := Module.Basis.finiteDimensional_of_finite b₂.toBasis
   exact
-  { toFun := fun x i => (x.of_orthonormalBasis_prod b₁ b₂ i).1
-    map_add' := fun _ _ => by simp [of_orthonormalBasis_prod, add_smul]; rfl
-    map_smul' := fun _ _ => by ext; simp [of_orthonormalBasis_prod, smul_smul] }
+  { toFun := fun x i => (x.ofOrthonormalBasisProd b₁ b₂ i).1
+    map_add' := fun _ _ => by simp [ofOrthonormalBasisProd, add_smul]; rfl
+    map_smul' := fun _ _ => by ext; simp [ofOrthonormalBasisProd, smul_smul] }
 
-lemma TensorProduct.of_orthonormalBasis_prod₁_lm_eq
+lemma TensorProduct.ofOrthonormalBasisProd₁Lm_eq
   {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
   {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : OrthonormalBasis ι₁ 𝕜 E)
   (b₂ : OrthonormalBasis ι₂ 𝕜 F) (x : E ⊗[𝕜] F) (i : ι₁ × ι₂) :
-  (TensorProduct.of_orthonormalBasis_prod₁_lm b₁ b₂) x i
-    = (TensorProduct.of_orthonormalBasis_prod x b₁ b₂ i).1 :=
+  (TensorProduct.ofOrthonormalBasisProd₁Lm b₁ b₂) x i
+    = (TensorProduct.ofOrthonormalBasisProd x b₁ b₂ i).1 :=
 rfl
 
 theorem
   QuantumGraph.Real.upsilon_eq'' {f : A →ₗ[ℂ] A}
     (hf : QuantumGraph.Real A f) (gns : hA.k = 0) :
   let P := orthogonalProjection' (upsilonSubmodule gns hf);
-  let a := fun x i => (TensorProduct.of_orthonormalBasis_prod x onb onb i).1
+  let a := fun x i => (TensorProduct.ofOrthonormalBasisProd x onb onb i).1
   f = ∑ j : n A × n A, rankOne ℂ (star (onb j.2)) (a (P 1 : A ⊗[ℂ] A) j) :=
 by
   intro P a
   nth_rw 1 [QuantumGraph.Real.upsilon_eq' hf gns]
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   simp_rw [P, u.orthogonalProjection'_eq_sum_rankOne]
-  simp only [ContinuousLinearMap.sum_apply, a, ← TensorProduct.of_orthonormalBasis_prod₁_lm_eq,
+  simp only [ContinuousLinearMap.sum_apply, a, ← TensorProduct.ofOrthonormalBasisProd₁Lm_eq,
     map_sum, rankOne_apply, map_smul,
     Finset.sum_apply, Pi.smul_apply, map_smulₛₗ, inner_conj_symm]
   rw [Finset.sum_comm]
@@ -1025,7 +1031,7 @@ theorem
   let u := QuantumGraph.Real.upsilonOrthonormalBasis gns hf
   let b := hA.onb
   let a := fun (x : A ⊗[ℂ] A) =>
-    fun i : (n A) × (n A) => (x.of_orthonormalBasis_prod b b i).1
+    fun i : (n A) × (n A) => (x.ofOrthonormalBasisProd b b i).1
   φ.toLinearMap ∘ₗ f ∘ₗ LinearMap.adjoint φ.toLinearMap
     = ∑ i, ∑ j, ∑ p,
       (⟪φ (a (u i : A ⊗[ℂ] A) p), 1⟫_ℂ

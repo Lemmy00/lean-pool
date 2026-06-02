@@ -11,10 +11,15 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Have
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Push
 import Mathlib.Tactic.Ring
+
+/-!
+# LeanPool.FriezePatterns.Chapter1
+
+Imported Lean Pool material for `LeanPool.FriezePatterns.Chapter1`.
+-/
 
 /-- A field-valued frieze pattern of height `n`: a function `f : ℕ × ℕ → F` with `0`s on
 the row `i = 0`, `1`s on rows `i = 1` and `i = n`, `0`s on rows `i ≥ n + 1`, satisfying the
@@ -76,7 +81,7 @@ lemma pattern_nContinuant1 (F : Type*) [Field F] (f : ℕ × ℕ → F) (n : ℕ
               rw [← sub_mul]
     change f (k + 1 + 2, m) = f (2, m + (k + 1)) * f (k + 1 + 1, m) - f (k + 1, m)
     have hgoal : f (k + 3, m) = f (2, m + (k + 1)) * f (k + 2, m) - f (k + 1, m) :=
-      mul_right_cancel₀ h₂ (by rw [h₃]; ring)
+      mul_right_cancel₀ h₂ (by rw [h₃]; ring_nf)
     convert hgoal using 2
 
 -- The second continuant lemma is proved like the first

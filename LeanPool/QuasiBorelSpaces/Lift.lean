@@ -6,6 +6,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 
 import LeanPool.QuasiBorelSpaces.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.Lift
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Lift`.
+-/
+
 variable {A B : Type*} [QuasiBorelSpace A] [QuasiBorelSpace B]
 
 namespace QuasiBorelSpace.ULift

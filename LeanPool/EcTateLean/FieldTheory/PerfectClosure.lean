@@ -10,6 +10,12 @@ import Mathlib.Tactic.Common
 
 import Mathlib.FieldTheory.PerfectClosure
 
+/-!
+# LeanPool.EcTateLean.FieldTheory.PerfectClosure
+
+Imported Lean Pool material for `LeanPool.EcTateLean.FieldTheory.PerfectClosure`.
+-/
+
 namespace ECTate
 /-- A perfect ring is one where raising to the power of the ring characteristic is a bijection
   or a ring of char zero.
@@ -31,30 +37,30 @@ Or.resolve_left pth_power_bijective h
 /-- The inverse of the `p`-th power map on a perfect ring (the identity in
 characteristic zero). -/
 noncomputable
-def pth_root [PerfectRing R] : R → R :=
+def pthRoot [PerfectRing R] : R → R :=
 if h : ringChar R = 0 then id else Function.surjInv (pth_power_bijective_of_char_nonzero h).2
 
-lemma pth_root_pow_char [PerfectRing R] (h : ringChar R ≠ 0) (x : R) :
-  pth_root x ^ (ringChar R) = x :=
+lemma pthRoot_pow_char [PerfectRing R] (h : ringChar R ≠ 0) (x : R) :
+  pthRoot x ^ (ringChar R) = x :=
 by
-  simp only [pth_root, h, dite_false]
+  simp only [pthRoot, h, dite_false]
   exact Function.rightInverse_surjInv (pth_power_bijective_of_char_nonzero h).2 x
 
-lemma pth_root_pow_eq [PerfectRing R] (x : R) :
-  pth_root x ^ n = x ^ (n / ringChar R) * pth_root x ^ (n % ringChar R) :=
+lemma pthRoot_pow_eq [PerfectRing R] (x : R) :
+  pthRoot x ^ n = x ^ (n / ringChar R) * pthRoot x ^ (n % ringChar R) :=
 by
   by_cases h : ringChar R = 0
   · simp [h]
   conv =>
     lhs
     rw [← Nat.mod_add_div n (ringChar R)]
-  rw [pow_add, pow_mul, pth_root_pow_char h, mul_comm]
+  rw [pow_add, pow_mul, pthRoot_pow_char h, mul_comm]
 
 
 @[simp]
-lemma pth_root_zero [PerfectRing R] : pth_root (0 : R) = 0 :=
+lemma pthRoot_zero [PerfectRing R] : pthRoot (0 : R) = 0 :=
 by
-  rw [pth_root]
+  rw [pthRoot]
   split
   · simp
   · apply_fun (fun x : R => x ^ ringChar R)

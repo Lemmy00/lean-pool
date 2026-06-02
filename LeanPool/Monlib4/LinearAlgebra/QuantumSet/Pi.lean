@@ -148,12 +148,12 @@ noncomputable instance Pi.quantumSet [Fact (∀ i, (hQ i).k = 0)] : QuantumSet (
     have hk : (hQ i).k = 0 := (Fact.out : ∀ i, (hQ i).k = 0) i
     simpa [hk] using (hQ i).inner_conj_left (x i) (y i) (z i)
   n := (i : ι) × n (A i)
-  n_isFintype := by
-    letI : (i : ι) -> Fintype (n (A i)) := fun i => (hQ i).n_isFintype
+  nIsFintype := by
+    letI : (i : ι) -> Fintype (n (A i)) := fun i => (hQ i).nIsFintype
     infer_instance
-  n_isDecidableEq := Classical.typeDecidableEq ((i : ι) × n (A i))
+  nIsDecidableEq := Classical.typeDecidableEq ((i : ι) × n (A i))
   onb := by
-    letI : (i : ι) -> Fintype (n (A i)) := fun i => (hQ i).n_isFintype
+    letI : (i : ι) -> Fintype (n (A i)) := fun i => (hQ i).nIsFintype
     exact Pi.orthonormalBasis fun i => (hQ i).onb
 
 end Pi

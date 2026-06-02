@@ -8,12 +8,18 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Order.BoundedOrder.Basic
 import Mathlib.Order.Defs.PartialOrder
 
+/-!
+# LeanPool.QuasiBorelSpaces.Option.Instances
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Option.Instances`.
+-/
+
 
 variable {A : Type*}
 
 namespace Option
 
-instance [Preorder A] : Preorder (Option A) where
+instance instPreorderLeanPool [Preorder A] : Preorder (Option A) where
   le_refl x := by cases x <;> simp only [Option.le_none, Option.some_le_some, le_refl]
   le_trans x y z h₁ h₂ := by
     cases x <;> cases y <;> cases z <;>
@@ -29,10 +35,10 @@ instance [Preorder A] : Preorder (Option A) where
         Option.some_lt_some, Option.some_le_some, lt_iff_le_not_ge]
 
 /-- Bottom-order on options: `none` is bottom, `some` is ordered pointwise. -/
-instance [PartialOrder A] : PartialOrder (Option A) where
+instance instPartialOrderLeanPool [PartialOrder A] : PartialOrder (Option A) where
   le_antisymm x y h₁ h₂ := by cases x <;> cases y <;> grind
 
-instance [LE A] : OrderBot (Option A) where
+instance instOrderBotLeanPool [LE A] : OrderBot (Option A) where
   bot := none
   bot_le _ := Option.none_le
 

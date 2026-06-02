@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Dhyan Aranha and contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dhyan Aranha and contributors
+Authors: Dhyan Aranha, contributors
 -/
 
 import LeanPool.Monsky.Appendix
@@ -20,7 +20,7 @@ import LeanPool.Monsky.Square
 # Monsky's Theorem
 
 Source: doi:10.2307/2316270
-Authors: Dhyan Aranha and contributors
+Authors: Dhyan Aranha, contributors
 Status: verified
 Main declarations: `LeanPool.Monsky.monsky_theorem`
 Tags: geometry, combinatorics, measure-theory

@@ -6,6 +6,12 @@ Authors: David Renshaw
 
 import Mathlib.Geometry.Euclidean.Projection
 
+/-!
+# LeanPool.Rupert.Affine
+
+Imported Lean Pool material for `LeanPool.Rupert.Affine`.
+-/
+
 /-- The Rupert Property for a pair of subsets X, Y of an arbitrary
     finite-dimensional real affine space P. X has the Rupert property
     with respect to Y if there exist
@@ -24,8 +30,8 @@ def IsAffineRupertPair {P : Type*} {V : Type*} [MetricSpace P] [NormedAddCommGro
       (Q : AffineSubspace ℝ P) (_ : Nonempty Q) (_ : IsCoatom Q),
     let proj := EuclideanGeometry.orthogonalProjection Q
     let inner_shadow := (proj ∘ inner_isometry) '' inner
-    let outer_shadow: Set Q := (proj ∘ outer_isometry) '' outer
-    closure inner_shadow ⊆ interior outer_shadow
+    let outerShadow: Set Q := (proj ∘ outer_isometry) '' outer
+    closure inner_shadow ⊆ interior outerShadow
 
 /-- The Rupert Property for a subset S of affine space P. S has the Rupert property
     if it has the pairwise Rupert property with respect to itself. -/

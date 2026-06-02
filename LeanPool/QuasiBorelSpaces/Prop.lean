@@ -10,6 +10,12 @@ import LeanPool.QuasiBorelSpaces.Defs
 import LeanPool.QuasiBorelSpaces.Prod
 import LeanPool.QuasiBorelSpaces.Subtype
 
+/-!
+# LeanPool.QuasiBorelSpaces.Prop
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Prop`.
+-/
+
 
 variable
   {A : Type*} {_ : QuasiBorelSpace A}

@@ -5,6 +5,8 @@ Authors: Madeleine Gignoux
 -/
 
 import Mathlib.Data.List.Chain
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Setoid.Basic
 import LeanPool.Lean4GlCoalgebras.Logic.Syntax
 
 /-! ## Defining GL-split proof systems.
@@ -301,27 +303,27 @@ lemma node_in_pg_sequent_in_FL (𝕏 : Proof) (x : 𝕏.X) :
 /-! # Filtration of GL-Proofs -/
 
 /-- Equivalence relation used for Filtration. -/
-instance f_eq_equi_rel (𝕏 : Proof) : Setoid 𝕏.X where
+instance fEqEquiRel (𝕏 : Proof) : Setoid 𝕏.X where
   r x y := f (r 𝕏.α x) = f (r 𝕏.α y)
   iseqv := ⟨by intro x; exact rfl,
             by intro x y h; exact Eq.symm h,
             by intro x y z h1 h2; exact Eq.trans h1 h2⟩
 
 /-- Structure morphism for Filtration. -/
-@[simp] noncomputable def αQuot 𝕐 (x : Quotient (f_eq_equi_rel 𝕐)) :=
+@[simp] noncomputable def αQuot 𝕐 (x : Quotient (fEqEquiRel 𝕐)) :=
   let structureMap := 𝕐.α (Quotient.out x)
-  (structureMap.1, structureMap.2.map (Quotient.mk (f_eq_equi_rel 𝕐)))
+  (structureMap.1, structureMap.2.map (Quotient.mk (fEqEquiRel 𝕐)))
 
 /-- Filtration of a GL-split Proof is a GL-split proof. -/
 noncomputable def filtration (𝕐 : Proof) : Proof where
-  X := Quotient (f_eq_equi_rel 𝕐)
+  X := Quotient (fEqEquiRel 𝕐)
   α := αQuot 𝕐
   step := by
     intro x
     cases x using Quotient.inductionOn
     case h x =>
-      have hyp := fun x ↦ @Quotient.mk_out _ (f_eq_equi_rel 𝕐) x
-      have h := 𝕐.step (@Quotient.out _ (f_eq_equi_rel 𝕐) ⟦x⟧)
+      have hyp := fun x ↦ @Quotient.mk_out _ (fEqEquiRel 𝕐) x
+      have h := 𝕐.step (@Quotient.out _ (fEqEquiRel 𝕐) ⟦x⟧)
       simp only [r, p, αQuot] at *
       convert h <;>
         simp_all only [Setoid.ker_def, List.empty_eq, Finset.union_singleton,
@@ -338,7 +340,7 @@ theorem finite_proof_of_proof (𝕏 : Proof) (Δ : SplitSequent) :
     (𝕏 ⊢ Δ) → ∃ 𝕐, Finite 𝕐.X ∧ (𝕐 ⊢ Δ) := by
   intro X_proves_Δ
   have ⟨x, f_Δ⟩ := X_proves_Δ
-  use pointGeneratedProof (filtration 𝕏) (Quotient.mk (f_eq_equi_rel 𝕏) x)
+  use pointGeneratedProof (filtration 𝕏) (Quotient.mk (fEqEquiRel 𝕏) x)
   constructor
   · have h : Finite (SplitSequent.FL Δ).powerset := by
       apply Set.finite_coe_iff.1
@@ -355,7 +357,7 @@ theorem finite_proof_of_proof (𝕏 : Proof) (Δ : SplitSequent) :
     apply Subtype.ext
     apply Quotient.out_equiv_out.1
     exact f_z_eq
-  · use ⟨Quotient.mk (f_eq_equi_rel 𝕏) x, Relation.ReflTransGen.refl⟩
+  · use ⟨Quotient.mk (fEqEquiRel 𝕏) x, Relation.ReflTransGen.refl⟩
     rw [←f_Δ]
     simp only [r, filtration, pointGeneratedProof, αPoint, αQuot]
     exact Quotient.mk_out x
@@ -380,7 +382,9 @@ lemma lt_if_not_box_edge {𝕏 : Proof} {x y : 𝕏.X} :
     all_goals
     · rw [c]
       simp only [SplitSequent.length, fₙ, f, fₚ, gt_iff_lt]
-      exact Finset.sum_diff_singleton_lt and_in (by simp [SplitFormula.length, Formula.length])
+      exact Finset.sum_diff_singleton_lt and_in (by
+        simp [SplitFormula.length, Formula.length]
+        omega)
   case andᵣ Δ A B and_in =>
     have := @List.mem_map_of_mem _ _ _ _ (fun x ↦ f (r 𝕏.α x)) x_y
     simp only [h, List.mem_cons, List.not_mem_nil, or_false] at this
@@ -388,7 +392,9 @@ lemma lt_if_not_box_edge {𝕏 : Proof} {x y : 𝕏.X} :
     all_goals
     · rw [c]
       simp only [SplitSequent.length, fₙ, f, fₚ, gt_iff_lt]
-      exact Finset.sum_diff_singleton_lt and_in (by simp [SplitFormula.length, Formula.length])
+      exact Finset.sum_diff_singleton_lt and_in (by
+        simp [SplitFormula.length, Formula.length]
+        omega)
   case orₗ Δ A B or_in =>
     have := @List.mem_map_of_mem _ _ _ _ (fun x ↦ f (r 𝕏.α x)) x_y
     simp only [h, List.mem_singleton] at this
@@ -398,6 +404,7 @@ lemma lt_if_not_box_edge {𝕏 : Proof} {x y : 𝕏.X} :
       by_cases A = B
       · subst_eqs
         simp [SplitFormula.length, Formula.length]
+        omega
       · have := @Finset.sum_union _ _ {Sum.inl A} {Sum.inl B} _ SplitFormula.length _ (by aesop)
         simp_all [SplitFormula.length, Formula.length])
   case orᵣ Δ A B or_in =>
@@ -409,6 +416,7 @@ lemma lt_if_not_box_edge {𝕏 : Proof} {x y : 𝕏.X} :
       by_cases A = B
       · subst_eqs
         simp [SplitFormula.length, Formula.length]
+        omega
       · have := @Finset.sum_union _ _ {Sum.inr A} {Sum.inr B} _ SplitFormula.length _ (by aesop)
         simp_all [SplitFormula.length, Formula.length])
   all_goals

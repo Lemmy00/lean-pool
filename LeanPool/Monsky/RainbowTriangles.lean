@@ -1,14 +1,33 @@
 /-
 Copyright (c) 2026 Dhyan Aranha and contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dhyan Aranha and contributors
+Authors: Dhyan Aranha, contributors
 -/
 
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Abel
 import LeanPool.Monsky.Appendix
 import LeanPool.Monsky.SimplexBasic
 import LeanPool.Monsky.SegmentTriangle
+
+/-!
+# LeanPool.Monsky.RainbowTriangles
+
+Imported Lean Pool material for `LeanPool.Monsky.RainbowTriangles`.
+-/
 
 namespace LeanPool.Monsky
 
@@ -94,7 +113,7 @@ lemma blue_region (X : ℝ²) : (coloring v X = Color.Blue) → v (X 0) ≥ v (1
 -- Record our definition of a rainbow triangle
 
 /-- A triangle is rainbow if its three vertices receive all three colors. -/
-def rainbow_triangle (T : Fin 3 → ℝ²) : Prop := Function.Surjective (coloring v ∘ T)
+def rainbowTriangle (T : Fin 3 → ℝ²) : Prop := Function.Surjective (coloring v ∘ T)
 
 -- We need a few inequalities that will be used in the proof of the main lemma.
 -- These are just bounds on valuations of terms that appear in the
@@ -134,17 +153,17 @@ lemma valuation_bounds
   -- v (X 0) * v (Y 1) ≥ 1
   · exact Right.one_le_mul hx0 hy1
   -- v (X 1) * v (Z 0) < v (X 0) * v (Y 1)
-  · exact mul_lt_mul' hxx (lt_of_le_of_lt' hy1 hz0) zero_le' x0_gt_zero
+  · exact mul_lt_mul' hxx (lt_of_le_of_lt' hy1 hz0) zero_le x0_gt_zero
   -- v (Y 0) * v (Z 1) < v (X 0) * v (Y 1)
   · rw [mul_comm (v (X 0)) (v (Y 1))]
-    exact mul_lt_mul'' hyy (lt_of_le_of_lt' hx0 hz1) zero_le' zero_le'
+    exact mul_lt_mul'' hyy (lt_of_le_of_lt' hx0 hz1) zero_le zero_le
   -- v (X 0) * v (Y 1) > v (Y 1) * v (Z 0)
   · rw [mul_comm (v (X 0)) (v (Y 1))]
-    exact mul_lt_mul' (le_refl _) (lt_of_le_of_lt' hx0 hz0) zero_le' y1_gt_zero
+    exact mul_lt_mul' (le_refl _) (lt_of_le_of_lt' hx0 hz0) zero_le y1_gt_zero
   -- v (X 0) * v (Y 1) > v (X 1) * v (Y 0)
-  · exact mul_lt_mul' hxx hyy zero_le' x0_gt_zero
+  · exact mul_lt_mul' hxx hyy zero_le x0_gt_zero
   -- v (X 0) * v (Y 1) > v (X 0) * v (Z 1)
-  · exact mul_lt_mul' (le_refl _) (lt_of_le_of_lt' hy1 hz1) zero_le' x0_gt_zero
+  · exact mul_lt_mul' (le_refl _) (lt_of_le_of_lt' hy1 hz1) zero_le x0_gt_zero
 
 -- The next definition and lemma relate things to matrices more like in the book.
 -- But they are not needed.
@@ -201,7 +220,7 @@ lemma det_triv_triangle (X Y : ℝ²) : det (fun | 0 => X | 1 => X | 2 => Y) = 0
   simp [det]
 
 lemma Lhull_equals_Thull (L : Segment) :
-  closed_hull L = closed_hull (fun | 0 => L 0 | 1 => L 0 | 2 => L 1: Fin 3 → ℝ²) := by
+  closedHull L = closedHull (fun | 0 => L 0 | 1 => L 0 | 2 => L 1: Fin 3 → ℝ²) := by
   ext x
   constructor
   · intro ⟨α, hα, hαx⟩
@@ -229,12 +248,12 @@ def σ : Fin 6 → (Fin 3 → Fin 3) := fun
 
 -- Signs of these 6 permutations
 /-- The sign of the permutation `σ b`, as a value in `ℝ`. -/
-def b_sign : Fin 6 → ℝ := fun
+def bSign : Fin 6 → ℝ := fun
   | 0 => 1 | 1 => -1 | 2 => -1 | 3 => 1 | 4 => 1 | 5 => -1
 
 -- None of the signs in determinant is 0
-lemma sign_non_zero : ∀ b, b_sign b ≠ 0 := by
-  intro b; fin_cases b <;> simp [b_sign]
+lemma sign_non_zero : ∀ b, bSign b ≠ 0 := by
+  intro b; fin_cases b <;> simp [bSign]
 
 -- Check that σ accounts for all 6 terms in the determinant
 lemma fun_in_bijections :
@@ -245,8 +264,8 @@ lemma fun_in_bijections :
 -- Area of the triangle may only change a sign
 -- if the vertices are supplied in a different order b
 lemma det_perm {T : Triangle} (b : Fin 6) :
-    det T = (b_sign b) * det (T ∘ (σ b)) := by
-  fin_cases b <;> (simp_all [det, b_sign, σ]; try ring)
+    det T = (bSign b) * det (T ∘ (σ b)) := by
+  fin_cases b <;> (simp_all [det, bSign, σ]; try ring)
 
 -- If the determinant is 0 then for any combinations of rows it's also 0
 lemma det_zero_perm {T : Triangle} (hT : det T = 0) :
@@ -272,33 +291,33 @@ lemma det_zero_perm {T : Triangle} (hT : det T = 0) :
 -- lemma det_zero_12 {T : Triangle} (h12 : T 1 = T 2) :
 --     det T = 0 := by simp [det, h12]; ring
 
-lemma linear_combination_det_middle {n : ℕ} {x z : ℝ²} {P : Fin n → ℝ²} {α : Fin n → ℝ}
+lemma linearCombinationDetMiddle {n : ℕ} {x z : ℝ²} {P : Fin n → ℝ²} {α : Fin n → ℝ}
     (hα : ∑ i, α i = 1) :
   det (fun | 0 => x | 1 => (∑ i, α i • P i) | 2 => z) =
   ∑ i, (α i * det (fun | 0 => x | 1 => (P i) | 2 => z)) := by
-  convert linear_combination_det_last (y := x) (P := P) (x := z) hα using 1
+  convert linearCombinationDetLast (y := x) (P := P) (x := z) hα using 1
   · convert det_perm 4
-    simp only [b_sign, σ, Fin.isValue, one_mul];
+    simp only [bSign, σ, Fin.isValue, one_mul];
     congr; funext k; fin_cases k <;> rfl
   · congr; ext i; congr 1;
     convert det_perm 4
-    simp only [b_sign, σ, Fin.isValue, one_mul];
+    simp only [bSign, σ, Fin.isValue, one_mul];
     congr; funext k; fin_cases k <;> rfl
 
-lemma linear_combination_det_first {n : ℕ} {y z : ℝ²} {P : Fin n → ℝ²} {α : Fin n → ℝ}
+lemma linearCombinationDetFirst {n : ℕ} {y z : ℝ²} {P : Fin n → ℝ²} {α : Fin n → ℝ}
     (hα : ∑ i, α i = 1) :
   det (fun | 0 => (∑ i, α i • P i) | 1 => y | 2 => z) =
   ∑ i, (α i * det (fun | 0 => (P i) | 1 => y | 2 => z)) := by
-  convert linear_combination_det_last (y := z) (P := P) (x := y) hα using 1
+  convert linearCombinationDetLast (y := z) (P := P) (x := y) hα using 1
   · convert det_perm 3
-    simp only [b_sign, σ, Fin.isValue, one_mul];
+    simp only [bSign, σ, Fin.isValue, one_mul];
     congr; funext k; fin_cases k <;> rfl
   · congr; ext i; congr 1;
     convert det_perm 3
-    simp only [b_sign, σ, Fin.isValue, one_mul];
+    simp only [bSign, σ, Fin.isValue, one_mul];
     congr; funext k; fin_cases k <;> rfl
 
-lemma linear_combination_det_last' {n : ℕ} {x y : ℝ²} {P : Fin n → ℝ²} {α : Fin n → ℝ}
+lemma linearCombinationDetLast' {n : ℕ} {x y : ℝ²} {P : Fin n → ℝ²} {α : Fin n → ℝ}
     (hα : ∑ i, α i = 1) :
   det (fun | 0 => x | 1 => y | 2 => (∑ i, α i • P i)) =
   ∑ i, (α i * det (fun | 0 => x | 1 => y | 2 => (P i))) := by
@@ -307,11 +326,11 @@ lemma linear_combination_det_last' {n : ℕ} {x y : ℝ²} {P : Fin n → ℝ²}
   congr <;> (ext; ring)
 
 lemma det_0_triangle_imp_triv {T : Triangle} (hT : det T = 0) :
-    ∀ x y z, x ∈ closed_hull T → y ∈ closed_hull T → z ∈ closed_hull T →
+    ∀ x y z, x ∈ closedHull T → y ∈ closedHull T → z ∈ closedHull T →
       det (fun | 0 => x | 1 => y | 2 => z) = 0 := by
   intro x y z ⟨_, ⟨_, hαx⟩ , hx⟩ ⟨_, ⟨_, hαy⟩ , hy⟩ ⟨_, ⟨_, hαz⟩ , hz⟩
-  rw [←hx, ← hy, ←hz, linear_combination_det_first hαx]
-  simp only [linear_combination_det_middle hαy]
+  rw [←hx, ← hy, ←hz, linearCombinationDetFirst hαx]
+  simp only [linearCombinationDetMiddle hαy]
   apply Finset.sum_eq_zero
   intro a ha
   rw [mul_eq_zero]
@@ -320,7 +339,7 @@ lemma det_0_triangle_imp_triv {T : Triangle} (hT : det T = 0) :
   intro b hb
   rw [mul_eq_zero]
   right
-  rw [linear_combination_det_last' (P := T) hαz]
+  rw [linearCombinationDetLast' (P := T) hαz]
   apply Finset.sum_eq_zero
   intro c hc
   rw [mul_eq_zero]
@@ -332,14 +351,14 @@ theorem no_Color_lines
   {Γ₀ : Type}
   [locg : LinearOrderedCommGroupWithZero Γ₀]
   (v : Valuation ℝ Γ₀) :
-    ∃ c : Color, ∀ P ∈ closed_hull L, coloring v P ≠ c := by
+    ∃ c : Color, ∀ P ∈ closedHull L, coloring v P ≠ c := by
   by_contra h
   push Not at h
-  have hr : ∃ z ∈ closed_hull L , coloring v z = Color.Red := by
+  have hr : ∃ z ∈ closedHull L , coloring v z = Color.Red := by
     apply h
-  have hb : ∃ x ∈ closed_hull L , coloring v x = Color.Blue := by
+  have hb : ∃ x ∈ closedHull L , coloring v x = Color.Blue := by
     apply h
-  have hg : ∃ y ∈ closed_hull L , coloring v y = Color.Green := by
+  have hg : ∃ y ∈ closedHull L , coloring v y = Color.Green := by
     apply h
   rcases hr with ⟨z, hz, hzr⟩
   rcases hb with ⟨x, hx, hxb⟩
@@ -380,20 +399,20 @@ lemma blue11 : coloring v !₂[1,1] = Color.Blue := by
 --TODO: Show that the area of a Color triangle cannot be zero or 1/n for n odd (here we will
 -- need the fact that v(1/2) > 1).
 
-lemma get_color_of_rainbow_triangle (T : Fin 3 → ℝ²) (rt : rainbow_triangle v T) (c : Color) :
+lemma get_color_of_rainbowTriangle (T : Fin 3 → ℝ²) (rt : rainbowTriangle v T) (c : Color) :
   ∃ i : Fin 3, coloring v (T i) = c := by
   have h := rt c
   obtain ⟨i, hi⟩ := h
   exact ⟨i, hi⟩
 
-theorem bounded_det_coord_free (T : Triangle) (rt : rainbow_triangle v T) :
+theorem bounded_det_coord_free (T : Triangle) (rt : rainbowTriangle v T) :
 v (det T) ≥ 1 := by
   have hr: ∃ z : Fin 3, coloring v (T z) = Color.Red := by
-    apply get_color_of_rainbow_triangle v T rt Color.Red
+    apply get_color_of_rainbowTriangle v T rt Color.Red
   have hb: ∃ x : Fin 3, coloring v (T x) = Color.Blue := by
-    apply get_color_of_rainbow_triangle v T rt Color.Blue
+    apply get_color_of_rainbowTriangle v T rt Color.Blue
   have hg: ∃ y : Fin 3, coloring v (T y) = Color.Green := by
-    apply get_color_of_rainbow_triangle v T rt Color.Green
+    apply get_color_of_rainbowTriangle v T rt Color.Green
   rcases hr with ⟨z, hz⟩
   rcases hb with ⟨x, hx⟩
   rcases hg with ⟨y, hy⟩
@@ -412,7 +431,7 @@ v (det T) ≥ 1 := by
   have hT : ∃ b, σ b = (fun | 0 =>  x | 1 =>  y | 2 => z) := by
     apply fun_in_bijections hxy hxz hyz
   rcases hT with ⟨b, hb⟩
-  have h1 : det T = b_sign b * det (T ∘ σ b) := by
+  have h1 : det T = bSign b * det (T ∘ σ b) := by
     apply det_perm
   have h2 : det (T ∘ σ b) =
       T x 0 * T y 1 + T x 1 * T z 0 + T y 0 * T z 1 - T y 1 * T z 0 - T x 1 * T y 0
@@ -424,17 +443,17 @@ v (det T) ≥ 1 := by
   have h3 : v (det (T ∘ σ b)) ≥ 1 := by
     rw [h2]
     apply bounded_det v (T x) (T y) (T z) hx hy hz
-  have h4 : v (b_sign b) = 1 := by
-    fin_cases b <;> simp [b_sign, v.map_one]
-  have h5 : v (det T) = v (b_sign b) * v (det (T ∘ σ b)) := by
+  have h4 : v (bSign b) = 1 := by
+    fin_cases b <;> simp [bSign, v.map_one]
+  have h5 : v (det T) = v (bSign b) * v (det (T ∘ σ b)) := by
     rw [h1, v.map_mul]
   rw [h4, one_mul] at h5
   rw [h5]
   exact h3
 
-theorem no_odd_rainbow_triangle
+theorem no_odd_rainbowTriangle
   (T : Fin 3 → ℝ²)
-  (rt : rainbow_triangle v T)
+  (rt : rainbowTriangle v T)
   (vhalf : v (1 / 2) > 1) :
     ¬ ∃ (n : ℕ) (_: Odd n),
     |det T| / 2 = 1 / n := by

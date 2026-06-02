@@ -14,7 +14,7 @@ import Mathlib.Data.Fintype.Defs
 import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic
+import Aesop
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Finset.Lattice.Basic
 
@@ -218,27 +218,27 @@ lemma node_in_pg_sequent_in_FL (𝕏 : Proof) (x : 𝕏.X) :
 /-! # Filtration of GL-Proofs -/
 
 /-- Equivalence relation used for Filtration. -/
-instance f_eq_equi_rel (𝕏 : Proof) : Setoid 𝕏.X where
+instance fEqEquiRel (𝕏 : Proof) : Setoid 𝕏.X where
   r x y := f (r 𝕏.α x) = f (r 𝕏.α y)
   iseqv := ⟨by intro x; exact rfl,
             by intro x y h; exact Eq.symm h,
             by intro x y z h1 h2; exact Eq.trans h1 h2⟩
 
 /-- Structure morphism for Filtration. -/
-@[simp] noncomputable def αQuot 𝕐 (x : Quotient (f_eq_equi_rel 𝕐)) :=
+@[simp] noncomputable def αQuot 𝕐 (x : Quotient (fEqEquiRel 𝕐)) :=
   let structureMap := 𝕐.α (Quotient.out x)
-  (structureMap.1, structureMap.2.map (Quotient.mk (f_eq_equi_rel 𝕐)))
+  (structureMap.1, structureMap.2.map (Quotient.mk (fEqEquiRel 𝕐)))
 
 /-- Filtration of a GL-Proof is a GL-proof. -/
 noncomputable def filtration (𝕐 : Proof) : Proof where
-  X := Quotient (f_eq_equi_rel 𝕐)
+  X := Quotient (fEqEquiRel 𝕐)
   α := αQuot 𝕐
   step := by
     intro x
     cases x using Quotient.inductionOn
     case h x =>
-      have hyp := fun x ↦ @Quotient.mk_out _ (f_eq_equi_rel 𝕐) x
-      have h := 𝕐.step (@Quotient.out _ (f_eq_equi_rel 𝕐) ⟦x⟧)
+      have hyp := fun x ↦ @Quotient.mk_out _ (fEqEquiRel 𝕐) x
+      have h := 𝕐.step (@Quotient.out _ (fEqEquiRel 𝕐) ⟦x⟧)
       simp only [r, p, αQuot] at *
       convert h <;>
         simp_all only [List.map_map, List.map_inj_left, Function.comp_apply,
@@ -253,7 +253,7 @@ noncomputable def filtration (𝕐 : Proof) : Proof where
 theorem finite_proof_of_proof (𝕏 : Proof) (Δ : Sequent) : (𝕏 ⊢ Δ) → ∃ 𝕐, Finite 𝕐.X ∧ (𝕐 ⊢ Δ) := by
   intro X_proves_Δ
   have ⟨x, f_Δ⟩ := X_proves_Δ
-  use pointGeneratedProof (filtration 𝕏) (Quotient.mk (f_eq_equi_rel 𝕏) x)
+  use pointGeneratedProof (filtration 𝕏) (Quotient.mk (fEqEquiRel 𝕏) x)
   constructor
   · have h : Finite (Sequent.FL Δ).powerset := by
       apply Set.finite_coe_iff.1
@@ -270,7 +270,7 @@ theorem finite_proof_of_proof (𝕏 : Proof) (Δ : Sequent) : (𝕏 ⊢ Δ) → 
     apply Subtype.ext
     apply Quotient.out_equiv_out.1
     exact f_z_eq
-  · use ⟨Quotient.mk (f_eq_equi_rel 𝕏) x, Relation.ReflTransGen.refl⟩
+  · use ⟨Quotient.mk (fEqEquiRel 𝕏) x, Relation.ReflTransGen.refl⟩
     rw [←f_Δ]
     simp only [r, filtration, pointGeneratedProof, αPoint, αQuot]
     exact Quotient.mk_out x

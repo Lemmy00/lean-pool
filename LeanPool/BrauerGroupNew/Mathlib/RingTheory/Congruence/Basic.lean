@@ -8,6 +8,12 @@ import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.RingQuot
 import Mathlib.RingTheory.Congruence.Basic
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence.Basic
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence.Basic`.
+-/
+
 open Function
 
 /-!
@@ -20,7 +26,8 @@ namespace RingCon
 
 variable {α R : Type*}
 
-instance [Semiring α] [NonAssocSemiring R] [Module α R] [IsScalarTower α R R]
+instance instModuleQuotientOfIsScalarTowerLeanPool [Semiring α] [NonAssocSemiring R]
+    [Module α R] [IsScalarTower α R R]
     (c : RingCon R) : Module α c.Quotient where
   zero_smul x := by
     induction x using Quotient.ind

@@ -6,6 +6,12 @@ Authors: Monica Omar
 
 import Mathlib.Data.Matrix.Basic
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.Matrix.PiMat`.
+-/
+
 /-- Square matrices over `R` indexed by `n`. -/
 abbrev Mat (R n : Type*) := Matrix n n R
 

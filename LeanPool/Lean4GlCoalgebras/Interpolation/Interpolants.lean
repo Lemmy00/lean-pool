@@ -366,7 +366,7 @@ lemma interpolant_strong_helper {p : Nat → Prop} [DecidablePred p]
 
 open Classical in
 /-- Strong solution towards finding interpolants. -/
-noncomputable def interpolant_strong {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
+noncomputable def interpolantStrong {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
   {Y : Finset 𝕏.X} (Y_sub : Y ⊆ fin_X.elems) :
     {n // n ∈ Y.image encodeVar} → Formula :=
     if em_con : Y = ∅ then (fun ⟨n, n_prop⟩ ↦ False.elim (by simp_all)) else
@@ -374,17 +374,17 @@ noncomputable def interpolant_strong {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
       have box_in_Y :=
         exists_box_on_restr_loop loop_con.choose (fun x ↦ x ∈ Y) loop_con.choose_spec
       let box := box_in_Y.choose
-      have τ := @interpolant_strong _ _ (Y \ {box}) (by
+      have τ := @interpolantStrong _ _ (Y \ {box}) (by
         intro x x_in
         exact Y_sub (Finset.mem_sdiff.mp x_in).1)
       have box_or_dia :
           (partial_ τ (equation box)).isBox ∨
             (partial_ τ (equation box)).isDiamond := by
         unfold box
-        have is_box := box_in_Y.choose_spec.1
+        have isBox := box_in_Y.choose_spec.1
         cases r_def : r 𝕏.α box_in_Y.choose <;>
-          simp [r_def] at is_box <;>
-          simp [RuleApp.isBox] at is_box
+          simp [r_def] at isBox <;>
+          simp [RuleApp.isBox] at isBox
         · unfold equation
           split <;> simp_all
           simp [partial_, Formula.isDiamond]
@@ -405,7 +405,7 @@ noncomputable def interpolant_strong {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
         finite_and_no_loop_implies_exists_leaf (fun x ↦ x ∈ Y) y_in_Y.choose
           y_in_Y.choose_spec loop_con
       let leaf := leaf_in_Y.choose
-      let τ := @interpolant_strong _ _ (Y \ {leaf}) (by
+      let τ := @interpolantStrong _ _ (Y \ {leaf}) (by
         intro x x_in
         exact Y_sub (Finset.mem_sdiff.mp x_in).1)
       fun n ↦ (single (encodeVar leaf) (equation leaf)) (partial_ τ (at n))
@@ -426,43 +426,43 @@ private theorem interpolant_strong_prop_loop_other {𝕏 : Proof} [fin_X : Finty
         Relation.TransGen (edgeRestr (fun x ↦ x ∈ Y)) z z}
   (Z_sub : Y \ {box_in_Y.choose} ⊆ fin_X.elems)
   (τ_prop : ∀ n : {n // n ∈ (Y \ {box_in_Y.choose}).image encodeVar},
-      ((interpolant_strong Z_sub n =
-        partial_ (interpolant_strong Z_sub)
+      ((interpolantStrong Z_sub n =
+        partial_ (interpolantStrong Z_sub)
           (equation (unencodeVar n (encodeVar_helper₁ n.2))))
-       ∨ (interpolant_strong Z_sub n ≅
-        partial_ (interpolant_strong Z_sub)
+       ∨ (interpolantStrong Z_sub n ≅
+        partial_ (interpolantStrong Z_sub)
           (equation (unencodeVar n (encodeVar_helper₁ n.2)))))
-    ∧ (∀ m ∈ (interpolant_strong Z_sub n).vocab,
+    ∧ (∀ m ∈ (interpolantStrong Z_sub n).vocab,
         m ∈ ((SplitSequent.left (f (r 𝕏.α
               (unencodeVar n (encodeVar_helper₁ n.2))))).vocab ∩
              (SplitSequent.right (f (r 𝕏.α
               (unencodeVar n (encodeVar_helper₁ n.2))))).vocab) ∪
              (fin_X.elems.image encodeVar \ (Y \ {box_in_Y.choose}).image encodeVar))
-    ∧ (∀ y : 𝕏.X, encodeVar y ∈ (partial_ (interpolant_strong Z_sub) (at n)).vocab →
+    ∧ (∀ y : 𝕏.X, encodeVar y ∈ (partial_ (interpolantStrong Z_sub) (at n)).vocab →
           Relation.ReflTransGen (edge 𝕏.α) (unencodeVar n (encodeVar_helper₁ n.2)) y))
   (ψ : Formula)
   (ψ_not_box : encodeVar box_in_Y.choose ∉ Formula.vocab ψ)
   (ψ_vocab :
     Formula.vocab ψ ⊆
-      Formula.vocab (partial_ (interpolant_strong Z_sub) (equation box_in_Y.choose)))
+      Formula.vocab (partial_ (interpolantStrong Z_sub) (equation box_in_Y.choose)))
   {z : 𝕏.X} (z_in : z ∈ Y) (box_z : z ∈ p 𝕏.α box_in_Y.choose)
   (equation_eq :
     equation box_in_Y.choose = □ (at (encodeVar z)) ∨
       equation box_in_Y.choose = ◇ (at (encodeVar z)))
   (y_ne_box : n ≠ encodeVar box_in_Y.choose) :
-      (single (encodeVar box_in_Y.choose) ψ (partial_ (interpolant_strong Z_sub) (at n)) =
+      (single (encodeVar box_in_Y.choose) ψ (partial_ (interpolantStrong Z_sub) (at n)) =
           partial_ (fun q : {q // q ∈ Y.image encodeVar} ↦
             single (encodeVar box_in_Y.choose) ψ
-            (partial_ (interpolant_strong Z_sub) (at (q : ℕ))))
+            (partial_ (interpolantStrong Z_sub) (at (q : ℕ))))
             (equation (unencodeVar n (encodeVar_helper₁ n_in))) ∨
         (single (encodeVar box_in_Y.choose) ψ
-          (partial_ (interpolant_strong Z_sub) (at n)) ≅
+          (partial_ (interpolantStrong Z_sub) (at n)) ≅
           partial_ (fun q : {q // q ∈ Y.image encodeVar} ↦
             single (encodeVar box_in_Y.choose) ψ
-            (partial_ (interpolant_strong Z_sub) (at (q : ℕ))))
+            (partial_ (interpolantStrong Z_sub) (at (q : ℕ))))
             (equation (unencodeVar n (encodeVar_helper₁ n_in))))) ∧
       (∀ m ∈ (single (encodeVar box_in_Y.choose) ψ
-          (partial_ (interpolant_strong Z_sub) (at n))).vocab,
+          (partial_ (interpolantStrong Z_sub) (at n))).vocab,
         m ∈ ((SplitSequent.left (f (r 𝕏.α
               (unencodeVar n (encodeVar_helper₁ n_in))))).vocab ∩
              (SplitSequent.right (f (r 𝕏.α
@@ -471,7 +471,7 @@ private theorem interpolant_strong_prop_loop_other {𝕏 : Proof} [fin_X : Finty
       (∀ y : 𝕏.X,
         encodeVar y ∈ (partial_ (fun q : {q // q ∈ Y.image encodeVar} ↦
             single (encodeVar box_in_Y.choose) ψ
-            (partial_ (interpolant_strong Z_sub) (at (q : ℕ)))) (at n)).vocab →
+            (partial_ (interpolantStrong Z_sub) (at (q : ℕ)))) (at n)).vocab →
           Relation.ReflTransGen (edge 𝕏.α) (unencodeVar n (encodeVar_helper₁ n_in)) y) := by
   have n_in' : n ∈ Finset.image encodeVar (Y \ {box_in_Y.choose}) := by
     simp only [Finset.mem_image, Finset.mem_sdiff, Finset.mem_singleton]
@@ -495,7 +495,7 @@ private theorem interpolant_strong_prop_loop_other {𝕏 : Proof} [fin_X : Finty
     · left
       simp only [partial_, n_in', ↓reduceDIte, eq, Finset.mem_image, Finset.mem_sdiff,
         Finset.mem_singleton]
-      convert @interpolant_strong_helper _ _ (interpolant_strong Z_sub)
+      convert @interpolant_strong_helper _ _ (interpolantStrong Z_sub)
         (encodeVar box_in_Y.choose) ψ (equation (unencodeVar n (encodeVar_helper₁ n_in)))
       · simp only [Finset.mem_image, Finset.mem_sdiff, Finset.mem_singleton]
         constructor
@@ -546,7 +546,7 @@ private theorem interpolant_strong_prop_loop_other {𝕏 : Proof} [fin_X : Finty
       have := single_preserves_equiv (encodeVar box_in_Y.choose) _ _ ψ equiv
       have equiv_help {C D E : Formula} (h : C ≅ D) (g : D = E) : (C ≅ E) := by aesop
       apply equiv_help this
-      convert @interpolant_strong_helper _ _ (interpolant_strong Z_sub)
+      convert @interpolant_strong_helper _ _ (interpolantStrong Z_sub)
         (encodeVar box_in_Y.choose) ψ (equation (unencodeVar n (encodeVar_helper₁ n_in)))
       · simp only [Finset.mem_image, Finset.mem_sdiff, Finset.mem_singleton]
         constructor
@@ -678,35 +678,35 @@ private theorem interpolant_strong_prop_leaf_other {𝕏 : Proof} [fin_X : Finty
       ∃ y : 𝕏.X, (fun x ↦ x ∈ Y) y ∧ ∀ z ∈ p 𝕏.α y, ¬(fun x ↦ x ∈ Y) z}
   (Z_sub : Y \ {leaf_in_Y.choose} ⊆ fin_X.elems)
   (τ_prop : ∀ n : {n // n ∈ (Y \ {leaf_in_Y.choose}).image encodeVar},
-      ((interpolant_strong Z_sub n =
-        partial_ (interpolant_strong Z_sub)
+      ((interpolantStrong Z_sub n =
+        partial_ (interpolantStrong Z_sub)
           (equation (unencodeVar n (encodeVar_helper₁ n.2))))
-       ∨ (interpolant_strong Z_sub n ≅
-        partial_ (interpolant_strong Z_sub)
+       ∨ (interpolantStrong Z_sub n ≅
+        partial_ (interpolantStrong Z_sub)
           (equation (unencodeVar n (encodeVar_helper₁ n.2)))))
-    ∧ (∀ m ∈ (interpolant_strong Z_sub n).vocab,
+    ∧ (∀ m ∈ (interpolantStrong Z_sub n).vocab,
         m ∈ ((SplitSequent.left (f (r 𝕏.α
               (unencodeVar n (encodeVar_helper₁ n.2))))).vocab ∩
              (SplitSequent.right (f (r 𝕏.α
               (unencodeVar n (encodeVar_helper₁ n.2))))).vocab) ∪
              (fin_X.elems.image encodeVar \ (Y \ {leaf_in_Y.choose}).image encodeVar))
-    ∧ (∀ y : 𝕏.X, encodeVar y ∈ (partial_ (interpolant_strong Z_sub) (at n)).vocab →
+    ∧ (∀ y : 𝕏.X, encodeVar y ∈ (partial_ (interpolantStrong Z_sub) (at n)).vocab →
           Relation.ReflTransGen (edge 𝕏.α) (unencodeVar n (encodeVar_helper₁ n.2)) y))
   (y_ne_box : n ≠ encodeVar leaf_in_Y.choose) :
       (single (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
-          (partial_ (interpolant_strong Z_sub) (at n)) =
+          (partial_ (interpolantStrong Z_sub) (at n)) =
           partial_ (fun q : {q // q ∈ Y.image encodeVar} ↦
             single (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
-              (partial_ (interpolant_strong Z_sub) (at (q : ℕ))))
+              (partial_ (interpolantStrong Z_sub) (at (q : ℕ))))
             (equation (unencodeVar n (encodeVar_helper₁ n_in))) ∨
         (single (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
-          (partial_ (interpolant_strong Z_sub) (at n)) ≅
+          (partial_ (interpolantStrong Z_sub) (at n)) ≅
           partial_ (fun q : {q // q ∈ Y.image encodeVar} ↦
             single (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
-              (partial_ (interpolant_strong Z_sub) (at (q : ℕ))))
+              (partial_ (interpolantStrong Z_sub) (at (q : ℕ))))
             (equation (unencodeVar n (encodeVar_helper₁ n_in))))) ∧
       (∀ m ∈ (single (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
-          (partial_ (interpolant_strong Z_sub) (at n))).vocab,
+          (partial_ (interpolantStrong Z_sub) (at n))).vocab,
         m ∈ ((SplitSequent.left (f (r 𝕏.α
               (unencodeVar n (encodeVar_helper₁ n_in))))).vocab ∩
              (SplitSequent.right (f (r 𝕏.α
@@ -715,7 +715,7 @@ private theorem interpolant_strong_prop_leaf_other {𝕏 : Proof} [fin_X : Finty
       (∀ y : 𝕏.X,
         encodeVar y ∈ (partial_ (fun q : {q // q ∈ Y.image encodeVar} ↦
             single (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
-              (partial_ (interpolant_strong Z_sub) (at (q : ℕ)))) (at n)).vocab →
+              (partial_ (interpolantStrong Z_sub) (at (q : ℕ)))) (at n)).vocab →
           Relation.ReflTransGen (edge 𝕏.α) (unencodeVar n (encodeVar_helper₁ n_in)) y) := by
   have n_in' : n ∈ Finset.image encodeVar (Y \ {leaf_in_Y.choose}) := by
     simp only [Finset.mem_image, Finset.mem_sdiff, Finset.mem_singleton]
@@ -739,7 +739,7 @@ private theorem interpolant_strong_prop_leaf_other {𝕏 : Proof} [fin_X : Finty
     · left
       simp only [partial_, n_in', ↓reduceDIte, eq, Finset.mem_image, Finset.mem_sdiff,
         Finset.mem_singleton]
-      convert @interpolant_strong_helper _ _ (interpolant_strong Z_sub)
+      convert @interpolant_strong_helper _ _ (interpolantStrong Z_sub)
         (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
         (equation (unencodeVar n (encodeVar_helper₁ n_in)))
       · simp only [Finset.mem_image, Finset.mem_sdiff, Finset.mem_singleton]
@@ -792,7 +792,7 @@ private theorem interpolant_strong_prop_leaf_other {𝕏 : Proof} [fin_X : Finty
           (equation leaf_in_Y.choose) equiv
       have equiv_help {C D E : Formula} (h : C ≅ D) (g : D = E) : (C ≅ E) := by aesop
       apply equiv_help this
-      convert @interpolant_strong_helper _ _ (interpolant_strong Z_sub)
+      convert @interpolant_strong_helper _ _ (interpolantStrong Z_sub)
         (encodeVar leaf_in_Y.choose) (equation leaf_in_Y.choose)
         (equation (unencodeVar n (encodeVar_helper₁ n_in)))
       · simp only [Finset.mem_image, Finset.mem_sdiff, Finset.mem_singleton]
@@ -877,13 +877,13 @@ private theorem interpolant_strong_prop_leaf_other {𝕏 : Proof} [fin_X : Finty
     · exact path y y_in_τ
 
 private theorem box_successor_in_restr_loop {𝕏 : Proof}
-    {Y : Finset 𝕏.X} {box : 𝕏.X} (is_box : (r 𝕏.α box).isBox)
+    {Y : Finset 𝕏.X} {box : 𝕏.X} (isBox : (r 𝕏.α box).isBox)
     (box_mem : box ∈ Y) (box_loop : Relation.TransGen (edgeRestr fun x ↦ x ∈ Y) box box) :
     ∃ z, p 𝕏.α box = [z] ∧ z ∈ Y ∧ z ∈ p 𝕏.α box := by
   have Xh := 𝕏.step box
   cases r_def : r 𝕏.α box <;>
-    simp [r_def] at is_box <;>
-    simp [RuleApp.isBox] at is_box <;>
+    simp [r_def] at isBox <;>
+    simp [RuleApp.isBox] at isBox <;>
     simp [r_def] at Xh
   all_goals
   refine ⟨Xh.choose, Xh.choose_spec.1, ?_, ?_⟩
@@ -918,17 +918,17 @@ private theorem box_successor_in_restr_loop {𝕏 : Proof}
     convert List.mem_singleton_self Xh.choose
 
 open Classical in
-/-- Proves that `interpolant_strong` satisfies the necessary properties. -/
+/-- Proves that `interpolantStrong` satisfies the necessary properties. -/
 theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
   (Y : Finset 𝕏.X) (Y_sub : Y ⊆ fin_X.elems) :
       ∀ n : {n // n ∈ Y.image encodeVar},
-          ((interpolant_strong Y_sub n =
-              partial_ (interpolant_strong Y_sub)
+          ((interpolantStrong Y_sub n =
+              partial_ (interpolantStrong Y_sub)
                 (equation (unencodeVar n (encodeVar_helper₁ n.2))))
-         ∨ (interpolant_strong Y_sub n ≅
-              partial_ (interpolant_strong Y_sub)
+         ∨ (interpolantStrong Y_sub n ≅
+              partial_ (interpolantStrong Y_sub)
                 (equation (unencodeVar n (encodeVar_helper₁ n.2)))))
-       ∧ (∀ m ∈ (interpolant_strong Y_sub n).vocab,
+       ∧ (∀ m ∈ (interpolantStrong Y_sub n).vocab,
           m ∈
             ((SplitSequent.left
                   (f (r 𝕏.α (unencodeVar n (encodeVar_helper₁ n.2))))).vocab ∩
@@ -936,11 +936,11 @@ theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
                   (f (r 𝕏.α (unencodeVar n (encodeVar_helper₁ n.2))))).vocab) ∪
                 (fin_X.elems.image encodeVar \ Y.image encodeVar))
        ∧ (∀ y : 𝕏.X,
-          encodeVar y ∈ (partial_ (interpolant_strong Y_sub) (at n)).vocab →
+          encodeVar y ∈ (partial_ (interpolantStrong Y_sub) (at n)).vocab →
             (Relation.ReflTransGen (edge 𝕏.α))
               (unencodeVar n (encodeVar_helper₁ n.2)) y)
        := by
-  unfold interpolant_strong
+  unfold interpolantStrong
   intro ⟨n, n_in⟩
   by_cases em_con : Y = ∅
   · subst em_con
@@ -957,12 +957,12 @@ theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
       let τ_prop :=
         @interpolant_strong_prop _ _ (Y \ {box_in_Y.choose}) Z_sub
       have box_or_dia :
-          (partial_ (interpolant_strong Z_sub) (equation box_in_Y.choose)).isBox ∨
-            (partial_ (interpolant_strong Z_sub) (equation box_in_Y.choose)).isDiamond := by
-        have is_box := box_in_Y.choose_spec.1
+          (partial_ (interpolantStrong Z_sub) (equation box_in_Y.choose)).isBox ∨
+            (partial_ (interpolantStrong Z_sub) (equation box_in_Y.choose)).isDiamond := by
+        have isBox := box_in_Y.choose_spec.1
         cases r_def : r 𝕏.α box_in_Y.choose <;>
-          simp [r_def] at is_box <;>
-          simp [RuleApp.isBox] at is_box
+          simp [r_def] at isBox <;>
+          simp [RuleApp.isBox] at isBox
         · unfold equation
           split <;> simp_all
           simp [partial_, Formula.isDiamond]
@@ -971,9 +971,9 @@ theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
           simp [partial_, Formula.isBox]
       have fpt :=
         fixed_point_theorem_modal
-          (partial_ (interpolant_strong Z_sub) (equation box_in_Y.choose))
+          (partial_ (interpolantStrong Z_sub) (equation box_in_Y.choose))
           (encodeVar box_in_Y.choose) box_or_dia
-      have const := partial_const (interpolant_strong Z_sub) (at (encodeVar box_in_Y.choose)) (by
+      have const := partial_const (interpolantStrong Z_sub) (at (encodeVar box_in_Y.choose)) (by
         simp [Formula.vocab, Finset.mem_singleton, forall_eq])
       have ⟨z, p_eq, z_in, box_z⟩ :=
         box_successor_in_restr_loop box_in_Y.choose_spec.1 box_in_Y.choose_spec.2.1
@@ -981,11 +981,11 @@ theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
       have equation_eq :
           equation box_in_Y.choose = □ (at (encodeVar z)) ∨
             equation box_in_Y.choose = ◇ (at (encodeVar z)) := by
-        have is_box := box_in_Y.choose_spec.1
+        have isBox := box_in_Y.choose_spec.1
         unfold equation
         split <;> rename_i r_def <;>
-          simp [r_def] at is_box <;>
-          simp [RuleApp.isBox] at is_box <;>
+          simp [r_def] at isBox <;>
+          simp [RuleApp.isBox] at isBox <;>
           simp [p_eq]
       by_cases n = encodeVar box_in_Y.choose
       case pos y_eq_box =>
@@ -998,7 +998,7 @@ theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
           have h :
               fpt.choose ≅
                 single (encodeVar box_in_Y.choose) fpt.choose
-                  (partial_ (interpolant_strong Z_sub)
+                  (partial_ (interpolantStrong Z_sub)
                     (equation box_in_Y.choose)) :=
             equiv_iff_sem_equiv.1 fpt.choose_spec.2.1
           convert h using 1
@@ -1087,7 +1087,7 @@ theorem interpolant_strong_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
         exact Y_sub (Finset.mem_sdiff.mp x_in).1
       let τ_prop :=
         @interpolant_strong_prop _ _ (Y \ {leaf_in_Y.choose}) Z_sub
-      have const := partial_const (interpolant_strong Z_sub) (at (encodeVar leaf_in_Y.choose)) (by
+      have const := partial_const (interpolantStrong Z_sub) (at (encodeVar leaf_in_Y.choose)) (by
         simp [Formula.vocab, Finset.mem_singleton, forall_eq])
       by_cases n = encodeVar leaf_in_Y.choose
       case pos y_eq_box =>
@@ -1138,7 +1138,7 @@ decreasing_by
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 noncomputable def interpolant (𝕏 : Proof) [fin_X : Fintype 𝕏.X] : Formula → Formula
-  := partial_ <| @interpolant_strong 𝕏 _ fin_X.elems (by aesop)
+  := partial_ <| @interpolantStrong 𝕏 _ fin_X.elems (by aesop)
 
 theorem interpolant_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X) :
     (interpolant 𝕏 (at (encodeVar x)) = interpolant 𝕏 (equation x)

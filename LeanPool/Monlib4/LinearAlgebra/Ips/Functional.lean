@@ -92,7 +92,7 @@ def Module.Dual.pi {k : Type _} [Fintype k] {s : k → Type _}
 
 /-- Restrict a linear functional on a product of matrix algebras to each block. -/
 @[simps!]
-def Module.Dual.pi_of {k : Type _} [DecidableEq k] {s : k → Type _}
+def Module.Dual.piOf {k : Type _} [DecidableEq k] {s : k → Type _}
     (φ : Module.Dual R (PiMat R k s)) :
     Π i, Module.Dual R (Matrix (s i) (s i) R) :=
 fun _ => φ ∘ₗ includeBlock
@@ -103,15 +103,15 @@ theorem Module.Dual.pi.apply {k : Type _} [Fintype k] {s : k → Type _} [∀ i,
     (x : PiMat R k s) : Module.Dual.pi φ x = ∑ i, ((φ i).matrix * x i).trace := by
   simp_rw [Module.Dual.pi_apply, Module.Dual.apply]
 
-lemma Module.Dual.eq_pi_of_pi {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
+lemma Module.Dual.eq_piOf_pi {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
   [∀ i, Finite (s i)]
   (φ : Π i, Module.Dual R (Matrix (s i) (s i) R)) :
-  φ = pi_of (pi φ) :=
+  φ = piOf (pi φ) :=
   by
   classical
   letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   ext i y
-  simp_rw [Module.Dual.pi_of_apply, pi_apply,
+  simp_rw [Module.Dual.piOf_apply, pi_apply,
     Module.Dual.apply]
   symm
   calc ∑ j : k, trace (matrix (φ j) * includeBlock y j)
@@ -123,16 +123,16 @@ lemma Module.Dual.eq_pi_of_pi {k : Type _} [Fintype k] [DecidableEq k] {s : k �
       by simp only [Finset.sum_ite_eq, Finset.mem_univ, if_true]
     _ = trace (matrix (φ i) * y) := by simp only [includeBlock_apply_same]
 
-lemma Module.Dual.eq_pi_pi_of {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
+lemma Module.Dual.eq_pi_piOf {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
   [∀ i, Finite (s i)]
   (φ : Module.Dual R (PiMat R k s)) :
-  φ = pi (pi_of φ) :=
+  φ = pi (piOf φ) :=
   by
   classical
   letI : ∀ i, Fintype (s i) := fun i => Fintype.ofFinite (s i)
   rw [LinearMap.ext_iff]
   intro x
-  simp_rw [Module.Dual.pi_apply, Module.Dual.pi_of_apply, ← map_sum,
+  simp_rw [Module.Dual.pi_apply, Module.Dual.piOf_apply, ← map_sum,
     sum_includeBlock]
 
 theorem Module.Dual.pi.apply' {k : Type _} [Fintype k] [DecidableEq k] {s : k → Type _}
@@ -170,8 +170,8 @@ theorem Module.Dual.pi_apply'' {k : Type _} [Fintype k] [DecidableEq k] {s : k �
     [∀ i, Fintype (s i)] [∀ i, DecidableEq (s i)]
     (φ : Module.Dual R (PiMat R k s))
     (x : PiMat R k s) :
-    φ x = ∑ i, ((pi_of φ i).matrix * x i).trace :=
-by simp_rw [← Module.Dual.apply, ← pi_apply, ← eq_pi_pi_of]
+    φ x = ∑ i, ((piOf φ i).matrix * x i).trace :=
+by simp_rw [← Module.Dual.apply, ← pi_apply, ← eq_pi_piOf]
 
 theorem Module.Dual.apply_eq_of (φ : Module.Dual R (Matrix n n R)) (x : Matrix n n R)
     (h : ∀ a, φ a = (x * a).trace) : x = φ.matrix :=
@@ -272,7 +272,7 @@ fun _ => h (star_mul_self_nonneg _)
 lemma Module.Dual.piIsPosMap_iff {k : Type _} [Finite k]
   [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)]
   (φ : Module.Dual 𝕜 (PiMat 𝕜 k s)) :
-  φ.IsPosMap ↔ ∀ i, (pi_of φ i).IsPosMap :=
+  φ.IsPosMap ↔ ∀ i, (piOf φ i).IsPosMap :=
 by
   classical
   letI : Fintype k := Fintype.ofFinite k
@@ -282,7 +282,7 @@ by
     simp_rw [includeBlock_conjTranspose, includeBlock_hMul_same] at h
     exact h
   · intro h x
-    simp_rw [IsPosMap, pi_of_apply] at h
+    simp_rw [IsPosMap, piOf_apply] at h
     nth_rw 1 [← sum_includeBlock x]
     simp_rw [star_sum, Finset.sum_mul, includeBlock_conjTranspose,
       includeBlock_hMul, map_sum]
@@ -295,7 +295,7 @@ lemma Module.Dual.pi_isPosMap_iff {k : Type _} [Fintype k]
 by
   classical
   rw [Module.Dual.piIsPosMap_iff]
-  simp_rw [← eq_pi_of_pi]
+  simp_rw [← eq_piOf_pi]
 
 /-- A linear functional $φ$ on $M_n$ is unital if $φ(1) = 1$. -/
 def Module.Dual.IsUnital {A : Type _} [AddCommMonoid A] [Module R A] [One A] (φ : Module.Dual R A) :
@@ -341,7 +341,7 @@ by
 lemma Module.Dual.piIsFaithful_iff {k : Type _} [Finite k]
   [DecidableEq k] {s : k → Type _} [∀ i, Fintype (s i)]
   {φ : Module.Dual 𝕜 (PiMat 𝕜 k s)} (hφ : φ.IsPosMap) :
-  φ.IsFaithful ↔ ∀ i, (pi_of φ i).IsFaithful :=
+  φ.IsFaithful ↔ ∀ i, (piOf φ i).IsFaithful :=
 by
   classical
   letI : Fintype k := Fintype.ofFinite k
@@ -352,7 +352,7 @@ by
       includeBlock_eq_zero] at h
     exact h
   · intro h x
-    simp_rw [IsFaithful, pi_of_apply] at h
+    simp_rw [IsFaithful, piOf_apply] at h
     nth_rw 1 [← sum_includeBlock x]
     simp_rw [star_sum, Finset.sum_mul, includeBlock_conjTranspose,
       includeBlock_hMul, map_sum]

@@ -9,6 +9,12 @@ import Mathlib.Tactic.TypeStar
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Encodable.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.RoseTree.Defs
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.RoseTree.Defs`.
+-/
+
 
 universe u
 variable {A B C : Type*}

@@ -7,6 +7,12 @@ Authors: Alex J. Best
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Ring
 
+/-!
+# LeanPool.EcTateLean.Algebra.EllipticCurve.AuxRingLemmas
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Algebra.EllipticCurve.AuxRingLemmas`.
+-/
+
 
 section ring_lemmas
 

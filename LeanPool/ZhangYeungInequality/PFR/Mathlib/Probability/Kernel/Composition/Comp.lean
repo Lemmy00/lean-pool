@@ -9,6 +9,13 @@ module
 public import Mathlib.Probability.Kernel.Composition.Comp
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Kernel.Disintegration
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Kernel.Composition.Comp
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Kernel.Composition.Comp`.
+-/
+
 public section
 
 open Function MeasureTheory Real

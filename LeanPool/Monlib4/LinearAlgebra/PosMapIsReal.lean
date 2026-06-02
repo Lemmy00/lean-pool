@@ -17,6 +17,12 @@ import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.CStarAlgebra.Matrix
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.PosMapIsReal
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.PosMapIsReal`.
+-/
+
 variable {A : Type _} [Ring A] [StarRing A] [Algebra ℂ A] [StarModule ℂ A] [PartialOrder A]
   [_root_.StarOrderedRing A]
 
@@ -28,31 +34,31 @@ def LinearMap.IsPosMap
 ∀ ⦃x : M₁⦄, 0 ≤ x → 0 ≤ f x
 
 /-- The self-adjoint real part of an element. -/
-noncomputable abbrev selfAdjointDecomposition_left
+noncomputable abbrev selfAdjointDecompositionLeft
   {B : Type*} [Star B] [Add B] [SMul ℂ B] (a : B) :=
 (1 / 2 : ℂ) • (a + star a)
-local notation "aL" => selfAdjointDecomposition_left
+local notation "aL" => selfAdjointDecompositionLeft
 
-lemma selfAdjointDecomposition_left_one
+lemma selfAdjointDecompositionLeft_one
   {B : Type*} [AddCommMonoid B] [MulOneClass B] [StarMul B] [Module ℂ B] :
   aL (1 : B) = 1 :=
 by
-  rw [selfAdjointDecomposition_left, star_one, ← two_smul ℂ, smul_smul]
+  rw [selfAdjointDecompositionLeft, star_one, ← two_smul ℂ, smul_smul]
   norm_num
 
 /-- The self-adjoint imaginary part of an element. -/
-noncomputable abbrev selfAdjointDecomposition_right
+noncomputable abbrev selfAdjointDecompositionRight
   {B : Type*} [Star B] [Sub B] [SMul ℂ B] (a : B) :=
 (RCLike.I : ℂ) • ((1 / 2 : ℂ) • (star a - a))
-local notation "aR" => selfAdjointDecomposition_right
+local notation "aR" => selfAdjointDecompositionRight
 
-lemma selfAdjointDecomposition_right_one
+lemma selfAdjointDecompositionRight_one
   {B : Type*} [AddCommGroup B] [MulOneClass B] [StarMul B] [SMulZeroClass ℂ B] :
     aR (1 : B) = 0 :=
 by
-  simp_rw [selfAdjointDecomposition_right, star_one, sub_self, smul_zero]
+  simp_rw [selfAdjointDecompositionRight, star_one, sub_self, smul_zero]
 
-lemma selfAdjointDecomposition_right_eq_zero_iff
+lemma selfAdjointDecompositionRight_eq_zero_iff
   {B : Type*} [Star B] [AddGroup B]
   [SMulWithZero ℂ B] [NoZeroSMulDivisors ℂ B] (a : B) :
     aR a = 0 ↔ IsSelfAdjoint a :=
@@ -67,20 +73,20 @@ by
         (by norm_num : (1 / 2 : ℂ) ≠ 0)
     exact sub_eq_zero.mp h2
   · intro h
-    simp [selfAdjointDecomposition_right, h]
+    simp [selfAdjointDecompositionRight, h]
 
-theorem selfAdjointDecomposition_left_isSelfAdjoint
+theorem selfAdjointDecompositionLeft_isSelfAdjoint
   {B : Type*} [AddCommMonoid B] [StarAddMonoid B] [SMul ℂ B] [StarModule ℂ B] (a : B) :
     IsSelfAdjoint (aL a) :=
-by simp [selfAdjointDecomposition_left, isSelfAdjoint_iff, star_smul, add_comm]
+by simp [selfAdjointDecompositionLeft, isSelfAdjoint_iff, star_smul, add_comm]
 
-theorem selfAdjointDecomposition_right_isSelfAdjoint
+theorem selfAdjointDecompositionRight_isSelfAdjoint
   {B : Type*} [AddCommGroup B] [StarAddMonoid B]
   [Module ℂ B] [StarModule ℂ B]
   (a : B) :
     IsSelfAdjoint (aR a) :=
 by
-  simp only [selfAdjointDecomposition_right, RCLike.I_to_complex, one_div, smul_smul,
+  simp only [selfAdjointDecompositionRight, RCLike.I_to_complex, one_div, smul_smul,
     isSelfAdjoint_iff, star_smul, star_mul', RCLike.star_def, Complex.conj_I,
     star_inv₀, star_ofNat, neg_mul, star_sub, star_star, neg_smul]
   rw [← neg_sub, ← neg_smul, neg_smul_neg]
@@ -90,7 +96,7 @@ theorem selfAdjointDecomposition
   [Module ℂ B] [StarModule ℂ B] (a : B) :
   a = aL a + (RCLike.I : ℂ) • (aR a) :=
 by
-  simp_rw [selfAdjointDecomposition_left, selfAdjointDecomposition_right,
+  simp_rw [selfAdjointDecompositionLeft, selfAdjointDecompositionRight,
     smul_smul, ← mul_assoc, RCLike.I, Complex.I_mul_I, smul_add, smul_sub,
     neg_mul, one_mul, neg_smul, neg_sub_neg]
   simp only [one_div, add_add_sub_cancel]
@@ -262,7 +268,7 @@ by
   simp only [Matrix.CLM_apply_orthogonalProjection]
   ext1
   simp only [ContinuousLinearMap.mul_apply, ContinuousLinearMap.zero_apply]
-  simp only [orthogonalProjection'_eq, ContinuousLinearMap.coe_comp', Submodule.coe_subtypeL',
+  simp only [orthogonalProjection'_eq, ContinuousLinearMap.coe_comp', Submodule.coe_subtypeL,
     Submodule.coe_subtype, Function.comp_apply, ZeroMemClass.coe_eq_zero,
     Submodule.orthogonalProjection_eq_zero_iff]
   rw [ContinuousLinearMap.ker_eq_ortho_adjoint_range, Submodule.orthogonal_orthogonal,
@@ -320,16 +326,16 @@ by
     Real.sq_sqrt (sq_nonneg _), implies_true]
 
 /-- The positive part in the decomposition of a Hermitian matrix. -/
-noncomputable def Matrix.IsHermitian.posSemidefDecomposition_left
+noncomputable def Matrix.IsHermitian.posSemidefDecompositionLeft
   (x : Matrix n n ℂ) [hx : Fact x.IsHermitian] :=
 (1 / 2 : ℂ) • (hx.out.sqSqrt + x)
 /-- Notation for the positive part in the decomposition of a Hermitian matrix. -/
 notation3:80 (name := posL) x:81"₊" =>
-  @Matrix.IsHermitian.posSemidefDecomposition_left _ _ _ x _
-lemma Matrix.IsHermitian.posSemidefDecomposition_left_isHermitian
+  @Matrix.IsHermitian.posSemidefDecompositionLeft _ _ _ x _
+lemma Matrix.IsHermitian.posSemidefDecompositionLeft_isHermitian
   {x : Matrix n n ℂ} [hx : Fact x.IsHermitian] : x₊.IsHermitian :=
 by
-  rw [IsHermitian, posSemidefDecomposition_left, conjTranspose_smul,
+  rw [IsHermitian, posSemidefDecompositionLeft, conjTranspose_smul,
     conjTranspose_add, hx.out.eq, RCLike.star_def]
   simp only [one_div, map_inv₀, map_ofNat]
   congr
@@ -339,17 +345,17 @@ by
   simp only [Function.comp_apply, _root_.IsSelfAdjoint, RCLike.star_def, RCLike.conj_ofReal]
 
 /-- The negative part in the decomposition of a Hermitian matrix. -/
-noncomputable def Matrix.IsHermitian.posSemidefDecomposition_right
+noncomputable def Matrix.IsHermitian.posSemidefDecompositionRight
   (x : Matrix n n ℂ) [hx : Fact x.IsHermitian] :=
 (1 / 2 : ℂ) • (hx.out.sqSqrt - x)
 /-- Notation for the negative part in the decomposition of a Hermitian matrix. -/
 notation3:80 (name := posR) x:81"₋" =>
-  Matrix.IsHermitian.posSemidefDecomposition_right x
-lemma Matrix.IsHermitian.posSemidefDecomposition_right_isHermitian
+  Matrix.IsHermitian.posSemidefDecompositionRight x
+lemma Matrix.IsHermitian.posSemidefDecompositionRight_isHermitian
   {x : Matrix n n ℂ} [hx : Fact x.IsHermitian] :
   x₋.IsHermitian :=
 by
-  rw [IsHermitian, posSemidefDecomposition_right, conjTranspose_smul,
+  rw [IsHermitian, posSemidefDecompositionRight, conjTranspose_smul,
     conjTranspose_sub, hx.out.eq, RCLike.star_def]
   simp only [one_div, map_inv₀, map_ofNat]
   congr
@@ -369,21 +375,21 @@ by
   nth_rw 2 [hx.spectral_theorem'']
   simp only [sqSqrt, ← Matrix.innerAut.map_mul, diagonal_mul_diagonal, mul_comm]
 
-lemma Matrix.IsHermitian.posSemidefDecomposition_left_mul_right (x : Matrix n n ℂ)
+lemma Matrix.IsHermitian.posSemidefDecompositionLeft_mul_right (x : Matrix n n ℂ)
   [hx : Fact x.IsHermitian] :
   x₊ * x₋ = 0 :=
 by
-  simp_rw [posSemidefDecomposition_left, posSemidefDecomposition_right,
+  simp_rw [posSemidefDecompositionLeft, posSemidefDecompositionRight,
     smul_add, smul_sub, add_mul, mul_sub]
   simp only [one_div, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
   simp_rw [← pow_two, hx.out.commute_sqSqrt.eq]
   simp only [sub_add_sub_cancel, sqSqrt_sq]
   simp only [sub_self]
-lemma Matrix.IsHermitian.posSemidefDecomposition_right_mul_left (x : Matrix n n ℂ)
+lemma Matrix.IsHermitian.posSemidefDecompositionRight_mul_left (x : Matrix n n ℂ)
   [hx : Fact x.IsHermitian] :
   x₋ * x₊ = 0 :=
 by
-  simp_rw [posSemidefDecomposition_left, posSemidefDecomposition_right,
+  simp_rw [posSemidefDecompositionLeft, posSemidefDecompositionRight,
     smul_add, smul_sub, sub_mul, mul_add]
   simp only [one_div, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
   simp_rw [← pow_two, hx.out.commute_sqSqrt.eq]
@@ -393,7 +399,7 @@ by
 lemma Matrix.IsHermitian.posSemidefDecomposition_eq (x : Matrix n n ℂ) [hx : Fact x.IsHermitian] :
   x = x₊ - x₋ :=
 by
-  simp_rw [posSemidefDecomposition_left, posSemidefDecomposition_right,
+  simp_rw [posSemidefDecompositionLeft, posSemidefDecompositionRight,
     ← smul_sub, add_sub_sub_cancel, ← two_smul ℂ, smul_smul]
   norm_num
 
@@ -404,10 +410,10 @@ by
   have h := fun (a b : Matrix n n ℂ) (ha : 0 ≤ a) (hb : 0 ≤ b)
     => Matrix.posSemidef_iff_commute ha hb
   simp only [sub_zero, Matrix.nonneg_def] at h
-  have h₂ := auxaux_2 (IsHermitian.posSemidefDecomposition_left_mul_right x)
+  have h₂ := auxaux_2 (IsHermitian.posSemidefDecompositionLeft_mul_right x)
   have h₃ : hx.out.sqSqrt = x₊ + x₋ :=
   by
-    simp_rw [IsHermitian.posSemidefDecomposition_left, IsHermitian.posSemidefDecomposition_right,
+    simp_rw [IsHermitian.posSemidefDecompositionLeft, IsHermitian.posSemidefDecompositionRight,
       ← smul_add, add_add_sub_cancel, ← two_smul ℂ, smul_smul]
     norm_num
   have h₄ :
@@ -415,7 +421,7 @@ by
         hx.out.sqSqrt = x₋ :=
   by
     rw [h₃, mul_add, h₂, Matrix.IsHermitian.orthogonalProjection_ker_apply_self
-      IsHermitian.posSemidefDecomposition_left_isHermitian, zero_add]
+      IsHermitian.posSemidefDecompositionLeft_isHermitian, zero_add]
   have h₅ : x =
       (1 - (2 : ℂ) •
           (orthogonalProjection
@@ -429,7 +435,7 @@ by
         (LinearMap.ker (toEuclideanCLM (𝕜 := ℂ) (x₊)).toLinearMap)ᗮ)
     * hx.out.sqSqrt :=
   by
-    nth_rw 1 [IsHermitian.posSemidefDecomposition_left]
+    nth_rw 1 [IsHermitian.posSemidefDecompositionLeft]
     nth_rw 3 [h₅]
     rw [Matrix.orthogonalProjection_ortho_eq]
     simp_rw [sub_mul, one_mul, smul_add, smul_sub, smul_mul_assoc,
@@ -438,14 +444,14 @@ by
   have h₄' : x₋ =
       hx.out.sqSqrt *
         (orthogonalProjection (LinearMap.ker (toEuclideanCLM (𝕜 := ℂ) (x₊)).toLinearMap)) :=
-  by rw [← IsHermitian.posSemidefDecomposition_right_isHermitian, ← h₄,
+  by rw [← IsHermitian.posSemidefDecompositionRight_isHermitian, ← h₄,
     conjTranspose_mul, (IsHermitian.sqSqrt_isPosSemidef _).1.eq,
     Matrix.orthogonalProjection_isPosSemidef.1.eq]
   have h₆' : x₊ =
       hx.out.sqSqrt *
         (orthogonalProjection (LinearMap.ker (toEuclideanCLM (𝕜 := ℂ) (x₊)).toLinearMap)ᗮ) :=
   by
-    nth_rw 1 [← IsHermitian.posSemidefDecomposition_left_isHermitian, h₆]
+    nth_rw 1 [← IsHermitian.posSemidefDecompositionLeft_isHermitian, h₆]
     rw [conjTranspose_mul, (IsHermitian.sqSqrt_isPosSemidef _).1.eq,
       Matrix.orthogonalProjection_isPosSemidef.1.eq]
   constructor
@@ -588,14 +594,14 @@ by
   have hR : R = aR x := rfl
   rw [← hL, ← hR]
   simp only [star_add, map_add, star_smul, _root_.map_smul]
-  repeat rw [selfAdjointDecomposition_left_isSelfAdjoint _]
+  repeat rw [selfAdjointDecompositionLeft_isSelfAdjoint _]
   suffices h2 : ∀ a (_ : _root_.IsSelfAdjoint a),
       φ (star a) = star (φ a)
   by
-    rw [← h2 _ (selfAdjointDecomposition_left_isSelfAdjoint _),
-      ← h2 _ (selfAdjointDecomposition_right_isSelfAdjoint _),
-      selfAdjointDecomposition_left_isSelfAdjoint,
-      selfAdjointDecomposition_right_isSelfAdjoint]
+    rw [← h2 _ (selfAdjointDecompositionLeft_isSelfAdjoint _),
+      ← h2 _ (selfAdjointDecompositionRight_isSelfAdjoint _),
+      selfAdjointDecompositionLeft_isSelfAdjoint,
+      selfAdjointDecompositionRight_isSelfAdjoint]
   intro x hx
   obtain ⟨a, b, rfl⟩ := Matrix.IsHermitian.posSemidefDecomposition' hx
   simp only [star_sub, star_mul, star_star, map_sub, ← star_eq_conjTranspose]
@@ -667,13 +673,13 @@ by
   have hR : R = aR x := rfl
   rw [← hL, ← hR]
   simp only [star_add, map_add, star_smul, map_smul]
-  repeat rw [selfAdjointDecomposition_left_isSelfAdjoint _]
+  repeat rw [selfAdjointDecompositionLeft_isSelfAdjoint _]
   suffices h2 : ∀ a (_ : IsSelfAdjoint a),
       φ (star a) = star (φ a)
-  by rw [← h2 _ (selfAdjointDecomposition_left_isSelfAdjoint _),
-    ← h2 _ (selfAdjointDecomposition_right_isSelfAdjoint _),
-    selfAdjointDecomposition_left_isSelfAdjoint,
-    selfAdjointDecomposition_right_isSelfAdjoint]
+  by rw [← h2 _ (selfAdjointDecompositionLeft_isSelfAdjoint _),
+    ← h2 _ (selfAdjointDecompositionRight_isSelfAdjoint _),
+    selfAdjointDecompositionLeft_isSelfAdjoint,
+    selfAdjointDecompositionRight_isSelfAdjoint]
   intro x hx
   obtain ⟨a, b, rfl⟩ := hx.isPositiveDecomposition
   simp only [star_sub, star_mul, star_star, map_sub]
@@ -695,13 +701,13 @@ by
   have hR : R = aR x := rfl
   rw [← hL, ← hR]
   simp only [star_add, map_add, star_smul, map_smul]
-  repeat rw [selfAdjointDecomposition_left_isSelfAdjoint _]
+  repeat rw [selfAdjointDecompositionLeft_isSelfAdjoint _]
   suffices h2 : ∀ a (_ : IsSelfAdjoint a),
       f (star a) = star (f a)
-  by rw [← h2 _ (selfAdjointDecomposition_left_isSelfAdjoint _),
-    ← h2 _ (selfAdjointDecomposition_right_isSelfAdjoint _),
-    selfAdjointDecomposition_left_isSelfAdjoint,
-    selfAdjointDecomposition_right_isSelfAdjoint]
+  by rw [← h2 _ (selfAdjointDecompositionLeft_isSelfAdjoint _),
+    ← h2 _ (selfAdjointDecompositionRight_isSelfAdjoint _),
+    selfAdjointDecompositionLeft_isSelfAdjoint,
+    selfAdjointDecompositionRight_isSelfAdjoint]
   intro x hx
   obtain ⟨a, b, rfl⟩ := hx.isPositiveDecomposition_of_starAlgEquiv_piMat hφ
   simp only [star_sub, star_mul, star_star, map_sub]
@@ -862,24 +868,24 @@ by
   rw [selfAdjointDecomposition a, h.1, h.2]
   exact Eq.symm (selfAdjointDecomposition b)
 
-theorem selfAdjointDecomposition_left_of
+theorem selfAdjointDecompositionLeft_of
   {B : Type*} [AddCommGroup B] [StarAddMonoid B]
   [Module ℂ B] [StarModule ℂ B] (a b : B)
   (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
     aL (a + Complex.I • b) = a :=
 by
-  rw [selfAdjointDecomposition_left, star_add, star_smul, ha, hb,
+  rw [selfAdjointDecompositionLeft, star_add, star_smul, ha, hb,
     Complex.star_def, Complex.conj_I, neg_smul, add_add_add_comm, add_neg_cancel, add_zero,
     ← two_smul ℂ, smul_smul]
   norm_num
 
-theorem selfAdjointDecomposition_right_of
+theorem selfAdjointDecompositionRight_of
   {B : Type*} [AddCommGroup B] [StarAddMonoid B]
   [Module ℂ B] [StarModule ℂ B] (a b : B)
   (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
     aR (a + Complex.I • b) = b :=
 by
-  rw [selfAdjointDecomposition_right, star_add, star_smul, ha, hb,
+  rw [selfAdjointDecompositionRight, star_add, star_smul, ha, hb,
     Complex.star_def, Complex.conj_I, neg_smul, sub_eq_add_neg,
     neg_add, add_add_add_comm, add_neg_cancel, zero_add, ← two_smul ℂ]
   simp only [smul_smul, smul_neg]
@@ -901,7 +907,7 @@ by
   congr 1
   simp only [smul_smul, Complex.I_mul_I, neg_smul, one_smul]
 
-theorem selfAdjointDecomposition_left_mul_self
+theorem selfAdjointDecompositionLeft_mul_self
   {B : Type*} [Ring B] [StarRing B]
   [Module ℂ B] [StarModule ℂ B] [IsScalarTower ℂ B B]
   [SMulCommClass ℂ B B] (a : B) :
@@ -912,12 +918,12 @@ by
   have : (aL a + RCLike.I • aR a) * (aL a + RCLike.I • aR a)
    = _ :=
     complex_decomposition_mul_decomposition _ _ _ _
-  rw [this, selfAdjointDecomposition_left_of]
+  rw [this, selfAdjointDecompositionLeft_of]
   all_goals { simp only [isSelfAdjoint_iff, star_sub, star_mul,
-    isSelfAdjoint_iff.mp (selfAdjointDecomposition_left_isSelfAdjoint _),
-    isSelfAdjoint_iff.mp (selfAdjointDecomposition_right_isSelfAdjoint _),
+    isSelfAdjoint_iff.mp (selfAdjointDecompositionLeft_isSelfAdjoint _),
+    isSelfAdjoint_iff.mp (selfAdjointDecompositionRight_isSelfAdjoint _),
     star_add, add_comm] }
-theorem selfAdjointDecomposition_right_mul_self
+theorem selfAdjointDecompositionRight_mul_self
   {B : Type*} [Ring B] [StarRing B]
   [Module ℂ B] [StarModule ℂ B] [IsScalarTower ℂ B B]
   [SMulCommClass ℂ B B] (a : B) :
@@ -928,10 +934,10 @@ by
   have : (aL a + RCLike.I • aR a) * (aL a + RCLike.I • aR a)
    = _ :=
     complex_decomposition_mul_decomposition _ _ _ _
-  rw [this, selfAdjointDecomposition_right_of]
+  rw [this, selfAdjointDecompositionRight_of]
   all_goals { simp only [isSelfAdjoint_iff, star_sub, star_mul,
-    isSelfAdjoint_iff.mp (selfAdjointDecomposition_left_isSelfAdjoint _),
-    isSelfAdjoint_iff.mp (selfAdjointDecomposition_right_isSelfAdjoint _),
+    isSelfAdjoint_iff.mp (selfAdjointDecompositionLeft_isSelfAdjoint _),
+    isSelfAdjoint_iff.mp (selfAdjointDecompositionRight_isSelfAdjoint _),
     star_add, add_comm] }
 
 theorem isStarNormal_iff_selfAdjointDecomposition_commute
@@ -949,7 +955,7 @@ by
     nth_rw 2 [star_smul]
     rw [Complex.star_def, Complex.conj_I, neg_smul, ← smul_neg,
       complex_decomposition_mul_decomposition,
-      selfAdjointDecomposition_left_isSelfAdjoint, selfAdjointDecomposition_right_isSelfAdjoint,
+      selfAdjointDecompositionLeft_isSelfAdjoint, selfAdjointDecompositionRight_isSelfAdjoint,
       mul_neg, sub_neg_eq_add, mul_neg, sub_eq_add_neg]
     simp only [pow_two]
     rfl
@@ -959,7 +965,7 @@ by
     nth_rw 2 [star_smul]
     rw [Complex.star_def, Complex.conj_I, neg_smul, ← smul_neg,
       complex_decomposition_mul_decomposition,
-      selfAdjointDecomposition_left_isSelfAdjoint, selfAdjointDecomposition_right_isSelfAdjoint,
+      selfAdjointDecompositionLeft_isSelfAdjoint, selfAdjointDecompositionRight_isSelfAdjoint,
       neg_mul, sub_neg_eq_add, neg_mul]
     simp_rw [sub_eq_add_neg, pow_two]
     nth_rw 3 [add_comm]
@@ -975,7 +981,7 @@ by
     _ ↔ a * b = b * a := eq_comm
   exact h₃
 
-theorem isSelfAdjoint_iff_selfAdjointDecomposition_right_eq_zero
+theorem isSelfAdjoint_iff_selfAdjointDecompositionRight_eq_zero
   {B : Type*} [Ring B] [StarRing B]
   [Module ℂ B] [StarModule ℂ B] [IsScalarTower ℂ B B]
   [SMulCommClass ℂ B B] (p : B) :
@@ -1051,8 +1057,8 @@ by
           rw [star_add]
           nth_rw 2 [star_smul]
           rw [Complex.star_def, Complex.conj_I, neg_smul,
-            isSelfAdjoint_iff.mp (selfAdjointDecomposition_left_isSelfAdjoint _),
-            isSelfAdjoint_iff.mp (selfAdjointDecomposition_right_isSelfAdjoint _),
+            isSelfAdjoint_iff.mp (selfAdjointDecompositionLeft_isSelfAdjoint _),
+            isSelfAdjoint_iff.mp (selfAdjointDecompositionRight_isSelfAdjoint _),
             ← smul_neg]
           simp_rw [complex_decomposition_mul_decomposition, mul_neg, sub_neg_eq_add,
             sub_eq_add_neg]

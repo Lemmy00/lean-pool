@@ -10,6 +10,12 @@ import Mathlib.Tactic.Ring.RingNF
 import LeanPool.ErdosTuzaValtr.Config.Default
 import LeanPool.ErdosTuzaValtr.Etv.Default
 
+/-!
+# LeanPool.ErdosTuzaValtr.Main.CapCup
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Main.CapCup`.
+-/
+
 noncomputable section
 
 namespace Config

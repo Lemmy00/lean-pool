@@ -14,6 +14,12 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
+/-!
+# LeanPool.AndersonConjecture.QuasiCompleteRing.QuasiCompleteRing
+
+Imported Lean Pool material for `LeanPool.AndersonConjecture.QuasiCompleteRing.QuasiCompleteRing`.
+-/
+
 open scoped Pointwise
 
 /-!
@@ -494,11 +500,11 @@ lemma dim1_ai_nonzero_prime_contracts
   rw [hM_ht] at hht_eq
   haveI : (⊥ : Ideal (AdicCompletion M R)).IsPrime := Ideal.isPrime_bot
   have h1 : (⊥ : Ideal (AdicCompletion M R)).height < P.height :=
-    Ideal.height_strict_mono_of_is_prime hbot_lt_P
-  have h2 : P.height < Mhat.height := Ideal.height_strict_mono_of_is_prime hP_lt_Mhat
+    Ideal.height_strict_mono_of_isPrime hbot_lt_P
+  have h2 : P.height < Mhat.height := Ideal.height_strict_mono_of_isPrime hP_lt_Mhat
   rw [Ideal.height_bot] at h1
   rw [hht_eq] at h2
-  exact absurd (ENat.lt_one_iff_eq_zero.mp h2) (ne_of_gt h1)
+  exact absurd (Order.lt_one_iff.mp h2) (ne_of_gt h1)
 theorem dim1_wqc_iff_analyticallyIrreducible
     (R : Type*) [CommRing R] [IsLocalRing R] [IsNoetherianRing R] [IsDomain R]
     (hdim : ringKrullDim R = 1) :

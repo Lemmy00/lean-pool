@@ -5,5 +5,11 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 import Mathlib.Algebra.Algebra.Equiv
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Equiv
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Equiv`.
+-/
+
 /-- Galois-group notation as algebra equivalences. -/
 notation "Gal("K ", "F")" => K ≃ₐ[F] K

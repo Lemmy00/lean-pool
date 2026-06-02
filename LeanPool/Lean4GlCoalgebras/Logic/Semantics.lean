@@ -61,9 +61,15 @@ def evaluateSeq {α : Type} : Model α × α → Sequent → Prop :=
   fun M_u Γ ↦ ∃ φ ∈ Γ, evaluate M_u φ
 
 /-- note: ignores the left/right annotation. -/
-@[simp]
 def evaluateSSeq {α : Type} : Model α × α → SplitSequent → Prop :=
   fun M_u Γ ↦ ∃ φ ∈ Γ, evaluate M_u (Sum.elim id id φ)
+
+@[simp]
+lemma not_evaluateSSeq {α : Type} {M_u : Model α × α} {Γ : SplitSequent} :
+    ¬ evaluateSSeq M_u Γ ↔
+      (∀ φ, Sum.inl φ ∈ Γ → ¬ evaluate M_u φ) ∧
+        ∀ φ, Sum.inr φ ∈ Γ → ¬ evaluate M_u φ := by
+  simp [evaluateSSeq]
 
 /-- A formula is valid if it holds at every world in every GL model. -/
 def Formula.isValid (φ : Formula) : Prop

@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 import LeanPool.BrauerGroupNew.CentralSimple
 import LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+
+/-!
+# LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.LemmasAboutSimpleRing`.
+-/
 universe u
 variable (K : Type u) [Field K]
 open TensorProduct in

@@ -14,3 +14,9 @@ import LeanPool.Monlib4.LinearAlgebra.QuantumSet.SchurMulTensor
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Subset
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Symm
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.TensorProduct
+
+/-!
+# LeanPool.Monlib4.LinearAlgebra.QuantumSet
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.QuantumSet`.
+-/

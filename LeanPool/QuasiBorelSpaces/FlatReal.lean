@@ -10,6 +10,12 @@ import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+/-!
+# LeanPool.QuasiBorelSpaces.FlatReal
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.FlatReal`.
+-/
+
 open MeasureTheory
 open MeasureSpace
 

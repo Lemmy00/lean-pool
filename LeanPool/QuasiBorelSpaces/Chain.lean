@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.Basic
 import LeanPool.QuasiBorelSpaces.Defs
 
+/-!
+# LeanPool.QuasiBorelSpaces.Chain
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Chain`.
+-/
+
 
 namespace QuasiBorelSpace.Chain
 

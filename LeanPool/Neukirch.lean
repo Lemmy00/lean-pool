@@ -13,7 +13,7 @@ import LeanPool.Neukirch.HilbertRamificationTheory
 Source: url:https://github.com/jjdishere/neukirch
 Authors: Hu Yongle
 Status: verified
-Main declarations: `NumberField.ramificationIdx_mul_inertiaDeg_of_isGalois`
+Main declarations: `NumberField.ramificationIdx_mul_inertiaDegOfIsGalois`
 Tags: number-theory, algebraic-number-theory, ramification, galois-theory
 MSC: 11R32, 11S15, 13B25
 -/
@@ -28,7 +28,7 @@ only its fully proved, complete results are vendored here.
 
 ## Main results
 
-- `NumberField.ramificationIdx_mul_inertiaDeg_of_isGalois`: the fundamental
+- `NumberField.ramificationIdx_mul_inertiaDegOfIsGalois`: the fundamental
   identity `g · e · f = [L : K]` for a Galois extension `L / K` of number fields,
   where `g` is the number of primes over `p`, and `e`, `f` are the common
   ramification index and inertia degree.
@@ -41,7 +41,7 @@ only its fully proved, complete results are vendored here.
   `NumberField.InertiaGroup_card_eq_ramificationIdx`.
 - `NumberField.IsMaximal_conjugates`: the Galois group acts transitively on the
   primes lying over a fixed prime `p`.
-- `NumberField.InertiaField_aut_equiv_ResidueField_aut`: the Galois group of the
+- `NumberField.InertiaFieldAutEquivResidueFieldAut`: the Galois group of the
   inertia field over `K` is isomorphic to the Galois group of the residue field
   extension.
 - `Ideal.ramificationIdx_algebra_tower_of_eq` and

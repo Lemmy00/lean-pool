@@ -11,6 +11,12 @@ import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Common
+
+/-!
+# LeanPool.EcTateLean.Algebra.EllipticCurve.Model
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Algebra.EllipticCurve.Model`.
+-/
 -- import Aesop
 
 
@@ -89,7 +95,7 @@ by
 -- TODO rename
 /-- A change of coordinates `(u, r, s, t)` of a Weierstrass model, with `u` a
 unit and `r`, `s`, `t` ring elements. -/
-structure urst_transform (R : Type _) [Ring R] where
+structure urstTransform (R : Type _) [Ring R] where
   /-- The scaling unit of the change of coordinates. -/
   u : Rˣ
   /-- The `x`-translation of the change of coordinates. -/
@@ -99,99 +105,99 @@ structure urst_transform (R : Type _) [Ring R] where
   /-- The `y`-translation of the change of coordinates. -/
   t : R
 
-namespace urst_transform
-instance instMulURSTTransform : Mul (urst_transform R) where
+namespace urstTransform
+instance instMulURSTTransform : Mul (urstTransform R) where
   mul f g := ⟨f.u * g.u, f.r + f.u * g.r, f.s + f.u * g.s, f.t + f.u * g.t⟩
-lemma mul_def (f g : urst_transform R) :
+lemma mul_def (f g : urstTransform R) :
   f * g = ⟨f.u * g.u, f.r + f.u * g.r, f.s + f.u * g.s, f.t + f.u * g.t⟩ := rfl
-instance : One (urst_transform R) where
+instance : One (urstTransform R) where
   one := ⟨1, 0, 0, 0⟩
-lemma one_def : (1 : urst_transform R) = ⟨1, 0, 0, 0⟩ := rfl
+lemma one_def : (1 : urstTransform R) = ⟨1, 0, 0, 0⟩ := rfl
 
-instance : Monoid (urst_transform R) where
+instance : Monoid (urstTransform R) where
   mul_one := by
     intros
-    simp [urst_transform.mul_def, urst_transform.one_def]
+    simp [urstTransform.mul_def, urstTransform.one_def]
   one_mul := by
     intros
-    simp [urst_transform.mul_def, urst_transform.one_def]
+    simp [urstTransform.mul_def, urstTransform.one_def]
   mul_assoc := by
     intros
-    simp only [urst_transform.mul_def, mk.injEq]
+    simp only [urstTransform.mul_def, mk.injEq]
     refine ⟨mul_assoc _ _ _, ?_, ?_, ?_⟩ <;> push_cast <;> ring
-instance : Inv (urst_transform R) where
+instance : Inv (urstTransform R) where
   inv f := ⟨f.u⁻¹, -f.u⁻¹ * f.r, -f.u⁻¹ * f.s, -f.u⁻¹ * f.t⟩
-lemma inv_def (f : urst_transform R) :
+lemma inv_def (f : urstTransform R) :
   f⁻¹ = ⟨f.u⁻¹, -f.u⁻¹ * f.r, -f.u⁻¹ * f.s, -f.u⁻¹ * f.t⟩ := rfl
 
-instance : Group (urst_transform R) where
+instance : Group (urstTransform R) where
   inv_mul_cancel := by
     intros
-    simp [urst_transform.mul_def, urst_transform.one_def, urst_transform.inv_def]
+    simp [urstTransform.mul_def, urstTransform.one_def, urstTransform.inv_def]
   mul_one := by
     intros
-    simp [urst_transform.mul_def, urst_transform.one_def]
+    simp [urstTransform.mul_def, urstTransform.one_def]
   one_mul := by
     intros
-    simp [urst_transform.mul_def, urst_transform.one_def]
+    simp [urstTransform.mul_def, urstTransform.one_def]
   mul_assoc := by
     intros
-    simp only [urst_transform.mul_def, mk.injEq]
+    simp only [urstTransform.mul_def, mk.injEq]
     refine ⟨mul_assoc _ _ _, ?_, ?_, ?_⟩ <;> push_cast <;> ring
 
-end urst_transform
+end urstTransform
 
 -- TODO maybe define as a subgroup?
 /-- The change-of-coordinates transformations with trivial scaling unit `u = 1`. -/
-def rst_transform := {urst : urst_transform R // urst.u = 1}
+def rstTransform := {urst : urstTransform R // urst.u = 1}
 
 --TODO instance Group
 /-- The Weierstrass model obtained from `e` by the change of coordinates
 `(1, r, s, t)`. -/
-def rst_iso (r s t : R) (e : Model R) : Model R :=
+def rstIso (r s t : R) (e : Model R) : Model R :=
 { a1 := e.a1 + 2*s
   a2 := e.a2 - s*e.a1 + 3*r - s*s
   a3 := e.a3 + r*e.a1 + 2*t
   a4 := e.a4 - s*e.a3 + 2*r*e.a2 - (t+r*s)*e.a1 + 3*r*r - 2*s*t
   a6 := e.a6 + r*e.a4 + r*r*e.a2 + r*r*r - t*(e.a3 + t + r*e.a1) }
 
-lemma rst_b2 (r s t : R) (e : Model R) : (rst_iso r s t e).b2 = e.b2 + 12*r := by
-  simp [rst_iso, b2]
+lemma rst_b2 (r s t : R) (e : Model R) : (rstIso r s t e).b2 = e.b2 + 12*r := by
+  simp [rstIso, b2]
   ring
 
 lemma rst_b4 (r s t : R) (e : Model R) :
-  (rst_iso r s t e).b4 = e.b4 + r * (e.b2 + 6 * r) :=
+  (rstIso r s t e).b4 = e.b4 + r * (e.b2 + 6 * r) :=
 by
-  simp only [rst_iso, b2, b4]
+  simp only [rstIso, b2, b4]
   ring
 
 lemma rst_b6 (r s t : R) (e : Model R) :
-  (rst_iso r s t e).b6 = e.b6 + 2*r*e.b4 + r*r*e.b2 + 4*r*r*r :=
+  (rstIso r s t e).b6 = e.b6 + 2*r*e.b4 + r*r*e.b2 + 4*r*r*r :=
 by
-  simp only [rst_iso, b2, b4, b6]
+  simp only [rstIso, b2, b4, b6]
   ring
 
 lemma rst_b8 (r s t : R) (e : Model R) :
-  (rst_iso r s t e).b8 = e.b8 + 3*r*e.b6 + 3*r*r*e.b4 + r*r*r*e.b2 + 3*r*r*r*r :=
+  (rstIso r s t e).b8 = e.b8 + 3*r*e.b6 + 3*r*r*e.b4 + r*r*r*e.b2 + 3*r*r*r*r :=
 by
-  simp only [rst_iso, b2, b4, b6, b8]
+  simp only [rstIso, b2, b4, b6, b8]
   ring
 
 @[simp]
 lemma rst_c4 (r s t : R) (e : Model R) :
-  (rst_iso r s t e).c4 = e.c4 :=
+  (rstIso r s t e).c4 = e.c4 :=
 by
-  simp only [rst_iso, b2, b4, c4]
+  simp only [rstIso, b2, b4, c4]
   ring
 
 @[simp]
 lemma rst_c6 (r s t : R) (e : Model R) :
-  (rst_iso r s t e).c6 = e.c6 :=
+  (rstIso r s t e).c6 = e.c6 :=
 by
-  simp only [rst_iso, b2, b4, b6, c6]
+  simp only [rstIso, b2, b4, b6, c6]
   ring
 
-lemma rst_discr (r s t : R) (e : Model R) : (rst_iso r s t e).discr = e.discr :=
+lemma rst_discr (r s t : R) (e : Model R) : (rstIso r s t e).discr = e.discr :=
 by
   simp only [discr, rst_b2, rst_b4, rst_b6, rst_b8]
   simp only [mul_add]
@@ -228,12 +234,12 @@ def weierstrass (e : Model R) (P : R × R) : R :=
 
 /-- The partial derivative of the Weierstrass polynomial with respect to `x`,
 evaluated at `P`. -/
-def dweierstrass_dx (e : Model R) (P : R × R) : R :=
+def dweierstrassDx (e : Model R) (P : R × R) : R :=
   e.a1 * P.2 - (3 * P.1 ^ 2 + 2 * e.a2 * P.1 + e.a4)
 
 /-- The partial derivative of the Weierstrass polynomial with respect to `y`,
 evaluated at `P`. -/
-def dweierstrass_dy (e : Model R) (P : R × R) : R :=
+def dweierstrassDy (e : Model R) (P : R × R) : R :=
   2 * P.2 + e.a1 * P.1 + e.a3
 
 @[simp]
@@ -242,14 +248,14 @@ lemma weierstrass_map (e : Model R) (P : R × R) : weierstrass (e.map f) (P.map 
 by simp [weierstrass]
 
 @[simp]
-lemma dweierstrass_dx_map (e : Model R) (P : R × R) : dweierstrass_dx (e.map f) (P.map f f) =
-  f (dweierstrass_dx e P) :=
-by simp [dweierstrass_dx, map_ofNat]
+lemma dweierstrassDx_map (e : Model R) (P : R × R) : dweierstrassDx (e.map f) (P.map f f) =
+  f (dweierstrassDx e P) :=
+by simp [dweierstrassDx, map_ofNat]
 
 @[simp]
-lemma dweierstrass_dy_map (e : Model R) (P : R × R) : dweierstrass_dy (e.map f) (P.map f f) =
-  f (dweierstrass_dy e P) :=
-by simp [dweierstrass_dy, map_ofNat]
+lemma dweierstrassDy_map (e : Model R) (P : R × R) : dweierstrassDy (e.map f) (P.map f f) =
+  f (dweierstrassDy e P) :=
+by simp [dweierstrassDy, map_ofNat]
 
 /--
 The discriminant equals (minus) the standard order-`a6` generator of the elimination ideal
@@ -281,7 +287,7 @@ lemma discr_in_jacobian_ideal (e : Model R) (P : R × R) : e.discr =
   +24*P.1^2*e.a1*e.a2^2 +32*P.1*e.a1*e.a2^3 +35*P.2*e.a1^3*e.a3 +e.a1^3*e.a3^2 +9*e.a1^3*e.a2*e.a4
       +48*P.2^2*e.a1*e.a2 +134*P.2*e.a1*e.a2*e.a3 +27*P.1*e.a1*e.a3^2 +36*e.a1*e.a2*e.a3^2
   +58*P.2*e.a1^2*e.a4 +24*e.a1*e.a2^2*e.a4 +144*P.1*P.2*e.a4 +120*P.2*e.a2*e.a4 +168*P.1*e.a3*e.a4
-      +34*e.a2*e.a3*e.a4))*(dweierstrass_dy e P)
+      +34*e.a2*e.a3*e.a4))*(dweierstrassDy e P)
   +(e.a1^2*e.a3^2 +12*e.a1^2*e.a6 +16*e.a2^2*e.a4 +32*P.1*e.a2^3 +e.a1^4*e.a4 +144*P.1*e.a6
       +48*e.a2*e.a6 +P.1*e.a1^4*e.a2 +84*P.1*e.a3^2 +56*P.2*e.a1*e.a4 +8*e.a1^2*e.a2*e.a4
       +28*P.2*e.a1^2*e.a3 +52*P.2*e.a2*e.a3
@@ -289,7 +295,7 @@ lemma discr_in_jacobian_ideal (e : Model R) (P : R × R) : e.discr =
   -(2*P.1*e.a1^3*e.a3 +112*P.1*e.a2*e.a4 +e.a1^3*e.a2*e.a3 +36*e.a1*e.a3*e.a4 +96*P.1^2*e.a4
       +32*P.1*P.2*e.a1*e.a2 +32*P.2*e.a1*e.a2^2 +64*e.a4^2
   +4*P.1*P.2*e.a1^3 +10*P.2*e.a1^3*e.a2 +P.2*e.a1^5 +8*e.a1*e.a2^2*e.a3
-      +46*P.1*e.a1*e.a2*e.a3))*(dweierstrass_dx e P)
+      +46*P.1*e.a1*e.a2*e.a3))*(dweierstrassDx e P)
   +(60*e.a1^2*e.a4 +288*P.1*e.a4 +240*e.a2*e.a4 +12*P.2*e.a1^3 +36*e.a1^3*e.a3 +96*P.2*e.a1*e.a2
       +168*e.a1*e.a2*e.a3
   -(432*e.a6 +e.a1^6 +288*P.2*e.a3 +252*e.a3^2 +12*e.a1^4*e.a2 +48*e.a1^2*e.a2^2 +96*P.1*e.a2^2
@@ -297,53 +303,53 @@ lemma discr_in_jacobian_ideal (e : Model R) (P : R × R) : e.discr =
  :=
 by
   rw [discr_eq_neg_singular]
-  simp only [weierstrass, dweierstrass_dx, dweierstrass_dy]
+  simp only [weierstrass, dweierstrassDx, dweierstrassDy]
   ring
 
 /-- The change of variables on points induced by the change of coordinates
 `(1, r, s, t)`. -/
-def var_change (r s t : R) (P' : R × R) : R × R :=
+def varChange (r s t : R) (P' : R × R) : R × R :=
   (P'.1 + r, P'.2 + s * P'.1 + t)
 
 @[simp]
-lemma var_change_comp (r s t : R) (r' s' t' : R) (P : R × R) :
-  var_change r s t (var_change r' s' t' P) = var_change (r + r') (s + s') (t + t' + s * r') P :=
+lemma varChange_comp (r s t : R) (r' s' t' : R) (P : R × R) :
+  varChange r s t (varChange r' s' t' P) = varChange (r + r') (s + s') (t + t' + s * r') P :=
 by
-  simp only [var_change, Prod.mk.injEq]
+  simp only [varChange, Prod.mk.injEq]
   apply And.intro <;>
   ring
 
 @[simp]
-lemma var_change_zero (P : R × R) : var_change (0 : R) 0 0 P = P :=
-by simp [var_change]
+lemma varChange_zero (P : R × R) : varChange (0 : R) 0 0 P = P :=
+by simp [varChange]
 
 -- TODO probably these proofs should be more conceptual
 
-theorem weierstrass_iso_eq_var_change (e : Model R) (P : R × R) :
-  weierstrass (rst_iso r s t e) P = weierstrass e (var_change r s t P) :=
+theorem weierstrass_iso_eq_varChange (e : Model R) (P : R × R) :
+  weierstrass (rstIso r s t e) P = weierstrass e (varChange r s t P) :=
 by
-  simp only [weierstrass, rst_iso, var_change]
+  simp only [weierstrass, rstIso, varChange]
   ring
 
-theorem dweierstrass_dx_iso_eq_var_change (e : Model R) (P : R × R) :
-  dweierstrass_dx (rst_iso r s t e) P =
-  dweierstrass_dx e (var_change r s t P) + s * dweierstrass_dy e (var_change r s t P) :=
+theorem dweierstrassDx_iso_eq_varChange (e : Model R) (P : R × R) :
+  dweierstrassDx (rstIso r s t e) P =
+  dweierstrassDx e (varChange r s t P) + s * dweierstrassDy e (varChange r s t P) :=
 by
-  simp only [dweierstrass_dx, dweierstrass_dy, rst_iso, var_change]
+  simp only [dweierstrassDx, dweierstrassDy, rstIso, varChange]
   ring
 
-theorem dweierstrass_dy_iso_eq_var_change (e : Model R) (P : R × R) :
-  dweierstrass_dy (rst_iso r s t e) P = dweierstrass_dy e (var_change r s t P) :=
+theorem dweierstrassDy_iso_eq_varChange (e : Model R) (P : R × R) :
+  dweierstrassDy (rstIso r s t e) P = dweierstrassDy e (varChange r s t P) :=
 by
-  simp only [dweierstrass_dy, rst_iso, var_change]
+  simp only [dweierstrassDy, rstIso, varChange]
   ring
 
 /-- The change of coordinates `(1, r, s, t)` applied to `e`, with the triple
 `rst = (r, s, t)` packaged as a single argument. -/
-def rst_triple (e : Model R) (rst : R × R × R) : Model R :=
-  rst_iso rst.fst rst.snd.fst rst.snd.snd e
+def rstTriple (e : Model R) (rst : R × R × R) : Model R :=
+  rstIso rst.fst rst.snd.fst rst.snd.snd e
 
-lemma rst_iso_to_triple (e : Model R) (r s t : R) : rst_iso r s t e = rst_triple e (r, s, t) := rfl
+lemma rstIso_to_triple (e : Model R) (r s t : R) : rstIso r s t e = rstTriple e (r, s, t) := rfl
 
 end Model
 
@@ -359,75 +365,75 @@ instance [Repr R] : Repr (ValidModel R) := ⟨fun (e : ValidModel R) _ => repr e
 
 /-- The valid model obtained from `e` by the change of coordinates `(1, r, s, t)`. -/
 @[simps!]
-def rst_iso (r s t : R) (e : ValidModel R) : ValidModel R := {
-  toModel := Model.rst_iso r s t e.toModel,
+def rstIso (r s t : R) (e : ValidModel R) : ValidModel R := {
+  toModel := Model.rstIso r s t e.toModel,
   discr_not_zero := by
     rw [Model.rst_discr]
     exact e.discr_not_zero }
 
 @[simp]
-lemma rst_discr_valid (r s t : R) (e : ValidModel R) : (rst_iso r s t e).discr = e.discr :=
+lemma rst_discr_valid (r s t : R) (e : ValidModel R) : (rstIso r s t e).discr = e.discr :=
   Model.rst_discr r s t e.toModel
 
 --more [simp] lemmas
-lemma rt_of_a1 (e : ValidModel R) (r t : R) : (rst_iso r 0 t e).a1 = e.a1 :=
-by simp only [rst_iso, Model.rst_iso, mul_zero, add_zero]
+lemma rt_of_a1 (e : ValidModel R) (r t : R) : (rstIso r 0 t e).a1 = e.a1 :=
+by simp only [rstIso, Model.rstIso, mul_zero, add_zero]
 
-lemma t_of_a2 (e : ValidModel R) (t : R) : (rst_iso 0 0 t e).a2 = e.a2 :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, sub_zero, mul_zero, add_zero]
+lemma t_of_a2 (e : ValidModel R) (t : R) : (rstIso 0 0 t e).a2 = e.a2 :=
+by simp only [rstIso, Model.rstIso, zero_mul, sub_zero, mul_zero, add_zero]
 
-lemma r_of_a2 (e : ValidModel R) (r : R) : (rst_iso r 0 0 e).a2 = e.a2 + 3 * r :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, sub_zero, mul_zero, add_zero]
+lemma r_of_a2 (e : ValidModel R) (r : R) : (rstIso r 0 0 e).a2 = e.a2 + 3 * r :=
+by simp only [rstIso, Model.rstIso, zero_mul, sub_zero, mul_zero, add_zero]
 
-lemma t_of_a3 (e : ValidModel R) (t : R) : (rst_iso 0 0 t e).a3 = e.a3 + 2 * t :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, sub_zero, mul_zero, add_zero]
+lemma t_of_a3 (e : ValidModel R) (t : R) : (rstIso 0 0 t e).a3 = e.a3 + 2 * t :=
+by simp only [rstIso, Model.rstIso, zero_mul, sub_zero, mul_zero, add_zero]
 
-lemma r_of_a3 (e : ValidModel R) (r : R) : (rst_iso r 0 0 e).a3 = e.a3 + r * e.a1 :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, sub_zero, mul_zero, add_zero]
+lemma r_of_a3 (e : ValidModel R) (r : R) : (rstIso r 0 0 e).a3 = e.a3 + r * e.a1 :=
+by simp only [rstIso, Model.rstIso, zero_mul, sub_zero, mul_zero, add_zero]
 
-lemma t_of_a4 (e : ValidModel R) (t : R) : (rst_iso 0 0 t e).a4 = e.a4 - t * e.a1 :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, sub_zero, mul_zero, add_zero]
+lemma t_of_a4 (e : ValidModel R) (t : R) : (rstIso 0 0 t e).a4 = e.a4 - t * e.a1 :=
+by simp only [rstIso, Model.rstIso, zero_mul, sub_zero, mul_zero, add_zero]
 
-lemma r_of_a4 (e : ValidModel R) (r : R) : (rst_iso r 0 0 e).a4 = e.a4 + 2 * r * e.a2 + 3 * r ^ 2 :=
-by simp only [rst_iso, Model.rst_iso, zero_mul,
+lemma r_of_a4 (e : ValidModel R) (r : R) : (rstIso r 0 0 e).a4 = e.a4 + 2 * r * e.a2 + 3 * r ^ 2 :=
+by simp only [rstIso, Model.rstIso, zero_mul,
   sub_zero, mul_zero, add_zero, mul_assoc, ←pow_two r]
 
-lemma t_of_a6 (e : ValidModel R) (t : R) : (rst_iso 0 0 t e).a6 = e.a6 - t * e.a3 - t ^ 2 :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, mul_zero,
+lemma t_of_a6 (e : ValidModel R) (t : R) : (rstIso 0 0 t e).a6 = e.a6 - t * e.a3 - t ^ 2 :=
+by simp only [rstIso, Model.rstIso, zero_mul, mul_zero,
   add_zero, mul_add, ←pow_two t, sub_eq_add_neg, neg_add, ←add_assoc]
 
 lemma r_of_a6 (e : ValidModel R) (r : R) :
-  (rst_iso r 0 0 e).a6 = e.a6 + r * e.a4 + r ^ 2 * e.a2 + r ^ 3 :=
-by simp only [rst_iso, Model.rst_iso, zero_mul, sub_zero,
+  (rstIso r 0 0 e).a6 = e.a6 + r * e.a4 + r ^ 2 * e.a2 + r ^ 3 :=
+by simp only [rstIso, Model.rstIso, zero_mul, sub_zero,
   mul_zero, add_zero, mul_assoc, pow_two r, pow_succ r]
 
-lemma st_of_a1 (e : ValidModel R) (s t : R) : (rst_iso 0 s t e).a1 = e.a1 + 2 * s :=
-by simp only [rst_iso, Model.rst_iso, mul_zero]
+lemma st_of_a1 (e : ValidModel R) (s t : R) : (rstIso 0 s t e).a1 = e.a1 + 2 * s :=
+by simp only [rstIso, Model.rstIso, mul_zero]
 
-lemma st_of_a2 (e : ValidModel R) (s t : R) : (rst_iso 0 s t e).a2 = e.a2 - s * e.a1 - s ^ 2 :=
-by simp only [rst_iso, Model.rst_iso, mul_zero, add_zero, mul_assoc, ←pow_two s]
+lemma st_of_a2 (e : ValidModel R) (s t : R) : (rstIso 0 s t e).a2 = e.a2 - s * e.a1 - s ^ 2 :=
+by simp only [rstIso, Model.rstIso, mul_zero, add_zero, mul_assoc, ←pow_two s]
 
-lemma st_of_a3 (e : ValidModel R) (s t : R) : (rst_iso 0 s t e).a3 = e.a3 + 2 * t :=
-by simp only [rst_iso, Model.rst_iso, mul_zero, add_zero, mul_assoc, zero_mul]
+lemma st_of_a3 (e : ValidModel R) (s t : R) : (rstIso 0 s t e).a3 = e.a3 + 2 * t :=
+by simp only [rstIso, Model.rstIso, mul_zero, add_zero, mul_assoc, zero_mul]
 
 lemma st_of_a4 (e : ValidModel R) (s t : R) :
-  (rst_iso 0 s t e).a4 = e.a4 - s * e.a3 - t * e.a1 - 2 * s * t :=
-by simp only [rst_iso, Model.rst_iso, mul_zero, add_zero, mul_assoc, zero_mul]
+  (rstIso 0 s t e).a4 = e.a4 - s * e.a3 - t * e.a1 - 2 * s * t :=
+by simp only [rstIso, Model.rstIso, mul_zero, add_zero, mul_assoc, zero_mul]
 
-lemma st_of_a6 (e : ValidModel R) (s t : R) : (rst_iso 0 s t e).a6 = e.a6 - t * e.a3 - t ^ 2 :=
-by simp only [rst_iso, Model.rst_iso, mul_zero,
+lemma st_of_a6 (e : ValidModel R) (s t : R) : (rstIso 0 s t e).a6 = e.a6 - t * e.a3 - t ^ 2 :=
+by simp only [rstIso, Model.rstIso, mul_zero,
   add_zero, mul_assoc, ←pow_two t, zero_mul, mul_add, sub_sub]
 
-lemma st_of_b8 (e : ValidModel R) (s t : R) : (rst_iso 0 s t e).b8 = e.b8 := by
-  rw [rst_iso, Model.rst_b8]
+lemma st_of_b8 (e : ValidModel R) (s t : R) : (rstIso 0 s t e).b8 = e.b8 := by
+  rw [rstIso, Model.rst_b8]
   simp only [mul_zero, add_zero, zero_mul]
 
 /-- The change of coordinates `(1, r, s, t)` applied to the valid model `e`, with
 the triple `rst = (r, s, t)` packaged as a single argument. -/
-def rst_triple (e : ValidModel R) (rst : R × R × R) : ValidModel R :=
-  rst_iso rst.fst rst.snd.fst rst.snd.snd e
+def rstTriple (e : ValidModel R) (rst : R × R × R) : ValidModel R :=
+  rstIso rst.fst rst.snd.fst rst.snd.snd e
 
-lemma rst_iso_to_triple (e : ValidModel R) (r s t : R) : rst_iso r s t e = rst_triple e (r, s, t) :=
+lemma rstIso_to_triple (e : ValidModel R) (r s t : R) : rstIso r s t e = rstTriple e (r, s, t) :=
 rfl
 
 end ValidModel
@@ -439,10 +445,10 @@ variable {K : Type u} [CommRing K]
 
 /-- A point `P` is a singular point of the model `e` when the Weierstrass
 polynomial and both of its partial derivatives vanish at `P`. -/
-def is_singular_point (e : Model K) (P : K × K) : Prop :=
-weierstrass e P = 0 ∧ dweierstrass_dx e P = 0 ∧ dweierstrass_dy e P = 0
+def isSingularPoint (e : Model K) (P : K × K) : Prop :=
+weierstrass e P = 0 ∧ dweierstrassDx e P = 0 ∧ dweierstrassDy e P = 0
 
-lemma discr_eq_zero_of_singular (e : Model K) {P} (h : is_singular_point e P) :
+lemma discr_eq_zero_of_singular (e : Model K) {P} (h : isSingularPoint e P) :
   e.discr = 0 :=
 by
   rcases h with ⟨h₁, h₂, h₃⟩
@@ -513,11 +519,11 @@ Proposition 1.5.4 of Elliptic Curve Handbook, Ian Connell February, 1999,
 https://www.math.rug.nl/~top/ian.pdf
 -/
 noncomputable
-def singular_point [PerfectRing K] (e : Model K) : K × K :=
+def singularPoint [PerfectRing K] (e : Model K) : K × K :=
   if e.c4 = 0 then
     match ringChar K with
-    | 2 => (pth_root e.a4, pth_root (e.a2 * e.a4 + e.a6))
-    | 3 => (pth_root (-(e.a3 ^ 2) - e.a6), e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a3)
+    | 2 => (pthRoot e.a4, pthRoot (e.a2 * e.a4 + e.a6))
+    | 3 => (pthRoot (-(e.a3 ^ 2) - e.a6), e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a3)
     | _ => (-e.b2 / 12, -(-e.a1 * e.b2 / 12 + e.a3) / 2)
   else
     ((18 * e.b6 - e.b2 * e.b4) / e.c4, (e.b2 * e.b5 + 3 * e.b7) / e.c4)
@@ -546,16 +552,16 @@ by
 
 -- TODO maybe rewrite to take an explicit point
 
-lemma is_singular_point_singular_point [PerfectRing K] (e : Model K) (h : e.discr = 0) :
-  is_singular_point e (singular_point e) :=
+lemma isSingularPoint_singularPoint [PerfectRing K] (e : Model K) (h : e.discr = 0) :
+  isSingularPoint e (singularPoint e) :=
 by
-  rw [singular_point]
+  rw [singularPoint]
   split_ifs with hc4
   · have hc6 : c6 e = 0 := by
       simpa [h, hc4, pow_succ, mul_eq_zero] using discr_identity e
     split
     -- case _ hchar => TODO get this working, but its subtly different
-    · rw [is_singular_point]
+    · rw [isSingularPoint]
       have hchar : ringChar K = 2 := by assumption
       have hchar' : (ringChar K : K) = 2 := by simp [hchar]
       have hchar'' : (2 : K) = 0 := by simp [← hchar']
@@ -567,19 +573,19 @@ by
         simp only [ha1, ha3, zero_mul, add_zero]
         rw [show 3 = 2 + 1 by norm_num]
         rw [pow_succ _ 2]
-        rw [← hchar, pth_root_pow_char hcharne]
-        rw [pth_root_pow_char hcharne]
+        rw [← hchar, pthRoot_pow_char hcharne]
+        rw [pthRoot_pow_char hcharne]
         ring_nf
         simp [hchar'']
-      · rw [dweierstrass_dx]
+      · rw [dweierstrassDx]
         simp only [ha1, zero_mul, hchar'', add_zero, zero_sub, neg_add_rev]
-        rw [← hchar, pth_root_pow_char hcharne, ← sub_eq_add_neg]
+        rw [← hchar, pthRoot_pow_char hcharne, ← sub_eq_add_neg]
         simp only [sub_eq_iff_eq_add, zero_add]
         rw [show (3 : K) = 2 * 2 - 1 by norm_num]
         rw [hchar'']
         simp []
-      · simp [dweierstrass_dy, ha1, ha3, hchar'']
-    · rw [is_singular_point]
+      · simp [dweierstrassDy, ha1, ha3, hchar'']
+    · rw [isSingularPoint]
       have hchar : ringChar K = 3 := by assumption
       have hcharne : ringChar K ≠ 0 := by simp [hchar]
       have hchar' : (ringChar K : K) = 3 := by simp [hchar]
@@ -590,16 +596,16 @@ by
       rw [b4] at hb4
       refine ⟨?_, ?_, ?_⟩
       · rw [weierstrass]
-        rw [← hchar, pth_root_pow_char hcharne]
+        rw [← hchar, pthRoot_pow_char hcharne]
         simp only
         rw [show
-          (e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a3) ^ 2 +
-          e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) * (e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a3) +
-          e.a3 * (e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a3) -
-          (-(e.a3 ^ 2) - e.a6 + e.a2 * pth_root (-(e.a3 ^ 2) - e.a6) ^ 2
-              + e.a4 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a6) =
-          (2 * e.a1 ^ 2 - e.a2) * pth_root (-(e.a3 ^ 2) - e.a6) ^ 2 +
-          (4 * e.a1 * e.a3 - e.a4) * pth_root (-(e.a3 ^ 2) - e.a6) +
+          (e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a3) ^ 2 +
+          e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) * (e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a3) +
+          e.a3 * (e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a3) -
+          (-(e.a3 ^ 2) - e.a6 + e.a2 * pthRoot (-(e.a3 ^ 2) - e.a6) ^ 2
+              + e.a4 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a6) =
+          (2 * e.a1 ^ 2 - e.a2) * pthRoot (-(e.a3 ^ 2) - e.a6) ^ 2 +
+          (4 * e.a1 * e.a3 - e.a4) * pthRoot (-(e.a3 ^ 2) - e.a6) +
           3 * e.a3 ^ 2
           by ring]
         have hfac2 : 2 * e.a1 ^ 2 - e.a2 = 0 := by
@@ -611,26 +617,26 @@ by
           simp [sub_eq_add_neg, hb4]
         rw [hfac2, hfac4]
         simp only [zero_mul, add_zero, hchar'']
-      · rw [dweierstrass_dx]
+      · rw [dweierstrassDx]
         rw [hchar'', zero_mul, zero_add]
         simp only
-        rw [show e.a1 * (e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a3)
-            - (2 * e.a2 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a4) =
-                 (e.a1 * e.a1 - 2 * e.a2) * pth_root (-(e.a3 ^ 2) - e.a6) + (e.a1 * e.a3 - e.a4)
+        rw [show e.a1 * (e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a3)
+            - (2 * e.a2 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a4) =
+                 (e.a1 * e.a1 - 2 * e.a2) * pthRoot (-(e.a3 ^ 2) - e.a6) + (e.a1 * e.a3 - e.a4)
           by ring]
         rw [show (2 : K) = -1 by rw [← add_zero (-1), ← hchar'']; norm_num] at hb4
         rw [show (4 : K) =
             -2 by rw [← add_zero (-2), ← zero_mul (2 : K), ← hchar'']; norm_num] at hb2
         simp only [neg_mul, one_mul, ← sub_eq_add_neg] at hb4 hb2
         rw [hb4, hb2, zero_mul, zero_add]
-      · rw [dweierstrass_dy]
+      · rw [dweierstrassDy]
         simp only
-        rw [show 2 * (e.a1 * pth_root (-(e.a3 ^ 2) - e.a6) + e.a3)
-            + e.a1 * pth_root (- (e.a3 ^ 2) - e.a6) + e.a3 = 3 * ((e.a1 * pth_root (-(e.a3 ^ 2)
+        rw [show 2 * (e.a1 * pthRoot (-(e.a3 ^ 2) - e.a6) + e.a3)
+            + e.a1 * pthRoot (- (e.a3 ^ 2) - e.a6) + e.a3 = 3 * ((e.a1 * pthRoot (-(e.a3 ^ 2)
                 - e.a6)) + e.a3) by ring]
         rw [hchar'', zero_mul]
     · rename_i hn2 hn3
-      rw [is_singular_point]
+      rw [isSingularPoint]
       -- have hb4 : e.b2 ^ 2 = 24 * e.b4 := sorry
       have h2 : (2 : K) ≠ 0 := fun hh => hn2 (ringChar_eq_of_Prime (n := 2) hh Nat.prime_two)
       have h3 : (3 : K) ≠ 0 := fun hh => hn3 (ringChar_eq_of_Prime (n := 3) hh Nat.prime_three)
@@ -659,7 +665,7 @@ by
         simp only [c6, b2, b4, b6]
         ring
       · apply nzero_mul_left_cancel (12 ^ 2) _ _ (pow_ne_zero _ h12)
-        simp only [dweierstrass_dx, div_eq_mul_inv, mul_zero]
+        simp only [dweierstrassDx, div_eq_mul_inv, mul_zero]
         rw [show
           12 ^ 2 * (e.a1 * (-(-e.a1 * b2 e * 12⁻¹ + e.a3) * 2⁻¹) - (3 * (-b2 e * 12⁻¹) ^ 2
               + 2 * e.a2 * (-b2 e * 12⁻¹) + e.a4))
@@ -674,7 +680,7 @@ by
         simp only [c4, b2, b4]
         ring
       · apply nzero_mul_left_cancel 12 _ _ h12
-        simp only [dweierstrass_dy, div_eq_mul_inv, mul_zero]
+        simp only [dweierstrassDy, div_eq_mul_inv, mul_zero]
         rw [show
           12 * (2 * (-(-e.a1 * b2 e * 12⁻¹ + e.a3) * 2⁻¹) + e.a1 * (-b2 e * 12⁻¹) + e.a3)
           =
@@ -686,7 +692,7 @@ by
         -- This is 2*c6
         simp only [b2]
         ring
-  · rw [is_singular_point]
+  · rw [isSingularPoint]
     refine ⟨?_, ?_, ?_⟩
     · rw [weierstrass]
       -- simp [b2, b5, b7]
@@ -721,7 +727,7 @@ by
         - 144*e.a1*e.a2*e.a3 - 72*e.a1^2*e.a4 + 216*e.a3^2 - 288*e.a2*e.a4 + 864*e.a6),
         ← h, discr_eq_neg_singular]
       ring
-    · rw [dweierstrass_dx]
+    · rw [dweierstrassDx]
       apply nzero_mul_left_cancel (e.c4 ^ 2) _ _ (pow_ne_zero _ hc4)
       rw [mul_zero, pow_two]
       simp only [div_eq_mul_inv]
@@ -739,7 +745,7 @@ by
       -- what remains is just 36 times the discriminant (up to sign)
       rw [← mul_zero (36 : K), ← h, discr_eq_neg_singular]
       ring
-    · rw [dweierstrass_dy]
+    · rw [dweierstrassDy]
       apply nzero_mul_left_cancel e.c4 _ _ hc4
       simp only [div_eq_mul_inv, mul_zero]
       rw [show c4 e * (2 * ((b2 e * b5 e + 3 * b7 e) * (c4 e)⁻¹)
@@ -756,38 +762,38 @@ Proposition 1.5.4 of Elliptic Curve Handbook, Ian Connell February, 1999,
 https://www.math.rug.nl/~top/ian.pdf
 -/
 noncomputable
-def move_singular_point_to_origin_triple [PerfectRing K] (e : Model K) : K × K × K :=
-⟨(singular_point e).1, 0, (singular_point e).2⟩
+def moveSingularPointToOriginTriple [PerfectRing K] (e : Model K) : K × K × K :=
+⟨(singularPoint e).1, 0, (singularPoint e).2⟩
 
 /-- The model obtained from `e` by the change of coordinates that moves its
 singular point to the origin. -/
 noncomputable
-def move_singular_point_to_origin_iso [PerfectRing K] (e : Model K) : Model K :=
-rst_triple e (move_singular_point_to_origin_triple e)
+def moveSingularPointToOriginIso [PerfectRing K] (e : Model K) : Model K :=
+rstTriple e (moveSingularPointToOriginTriple e)
 
-lemma move_singular_point (e : Model K) (r t : K) {P : K × K} (h : is_singular_point e P) :
-  is_singular_point (rst_iso r 0 t e) (var_change (-r) 0 (-t) P) :=
+lemma move_singularPoint (e : Model K) (r t : K) {P : K × K} (h : isSingularPoint e P) :
+  isSingularPoint (rstIso r 0 t e) (varChange (-r) 0 (-t) P) :=
 by
-  rw [is_singular_point, weierstrass_iso_eq_var_change,
-    dweierstrass_dx_iso_eq_var_change, zero_mul, add_zero,
-    dweierstrass_dy_iso_eq_var_change, var_change_comp]
+  rw [isSingularPoint, weierstrass_iso_eq_varChange,
+    dweierstrassDx_iso_eq_varChange, zero_mul, add_zero,
+    dweierstrassDy_iso_eq_varChange, varChange_comp]
   simpa
 
-lemma move_singular_point_to_origin [PerfectRing K] (e : Model K) (h : e.discr = 0) :
-  is_singular_point (move_singular_point_to_origin_iso e) (0, 0) :=
+lemma move_singularPoint_to_origin [PerfectRing K] (e : Model K) (h : e.discr = 0) :
+  isSingularPoint (moveSingularPointToOriginIso e) (0, 0) :=
 by
-  rw [move_singular_point_to_origin_iso, rst_triple, move_singular_point_to_origin_triple]
-  convert move_singular_point e (singular_point e).fst (singular_point e).snd
-    (is_singular_point_singular_point e h) using 2 <;> -- TODO convert does too much here
-  simp [var_change]
+  rw [moveSingularPointToOriginIso, rstTriple, moveSingularPointToOriginTriple]
+  convert move_singularPoint e (singularPoint e).fst (singularPoint e).snd
+    (isSingularPoint_singularPoint e h) using 2 <;> -- TODO convert does too much here
+  simp [varChange]
 
-lemma move_singular_point_to_origin' [PerfectRing K] (e : Model K) :
-  (∃ P, is_singular_point e P) →
-    is_singular_point (move_singular_point_to_origin_iso e) (0, 0) :=
+lemma move_singularPoint_to_origin' [PerfectRing K] (e : Model K) :
+  (∃ P, isSingularPoint e P) →
+    isSingularPoint (moveSingularPointToOriginIso e) (0, 0) :=
 by
   rintro ⟨P, hP⟩
   have hd := discr_eq_zero_of_singular e hP
-  exact move_singular_point_to_origin e hd
+  exact move_singularPoint_to_origin e hd
 
 end Field
 

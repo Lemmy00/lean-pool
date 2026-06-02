@@ -209,7 +209,7 @@ theorem Psi.one [hφ : φ.IsFaithfulPosMap] :
   apply_fun (oneMapTranspose : ℍ ⊗[ℂ] ℍᵐᵒᵖ ≃⋆ₐ[ℂ] _) using StarAlgEquiv.injective _
   ext i j
   simp only [← oneMapTranspose_symm_eq, StarAlgEquiv.apply_symm_apply, map_sum,
-    Module.Dual.IsFaithfulPosMap.psi, QuantumSet.Psi_apply, QuantumSet.Psi_toFun_apply,
+    Module.Dual.IsFaithfulPosMap.psi, QuantumSet.Psi_apply, QuantumSet.PsiToFun_apply,
     oneMapTranspose_apply]
   have hbasis : hφ.basis = hφ.orthonormalBasis.toBasis := by
     ext ij i j
@@ -276,7 +276,7 @@ theorem one_map_transpose_psi_eq [hφ : φ.IsFaithfulPosMap] (A : l(ℍ)) :
       _ = A := by rw [LinearMap.comp_one]
   nth_rw 1 [← this]
   simp_rw [map_sum, Module.Dual.IsFaithfulPosMap.psi, QuantumSet.Psi_apply,
-    QuantumSet.Psi_toFun_apply]
+    QuantumSet.PsiToFun_apply]
   have hzero :
     ∀ x x_1,
       (modAut 0) (A (stdBasisMatrix x x_1 1 * hφ.matrixIsPosDef.rpow (-(1 / 2)))) =
@@ -287,7 +287,7 @@ theorem one_map_transpose_psi_eq [hφ : φ.IsFaithfulPosMap] (A : l(ℍ)) :
     intro x x_1
     simp [starAlgebra.modAut_zero]
   simp_rw [hzero, TensorProduct.map_tmul, Module.End.one_apply, ← TensorProduct.map_tmul A,
-    ← QuantumSet.Psi_toFun_apply, ← QuantumSet.Psi_apply, ← map_sum, ← Finset.sum_product',
+    ← QuantumSet.PsiToFun_apply, ← QuantumSet.Psi_apply, ← map_sum, ← Finset.sum_product',
     ← Module.Dual.IsFaithfulPosMap.orthonormalBasis_apply, Finset.univ_product_univ,
     rankOne.sum_orthonormalBasis_eq_id_lm]
   have hPsi := @Psi.one n _ _ φ hφ

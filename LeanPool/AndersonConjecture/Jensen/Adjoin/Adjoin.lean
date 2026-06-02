@@ -337,17 +337,17 @@ private def adjoin_surjectivity_proof
               (hQ_le_span (Ideal.subset_span (Set.mem_singleton _))))
           have hQ_lt_P : Q < P := lt_of_le_of_ne hQ_le_P hQ_ne_P
           have h_bot_lt_Q : (⊥ : Ideal T) < Q := bot_lt_iff_ne_bot.mpr hQ_ne_bot
-          have h2 := @Ideal.primeHeight_add_one_le_of_lt T _ Q P hQ_prime hP_prime hQ_lt_P
-          rw [Ideal.height_eq_primeHeight] at hP_ht
-          have h4 : (2 : ℕ∞) ≤ P.primeHeight :=
+          have h2 := @Ideal.height_add_one_le_of_lt_of_isPrime T _ Q P hQ_prime hP_prime hQ_lt_P
+          have h4 : (2 : ℕ∞) ≤ P.height :=
             calc (2 : ℕ∞) = 0 + 1 + 1 := by norm_num
-              _ ≤ (⊥ : Ideal T).primeHeight + 1 + 1 := by gcongr
-                                                          exact zero_le _
-              _ ≤ Q.primeHeight + 1 := by
+              _ ≤ (⊥ : Ideal T).height + 1 + 1 := by
+                gcongr
+                exact zero_le
+              _ ≤ Q.height + 1 := by
                   gcongr
-                  exact @Ideal.primeHeight_add_one_le_of_lt T _ ⊥ Q
+                  exact @Ideal.height_add_one_le_of_lt_of_isPrime T _ ⊥ Q
                     Ideal.isPrime_bot hQ_prime h_bot_lt_Q
-              _ ≤ P.primeHeight := h2
+              _ ≤ P.height := h2
           exact not_lt.mpr h4 (by exact_mod_cast hP_ht.trans_lt (by norm_num))
         have hP_assoc : P ∈ associatedPrimes T (T ⧸ Ideal.span {(r₀ : T)}) := by
           have hsub := Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes

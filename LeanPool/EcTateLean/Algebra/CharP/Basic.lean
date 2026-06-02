@@ -7,6 +7,12 @@ Authors: Alex J. Best
 import LeanPool.EcTateLean.Algebra.Ring.Basic
 import Mathlib.Algebra.CharP.Lemmas
 
+/-!
+# LeanPool.EcTateLean.Algebra.CharP.Basic
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Algebra.CharP.Basic`.
+-/
+
 lemma ringChar_is_zero_or_prime (R : Type _) [NonAssocSemiring R] [NoZeroDivisors R]
     [Nontrivial R] : ringChar R = 0 ∨ Nat.Prime (ringChar R) :=
   (CharP.char_is_prime_or_zero R (ringChar R)).symm

@@ -111,7 +111,7 @@ lemma distrib_cases
   apply Chain.ext
   funext n
   dsimp only [distrib]
-  have := (OrderHomClass.mono c) (zero_le n)
+  have := (OrderHomClass.mono c) (Nat.zero_le n)
   cases h₀ : c 0 with
   | inl x =>
     cases hₙ : c n with

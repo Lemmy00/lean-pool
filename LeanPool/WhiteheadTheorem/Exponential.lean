@@ -8,6 +8,12 @@ import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Category.TopCat.Limits.Products
 
+/-!
+# LeanPool.WhiteheadTheorem.Exponential
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Exponential`.
+-/
+
 open CategoryTheory
 open scoped Topology
 

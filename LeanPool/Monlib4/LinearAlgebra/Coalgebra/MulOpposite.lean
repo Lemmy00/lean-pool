@@ -9,6 +9,12 @@ import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
 import LeanPool.Monlib4.LinearAlgebra.Coalgebra.Lemmas
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.Coalgebra.MulOpposite
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.Coalgebra.MulOpposite`.
+-/
+
 open scoped TensorProduct
 
 /-- The tensor product of multiplicative opposites as the opposite of a tensor product. -/
@@ -17,10 +23,10 @@ noncomputable def TensorProduct.opLinearEquiv
   [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] :
     (A ⊗[R] B)ᵐᵒᵖ ≃ₗ[R] Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ :=
-(MulOpposite.opLinearEquiv R).symm.trans
-(LinearEquiv.TensorProduct.map
-  (MulOpposite.opLinearEquiv R)
-  (MulOpposite.opLinearEquiv R))
+  (MulOpposite.opLinearEquiv R (M := A ⊗[R] B)).symm.trans
+    (LinearEquiv.TensorProduct.map
+      (MulOpposite.opLinearEquiv R)
+      (MulOpposite.opLinearEquiv R))
 
 @[simp]
 lemma TensorProduct.opLinearEquiv_tmul
@@ -106,7 +112,7 @@ by
     intro x y
     simp
 
-private lemma coassoc_aux_3
+private lemma coassoc_aux3
   {R A : Type*} [CommSemiring R]
   [AddCommMonoid A]
   [Module R A] :
@@ -182,7 +188,7 @@ by
         ∘ₗ ((TensorProduct.assoc R _ _ _).toLinearMap
         ∘ₗ (comul (R:=R) (A:=A)).rTensor _
         ∘ₗ (comul (R:=R) (A:=A))) ∘ₗ (MulOpposite.opLinearEquiv R).symm.toLinearMap := by
-          rw [coassoc_aux_3]
+          rw [coassoc_aux3]
           simp only [LinearMap.comp_assoc]
     _ = TensorProduct.map (MulOpposite.opLinearEquiv R).toLinearMap
         ((TensorProduct.map (MulOpposite.opLinearEquiv R).toLinearMap

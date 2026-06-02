@@ -5,6 +5,12 @@ Authors: Vincent Trélat
 -/
 
 import Mathlib.CategoryTheory.Category.Basic
+
+/-!
+# LeanPool.ZFLean.Tactics
+
+Imported Lean Pool material for `LeanPool.ZFLean.Tactics`.
+-/
 /-- Imported ZFLean declaration. -/
 register_label_attr zrel
 /-- Imported ZFLean declaration. -/

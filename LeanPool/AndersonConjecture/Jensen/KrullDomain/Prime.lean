@@ -56,10 +56,10 @@ lemma not_mem_associatedPrime_of_ndvd
     have hbot_lt := bot_lt_iff_ne_bot.mpr hspan_ne
     have hbot_fin : (⊥ : Ideal R.carrier).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
-    have h0 := @Ideal.height_strict_mono_of_is_prime R.carrier _
+    have h0 := @Ideal.height_strict_mono_of_isPrime R.carrier _
       (⊥ : Ideal R.carrier) (Ideal.span {r}) Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
-    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hspan_ht
+    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hspan_ht
     rw [hspan_ht] at h0
     exact lt_irrefl _ h0
   have hy_comap : y ∈ P.comap R.carrier.subtype := hy_P
@@ -220,10 +220,10 @@ theorem coprime_not_both_in_prime (R : NSubring T)
     have hbot_fin : (⊥ : Ideal R.carrier).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
     have h0 : (⊥ : Ideal R.carrier).height < (Ideal.span {q}).height :=
-      @Ideal.height_strict_mono_of_is_prime R.carrier _ (⊥ : Ideal R.carrier)
+      @Ideal.height_strict_mono_of_isPrime R.carrier _ (⊥ : Ideal R.carrier)
         (Ideal.span {q}) Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
-    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hspan_height
+    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hspan_height
     rw [hspan_height] at h0
     exact lt_irrefl _ h0
   have hy₁_span : y₁ ∈ Ideal.span {q} := hspan_eq ▸ hy₁_comap

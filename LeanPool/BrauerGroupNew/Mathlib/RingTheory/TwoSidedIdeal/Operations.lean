@@ -6,6 +6,13 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+Imported Lean Pool material for
+`LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Operations`.
+-/
+
 open Function
 
 namespace TwoSidedIdeal

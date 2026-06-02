@@ -7,7 +7,6 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import Mathlib.MeasureTheory.Measure.Prod
 import LeanPool.QuasiBorelSpaces.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
-import LeanPool.QuasiBorelSpaces.Basic
 import LeanPool.QuasiBorelSpaces.OmegaQuasiBorelSpace
 
 

@@ -288,7 +288,7 @@ noncomputable instance : CommRing ZFInt where
   zsmul_succ' _ _ := add_comm _ _
   zsmul_neg' _ _ := rfl
   neg_add_cancel _ := add_left_neg
-instance int_lt : LT ZFInt where
+instance intLt : LT ZFInt where
   lt x y := Quotient.liftOn₂ x y
     (fun ⟨a, b⟩ ⟨c, d⟩ => a + d < b + c) fun ⟨a, b⟩ ⟨c, d⟩ ⟨s, t⟩ ⟨u, v⟩ h₁ h₂ => by
       replace h₁ : a + t = b + s := h₁
@@ -314,7 +314,7 @@ instance int_lt : LT ZFInt where
         conv_lhs at lt => rw [ZFNat.add_comm, ZFNat.add_assoc, h₂, ZFNat.add_comm, ZFNat.add_assoc]
         conv_rhs at lt => rw [ZFNat.add_comm, ZFNat.add_comm u, ZFNat.add_assoc]
         rwa [ZFNat.add_lt_add_iff_right, ZFNat.add_comm c] at lt
-instance int_le : LE ZFInt where
+instance intLe : LE ZFInt where
   le x y := x < y ∨ x = y
 theorem lt_succ {n : ZFInt} : n < n + 1 := by
   induction n using Quotient.ind with
@@ -448,7 +448,7 @@ theorem le_neg_iff {a b : ZFInt} : a ≤ b ↔ -b ≤ -a := by
       right
       rwa [eq, ZFSet.zrel, ZFNat.add_comm a₁, ZFNat.add_comm a₂]
 noncomputable instance : LinearOrder ZFInt where
-  le := int_le.le
+  le := intLe.le
   le_refl x := Or.inr rfl
   le_trans _ _ _ := le_trans
   le_antisymm _ _ := le_antisymm
@@ -469,7 +469,7 @@ noncomputable instance : AddCommGroup ZFInt where
   neg_add_cancel := @add_left_neg
   add_comm := @add_comm
 instance : PartialOrder ZFInt where
-  le := int_le.le
+  le := intLe.le
   le_refl := le_refl
   le_trans := @le_trans
   lt_iff_le_not_ge := @lt_iff_le_not_ge
@@ -636,7 +636,7 @@ theorem lt_succ_of_le (n m : ZFInt) : n ≤ m → n < m + 1 := by
 theorem lt_succ_of_le_iff (n m : ZFInt) : n ≤ m ↔ n < m + 1 where
   mp := lt_succ_of_le n m
   mpr := le_of_lt_succ n m
-theorem _root_.ZFSet.ZFInt.int_le.dest {n m : ZFInt} : n ≤ m → ∃ k, 0 ≤ k ∧ n + k = m := by
+theorem _root_.ZFSet.ZFInt.intLe.dest {n m : ZFInt} : n ≤ m → ∃ k, 0 ≤ k ∧ n + k = m := by
   intro h
   exists m - n
   and_intros
@@ -706,7 +706,7 @@ theorem mul_nonpos_nonpos_nonneg (a b : ZFInt) (ha : a ≤ 0) (hb : b ≤ 0) : 0
   rw [mul_neg_neg]
   exact mul_nonneg_nonneg_nonneg _ _ (neg_nonneg.mpr ha) (neg_nonneg.mpr hb)
 theorem mul_le_mul_left {n m : ZFInt} (k : ZFInt) (h : n ≤ m) (h' : 0 ≤ k) : k * n ≤ k * m := by
-  obtain ⟨l, pos, hl⟩ := int_le.dest h
+  obtain ⟨l, pos, hl⟩ := intLe.dest h
   have : k * n + k * l = k * m := by rw [←hl, left_distrib]
   rw [←this]
   apply le_add_of_nonneg_right
@@ -836,7 +836,7 @@ noncomputable instance : CommRing ZFInt where
   zsmul_succ' x y := add_comm y (nsmul x y)
   neg_add_cancel := @add_left_neg
 instance : PartialOrder ZFInt where
-  le := int_le.le
+  le := intLe.le
   le_refl := le_refl
   le_trans := @le_trans
   le_antisymm := @le_antisymm
@@ -875,7 +875,7 @@ def PInt' : PSet := ⟨ULift ℤ, fun n => ofInt' n.down⟩
 def Int' : ZFSet := ZFSet.mk PInt'
 theorem _root_.ZFSet.ZFNat.mem_lift_lift_Nat (n : ℕ) : ↑(↑n : ZFNat) ∈ Nat := by
   induction n with
-  | zero => simp only [Nat.cast_zero, ZFNat.nat_zero_eq, ZFNat.zero_in_Nat]
+  | zero => simp only [Nat.cast_zero, ZFNat.natZero_eq, ZFNat.zero_in_Nat]
   | succ n ih =>
     simp only [Nat.cast_succ, ZFNat.add_one_eq_succ, ZFNat.succ]
     exact ZFNat.succ_mem_Nat' ih
@@ -1272,7 +1272,7 @@ theorem _root_.ZFSet.ZFInt.exists_mono_bij :
   · exact Equiv.bijective f
   · intro x y
     unfold f
-    dsimp [LT.lt, instLTSubtypeMemInt, int_lt]
+    dsimp [LT.lt, instLTSubtypeMemInt, intLt]
     apply Eq.to_iff
     congr
     · exact Equiv.symm_apply_apply (Classical.choice _) x

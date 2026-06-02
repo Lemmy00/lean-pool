@@ -7,6 +7,12 @@ Authors: Monica Omar
 import LeanPool.Monlib4.LinearAlgebra.QuantumSet.Basic
 import Mathlib.RingTheory.Coalgebra.Basic
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.QuantumSet.DeltaForm
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.QuantumSet.DeltaForm`.
+-/
+
 open scoped ComplexOrder
 
 open Coalgebra
@@ -22,7 +28,7 @@ class QuantumSetDeltaForm (A : Type*) [starAlgebra A] [QuantumSet A] [CoalgebraS
 
 /-- In delta form, `m ∘ comul` is invertible. -/
 @[reducible, instance]
-noncomputable def QuantumSet.DeltaForm.mul_comp_comul_isInvertible {A : Type*} [starAlgebra A]
+noncomputable def QuantumSet.DeltaForm.mulCompComulIsInvertible {A : Type*} [starAlgebra A]
   [QuantumSet A] [CoalgebraStruct ℂ A] [FiniteDimensional ℂ A] [hA2 : QuantumSetDeltaForm A] :
   Invertible (LinearMap.mul' ℂ A ∘ₗ Coalgebra.comul) :=
 by

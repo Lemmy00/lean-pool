@@ -26,8 +26,8 @@ noncomputable section
 
 -- T is local since it's a quotient of a local ring by a proper ideal
 instance T_isLocalRing : IsLocalRing T := by
-  have : Nontrivial T := Ideal.Quotient.nontrivial_iff.mpr conj_I_ne_top
-  exact IsLocalRing.of_surjective' (Ideal.Quotient.mk conj_I) Ideal.Quotient.mk_surjective
+  have : Nontrivial T := Ideal.Quotient.nontrivial_iff.mpr conjI_ne_top
+  exact IsLocalRing.of_surjective' (Ideal.Quotient.mk conjI) Ideal.Quotient.mk_surjective
 
 noncomputable instance : IsNoetherianRing (MvPowerSeries (Fin 1) ℂ) :=
   isNoetherianRing_of_ringEquiv (PowerSeries ℂ)
@@ -210,14 +210,14 @@ lemma mvPowerSeries_fin3_isNoetherianRing :
 -- T is Noetherian as a quotient of a Noetherian ring
 instance T_isNoetherianRing : IsNoetherianRing T :=
   @isNoetherianRing_of_surjective (MvPowerSeries (Fin 3) ℂ) _ T _
-    (Ideal.Quotient.mk conj_I) Ideal.Quotient.mk_surjective mvPowerSeries_fin3_isNoetherianRing
+    (Ideal.Quotient.mk conjI) Ideal.Quotient.mk_surjective mvPowerSeries_fin3_isNoetherianRing
 
 section AdicComplete
 
 open MvPowerSeries Finset Finsupp
 
 /-- Local abbreviation for the maximal ideal of `ℂ[[x,y,z]] = MvPowerSeries (Fin 3) ℂ`. -/
-abbrev M_PS := IsLocalRing.maximalIdeal (MvPowerSeries (Fin 3) ℂ)
+abbrev MPS := IsLocalRing.maximalIdeal (MvPowerSeries (Fin 3) ℂ)
 
 /-- Total degree of a monomial exponent vector `d : Fin 3 →₀ ℕ`. -/
 abbrev tdeg (d : Fin 3 →₀ ℕ) : ℕ := d.sum fun _ k => k
@@ -226,18 +226,18 @@ lemma tdeg_add (a b : Fin 3 →₀ ℕ) :
     tdeg (a + b) = tdeg a + tdeg b := by
   simp [tdeg, Finsupp.sum_add_index']
 
-lemma constantCoeff_eq_zero_of_mem_M_PS
+lemma constantCoeff_eq_zero_of_mem_MPS
     {m : MvPowerSeries (Fin 3) ℂ}
-    (hm : m ∈ M_PS) :
+    (hm : m ∈ MPS) :
     MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ) m = 0 := by
   simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, isUnit_iff_constantCoeff] at hm
   by_contra h
   exact hm (IsUnit.mk0 _ h)
 
--- If f ∈ M_PS^n then all coefficients at degree < n vanish
-lemma coeff_eq_zero_of_mem_M_PS_pow
+-- If f ∈ MPS^n then all coefficients at degree < n vanish
+lemma coeff_eq_zero_of_mem_MPS_pow
     {f : MvPowerSeries (Fin 3) ℂ} {n : ℕ}
-    (hf : f ∈ M_PS ^ n) :
+    (hf : f ∈ MPS ^ n) :
     ∀ d : Fin 3 →₀ ℕ, tdeg d < n → coeff d f = 0 := by
   induction hf using Submodule.pow_induction_on_left' with
   | algebraMap r => intro d hd
@@ -251,11 +251,11 @@ lemma coeff_eq_zero_of_mem_M_PS_pow
     apply Finset.sum_eq_zero
     intro ⟨a, b⟩ hab
     rw [Finset.mem_antidiagonal] at hab
-    -- Case split: if a = 0 then coeff 0 m = 0 since m ∈ M_PS; else tdeg b < i
+    -- Case split: if a = 0 then coeff 0 m = 0 since m ∈ MPS; else tdeg b < i
     by_cases ha : a = 0
     · subst ha
       rw [show coeff (0 : Fin 3 →₀ ℕ) m = constantCoeff m from rfl,
-          constantCoeff_eq_zero_of_mem_M_PS hm, zero_mul]
+          constantCoeff_eq_zero_of_mem_MPS hm, zero_mul]
     · have ha_pos : 1 ≤ tdeg a := by
         have := Finsupp.support_nonempty_iff.mpr ha
         obtain ⟨j, hj⟩ := this
@@ -267,15 +267,15 @@ lemma coeff_eq_zero_of_mem_M_PS_pow
         omega
       rw [ih b hb, mul_zero]
 
--- Converse: vanishing coefficients at degree < n implies f ∈ M_PS^n
-lemma mem_M_PS_pow_of_coeff_vanish
+-- Converse: vanishing coefficients at degree < n implies f ∈ MPS^n
+lemma mem_MPS_pow_of_coeff_vanish
     (f : MvPowerSeries (Fin 3) ℂ) (n : ℕ)
     (hf : ∀ d : Fin 3 →₀ ℕ, tdeg d < n → coeff d f = 0) :
-    f ∈ M_PS ^ n := by
+    f ∈ MPS ^ n := by
   induction n generalizing f with
   | zero => simp [pow_zero]
   | succ n ih =>
-    -- Decompose f = X₀g₀ + X₁g₁ + X₂g₂ where g_i ∈ M_PS^n by induction
+    -- Decompose f = X₀g₀ + X₁g₁ + X₂g₂ where g_i ∈ MPS^n by induction
     have hconst : MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ) f = 0 :=
       hf 0 (by simp [tdeg, Finsupp.sum])
     let g₀ : MvPowerSeries (Fin 3) ℂ := fun m => coeff (m + single 0 1) f
@@ -283,13 +283,13 @@ lemma mem_M_PS_pow_of_coeff_vanish
       if m 0 = 0 then coeff (m + single 1 1) f else 0
     let g₂ : MvPowerSeries (Fin 3) ℂ := fun m =>
       if m 0 = 0 ∧ m 1 = 0 then coeff (m + single 2 1) f else 0
-    have hg₀ : g₀ ∈ M_PS ^ n := ih _ fun d hd => by
+    have hg₀ : g₀ ∈ MPS ^ n := ih _ fun d hd => by
       change coeff (d + single 0 1) f = 0
       exact hf _ (by
                     rw [tdeg_add]
                     simp [tdeg, Finsupp.sum_single_index]
                     omega)
-    have hg₁ : g₁ ∈ M_PS ^ n := ih _ fun d hd => by
+    have hg₁ : g₁ ∈ MPS ^ n := ih _ fun d hd => by
       change (if d 0 = 0 then coeff (d + single 1 1) f else 0) = 0
       split
       · exact hf _ (by
@@ -297,7 +297,7 @@ lemma mem_M_PS_pow_of_coeff_vanish
                       simp [tdeg, Finsupp.sum_single_index]
                       omega)
       · rfl
-    have hg₂ : g₂ ∈ M_PS ^ n := ih _ fun d hd => by
+    have hg₂ : g₂ ∈ MPS ^ n := ih _ fun d hd => by
       change (if d 0 = 0 ∧ d 1 = 0 then coeff (d + single 2 1) f else 0) = 0
       split
       · exact hf _ (by
@@ -305,21 +305,21 @@ lemma mem_M_PS_pow_of_coeff_vanish
                       simp [tdeg, Finsupp.sum_single_index]
                       omega)
       · rfl
-    have hfM : f ∈ M_PS := by
+    have hfM : f ∈ MPS := by
       rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, isUnit_iff_constantCoeff, hconst]
       exact not_isUnit_zero
-    -- Decompose f = X₀g₀ + X₁g₁ + X₂g₂; each X_i*g_i ∈ M_PS^(n+1)
+    -- Decompose f = X₀g₀ + X₁g₁ + X₂g₂; each X_i*g_i ∈ MPS^(n+1)
     suffices hdecomp : f = X 0 * g₀ + X 1 * g₁ + X 2 * g₂ by
       rw [hdecomp]
-      have hX : ∀ (i : Fin 3), X i ∈ M_PS := fun i => by
+      have hX : ∀ (i : Fin 3), X i ∈ MPS := fun i => by
         rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, isUnit_iff_constantCoeff,
             constantCoeff_X]
         exact not_isUnit_zero
-      have key : ∀ (i : Fin 3) (g : MvPowerSeries (Fin 3) ℂ), g ∈ M_PS ^ n →
-          X i * g ∈ M_PS ^ (n + 1) := fun i g hg => by
+      have key : ∀ (i : Fin 3) (g : MvPowerSeries (Fin 3) ℂ), g ∈ MPS ^ n →
+          X i * g ∈ MPS ^ (n + 1) := fun i g hg => by
         have := Ideal.mul_mem_mul (hX i) hg
-        rwa [show M_PS * M_PS ^ n = M_PS ^ (n + 1) from
-          (Ideal.IsTwoSided.pow_succ (I := M_PS) n).symm] at this
+        rwa [show MPS * MPS ^ n = MPS ^ (n + 1) from
+          (Ideal.IsTwoSided.pow_succ (I := MPS) n).symm] at this
       exact Ideal.add_mem _
         (Ideal.add_mem _ (key 0 g₀ hg₀) (key 1 g₁ hg₁)) (key 2 g₂ hg₂)
     ext m
@@ -411,13 +411,13 @@ lemma mem_M_PS_pow_of_coeff_vanish
           exact hconst
 
 -- Precompleteness: coefficients stabilize, so define limit coefficientwise
-lemma mvPS_isPrecomplete : IsPrecomplete M_PS (MvPowerSeries (Fin 3) ℂ) := by
+lemma mvPS_isPrecomplete : IsPrecomplete MPS (MvPowerSeries (Fin 3) ℂ) := by
   rw [isPrecomplete_iff]
   intro f hcauchy
   -- L(d) = coeff d (f(tdeg d + 1)); coefficients stabilize past tdeg d
   refine ⟨fun d => coeff d (f (tdeg d + 1)), fun n => ?_⟩
   rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top]
-  apply mem_M_PS_pow_of_coeff_vanish
+  apply mem_MPS_pow_of_coeff_vanish
   intro d hd
   simp only [map_sub, MvPowerSeries.coeff_apply]
   change coeff d (f n) - coeff d (f (tdeg d + 1)) = 0
@@ -425,7 +425,7 @@ lemma mvPS_isPrecomplete : IsPrecomplete M_PS (MvPowerSeries (Fin 3) ℂ) := by
   by_cases hn : tdeg d + 1 ≤ n
   · have h := hcauchy hn
     rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at h
-    have hcoeff := coeff_eq_zero_of_mem_M_PS_pow h d (by omega)
+    have hcoeff := coeff_eq_zero_of_mem_MPS_pow h d (by omega)
     simp only [map_sub] at hcoeff
     exact sub_eq_zero.mp hcoeff |>.symm
   · push Not at hn
@@ -435,15 +435,15 @@ lemma mvPS_isPrecomplete : IsPrecomplete M_PS (MvPowerSeries (Fin 3) ℂ) := by
 lemma T_isPrecomplete : IsPrecomplete (IsLocalRing.maximalIdeal T) T := by
   rw [isPrecomplete_iff]
   intro f hcauchy
-  have M_T_eq : IsLocalRing.maximalIdeal T = M_PS.map (Ideal.Quotient.mk conj_I) :=
+  have M_T_eq : IsLocalRing.maximalIdeal T = MPS.map (Ideal.Quotient.mk conjI) :=
     (IsLocalRing.map_maximalIdeal_of_surjective _ Ideal.Quotient.mk_surjective).symm
   have M_T_pow_eq : ∀ k, (IsLocalRing.maximalIdeal T) ^ k =
-      (M_PS ^ k).map (Ideal.Quotient.mk conj_I) := by
+      (MPS ^ k).map (Ideal.Quotient.mk conjI) := by
     intro k
     rw [M_T_eq, Ideal.map_pow]
-  -- Lift elements of (maximalIdeal T)^k to M_PS^k via surjectivity of mk
+  -- Lift elements of (maximalIdeal T)^k to MPS^k via surjectivity of mk
   have lift_mem : ∀ (x : T) (k : ℕ), x ∈ (IsLocalRing.maximalIdeal T) ^ k →
-      ∃ y, y ∈ M_PS ^ k ∧ Ideal.Quotient.mk conj_I y = x := by
+      ∃ y, y ∈ MPS ^ k ∧ Ideal.Quotient.mk conjI y = x := by
     intro x k hx
     rw [M_T_pow_eq] at hx
     exact (Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective).mp hx
@@ -452,31 +452,31 @@ lemma T_isPrecomplete : IsPrecomplete (IsLocalRing.maximalIdeal T) T := by
     intro n
     have h := hcauchy (Nat.le_succ n)
     rwa [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at h
-  have : ∀ n, ∃ δ, δ ∈ M_PS ^ n ∧ Ideal.Quotient.mk conj_I δ = f n - f (n + 1) := by
+  have : ∀ n, ∃ δ, δ ∈ MPS ^ n ∧ Ideal.Quotient.mk conjI δ = f n - f (n + 1) := by
     intro n
     exact lift_mem _ n (diff_mem n)
   choose δ hδ_mem hδ_eq using this
   -- Define g by accumulating lifts: g n = g0 - ∑_{i<n} δ i
   let g : ℕ → MvPowerSeries (Fin 3) ℂ := fun n => g0 - ∑ i ∈ Finset.range n, δ i
   -- Verify mk(g n) = f n by telescoping: mk(δ i) = f i - f(i+1)
-  have hg_mk : ∀ n, Ideal.Quotient.mk conj_I (g n) = f n := by
+  have hg_mk : ∀ n, Ideal.Quotient.mk conjI (g n) = f n := by
     intro n
     induction n with
     | zero => simp only [g, Finset.range_zero, Finset.sum_empty, sub_zero]
               exact hg0
     | succ n ihn =>
-      change Ideal.Quotient.mk conj_I (g0 - ∑ i ∈ Finset.range (n + 1), δ i) = f (n + 1)
+      change Ideal.Quotient.mk conjI (g0 - ∑ i ∈ Finset.range (n + 1), δ i) = f (n + 1)
       rw [Finset.sum_range_succ, ← sub_sub, map_sub, map_sub, map_sum]
-      conv_lhs => rw [show Ideal.Quotient.mk conj_I g0 -
-        ∑ x ∈ Finset.range n, Ideal.Quotient.mk conj_I (δ x) =
-        Ideal.Quotient.mk conj_I (g n) from by simp [g, map_sub, map_sum]]
+      conv_lhs => rw [show Ideal.Quotient.mk conjI g0 -
+        ∑ x ∈ Finset.range n, Ideal.Quotient.mk conjI (δ x) =
+        Ideal.Quotient.mk conjI (g n) from by simp [g, map_sub, map_sum]]
       rw [ihn, hδ_eq n, sub_sub_cancel]
-  -- g is Cauchy: δ i ∈ M_PS^i ⊆ M_PS^n for i ≥ n
-  have hg_cauchy : ∀ {m n : ℕ}, n ≤ m → g m - g n ∈ M_PS ^ n := by
+  -- g is Cauchy: δ i ∈ MPS^i ⊆ MPS^n for i ≥ n
+  have hg_cauchy : ∀ {m n : ℕ}, n ≤ m → g m - g n ∈ MPS ^ n := by
     intro m n hnm
     change (g0 - ∑ i ∈ Finset.range m, δ i) -
-      (g0 - ∑ i ∈ Finset.range n, δ i) ∈ M_PS ^ n
-    suffices h : ∑ i ∈ Finset.range m \ Finset.range n, δ i ∈ M_PS ^ n by
+      (g0 - ∑ i ∈ Finset.range n, δ i) ∈ MPS ^ n
+    suffices h : ∑ i ∈ Finset.range m \ Finset.range n, δ i ∈ MPS ^ n by
       have calc_eq : (g0 - ∑ i ∈ Finset.range m, δ i) - (g0 - ∑ i ∈ Finset.range n, δ i) =
           -(∑ i ∈ Finset.range m \ Finset.range n, δ i) := by
         rw [← Finset.sum_sdiff (Finset.range_mono hnm)]
@@ -490,14 +490,14 @@ lemma T_isPrecomplete : IsPrecomplete (IsLocalRing.maximalIdeal T) T := by
   -- Use MvPowerSeries precompleteness to get limit G, then project to T
   have hprec := mvPS_isPrecomplete.prec' (f := g)
   have hcauchyG : ∀ {m n : ℕ}, m ≤ n → g m ≡ g n
-      [SMOD (M_PS ^ m • ⊤ :
+      [SMOD (MPS ^ m • ⊤ :
         Submodule (MvPowerSeries (Fin 3) ℂ) (MvPowerSeries (Fin 3) ℂ))] := by
     intro m n hmn
     rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top]
     have h := hg_cauchy hmn
     rwa [show g m - g n = -(g n - g m) by ring, neg_mem_iff]
   obtain ⟨G, hG⟩ := hprec hcauchyG
-  refine ⟨Ideal.Quotient.mk conj_I G, fun n => ?_⟩
+  refine ⟨Ideal.Quotient.mk conjI G, fun n => ?_⟩
   rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top, M_T_pow_eq]
   rw [← hg_mk n, ← map_sub]
   exact Ideal.mem_map_of_mem _ (by
@@ -678,11 +678,11 @@ lemma gen_mem_maximalIdeal :
 -- Injectivity of ℂ → MvPowerSeries → T: gen has zero constant term
 open MvPowerSeries in
 lemma cToT_injective : Function.Injective
-    ((Ideal.Quotient.mk conj_I).comp (MvPowerSeries.C (σ := Fin 3) (R := ℂ))) := by
+    ((Ideal.Quotient.mk conjI).comp (MvPowerSeries.C (σ := Fin 3) (R := ℂ))) := by
   intro a b hab
   simp only [RingHom.comp_apply] at hab
-  have hmem : C (σ := Fin 3) a - C (σ := Fin 3) b ∈ conj_I := Ideal.Quotient.eq.mp hab
-  rw [← map_sub, conj_I, Ideal.mem_span_singleton] at hmem
+  have hmem : C (σ := Fin 3) a - C (σ := Fin 3) b ∈ conjI := Ideal.Quotient.eq.mp hab
+  rw [← map_sub, conjI, Ideal.mem_span_singleton] at hmem
   obtain ⟨q, hq⟩ := hmem
   have h1 := congr_arg (constantCoeff (σ := Fin 3) (R := ℂ)) hq
   simp only [MvPowerSeries.constantCoeff_C, map_mul, map_sub, map_pow,
@@ -708,15 +708,15 @@ theorem T_card_eq : Cardinal.mk T = Cardinal.mk ℂ :=
 
 -- If mk(g) is a unit in T, then constantCoeff g is a unit in ℂ
 lemma unit_of_mk_unit_T (g : MvPowerSeries (Fin 3) ℂ)
-    (h : IsUnit (Ideal.Quotient.mk conj_I g)) : IsUnit (MvPowerSeries.constantCoeff g) := by
+    (h : IsUnit (Ideal.Quotient.mk conjI g)) : IsUnit (MvPowerSeries.constantCoeff g) := by
   obtain ⟨⟨u, v, huv, hvu⟩, hu⟩ := h
   obtain ⟨f₁, rfl⟩ := Ideal.Quotient.mk_surjective v
-  have h1 : g * f₁ - 1 ∈ conj_I := by
+  have h1 : g * f₁ - 1 ∈ conjI := by
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_one]
     exact sub_eq_zero.mpr (hu ▸ huv)
-  have hcc_I : ∀ x ∈ conj_I, MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ) x = 0 := by
+  have hcc_I : ∀ x ∈ conjI, MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ) x = 0 := by
     intro x hx
-    rw [conj_I, Ideal.mem_span_singleton] at hx
+    rw [conjI, Ideal.mem_span_singleton] at hx
     obtain ⟨c, rfl⟩ := hx
     simp [map_mul, map_sub, map_pow, MvPowerSeries.constantCoeff_X]
   have hcc := hcc_I _ h1
@@ -725,7 +725,7 @@ lemma unit_of_mk_unit_T (g : MvPowerSeries (Fin 3) ℂ)
 
 open MvPowerSeries in
 lemma mk_sub_C_mem_maxIdeal_T (f : MvPowerSeries (Fin 3) ℂ) :
-    Ideal.Quotient.mk conj_I (f - MvPowerSeries.C (σ := Fin 3) (constantCoeff f)) ∈
+    Ideal.Quotient.mk conjI (f - MvPowerSeries.C (σ := Fin 3) (constantCoeff f)) ∈
     IsLocalRing.maximalIdeal T := by
   rw [IsLocalRing.mem_maximalIdeal]
   intro hu
@@ -739,7 +739,7 @@ open MvPowerSeries in
 /-- The composite `ℂ →[C] MvPowerSeries (Fin 3) ℂ →[mk] T →[residue] T/M` from `ℂ` to the
 residue field of `T`. -/
 noncomputable def cToResT : ℂ →+* IsLocalRing.ResidueField T :=
-  (IsLocalRing.residue T).comp ((Ideal.Quotient.mk conj_I).comp (C (σ := Fin 3)))
+  (IsLocalRing.residue T).comp ((Ideal.Quotient.mk conjI).comp (C (σ := Fin 3)))
 
 -- Surjectivity: every class in T/M has a constant representative
 open MvPowerSeries in
@@ -749,9 +749,9 @@ lemma cToResT_surjective : Function.Surjective cToResT := by
   obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective t
   use constantCoeff f
   change (Ideal.Quotient.mk (IsLocalRing.maximalIdeal T))
-      ((Ideal.Quotient.mk conj_I) (C (constantCoeff f))) =
+      ((Ideal.Quotient.mk conjI) (C (constantCoeff f))) =
     (Ideal.Quotient.mk (IsLocalRing.maximalIdeal T))
-      ((Ideal.Quotient.mk conj_I) f)
+      ((Ideal.Quotient.mk conjI) f)
   rw [Ideal.Quotient.eq, ← map_sub]
   have : C (σ := Fin 3) (constantCoeff f) - f = -(f - C (constantCoeff f)) := by ring
   rw [this, map_neg]
@@ -763,13 +763,13 @@ lemma cToResT_injective : Function.Injective cToResT := by
   intro a b hab
   by_contra h
   change (Ideal.Quotient.mk (IsLocalRing.maximalIdeal T))
-      ((Ideal.Quotient.mk conj_I) (C (σ := Fin 3) a)) =
+      ((Ideal.Quotient.mk conjI) (C (σ := Fin 3) a)) =
     (Ideal.Quotient.mk (IsLocalRing.maximalIdeal T))
-      ((Ideal.Quotient.mk conj_I) (C (σ := Fin 3) b)) at hab
+      ((Ideal.Quotient.mk conjI) (C (σ := Fin 3) b)) at hab
   rw [Ideal.Quotient.eq, ← map_sub, ← map_sub] at hab
   rw [IsLocalRing.mem_maximalIdeal] at hab
   apply hab
-  apply (Ideal.Quotient.mk conj_I).isUnit_map
+  apply (Ideal.Quotient.mk conjI).isUnit_map
   rw [MvPowerSeries.isUnit_iff_constantCoeff, MvPowerSeries.constantCoeff_C]
   exact IsUnit.mk0 _ (sub_ne_zero.mpr h)
 

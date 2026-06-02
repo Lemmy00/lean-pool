@@ -12,3 +12,9 @@ import LeanPool.LeanPolyABC.Lib.Radical
 import LeanPool.LeanPolyABC.Corollaries.FltCatalan
 import LeanPool.LeanPolyABC.Corollaries.Davenport
 import LeanPool.LeanPolyABC.Corollaries.NoParametrization
+
+/-!
+# LeanPool.LeanPolyABC.All
+
+Imported Lean Pool material for `LeanPool.LeanPolyABC.All`.
+-/

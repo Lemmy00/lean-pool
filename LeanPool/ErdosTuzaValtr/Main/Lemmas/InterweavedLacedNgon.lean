@@ -9,6 +9,12 @@ import LeanPool.ErdosTuzaValtr.Lib.List.Default
 import LeanPool.ErdosTuzaValtr.Etv.Default
 import LeanPool.ErdosTuzaValtr.Main.Lemmas.JoinN2N2
 
+/-!
+# LeanPool.ErdosTuzaValtr.Main.Lemmas.InterweavedLacedNgon
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Main.Lemmas.InterweavedLacedNgon`.
+-/
+
 open OrderDual
 
 variable {α : Type _} [LinearOrder α] (C : Config α)

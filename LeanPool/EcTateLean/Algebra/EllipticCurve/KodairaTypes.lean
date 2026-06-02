@@ -6,6 +6,12 @@ Authors: Alex J. Best
 
 import Mathlib.Tactic.Basic
 
+/-!
+# LeanPool.EcTateLean.Algebra.EllipticCurve.KodairaTypes
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Algebra.EllipticCurve.KodairaTypes`.
+-/
+
 -- For imperfect residue fields of characteristic 2 or 3 there are new types:
 -- Z1, Z2, X1, X2, Y1, Y2, Y3, K n (n ≥ 2), K' n (even n ≥ 2), T n (n ≥ 1)
 
@@ -82,7 +88,7 @@ inductive ReductionType
 deriving DecidableEq, Repr, Inhabited
 
 /-- The integer code that the LMFDB uses for a reduction type. -/
-def ReductionType.to_lmfdb : ReductionType → Int
+def ReductionType.toLmfdb : ReductionType → Int
   | Good                   => unreachable! -- LMFDB has no code for good reduction
   | SplitMultiplicative    => 1
   | NonSplitMultiplicative => -1

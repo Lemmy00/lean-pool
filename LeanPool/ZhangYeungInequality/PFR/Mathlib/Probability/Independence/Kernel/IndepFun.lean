@@ -9,6 +9,13 @@ module
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Independence.Kernel.IndepFun
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.Independence.Kernel.IndepFun`.
+-/
+
 public section
 
 open MeasureTheory MeasurableSpace

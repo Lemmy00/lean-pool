@@ -11,9 +11,13 @@ import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Defs
 import Mathlib.CategoryTheory.Endofunctor.Algebra
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic
+import Aesop
+import Mathlib.Tactic.Linarith
 
 /-! ## Syntax of Basic Modal Logic
 

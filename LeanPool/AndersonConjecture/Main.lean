@@ -50,12 +50,12 @@ Key steps:
 - dim(A/aA) = 1, so not analytically irred. → not WQC (Anderson Cor 2 Part 3)
 -/
 
-/-- X₀ is not in conj_I = (x²-yz): coefficient at degree-1 monomial x is 1 for X₀
+/-- X₀ is not in conjI = (x²-yz): coefficient at degree-1 monomial x is 1 for X₀
     but 0 for any multiple of x²-yz (which has minimum degree 2). -/
-lemma X0_not_mem_conj_I :
-    (MvPowerSeries.X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ∉ conj_I := by
+lemma X0_not_mem_conjI :
+    (MvPowerSeries.X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ∉ conjI := by
   open MvPowerSeries in
-  rw [conj_I, Ideal.mem_span_singleton]
+  rw [conjI, Ideal.mem_span_singleton]
   intro ⟨f, hf⟩
   have h1 := MvPowerSeries.coeff_index_single_self_X (R := ℂ) (0 : Fin 3)
   have h2 := congr_arg (MvPowerSeries.coeff (σ := Fin 3) (R := ℂ) (Finsupp.single 0 1)) hf
@@ -79,16 +79,16 @@ lemma X0_not_mem_conj_I :
   rw [if_neg hle2, neg_zero] at h2
   exact one_ne_zero h2
 
-/-- Q is not the zero ideal of T. (xbar ≠ 0 since X₀ ∉ conj_I.) -/
+/-- Q is not the zero ideal of T. (xbar ≠ 0 since X₀ ∉ conjI.) -/
 lemma Q_ne_bot : Q ≠ ⊥ := by
   intro h
-  have : Ideal.Quotient.mk conj_I (MvPowerSeries.X 0) = 0 := by
-    have hmem : Ideal.Quotient.mk conj_I (MvPowerSeries.X 0) ∈ Q :=
+  have : Ideal.Quotient.mk conjI (MvPowerSeries.X 0) = 0 := by
+    have hmem : Ideal.Quotient.mk conjI (MvPowerSeries.X 0) ∈ Q :=
       Ideal.subset_span (Set.mem_insert _ _)
     rw [h] at hmem
     exact Ideal.mem_bot.mp hmem
   rw [Ideal.Quotient.eq_zero_iff_mem] at this
-  exact X0_not_mem_conj_I this
+  exact X0_not_mem_conjI this
 
 /-- Comap of a nonzero ideal under a ring isomorphism is nonzero. -/
 lemma comap_ringEquiv_ne_bot {R S : Type*} [CommRing R] [CommRing S]
@@ -129,12 +129,11 @@ lemma contraction_height_one
           (Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown q Q').symm
       _ = 1 := hQ'_height
   have h_lower : 1 ≤ q.height := by
-    rw [Ideal.height_eq_primeHeight]
     haveI : (⊥ : Ideal A).IsPrime := Ideal.isPrime_bot
-    have h := Ideal.primeHeight_add_one_le_of_lt
+    have h := Ideal.height_add_one_le_of_lt_of_isPrime
       (bot_lt_iff_ne_bot.mpr hq_ne)
-    rwa [show (⊥ : Ideal A).primeHeight = 0 from by
-      rw [Ideal.primeHeight_eq_zero_iff,
+    rwa [show (⊥ : Ideal A).height = 0 from by
+      rw [Ideal.height_eq_zero_iff,
           IsDomain.minimalPrimes_eq_singleton_bot]
       exact Set.mem_singleton _, zero_add] at h
   exact le_antisymm h_upper h_lower
@@ -156,18 +155,17 @@ lemma ufd_height_one_principal
   by_contra h_not_le
   have h_lt : Ideal.span {a} < q :=
     lt_of_le_of_ne h_le (fun h => h_not_le (le_of_eq h.symm))
-  rw [Ideal.height_eq_primeHeight] at hq_height
-  have h1 := Ideal.primeHeight_add_one_le_of_lt h_lt
+  have h1 := Ideal.height_add_one_le_of_lt_of_isPrime h_lt
   rw [hq_height] at h1
   haveI : (⊥ : Ideal A).IsPrime := Ideal.isPrime_bot
   have h_bot_lt : (⊥ : Ideal A) < Ideal.span {a} :=
     bot_lt_iff_ne_bot.mpr (Ideal.span_singleton_eq_bot.not.mpr ha_prime.ne_zero)
-  have h2 := Ideal.primeHeight_add_one_le_of_lt h_bot_lt
-  have h3 : (⊥ : Ideal A).primeHeight = 0 := by
-    rw [Ideal.primeHeight_eq_zero_iff, IsDomain.minimalPrimes_eq_singleton_bot]
+  have h2 := Ideal.height_add_one_le_of_lt_of_isPrime h_bot_lt
+  have h3 : (⊥ : Ideal A).height = 0 := by
+    rw [Ideal.height_eq_zero_iff, IsDomain.minimalPrimes_eq_singleton_bot]
     exact Set.mem_singleton _
   rw [h3] at h2
-  have h4 : (1 : ℕ∞) ≤ (Ideal.span {a}).primeHeight := by simpa using h2
+  have h4 : (1 : ℕ∞) ≤ (Ideal.span {a}).height := by simpa using h2
   exact absurd (le_trans (add_le_add_right h4 1 |>.trans_eq (add_comm _ _)) h1)
     (by norm_num : ¬((2 : ℕ∞) ≤ 1))
 
@@ -582,15 +580,14 @@ lemma span_singleton_not_isPrime_of_mem_Q {b : T} (hb_ne : b ≠ 0) (hb_mem : b 
   · exact Q_not_isPrincipal ⟨⟨b, heq.symm⟩⟩
   · have hlt : Ideal.span ({b} : Set T) < Q :=
       lt_of_le_of_ne hle heq
-    have h1 := Ideal.primeHeight_add_one_le_of_lt hlt
+    have h1 := Ideal.height_add_one_le_of_lt_of_isPrime hlt
     have hQh : Q.height = 1 := Q_height_one
-    rw [Ideal.height_eq_primeHeight] at hQh
     rw [hQh] at h1
     haveI : (⊥ : Ideal T).IsPrime := Ideal.isPrime_bot
-    have h2 := Ideal.primeHeight_add_one_le_of_lt
+    have h2 := Ideal.height_add_one_le_of_lt_of_isPrime
       (bot_lt_iff_ne_bot.mpr hne_bot)
-    have h3 : (⊥ : Ideal T).primeHeight = 0 := by
-      rw [Ideal.primeHeight_eq_zero_iff,
+    have h3 : (⊥ : Ideal T).height = 0 := by
+      rw [Ideal.height_eq_zero_iff,
           IsDomain.minimalPrimes_eq_singleton_bot]
       exact Set.mem_singleton _
     rw [h3, zero_add] at h2

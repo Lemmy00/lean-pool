@@ -8,6 +8,12 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Map
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.ForMathlib.FiniteRange.Defs
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.PFR.ForMathlib.FiniteRange.Defs`.
+-/
+
 @[expose] public section
 
 /-- The property of having a finite range. -/

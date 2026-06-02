@@ -7,6 +7,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 import LeanPool.BrauerGroupNew.Subfield.Defs
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
+/-!
+# LeanPool.BrauerGroupNew.Subfield.FiniteDimensional
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Subfield.FiniteDimensional`.
+-/
+
 namespace SubField
 variable {K A : Type*} [Field K] [Ring A] [Algebra K A] {L : SubField K A}
 

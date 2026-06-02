@@ -8,12 +8,18 @@ import Mathlib.Data.Sigma.Order
 import Mathlib.Order.OmegaCompletePartialOrder
 import LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Sigma
 
+/-!
+# LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Sigma
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Sigma`.
+-/
+
 
 namespace OmegaCompletePartialOrder.Sigma
 
 variable {I : Type*} {P : I → Type*} [∀ i, OmegaCompletePartialOrder (P i)]
 
-instance : OmegaCompletePartialOrder ((i : I) × P i) where
+instance instSigmaLeanPool : OmegaCompletePartialOrder ((i : I) × P i) where
   ωSup c := (Chain.Sigma.distrib c).map id fun _ ↦ ωSup
   le_ωSup c i := by
     cases c using Chain.Sigma.distrib_cases

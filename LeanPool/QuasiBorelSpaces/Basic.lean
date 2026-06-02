@@ -7,7 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.Defs
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Pack
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import LeanPool.QuasiBorelSpaces.Defs
+
+/-!
+# LeanPool.QuasiBorelSpaces.Basic
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Basic`.
+-/
 
 open scoped MeasureTheory
 

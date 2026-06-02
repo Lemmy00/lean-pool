@@ -6,6 +6,12 @@ Authors: David Renshaw
 
 import LeanPool.Rupert.Basic
 
+/-!
+# LeanPool.Rupert.SnubCube
+
+Imported Lean Pool material for `LeanPool.Rupert.SnubCube`.
+-/
+
 namespace SnubCube
 
 /-- Real cube root, written using real powers. -/
@@ -16,7 +22,7 @@ noncomputable def trib : ℝ :=
   (1 + cbrt (19 + 3 * √33) + cbrt (19 - 3 * √33) ) / 3
 
 /-- Coordinates for a snub cube. -/
-noncomputable def snub_cube : Fin 24 → ℝ³ :=
+noncomputable def snubCube : Fin 24 → ℝ³ :=
  ![ !₂[      -1,  1/trib,    trib],
     !₂[       1, -1/trib,    trib],
     !₂[       1,  1/trib,   -trib],
@@ -43,6 +49,6 @@ noncomputable def snub_cube : Fin 24 → ℝ³ :=
     !₂[     trib,  1/trib,      1]
   ]
 
-proof_wanted rupert : ¬ IsRupert snub_cube
+proof_wanted rupert : ¬ IsRupert snubCube
 
 end SnubCube

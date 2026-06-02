@@ -13,6 +13,12 @@ import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.DiskHomeoCube
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.DiskHomeoCube`.
+-/
+
 
 open scoped Topology TopCat ENNReal unitInterval
 

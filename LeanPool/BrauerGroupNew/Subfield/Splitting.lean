@@ -9,6 +9,12 @@ import LeanPool.BrauerGroupNew.RelativeBrauer
 import LeanPool.BrauerGroupNew.Subfield.FiniteDimensional
 import LeanPool.BrauerGroupNew.Subfield.Subfield
 
+/-!
+# LeanPool.BrauerGroupNew.Subfield.Splitting
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Subfield.Splitting`.
+-/
+
 universe u
 
 variable (K F : Type u) [Field K] [Field F] [Algebra F K]
@@ -84,7 +90,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
       use r
       rw [Subtype.ext_iff, ← hr]
       rfl }
-  haveI : IsSimpleRing B := centralizer_isSimple _ (Module.Free.chooseBasis _ _)
+  haveI : IsSimpleRing B := centralizerIsSimple _ (Module.Free.chooseBasis _ _)
   refine ⟨⟨.of F B⟩, ?_,
     { toFun r :=
         ⟨{
@@ -97,9 +103,9 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         }, by
         rintro _ ⟨x, rfl⟩
         refine LinearMap.ext fun v ↦ ?_
-        simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-          AlgHom.coe_restrictScalars', AlgHom.coe_coe, Function.comp_apply,
+          Function.comp_apply,
           Algebra.TensorProduct.includeRight_apply, Module.End.mul_apply, LinearMap.coe_mk,
           AddHom.coe_mk, LinearMap.coe_restrictScalars, map_smul, emb]⟩
       map_one' := by
@@ -138,7 +144,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         (writeAsTensorProduct (B := emb.range) |>.trans <|
           Algebra.TensorProduct.congr e.symm AlgEquiv.refl)
     apply Quotient.sound'
-    exact ⟨1, Module.finrank F (Fin n → K), one_ne_zero, by aesop, ⟨(dim_one_iso _).trans iso⟩⟩
+    exact ⟨1, Module.finrank F (Fin n → K), one_ne_zero, by aesop, ⟨(dimOneIso _).trans iso⟩⟩
   · change Module.finrank F K ^ 2 = Module.finrank F B
     have dim_eq1 : Module.finrank F B * _ = _ := dim_centralizer F emb.range
     rw [Module.finrank_linearMap, show Module.finrank F (Fin n → K) =
@@ -328,7 +334,7 @@ theorem isSplit_if_equiv (A B : CSA F) (hAB : IsBrauerEquivalent A B) (hA : isSp
     isSplit F B K := by
   obtain ⟨n, m, hn, hm, ⟨iso⟩⟩ := hAB
   obtain ⟨p, hp, ⟨e⟩⟩ := hA
-  obtain ⟨q, hq, D, hD1, _, ⟨e'⟩⟩ := Wedderburn_Artin_algebra_version K (K ⊗[F] B)
+  obtain ⟨q, hq, D, hD1, _, ⟨e'⟩⟩ := WedderburnArtin_algebra_version K (K ⊗[F] B)
   haveI := is_fin_dim_of_wdb K (K ⊗[F] B) hq D e'
   have ee := Matrix.reindexAlgEquiv _ _ finProdFinEquiv |>.symm.trans <|
     Matrix.compAlgEquiv _ _ _ _ |>.symm.trans <| e'.mapMatrix.symm.trans <|
@@ -340,7 +346,7 @@ theorem isSplit_if_equiv (A B : CSA F) (hAB : IsBrauerEquivalent A B) (hA : isSp
   haveI : NeZero (m * q) := ⟨by aesop⟩
   haveI : NeZero (n * p) := ⟨by aesop⟩
   exact ⟨q, ⟨hq⟩, ⟨e'.trans <|
-    Wedderburn_Artin_uniqueness₀ K (Matrix (Fin (m * q)) (Fin (m * q)) D) (m * q) (n * p)
+    WedderburnArtin_uniqueness₀ K (Matrix (Fin (m * q)) (Fin (m * q)) D) (m * q) (n * p)
       D AlgEquiv.refl K ee |>.some.mapMatrix⟩⟩
 
 end CSA2

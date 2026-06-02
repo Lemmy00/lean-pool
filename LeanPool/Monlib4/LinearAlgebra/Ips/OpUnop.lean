@@ -74,7 +74,6 @@ noncomputable abbrev tenSwap (R : Type*)
 (TensorProduct.comm R A Bᵐᵒᵖ).trans
   (LinearEquiv.TensorProduct.map (unop R) (op R))
 
-@[simp]
 theorem tenSwap_apply (x : A) (y : Bᵐᵒᵖ) :
     tenSwap R (x ⊗ₜ[R] y) = MulOpposite.unop y ⊗ₜ[R] MulOpposite.op x :=
   rfl

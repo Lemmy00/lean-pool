@@ -7,6 +7,12 @@ Authors: David Renshaw
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Data.Real.StarOrdered
 
+/-!
+# LeanPool.Rupert.Convex
+
+Imported Lean Pool material for `LeanPool.Rupert.Convex`.
+-/
+
 open Pointwise
 
 namespace Convex

@@ -6,6 +6,12 @@ Authors: Jiazhen Xia
 
 import LeanPool.WhiteheadTheorem.Auxiliary
 import LeanPool.WhiteheadTheorem.Shapes.Disk
+
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.Jar
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.Jar`.
+-/
 -- import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 -- import Mathlib.CategoryTheory.LiftingProperties.Limits
 
@@ -184,7 +190,7 @@ lemma proj_compatible' (n : ℕ) {Y : Type*} [TopologicalSpace Y]
   · exact proj_compatible n f H hf p hpi hpj
   · exact Eq.symm <| proj_compatible n f H hf p hpj hpi
 
-lemma closedCover_is_cover (n : ℕ) : ∀ (p : Jar n), ∃ i, p ∈ closedCover n i :=
+lemma closedCover_isCover (n : ℕ) : ∀ (p : Jar n), ∃ i, p ∈ closedCover n i :=
   fun ⟨⟨x, _⟩, ⟨y, _⟩⟩ ↦ by
     by_cases h : ‖x‖ ≤ 1 - y / 2
     · use 0; exact h
@@ -199,7 +205,7 @@ noncomputable def homotopyExtension (n : ℕ) {Y : Type*} [TopologicalSpace Y]
     (f : C(𝔻 n, Y)) (H : C(∂𝔻 n × I, Y))
     (hf : f ∘ diskBoundaryIncl n = H ∘ (·, 0)) : C(Jar n, Y) :=
   ContinuousMap.liftCoverClosed (closedCover n) (proj n f H) (proj_compatible' n f H hf)
-    (closedCover_is_cover n) (closedCover_isClosed n)
+    (closedCover_isCover n) (closedCover_isClosed n)
 
 -- The triangle involving the bottom (i.e., `𝔻 (n + 1)`) of the jar commutes.
 lemma homotopyExtension_bottom_commutes (n : ℕ) {Y : Type*} [TopologicalSpace Y]

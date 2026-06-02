@@ -10,6 +10,10 @@ import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
+/-!
+# LeanPool.LeanPolyABC.Lib.Radical
+-/
+
 noncomputable section
 
 open Polynomial UniqueFactorizationMonoid

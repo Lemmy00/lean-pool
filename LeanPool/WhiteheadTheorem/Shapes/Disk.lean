@@ -7,6 +7,12 @@ Authors: Jiazhen Xia
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.Disk
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.Disk`.
+-/
+
 
 namespace TopCat
 

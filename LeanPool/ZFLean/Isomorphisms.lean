@@ -4,6 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Trélat
 -/
 import LeanPool.ZFLean.Functions
+
+/-!
+# LeanPool.ZFLean.Isomorphisms
+
+Imported Lean Pool material for `LeanPool.ZFLean.Isomorphisms`.
+-/
 namespace ZFSet
 /-- Imported ZFLean declaration. -/
 def isIso (A B : ZFSet) : Prop :=

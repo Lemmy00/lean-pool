@@ -19,7 +19,7 @@ import Mathlib.Data.Complex.Basic
 def Set.ofPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, Zero (B i)] (s : Set (∀ i, B i)) :
     ∀ i, Set (B i) := fun i x => Pi.single i x ∈ s
 
-theorem Set.pi_ofPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, AddZeroClass (B i)]
+theorem Set.piOfPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, AddZeroClass (B i)]
     {s : ∀ i, Set (B i)} (h : ∀ i, s i 0) : (Set.univ.pi s).ofPi = s :=
   by
   ext i x
@@ -50,7 +50,7 @@ def AddSubmonoid.ofPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i,
       simp only [AddSubmonoid.mem_carrier, ← Pi.single_add] at this ⊢
       exact this }
 
-theorem AddSubmonoid.pi_ofPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, AddZeroClass (B i)]
+theorem AddSubmonoid.piOfPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, AddZeroClass (B i)]
     (h : ∀ i, AddSubmonoid (B i)) : (AddSubmonoid.pi Set.univ h).ofPi = h :=
   by
   ext i x

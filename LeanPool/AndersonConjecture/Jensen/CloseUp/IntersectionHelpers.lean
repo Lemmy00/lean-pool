@@ -36,28 +36,27 @@ private def close_up_aux_factor_intersection_large_proof
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T}
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (rest : Finset R.carrier)
     (_hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
     {b : R.carrier} (hb_rest : b ∈ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     {q' : R.carrier} (hq' : Prime q')
     (_hq'_dvd : ∀ x ∈ rest, q' ∣ x)
     {S₁ : NSubring T} (hAext₁ : IsAExtension R S₁)
     (hle₁ : R.carrier ≤ S₁.carrier)
     (hS₁_card : Cardinal.mk S₁.carrier < Cardinal.mk T)
-    [IsDomain S₁.carrier] [UniqueFactorizationMonoid S₁.carrier]
     (w : S₁.carrier)
     (div_q_b2 : R.carrier → R.carrier)
     (hdiv_b2 : ∀ x ∈ rest, x = q' * div_q_b2 x)
@@ -165,9 +164,9 @@ private def close_up_aux_factor_intersection_large_proof
         rw [h1, Finset.card_insert_of_notMem ha_rest'2, hrest'2_card]
       have ha_s₁' : liftR₁' a ∈ s₁' :=
         Finset.mem_image_of_mem _ (Finset.mem_insert_self a rest'2)
-      have hgcd_s₁' : gcd_complexity s₁' < m := by
-        have hcross : gcd_complexity s₁' = gcd_complexity (insert a rest'2) := by
-          unfold gcd_complexity
+      have hgcd_s₁' : gcdComplexity s₁' < m := by
+        have hcross : gcdComplexity s₁' = gcdComplexity (insert a rest'2) := by
+          unfold gcdComplexity
           have hinj₁ : Set.InjOn liftR₁' ↑(insert a rest'2) :=
             fun x _ y _ h => (Subring.inclusion_injective hle₁) h
           rw [show s₁' = (insert a rest'2).image liftR₁' from rfl,
@@ -176,10 +175,10 @@ private def close_up_aux_factor_intersection_large_proof
           intro x _
           exact normalizedFactors_card_inclusion R S₁
             ⟨hAext₁.le, hAext₁.primes_preserved, hAext₁.card_le⟩ hle₁ x
-        have hstrict : gcd_complexity (insert a rest'2) < gcd_complexity (insert a rest) := by
+        have hstrict : gcdComplexity (insert a rest'2) < gcdComplexity (insert a rest) := by
           letI : NormalizationMonoid R.carrier :=
             UniqueFactorizationMonoid.normalizationMonoid
-          unfold gcd_complexity
+          unfold gcdComplexity
           rw [Finset.sum_insert ha_rest'2, Finset.sum_insert ha_rest]
           apply Nat.add_lt_add_left
           have hinj_b2 : Set.InjOn div_q_b2 ↑rest :=
@@ -222,14 +221,14 @@ private def close_up_aux_factor_intersection_large_proof
                 normalizedFactors_irreducible (irreducible_iff_prime.mpr hq'),
                 Multiset.card_singleton]
             omega
-        calc gcd_complexity s₁' =
-              gcd_complexity (insert a rest'2) := hcross
-          _ < gcd_complexity (insert a rest) :=
+        calc gcdComplexity s₁' =
+              gcdComplexity (insert a rest'2) := hcross
+          _ < gcdComplexity (insert a rest) :=
               hstrict
-          _ ≤ gcd_complexity s := hgcd_rest
+          _ ≤ gcdComplexity s := hgcd_rest
           _ ≤ m := hs_gcd
       obtain ⟨S₂, hAext₂, hle₂, hw_S₂⟩ :=
-        ih_m (gcd_complexity s₁') hgcd_s₁' S₁ hS₁_card (liftR₁' a) s₁' le_rfl hs₁'_card
+        ih_m (gcdComplexity s₁') hgcd_s₁' S₁ hS₁_card (liftR₁' a) s₁' le_rfl hs₁'_card
           ha_s₁' w hw_s₁'
       refine ⟨S₂, hAext₂, hle₂, ?_⟩
       convert hw_S₂ using 1
@@ -252,28 +251,27 @@ theorem close_up_aux_factor_intersection_large
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T}
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (rest : Finset R.carrier)
     (_hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
     {b : R.carrier} (hb_rest : b ∈ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     {q' : R.carrier} (hq' : Prime q')
     (_hq'_dvd : ∀ x ∈ rest, q' ∣ x)
     {S₁ : NSubring T} (hAext₁ : IsAExtension R S₁)
     (hle₁ : R.carrier ≤ S₁.carrier)
     (hS₁_card : Cardinal.mk S₁.carrier < Cardinal.mk T)
-    [IsDomain S₁.carrier] [UniqueFactorizationMonoid S₁.carrier]
     (w : S₁.carrier)
     (div_q_b2 : R.carrier → R.carrier)
     (hdiv_b2 : ∀ x ∈ rest, x = q' * div_q_b2 x)
@@ -299,9 +297,8 @@ theorem close_up_aux_factor_intersection_large
       _hrest_card ha_rest hb_rest hgcd_rest hq' _hq'_dvd hAext₁ hle₁ hS₁_card w div_q_b2
       hdiv_b2 rest'2 hrest'2_def _h_ml_b2 hw_mem_T ha_rest'2 hrest'2_card hb_rest'2
     ).down
-theorem gcd_complexity_div_prime_strict
+theorem gcdComplexity_div_prime_strict
     {R : NSubring T}
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier]
     [DecidableEq R.carrier]
     {a : R.carrier} {s s' : Finset R.carrier}
     (hs_insert : s = insert a s')
@@ -311,14 +308,14 @@ theorem gcd_complexity_div_prime_strict
     (div_f : R.carrier → R.carrier)
     (hdiv : ∀ x ∈ s', x = p * div_f x)
     (ha_sdiv : a ∉ s'.image div_f) :
-    gcd_complexity (insert a (s'.image div_f)) <
-      gcd_complexity s := by
+    gcdComplexity (insert a (s'.image div_f)) <
+      gcdComplexity s := by
   have ha_not_s' : a ∉ s' := by
     rw [hs'_def]
     simp [Finset.mem_erase]
   letI : NormalizationMonoid R.carrier :=
     UniqueFactorizationMonoid.normalizationMonoid
-  unfold gcd_complexity
+  unfold gcdComplexity
   rw [Finset.sum_insert ha_sdiv, hs_insert, Finset.sum_insert ha_not_s']
   apply Nat.add_lt_add_left
   have hinj_f : Set.InjOn div_f ↑s' :=

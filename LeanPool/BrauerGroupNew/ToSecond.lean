@@ -9,6 +9,12 @@ import LeanPool.BrauerGroupNew.Mathlib.RingTheory.Congruence.Defs
 import LeanPool.BrauerGroupNew.Subfield.Splitting
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
+/-!
+# LeanPool.BrauerGroupNew.ToSecond
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.ToSecond`.
+-/
+
 suppress_compilation
 
 open FiniteDimensional BrauerGroup Module groupCohomology
@@ -154,7 +160,7 @@ lemma conjFactorTwistCoeff_self (x : A.conjFactor σ) : conjFactorTwistCoeff x x
   Eq.symm <| conjFactorTwistCoeff_unique _ _ _ <| by simp
 
 /-- The twist coefficient packaged as a unit. -/
-@[simps]
+@[simps -isSimp]
 def conjFactorTwistCoeffAsUnit (x y : A.conjFactor σ) : Kˣ where
   val := conjFactorTwistCoeff x y
   inv := conjFactorTwistCoeff y x
@@ -206,7 +212,7 @@ def conjFactorCompCoeff (x : A.conjFactor σ) (y : A.conjFactor τ) (z : A.conjF
     σ <| τ <| conjFactorTwistCoeff (mul' x y) z
 
 /-- The composition coefficient packaged as a unit. -/
-@[simps]
+@[simps -isSimp]
 def conjFactorCompCoeffAsUnit
     (x : A.conjFactor σ) (y : A.conjFactor τ) (z : A.conjFactor (σ * τ)) : Kˣ where
   val := conjFactorCompCoeff x y z
@@ -507,10 +513,14 @@ lemma compare_toCocycles₂ (x_ : Π σ, A.conjFactor σ) (y_ : Π σ, B.conjFac
     (x_ σ) (y_ σ)
     (x_ τ) (y_ τ)
     (x_ _) (y_ _)
-  simp only at this
   ext : 1
   dsimp
-  rw [this]
+  change B.conjFactorCompCoeff (y_ σ) (y_ τ) (y_ (σ * τ)) *
+      A.pushConjFactorCoeff B (x_ (σ * τ)) (y_ (σ * τ)) =
+    A.pushConjFactorCoeff B (x_ σ) (y_ σ) *
+      σ (A.pushConjFactorCoeff B (x_ τ) (y_ τ)) *
+      A.conjFactorCompCoeff (x_ σ) (x_ τ) (x_ (σ * τ))
+  exact this
 
 lemma compare_toCocycles₂' (x_ : Π σ, A.conjFactor σ) (y_ : Π σ, B.conjFactor σ) :
     IsMulCoboundary₂ (B.toCocycles₂ y_ / A.toCocycles₂ x_) := by
@@ -621,7 +631,7 @@ lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support, B.repr ⟨_, mem1⟩ τ • (x_ τ).1.1 := by
     conv_lhs => rw [← B.linearCombination_repr ⟨(x_ σ).1.1, mem1⟩, Finsupp.linearCombination_apply,
       Finsupp.sum]
-    rw [AddSubmonoidClass.coe_finset_sum]
+    rw [AddSubmonoidClass.coe_finsetSum]
     refine Finset.sum_congr rfl fun i _ => ?_
     simp only [SetLike.val_smul, smul_def]
     congr 1
@@ -893,9 +903,15 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   ext a
   induction a using H2_induction_on with | h a =>
   -- rcases a with ⟨(a : _ → Kˣ), ha'⟩
-  let am := Additive.toMul ∘ Amelia.toAdditive _ _ ∘ a
+  let am : Gal(K, F) × Gal(K, F) → Kˣ :=
+    fun p => Additive.toMul (Amelia.toAdditive Gal(K, F) Kˣ (a p))
+  have hmem : (fun p : Gal(K, F) × Gal(K, F) =>
+      Amelia.toAdditive Gal(K, F) Kˣ (a p)) ∈
+      cocycles₂ (Rep.ofMulDistribMulAction Gal(K, F) Kˣ) := by
+    change (a : Gal(K, F) × Gal(K, F) → galAct F K) ∈ cocycles₂ (galAct F K)
+    exact a.2
   have ha : IsMulCocycle₂ am :=
-    isMulCocycle₂_of_mem_cocycles₂ _ (by simpa using a.2)
+    isMulCocycle₂_of_mem_cocycles₂ _ hmem
   haveI : Fact (IsMulCocycle₂ am) := ⟨ha⟩
   simp only [Function.comp_apply, id_eq]
   let A : GoodRep K (Quotient.mk'' <| CrossProductAlgebra.asCSA am) :=
@@ -903,8 +919,8 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   let y_ σ : A.conjFactor σ :=
     ⟨CrossProductAlgebra.of am σ,
     fun c ↦ by erw [CrossProductAlgebra.of_conj]; rfl⟩
-  simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, H2π, ModuleCat.hom_comp,
-    LinearMap.coe_comp, Function.comp_apply, π_comp_H2Iso_hom_apply,
+  simp only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
+    π_comp_H2Iso_hom_apply,
     CategoryTheory.Iso.inv_hom_id_apply]
   change toSnd (fromSnd F K (Quotient.mk'' a)) =
     (ModuleCat.Hom.hom (π (galAct F K) 2)) ((ModuleCat.Hom.hom (isoCocycles₂ (galAct F K)).inv) a)
@@ -956,8 +972,8 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   rw [toSnd_wd (A := A) (x_ := A.arbitraryConjFactor)]
   ext : 1
   conv_rhs => rw [← A.quot_eq]
-  simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, GoodRep.toH2, H2π,
-    ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, π_comp_H2Iso_hom_apply,
+  simp only [GoodRep.toH2, H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
+    π_comp_H2Iso_hom_apply,
     CategoryTheory.Iso.inv_hom_id_apply]
   change (fromSnd F K
     (Quotient.mk'' (cocyclesOfIsMulCocycle₂ (GoodRep.isMulCocycle₂

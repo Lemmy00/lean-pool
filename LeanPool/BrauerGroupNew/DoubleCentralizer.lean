@@ -13,6 +13,12 @@ import LeanPool.BrauerGroupNew.LemmasAboutSimpleRing
 import LeanPool.BrauerGroupNew.SkolemNoether
 import Mathlib.RingTheory.SimpleRing.Field
 
+/-!
+# LeanPool.BrauerGroupNew.DoubleCentralizer
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.DoubleCentralizer`.
+-/
+
 universe u v
 
 variable {F A : Type u}
@@ -198,7 +204,7 @@ lemma centralizer_mulLeft_le_of_isCentralSimple :
     (Subalgebra.centralizer F (Set.range <| LinearMap.mulLeft F : Set  <| Module.End F B) : Set _) ≤
     Set.range (LinearMap.mulRight F (A := B)) := by
   intro (x : Module.End F B) hx
-  let eqv := tensor_self_op.equivEnd F B
+  let eqv := tensorSelfOp.equivEnd F B
   have hx' : eqv.symm x ∈ Subalgebra.centralizer F
     ((Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := B) (B := Bᵐᵒᵖ)).range :
       Set (B ⊗[F] Bᵐᵒᵖ)) := by
@@ -210,7 +216,7 @@ lemma centralizer_mulLeft_le_of_isCentralSimple :
     rw [show eqv (y ⊗ₜ[F] 1) = LinearMap.mulLeft F y by
       ext x
       simp only [LinearMap.mulLeft_apply]
-      simp only [tensor_self_op.equivEnd, tensor_self_op.toEnd, AlgEquiv.coe_ofBijective,
+      simp only [tensorSelfOp.equivEnd, tensorSelfOp.toEnd, AlgEquiv.coe_ofBijective,
         Algebra.TensorProduct.lift_tmul, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk,
         OneHom.coe_mk, MulOpposite.unop_one, mul_one, Module.End.mul_apply, LinearMap.coe_mk,
         AddHom.coe_mk, eqv] ]
@@ -259,7 +265,7 @@ lemma centralizer_mulLeft_le_of_isCentralSimple :
   rw [← hy]
   refine ⟨y.unop, ?_⟩
   ext c
-  simp only [LinearMap.mulRight_apply, tensor_self_op.equivEnd, tensor_self_op.toEnd,
+  simp only [LinearMap.mulRight_apply, tensorSelfOp.equivEnd, tensorSelfOp.toEnd,
     AlgEquiv.coe_ofBijective, Algebra.TensorProduct.lift_tmul, AlgHom.coe_mk, RingHom.coe_mk,
     MonoidHom.coe_mk, OneHom.coe_mk, one_mul, Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk,
     eqv]
@@ -292,10 +298,10 @@ instance : SMulCommClass (Subalgebra.center F B) B B where
     change x.1 * (y * z) = y * (x.1 * z)
     rw [← mul_assoc, ← Subalgebra.mem_center_iff.1 x.2 y, mul_assoc]
 
-noncomputable instance center_field : Field (Subalgebra.center F B) :=
+noncomputable instance centerField : Field (Subalgebra.center F B) :=
   IsField.toField <| IsSimpleRing.isField_center _
 
-instance center_algebra : Algebra (Subalgebra.center F B) B where
+instance centerAlgebra : Algebra (Subalgebra.center F B) B where
   smul a b := a.1 • b
   algebraMap := {
     toFun a := a.1
@@ -609,7 +615,7 @@ lemma Subalgebra.conj_centralizer' (B : Subalgebra F A) {x : Aˣ} :
     (Subalgebra.centralizer F B).conj x :=
   Subalgebra.conj_centralizer _
 
-namespace centralizer_isSimple.aux
+namespace centralizerIsSimple.aux
 
 open FiniteDimensional
 
@@ -783,10 +789,10 @@ lemma finrank_mop (B : Type*) [Ring B] [Algebra F B] : Module.finrank F Bᵐᵒ�
       left_inv := by intros x; simp
       right_inv := by intros x; simp }
 
-end centralizer_isSimple.aux
+end centralizerIsSimple.aux
 
-open centralizer_isSimple.aux in
-lemma centralizer_isSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
+open centralizerIsSimple.aux in
+lemma centralizerIsSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
     IsSimpleRing (Subalgebra.centralizer F (B : Set A)) := by
   letI (X : Subalgebra F (A ⊗[F] Module.End F B)) : Ring X :=
       Subalgebra.toRing (R := F) (A := A ⊗[F] Module.End F B) X
@@ -804,7 +810,7 @@ lemma centralizer_isSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
     (B := Subalgebra.centralizer F (B : Set A))
     (C := Module.End F B)
 
-open centralizer_isSimple.aux in
+open centralizerIsSimple.aux in
 variable (F) in
 lemma dim_centralizer :
     Module.finrank F (Subalgebra.centralizer F (B : Set A)) *
@@ -839,7 +845,7 @@ lemma double_centralizer :
   apply Subalgebra.eq_of_le_of_finrank_eq
   · intro x hx y hy
     exact hy x hx |>.symm
-  · haveI := centralizer_isSimple B (Module.finBasis F _)
+  · haveI := centralizerIsSimple B (Module.finBasis F _)
     have eq1 := dim_centralizer F B
     have eq2 := dim_centralizer F (A := A) (Subalgebra.centralizer F B)
     have eq3 := eq1.trans eq2.symm
@@ -854,10 +860,10 @@ lemma double_centralizer :
 -/
 /-- The double-centralizer tensor-product decomposition. -/
 noncomputable def writeAsTensorProduct
-    [Algebra.IsCentral F B] [IsSimpleRing B] :
+    [Algebra.IsCentral F B] :
     A ≃ₐ[F] B ⊗[F] Subalgebra.centralizer F (B : Set A) :=
   haveI s1 : IsSimpleRing (Subalgebra.centralizer F (B : Set A)) :=
-    centralizer_isSimple B (Module.Free.chooseBasis _ _)
+    centralizerIsSimple B (Module.Free.chooseBasis _ _)
   haveI s2 : IsSimpleRing (B ⊗[F] Subalgebra.centralizer F (B : Set A)) :=
     ⟨TwoSidedIdeal.orderIsoOfRingEquiv
       (Algebra.TensorProduct.comm F B (Subalgebra.centralizer F (B : Set A))).toRingEquiv

@@ -6,7 +6,20 @@ Authors: Jiazhen Xia
 
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Abel
 
 
 /-!
@@ -91,10 +104,17 @@ private lemma im_B_eq_zero (a : A → B) (b : B → C) (a_surj : Function.Surjec
     [IsPointedMap a] [IsPointedMap b] (exb : IsExactAt a b) :
     Set.range b = {default} := by
   rw [IsExactAt, Set.range_eq_univ.mpr a_surj] at exb
-  apply_fun (Set.image b) at exb
-  rw [Set.image_univ] at exb
-  convert exb.symm
-  exact IsPointedMap.default_eq_image_preimage_default _
+  ext y
+  constructor
+  · rintro ⟨x, rfl⟩
+    have hx : x ∈ b ⁻¹' ({default} : Set C) := by
+      rw [exb]
+      exact Set.mem_univ x
+    simpa using hx
+  · intro hy
+    rw [Set.mem_singleton_iff] at hy
+    subst y
+    exact ⟨default, IsPointedMap.map_default⟩
 
 private lemma ker_c_eq_C (c : C → D) (d : D → E) (d_inj : Function.Injective d)
     [IsPointedMap c] [IsPointedMap d] (exd : IsExactAt c d) :
@@ -109,9 +129,11 @@ private lemma ker_c_eq_C (c : C → D) (d : D → E) (d_inj : Function.Injective
     rw [hx]
     exact Eq.symm IsPointedMap.map_default
   have : {default} = Set.range c := this.symm.trans exd
-  apply_fun (Set.preimage c) at this
-  convert this
-  exact Eq.symm (Set.preimage_range c)
+  apply Set.eq_univ_of_forall
+  intro x
+  have hx : c x ∈ Set.range c := ⟨x, rfl⟩
+  rw [← this] at hx
+  exact hx
 
 /-- `C = {0}` if there is an exact sequence `A --a-> B --b-> C --c-> D --d-> E`
 of five pointed sets such that `a` is surjective and `d` is injective. -/

@@ -6,6 +6,12 @@ Authors: Jineon Baek
 
 import LeanPool.ErdosTuzaValtr.Lib.List.Defs
 
+/-!
+# LeanPool.ErdosTuzaValtr.Lib.List.Chain3
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Lib.List.Chain3`.
+-/
+
 variable {α : Type _} {R : α → α → α → Prop}
 
 namespace List

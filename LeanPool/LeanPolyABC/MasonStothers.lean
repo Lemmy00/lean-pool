@@ -11,6 +11,10 @@ import LeanPool.LeanPolyABC.Lib.Wronskian
 import LeanPool.LeanPolyABC.Lib.DivRadical
 import LeanPool.LeanPolyABC.Lib.Max3
 
+/-!
+# LeanPool.LeanPolyABC.MasonStothers
+-/
+
 noncomputable section
 
 open scoped Polynomial

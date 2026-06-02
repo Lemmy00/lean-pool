@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Kernel
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Mathlib.RingTheory.TwoSidedIdeal.Kernel`.
+-/
+
 variable {R S : Type*} [Ring R] [Ring S]
 
 namespace TwoSidedIdeal

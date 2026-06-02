@@ -6,6 +6,12 @@ Authors: Monica Omar
 import LeanPool.Monlib4.QuantumGraph.PiMat
 import LeanPool.Monlib4.LinearAlgebra.Ips.Nontracial
 
+/-!
+# LeanPool.Monlib4.QuantumGraph.PiMatFinTwo
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph.PiMatFinTwo`.
+-/
+
 open scoped Functional MatrixOrder ComplexOrder TensorProduct Matrix
 
 /-- Elaborate a product-of-blocks statement with matrix quantum-set instances on each block. -/
@@ -54,11 +60,11 @@ macro_rules
 
 /-- The algebra equivalence between a two-block product of matrix algebras and the matching
   `PiMat`. -/
-def MatProd_algEquiv_PiMat (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)] :
+def MatProdAlgEquivPiMat (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)] :
   (Matrix (n' 0) (n' 0) ℂ × Matrix (n' 1) (n' 1) ℂ)
     ≃ₐ[ℂ]
   PiMat ℂ (Fin 2) n' :=
-matrixPiFinTwo_algEquiv_prod.symm
+matrixPiFinTwoAlgEquivProd.symm
 
 /-- Swap the two types in a `Fin 2`-indexed family. -/
 abbrev PiFinTwo.swap (n' : Fin 2 → Type*) :
@@ -77,16 +83,16 @@ fun i => by
   split_ifs <;> infer_instance
 
 /-- The swapped product-to-`PiMat` equivalence for two matrix blocks. -/
-def MatProd_algEquiv_PiMat_swap (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i,
+def MatProdAlgEquivPiMatSwap (n' : Fin 2 → Type*) [Π i, Fintype (n' i)] [Π i,
   DecidableEq (n' i)] :
   (Matrix (n' 1) (n' 1) ℂ × Matrix (n' 0) (n' 0) ℂ)
     ≃ₐ[ℂ]
   PiMat ℂ (Fin 2) (PiFinTwo.swap n') :=
-MatProd_algEquiv_PiMat (PiFinTwo.swap n')
+MatProdAlgEquivPiMat (PiFinTwo.swap n')
 
 /-- Swap the two factors of a product as an algebra equivalence. -/
 @[simps]
-def Prod.swap_algEquiv
+def Prod.swapAlgEquiv
   (α β : Type*) [Semiring α] [Semiring β] [Algebra ℂ α] [Algebra ℂ β] :
     (α × β) ≃ₐ[ℂ] (β × α) where
   toFun x := x.swap
@@ -98,96 +104,96 @@ def Prod.swap_algEquiv
   commutes' _ := by simp
 
 /-- Swap the two blocks of a `PiMat` indexed by `Fin 2`. -/
-def PiMat_finTwo_swapAlgEquiv
+def PiMatFinTwoSwapAlgEquiv
   {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] [Π i, DecidableEq (n' i)] :
     PiMat ℂ (Fin 2) n' ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo.swap n') :=
-(MatProd_algEquiv_PiMat n').symm.trans ((Prod.swap_algEquiv _ _).trans
-  (MatProd_algEquiv_PiMat_swap n'))
+(MatProdAlgEquivPiMat n').symm.trans ((Prod.swapAlgEquiv _ _).trans
+  (MatProdAlgEquivPiMatSwap n'))
 
 /-- The constant `Fin 2`-indexed family with value `n`. -/
-abbrev PiFinTwo_same (n : Type*) :
+abbrev PiFinTwoSame (n : Type*) :
   Fin 2 → Type _ :=
 fun i => let _ := i; n
 
 instance {n : Type*} [Fintype n] :
-  Π i, Fintype ((PiFinTwo_same n) i) :=
+  Π i, Fintype ((PiFinTwoSame n) i) :=
 fun i => by infer_instance
 instance {n : Type*} [DecidableEq n] :
-  Π i, DecidableEq ((PiFinTwo_same n) i) :=
+  Π i, DecidableEq ((PiFinTwoSame n) i) :=
 fun i => by infer_instance
 
-theorem PiMat_finTwo_swapAlgEquiv_apply {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] [Π i,
+theorem PiMatFinTwoSwapAlgEquiv_apply {n' : Fin 2 → Type*} [Π i, Fintype (n' i)] [Π i,
   DecidableEq (n' i)]
   (x : Matrix (n' 0) (n' 0) ℂ) (y : Matrix (n' 1) (n' 1) ℂ) :
-  PiMat_finTwo_swapAlgEquiv (MatProd_algEquiv_PiMat n' (x, y))
-    = MatProd_algEquiv_PiMat _ (y, x) :=
+  PiMatFinTwoSwapAlgEquiv (MatProdAlgEquivPiMat n' (x, y))
+    = MatProdAlgEquivPiMat _ (y, x) :=
 rfl
 
-lemma PiFinTwo_same_swap {n : Type*} :
-  PiFinTwo.swap (PiFinTwo_same n) = PiFinTwo_same n :=
+lemma PiFinTwoSame_swap {n : Type*} :
+  PiFinTwo.swap (PiFinTwoSame n) = PiFinTwoSame n :=
 by ext; simp only [ite_self, Fin.isValue]
 
 /-- Swap the two identical matrix blocks of a `PiMat` indexed by `Fin 2`. -/
-def PiMat_finTwo_same_swapAlgEquiv
+def PiMatFinTwoSameSwapAlgEquiv
   {n : Type*} [Fintype n] [DecidableEq n] :
-    PiMat ℂ (Fin 2) (PiFinTwo_same n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n) :=
-(MatProd_algEquiv_PiMat (PiFinTwo_same n)).symm.trans ((Prod.swap_algEquiv _ _).trans
-  (MatProd_algEquiv_PiMat (PiFinTwo_same n)))
+    PiMat ℂ (Fin 2) (PiFinTwoSame n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwoSame n) :=
+(MatProdAlgEquivPiMat (PiFinTwoSame n)).symm.trans ((Prod.swapAlgEquiv _ _).trans
+  (MatProdAlgEquivPiMat (PiFinTwoSame n)))
 
 
-theorem PiMat_finTwo_same_swapAlgEquiv_apply {n : Type*} [Fintype n] [DecidableEq n]
+theorem PiMatFinTwoSameSwapAlgEquiv_apply {n : Type*} [Fintype n] [DecidableEq n]
   (x : Matrix n n ℂ) (y : Matrix n n ℂ) :
-  PiMat_finTwo_same_swapAlgEquiv (MatProd_algEquiv_PiMat (PiFinTwo_same n) (x, y))
-    = MatProd_algEquiv_PiMat _ (y, x) :=
+  PiMatFinTwoSameSwapAlgEquiv (MatProdAlgEquivPiMat (PiFinTwoSame n) (x, y))
+    = MatProdAlgEquivPiMat _ (y, x) :=
 rfl
 
 variable {n : Type*}
   [Fintype n] [DecidableEq n]
 
-theorem AlgEquiv.prod_map_inner_of {K R₁ R₂ : Type*} [CommSemiring K]
+theorem AlgEquiv.prodMap_inner_of {K R₁ R₂ : Type*} [CommSemiring K]
   [Semiring R₁] [Semiring R₂] [Algebra K R₁] [Algebra K R₂]
   {f : R₁ ≃ₐ[K] R₁} (hf : f.IsInner) {g : R₂ ≃ₐ[K] R₂} (hg : g.IsInner) :
-  (f.prod_map g).IsInner :=
+  (f.prodMap g).IsInner :=
 by
-  rw [AlgEquiv.prod_isInner_iff_prod_map]
+  rw [AlgEquiv.prod_isInner_iff_prodMap]
   obtain ⟨U, hU, rfl⟩ := hf
   obtain ⟨V, hV, rfl⟩ := hg
   exact ⟨U, hU, V, hV, rfl⟩
 
 /-- Invertibility is preserved by the product-to-`PiMat` equivalence in the same-block case. -/
 @[reducible]
-def MatProd_algEquiv_PiMat_same_invertible_of {U : Matrix n n ℂ × Matrix n n ℂ}
+def MatProdAlgEquivPiMatSameInvertibleOf {U : Matrix n n ℂ × Matrix n n ℂ}
   (hU : Invertible U) :
-  Invertible ((MatProd_algEquiv_PiMat (PiFinTwo_same n)) U) :=
+  Invertible ((MatProdAlgEquivPiMat (PiFinTwoSame n)) U) :=
 by
-  use (MatProd_algEquiv_PiMat _ ⅟U) <;>
+  use (MatProdAlgEquivPiMat _ ⅟U) <;>
   simp only [← map_mul, invOf_mul_self, mul_invOf_self, map_one]
 
 theorem AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner
   {f : (Matrix n n ℂ × Matrix n n ℂ) ≃ₐ[ℂ] (Matrix n n ℂ × Matrix n n ℂ)}
   (hf : f.IsInner) :
-  ((MatProd_algEquiv_PiMat (PiFinTwo_same n)).symm.trans
+  ((MatProdAlgEquivPiMat (PiFinTwoSame n)).symm.trans
   (f.trans
-  (MatProd_algEquiv_PiMat (PiFinTwo_same n)))).IsInner :=
+  (MatProdAlgEquivPiMat (PiFinTwoSame n)))).IsInner :=
 by
   obtain ⟨U, hU, rfl⟩ := hf
-  use ((MatProd_algEquiv_PiMat _) U), MatProd_algEquiv_PiMat_same_invertible_of hU
+  use ((MatProdAlgEquivPiMat _) U), MatProdAlgEquivPiMatSameInvertibleOf hU
   ext1
-  simp only [Fin.isValue, MatProd_algEquiv_PiMat, symm_symm, trans_apply,
-    matrixPiFinTwo_algEquiv_prod_apply, Algebra.autInner_apply, map_mul]
+  simp only [Fin.isValue, MatProdAlgEquivPiMat, symm_symm, trans_apply,
+    matrixPiFinTwoAlgEquivProd_apply, Algebra.autInner_apply, map_mul]
   congr
   simp only [PiMat.ext_iff, Fin.forall_fin_two]
   trivial
 
 theorem AlgEquiv.PiMat_finTwo_same
-  (f : PiMat ℂ (Fin 2) (PiFinTwo_same n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n)) :
+  (f : PiMat ℂ (Fin 2) (PiFinTwoSame n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwoSame n)) :
   f.IsInner
   ∨
-  (∃ (g : PiMat ℂ (Fin 2) (PiFinTwo_same n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n))
+  (∃ (g : PiMat ℂ (Fin 2) (PiFinTwoSame n) ≃ₐ[ℂ] PiMat ℂ (Fin 2) (PiFinTwoSame n))
     (_ : AlgEquiv.IsInner g),
-      f = PiMat_finTwo_same_swapAlgEquiv.trans g) :=
+      f = PiMatFinTwoSameSwapAlgEquiv.trans g) :=
 by
-  let f' := ((MatProd_algEquiv_PiMat _).trans f).trans (MatProd_algEquiv_PiMat _).symm
+  let f' := ((MatProdAlgEquivPiMat _).trans f).trans (MatProdAlgEquivPiMat _).symm
   rcases (AlgEquiv.matrix_prod_aut' f') with (⟨f₁, f₂, hf⟩ | ⟨g₁, g₂, hg⟩)
   · left
     obtain ⟨U, hf₁⟩ := Matrix.aut_mat_inner' f₁
@@ -195,11 +201,11 @@ by
     have hf₁' : f₁.IsInner := ⟨U, _, hf₁⟩
     have hf₂' : f₂.IsInner := ⟨V, _, hf₂⟩
     have hf' :=
-      AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prod_map_inner_of hf₁' hf₂')
+      AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prodMap_inner_of hf₁' hf₂')
     simp only [Fin.isValue, ← hf] at hf'
     have :
-      (MatProd_algEquiv_PiMat _).symm.trans
-      (f'.trans (MatProd_algEquiv_PiMat _)) = f :=
+      (MatProdAlgEquivPiMat _).symm.trans
+      (f'.trans (MatProdAlgEquivPiMat _)) = f :=
     by ext1; simp [f']
     rw [this] at hf'
     exact hf'
@@ -209,15 +215,15 @@ by
     have hg₁' : g₁.IsInner := ⟨U, _, hg₁⟩
     have hg₂' : g₂.IsInner := ⟨V, _, hg₂⟩
     have hg' :=
-      AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prod_map_inner_of hg₁' hg₂')
-    use (MatProd_algEquiv_PiMat (PiFinTwo_same n)).symm.trans
-      ((g₁.prod_map g₂).trans (MatProd_algEquiv_PiMat (PiFinTwo_same n))), hg'
+      AlgEquiv.toPiMat_finTwo_same_inner_of_matrix_prod_inner (AlgEquiv.prodMap_inner_of hg₁' hg₂')
+    use (MatProdAlgEquivPiMat (PiFinTwoSame n)).symm.trans
+      ((g₁.prodMap g₂).trans (MatProdAlgEquivPiMat (PiFinTwoSame n))), hg'
     rw [funext_iff] at hg
     simp only [Fin.isValue, AlgEquiv.coe_trans, Function.comp_apply,
-      AlgEquiv.prod_map_apply, Prod.swap, Prod.map_apply, f',
+      AlgEquiv.prodMap_apply, Prod.swap, Prod.map_apply, f',
       AlgEquiv.symm_apply_eq] at hg
     ext1 x
-    specialize hg ((MatProd_algEquiv_PiMat _).symm x)
+    specialize hg ((MatProdAlgEquivPiMat _).symm x)
     simp only [AlgEquiv.apply_symm_apply] at hg
     rw [hg]
     rfl
@@ -229,7 +235,7 @@ theorem PiMat.trace_eq_linearMap_trace_toEuclideanLM
   (y : (PiMat ℂ (ι × ι) fun i ↦ p i.1 × p i.2)) :
   PiMat.traceLinearMap y
     = ∑ x : ι × ι, LinearMap.trace ℂ (EuclideanSpace ℂ (p x.1 × p x.2))
-      (PiMat_toEuclideanLM y x) :=
+      (PiMatToEuclideanLM y x) :=
 by
   simp only [StarAlgEquiv.piCongrRight_apply, StarAlgEquiv.ofAlgEquiv_coe,
     AlgEquiv.ofLinearEquiv_apply, LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply,
@@ -245,32 +251,32 @@ by
 variable {φ : (i : ι) → Module.Dual ℂ (Matrix (p i) (p i) ℂ)}
   [hφ : ∀ (i : ι), (φ i).IsFaithfulPosMap]
 
-theorem QuantumGraph.Real.dim_of_piMat_submodule_eq
+theorem QuantumGraph.Real.dimOfPiMatSubmodule_eq
   : withPiBlockQuantum[φ]
     letI : CoalgebraStruct ℂ (PiMat ℂ ι p) :=
       PiMat.finiteDimensionalHilbertCoalgebraStruct (φ := φ)
     ∀ {A : PiMat ℂ ι p →ₗ[ℂ] PiMat ℂ ι p},
       (hA : QuantumGraph.Real (PiMat ℂ ι p) A) →
-      hA.toQuantumGraph.dim_of_piMat_submodule =
-        ∑ i, Module.finrank ℂ (hA.PiMat_submodule i) :=
+      hA.toQuantumGraph.dimOfPiMatSubmodule =
+        ∑ i, Module.finrank ℂ (hA.PiMatSubmodule i) :=
 by
   withPiBlockQuantumCtx[φ]
   letI : CoalgebraStruct ℂ (PiMat ℂ ι p) :=
     PiMat.finiteDimensionalHilbertCoalgebraStruct (φ := φ)
   intro A hA
   rw [← Nat.cast_inj (R := ℂ)]
-  rw [QuantumGraph.dim_of_piMat_submodule_eq_trace]
+  rw [QuantumGraph.dimOfPiMatSubmodule_eq_trace]
   simp only [Nat.cast_sum, ←
     orthogonalProjection_trace (R := ℂ),
-    QuantumGraph.Real.PiMat_submoduleOrthogonalProjection,
+    QuantumGraph.Real.PiMatSubmoduleOrthogonalProjection,
     LinearMap.coe_toContinuousLinearMap]
   rw [← PiMat.trace_eq_linearMap_trace_toEuclideanLM]
 
 variable
-  {ψ : Π i : Fin 2, Module.Dual ℂ (Matrix (PiFinTwo_same n i) (PiFinTwo_same n i) ℂ)}
+  {ψ : Π i : Fin 2, Module.Dual ℂ (Matrix (PiFinTwoSame n i) (PiFinTwoSame n i) ℂ)}
   [hψ : ∀ i, (ψ i).IsFaithfulPosMap]
   {A : withPiBlockQuantum[ψ]
-    (PiMat ℂ (Fin 2) (PiFinTwo_same n) →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n))}
+    (PiMat ℂ (Fin 2) (PiFinTwoSame n) →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwoSame n))}
   (hA : withPiBlockCoalgebraQuantum[ψ] QuantumGraph.Real _ A)
 
 omit [(i : ι) → DecidableEq (p i)] in
@@ -337,29 +343,29 @@ by
   rw [LinearMap.lrsum_eq_single_proj_lrcomp]
 
 private lemma
-  QuantumGraph.Real.PiFinTwo_same_exists_proj_conj_add_of_piMat_submodule_eq_bot
+  QuantumGraph.Real.PiFinTwoSame_exists_proj_conj_add_of_piMat_submodule_eq_bot
   : withPiBlockCoalgebraQuantum[ψ]
-    ∀ (_ : hA.PiMat_submodule ((1 : Fin 2), (0 : Fin 2)) = ⊥)
-      (_ : hA.PiMat_submodule ((0 : Fin 2), (1 : Fin 2)) = ⊥),
+    ∀ (_ : hA.PiMatSubmodule ((1 : Fin 2), (0 : Fin 2)) = ⊥)
+      (_ : hA.PiMatSubmodule ((0 : Fin 2), (1 : Fin 2)) = ⊥),
   -- ∃ (f₁ f₂ : Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ),
     (LinearMap.adjoint
-        (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2))
-      ∘ₗ ((LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2)) ∘ₗ A
+        (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2))
+      ∘ₗ ((LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2)) ∘ₗ A
         ∘ₗ LinearMap.adjoint
-          (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2)))
-      ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2))
+          (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2)))
+      ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2))
     + (LinearMap.adjoint
-        (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2))
-      ∘ₗ ((LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2)) ∘ₗ A
+        (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2))
+      ∘ₗ ((LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2)) ∘ₗ A
         ∘ₗ LinearMap.adjoint
-          (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2)))
-      ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2)) = A :=
+          (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2)))
+      ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2)) = A :=
 by
   withPiBlockCoalgebraQuantumCtx[ψ]
   intro h₂ h₃
   simp only [Fin.isValue,
-    QuantumGraph.Real.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero] at h₂ h₃
-  simp_all only [PiFinTwo_same]
+    QuantumGraph.Real.PiMatSubmodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero] at h₂ h₃
+  simp_all only [PiFinTwoSame]
   nth_rw 3 [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hψ) A]
   simp only [Finset.sum_product_univ, Fin.sum_univ_two,
     Fin.isValue,
@@ -369,22 +375,22 @@ lemma
   QuantumGraph.Real.piFinTwo_same_piMat_submodule_eq_bot_of_adjoint_and_dim_eq_one
   : withPiBlockCoalgebraQuantum[ψ]
     ∀ (_ : LinearMap.adjoint A = A)
-      (_ : hA.toQuantumGraph.dim_of_piMat_submodule = 1),
-    hA.PiMat_submodule ((1 : Fin 2), (0 : Fin 2)) = ⊥
-    ∧ ((Module.finrank ℂ (hA.PiMat_submodule 0) = 1
-      ∧ hA.PiMat_submodule 1 = ⊥)
+      (_ : hA.toQuantumGraph.dimOfPiMatSubmodule = 1),
+    hA.PiMatSubmodule ((1 : Fin 2), (0 : Fin 2)) = ⊥
+    ∧ ((Module.finrank ℂ (hA.PiMatSubmodule 0) = 1
+      ∧ hA.PiMatSubmodule 1 = ⊥)
       ∨
-      (hA.PiMat_submodule 0 = ⊥
-        ∧ Module.finrank ℂ (hA.PiMat_submodule 1) = 1)) :=
+      (hA.PiMatSubmodule 0 = ⊥
+        ∧ Module.finrank ℂ (hA.PiMatSubmodule 1) = 1)) :=
 by
   withPiBlockCoalgebraQuantumCtx[ψ]
   intro hA₂ hd
-  simp only [QuantumGraph.Real.dim_of_piMat_submodule_eq,
+  simp only [QuantumGraph.Real.dimOfPiMatSubmodule_eq,
     Finset.sum_product_univ, Fin.sum_univ_two,
     Fin.isValue, Prod.mk_zero_zero, Prod.mk_one_one] at hd
   simp only [Fin.isValue, Nat.add_eq_one_iff, AddLeftCancelMonoid.add_eq_zero,
     Submodule.finrank_eq_zero] at hd
-  simp only [Fin.isValue, hA.PiMat_submodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (0, 1),
+  simp only [Fin.isValue, hA.PiMatSubmodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (0, 1),
     Prod.swap_prod_mk] at hd
   rcases hd with (h | h)
   · obtain ⟨h₁, (h₂ | h₂)⟩ := h
@@ -392,7 +398,7 @@ by
     · rw [h₁.2] at h₂
       simp only [finrank_bot, zero_ne_one, false_and] at h₂
   · obtain ⟨(h₁ | h₁), h₂⟩ := h
-    · rw [hA.PiMat_submodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (1, 0),
+    · rw [hA.PiMatSubmodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂ (1, 0),
         Prod.swap_prod_mk] at h₂
       rw [h₂.1, finrank_bot] at h₁
       simp only [zero_ne_one, and_false] at h₁
@@ -460,21 +466,21 @@ by
   simp only [this1, true_and, hi]
   exact hii
 
-theorem QuantumGraph.Real.dim_of_piMat_submodule_eq_zero_iff_eq_zero
+theorem QuantumGraph.Real.dimOfPiMatSubmodule_eq_zero_iff_eq_zero
   {ι : Type*} {p : ι → Type*} [Fintype ι] [DecidableEq ι]
   [(i : ι) → Fintype (p i)] [(i : ι) → DecidableEq (p i)]
   {φ : (i : ι) → Module.Dual ℂ (Matrix (p i) (p i) ℂ)}
   [hφ : ∀ i, (φ i).IsFaithfulPosMap]
   : withPiBlockCoalgebraQuantum[φ]
     ∀ {A : PiMat ℂ ι p →ₗ[ℂ] PiMat ℂ ι p} (hA : QuantumGraph.Real _ A),
-      hA.toQuantumGraph.dim_of_piMat_submodule = 0 ↔ A = 0 :=
+      hA.toQuantumGraph.dimOfPiMatSubmodule = 0 ↔ A = 0 :=
 by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro A hA
-  simp only [QuantumGraph.Real.dim_of_piMat_submodule_eq]
+  simp only [QuantumGraph.Real.dimOfPiMatSubmodule_eq]
   simp_rw [Finset.sum_eq_zero_iff,
     Submodule.finrank_eq_zero,
-    QuantumGraph.Real.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero]
+    QuantumGraph.Real.PiMatSubmodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero]
   constructor
   · intro h
     rw [LinearMap.eq_sum_conj_adjoint_proj_comp_proj (hφ := hφ) A]
@@ -484,7 +490,7 @@ by
     simp only [LinearMap.zero_comp, LinearMap.comp_zero,
       Finset.mem_univ, imp_self, implies_true]
 
-theorem QuantumGraph.Real.exists_unique_includeMap_of_adjoint_and_dim_ofPiMat_submodule_eq_one
+theorem QuantumGraph.Real.exists_unique_includeMap_of_adjoint_and_dim_ofPiMatSubmodule_eq_one
   {ι : Type*} {p : ι → Type*} [Fintype ι] [DecidableEq ι]
   [(i : ι) → Fintype (p i)] [(i : ι) → DecidableEq (p i)]
   {φ : (i : ι) → Module.Dual ℂ (Matrix (p i) (p i) ℂ)}
@@ -492,7 +498,7 @@ theorem QuantumGraph.Real.exists_unique_includeMap_of_adjoint_and_dim_ofPiMat_su
   : withPiBlockCoalgebraQuantum[φ]
     ∀ {A : PiMat ℂ ι p →ₗ[ℂ] PiMat ℂ ι p}, (hA : QuantumGraph.Real _ A) →
       (hA₂ : LinearMap.adjoint A = A) →
-      (hd : hA.toQuantumGraph.dim_of_piMat_submodule = 1) →
+      (hd : hA.toQuantumGraph.dimOfPiMatSubmodule = 1) →
       ∃! i : ι,
         LinearMap.adjoint (LinearMap.proj i)
           ∘ₗ LinearMap.proj i
@@ -501,12 +507,12 @@ by
   withPiBlockCoalgebraQuantumCtx[φ]
   intro A hA hA₂ hd
   have hA_neZero :=
-    (not_iff_not.mpr (hA.dim_of_piMat_submodule_eq_zero_iff_eq_zero)).mp
+    (not_iff_not.mpr (hA.dimOfPiMatSubmodule_eq_zero_iff_eq_zero)).mp
     (ne_zero_of_eq_one hd)
-  simp only [QuantumGraph.Real.dim_of_piMat_submodule_eq] at hd
+  simp only [QuantumGraph.Real.dimOfPiMatSubmodule_eq] at hd
   obtain ⟨i, hi, hii⟩ := Finset.sum_nat_eq_one_iff_exists_unique_eq_one hd
   have this₁ : ∀ j ∈ Finset.univ \ {i},
-    Module.finrank ℂ (hA.PiMat_submodule j) = 0 :=
+    Module.finrank ℂ (hA.PiMatSubmodule j) = 0 :=
   by
     intro j hj
     simp only [Finset.mem_sdiff, Finset.mem_univ, Finset.mem_singleton, true_and] at hj
@@ -516,7 +522,7 @@ by
   have this₃ := Prod.ext_iff.mp (hii _ hi)
   simp only [Prod.fst_swap, Prod.snd_swap] at this₃
   simp_rw [Submodule.finrank_eq_zero,
-    QuantumGraph.Real.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero] at this₁
+    QuantumGraph.Real.PiMatSubmodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero] at this₁
   have : ∑ x ∈ Finset.univ \ {i},
       LinearMap.adjoint (LinearMap.proj x.1) ∘ₗ
         ((LinearMap.proj x.1 ∘ₗ A ∘ₗ LinearMap.adjoint (LinearMap.proj x.2))) ∘ₗ LinearMap.proj x.2
@@ -550,32 +556,32 @@ by
 theorem QuantumGraph.Real.piFinTwo_same_exists_matrix_map_eq_map_of_adjoint_and_dim_eq_one
   : withPiBlockCoalgebraQuantum[ψ]
     ∀ (_ : LinearMap.adjoint A = A)
-      (_ : hA.toQuantumGraph.dim_of_piMat_submodule = 1),
+      (_ : hA.toQuantumGraph.dimOfPiMatSubmodule = 1),
   -- (∃ f : Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ,
-  LinearMap.adjoint (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2))
-    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2)
+  LinearMap.adjoint (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2))
+    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2)
     ∘ₗ A
     ∘ₗ LinearMap.adjoint
-      (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2))
-    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (0 : Fin 2) = A
+      (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2))
+    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (0 : Fin 2) = A
   ∨
     -- ∃ f : Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ,
       LinearMap.adjoint
-        (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2))
-    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2)
+        (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2))
+    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2)
     ∘ₗ A
     ∘ₗ LinearMap.adjoint
-      (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2))
-    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwo_same n j)) (1 : Fin 2) = A :=
+      (LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2))
+    ∘ₗ LinearMap.proj (R := ℂ) (φ := fun j => Mat ℂ (PiFinTwoSame n j)) (1 : Fin 2) = A :=
 by
   withPiBlockCoalgebraQuantumCtx[ψ]
   intro hA₂ hd
   obtain ⟨h₁, h⟩ := hA.piFinTwo_same_piMat_submodule_eq_bot_of_adjoint_and_dim_eq_one hA₂ hd
   have h₂ := h₁
-  rw [hA.PiMat_submodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂,
+  rw [hA.PiMatSubmodule_eq_bot_iff_swap_eq_bot_of_adjoint hA₂,
     Prod.swap_prod_mk] at h₂
-  obtain hf := hA.PiFinTwo_same_exists_proj_conj_add_of_piMat_submodule_eq_bot h₁ h₂
-  simp only [hA.PiMat_submodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero,
+  obtain hf := hA.PiFinTwoSame_exists_proj_conj_add_of_piMat_submodule_eq_bot h₁ h₂
+  simp only [hA.PiMatSubmodule_eq_bot_iff_proj_comp_adjoint_proj_eq_zero,
     Prod.fst_one, Prod.snd_one, Prod.fst_zero, Prod.snd_zero] at h
   rcases h with (h | h)
   <;>
@@ -756,7 +762,7 @@ by
   simp only [← LinearMap.comp_assoc]
   congr 2
   rw [← AlgHom.proj_toLinearMap]
-  exact TensorProduct.map_mul'_commute_iff.mpr fun x ↦ congrFun rfl
+  exact TensorProduct.mapMul'_commute_iff.mpr fun x ↦ congrFun rfl
 
 lemma schurMul_comp_proj
   {B : Type*} [starAlgebra B] [QuantumSet B]
@@ -868,7 +874,7 @@ by
     rw [hsingle]
     simp only [hadjPi]
     rw [← AlgHom.proj_toLinearMap]
-    exact TensorProduct.map_mul'_commute_iff.mpr fun x => congrFun rfl
+    exact TensorProduct.mapMul'_commute_iff.mpr fun x => congrFun rfl
   calc
     ((LinearMap.mul' ℂ B ∘ₗ TensorProduct.map f g) ∘ₗ
         TensorProduct.map
@@ -1076,56 +1082,56 @@ by
 
 theorem Pi.single_zero_piFinTwo_same_apply (x : Matrix n n ℂ) :
   (Pi.single 0 x : PiMat ℂ (Fin 2) _) =
-  MatProd_algEquiv_PiMat (PiFinTwo_same n) (x, 0) :=
+  MatProdAlgEquivPiMat (PiFinTwoSame n) (x, 0) :=
 by
   ext1
-  simp [MatProd_algEquiv_PiMat, Pi.single, Function.update]
+  simp [MatProdAlgEquivPiMat, Pi.single, Function.update]
   rfl
 theorem Pi.single_one_piFinTwo_same_apply (x : Matrix n n ℂ) :
   (Pi.single 1 x : PiMat ℂ (Fin 2) _) =
-  MatProd_algEquiv_PiMat (PiFinTwo_same n) (0, x) :=
+  MatProdAlgEquivPiMat (PiFinTwoSame n) (0, x) :=
 by
-  simp only [funext_iff, Fin.forall_fin_two, MatProd_algEquiv_PiMat,
-    matrixPiFinTwo_algEquiv_prod_symm_apply,
+  simp only [funext_iff, Fin.forall_fin_two, MatProdAlgEquivPiMat,
+    matrixPiFinTwoAlgEquivProd_symm_apply,
     single_eq_same, dite_true, single_eq_of_ne (zero_ne_one' _),
     one_ne_zero, dite_false]
   exact ⟨rfl, rfl⟩
 
 theorem
-  PiMat_finTwo_same_swap_swap (x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :
-  PiMat_finTwo_same_swapAlgEquiv
-    (PiMat_finTwo_same_swapAlgEquiv x) = x :=
-by simp [PiMat_finTwo_same_swapAlgEquiv]
+  PiMat_finTwo_same_swap_swap (x : PiMat ℂ (Fin 2) (PiFinTwoSame n)) :
+  PiMatFinTwoSameSwapAlgEquiv
+    (PiMatFinTwoSameSwapAlgEquiv x) = x :=
+by simp [PiMatFinTwoSameSwapAlgEquiv]
 
-theorem PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero (x : Matrix n n ℂ) :
-  PiMat_finTwo_same_swapAlgEquiv (Pi.single 0 x) =
-    (Pi.single 1 x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+theorem PiMatFinTwoSameSwapAlgEquiv_apply_piSingle_zero (x : Matrix n n ℂ) :
+  PiMatFinTwoSameSwapAlgEquiv (Pi.single 0 x) =
+    (Pi.single 1 x : PiMat ℂ (Fin 2) (PiFinTwoSame n)) :=
 by
   simp only [Pi.single_zero_piFinTwo_same_apply,
-    PiMat_finTwo_same_swapAlgEquiv_apply, Pi.single_one_piFinTwo_same_apply]
+    PiMatFinTwoSameSwapAlgEquiv_apply, Pi.single_one_piFinTwo_same_apply]
 
-theorem PiMat_finTwo_same_swapAlgEquiv_comp_linearMapSingle_zero :
-  PiMat_finTwo_same_swapAlgEquiv.toLinearMap.comp (LinearMap.single ℂ _ 0) =
-    (LinearMap.single ℂ _ 1 : _ →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+theorem PiMatFinTwoSameSwapAlgEquiv_comp_linearMapSingle_zero :
+  PiMatFinTwoSameSwapAlgEquiv.toLinearMap.comp (LinearMap.single ℂ _ 0) =
+    (LinearMap.single ℂ _ 1 : _ →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwoSame n)) :=
 by
   simp only [LinearMap.ext_iff, LinearMap.comp_apply,
     LinearMap.single_apply]
-  exact PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero
+  exact PiMatFinTwoSameSwapAlgEquiv_apply_piSingle_zero
 
-theorem PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_one (x : Matrix n n ℂ) :
-  PiMat_finTwo_same_swapAlgEquiv (Pi.single 1 x) =
-    (Pi.single 0 x : PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+theorem PiMatFinTwoSameSwapAlgEquiv_apply_piSingle_one (x : Matrix n n ℂ) :
+  PiMatFinTwoSameSwapAlgEquiv (Pi.single 1 x) =
+    (Pi.single 0 x : PiMat ℂ (Fin 2) (PiFinTwoSame n)) :=
 by
-  rw [← PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_zero,
+  rw [← PiMatFinTwoSameSwapAlgEquiv_apply_piSingle_zero,
     PiMat_finTwo_same_swap_swap]
 
-theorem PiMat_finTwo_same_swapAlgEquiv_comp_linearMapSingle_one :
-  PiMat_finTwo_same_swapAlgEquiv.toLinearMap ∘ₗ (LinearMap.single ℂ _ 1) =
-    (LinearMap.single ℂ _ 0 : _ →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwo_same n)) :=
+theorem PiMatFinTwoSameSwapAlgEquiv_comp_linearMapSingle_one :
+  PiMatFinTwoSameSwapAlgEquiv.toLinearMap ∘ₗ (LinearMap.single ℂ _ 1) =
+    (LinearMap.single ℂ _ 0 : _ →ₗ[ℂ] PiMat ℂ (Fin 2) (PiFinTwoSame n)) :=
 by
   simp only [LinearMap.ext_iff, LinearMap.comp_apply,
     LinearMap.single_apply]
-  exact PiMat_finTwo_same_swapAlgEquiv_apply_piSingle_one
+  exact PiMatFinTwoSameSwapAlgEquiv_apply_piSingle_one
 
 theorem QuantumGraph.Real.schurProjection_proj_conj
   : withPiBlockCoalgebraQuantum[φ]

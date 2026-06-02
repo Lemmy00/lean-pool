@@ -113,9 +113,9 @@ noncomputable instance QuantumSet.tensorProduct
     (fun _ _ h1 h2 => by
       simp only [add_mul, inner_add_left, h1, h2])
   n := _
-  n_isFintype := _
+  nIsFintype := _
   onb := hA.onb.tensorProduct hB.onb
-  n_isDecidableEq := by infer_instance
+  nIsDecidableEq := by infer_instance
 
 theorem QuantumSet.tensorProduct.k_eq₁ [hA : QuantumSet A] [hB : QuantumSet B]
     [Fact (hA.k = hB.k)] :
@@ -146,7 +146,7 @@ theorem comul_real [hA : QuantumSet A] :
   rfl
 
 /-- Swap the two middle factors in a fourfold tensor product. -/
-noncomputable def swap_middle_tensor
+noncomputable def swapMiddleTensor
     (R : Type*) [CommSemiring R] (A B C D : Type*)
     [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
     [Module R A] [Module R B] [Module R C] [Module R D] :
@@ -159,24 +159,24 @@ noncomputable def swap_middle_tensor
     (TensorProduct.assoc R (A ⊗[R] C) _ _)
 
 @[simp]
-lemma swap_middle_tensor_tmul_apply
+lemma swapMiddleTensor_tmul_apply
     {R : Type*} [CommSemiring R] {A B C D : Type*}
     [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
     [Module R A] [Module R B] [Module R C] [Module R D]
     (x : A) (y : B) (z : C) (w : D) :
-    swap_middle_tensor R A B C D ((x ⊗ₜ[R] y) ⊗ₜ[R] (z ⊗ₜ[R] w)) =
+    swapMiddleTensor R A B C D ((x ⊗ₜ[R] y) ⊗ₜ[R] (z ⊗ₜ[R] w)) =
       (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) :=
   rfl
 
 @[simp]
-lemma swap_middle_tensor_symm
+lemma swapMiddleTensor_symm
     {R : Type*} [CommSemiring R] {A B C D : Type*}
     [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
     [Module R A] [Module R B] [Module R C] [Module R D] :
-    (swap_middle_tensor R A B C D).symm = swap_middle_tensor R A C B D :=
+    (swapMiddleTensor R A B C D).symm = swapMiddleTensor R A C B D :=
   rfl
 
-lemma swap_middle_tensor_comp_map
+lemma swapMiddleTensor_comp_map
     {R : Type*} [CommSemiring R] {A B C D E F G H : Type*}
     [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
     [Module R A] [Module R B] [Module R C] [Module R D]
@@ -184,10 +184,10 @@ lemma swap_middle_tensor_comp_map
     [Module R E] [Module R F] [Module R G] [Module R H]
     (f : A →ₗ[R] B) (g : C →ₗ[R] D)
     (h : E →ₗ[R] F) (k : G →ₗ[R] H) :
-    (swap_middle_tensor R B D F H).toLinearMap ∘ₗ
+    (swapMiddleTensor R B D F H).toLinearMap ∘ₗ
         (TensorProduct.map (TensorProduct.map f g) (TensorProduct.map h k)) =
       (TensorProduct.map (TensorProduct.map f h) (TensorProduct.map g k)) ∘ₗ
-        (swap_middle_tensor R A C E G).toLinearMap := by
+        (swapMiddleTensor R A C E G).toLinearMap := by
   apply TensorProduct.ext_fourfold'
   simp
 
@@ -198,25 +198,25 @@ lemma LinearMap.mul'_tensorProduct {R A B : Type*}
     [IsScalarTower R B B] :
     LinearMap.mul' R (A ⊗[R] B) =
       (TensorProduct.map (LinearMap.mul' R A) (LinearMap.mul' R B)) ∘ₗ
-        (swap_middle_tensor R A B A B).toLinearMap := by
+        (swapMiddleTensor R A B A B).toLinearMap := by
   apply TensorProduct.ext_fourfold'
   simp
 
-lemma swap_middle_tensor_map_conj {R A B C D E F G H : Type*} [CommSemiring R]
+lemma swapMiddleTensor_map_conj {R A B C D E F G H : Type*} [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
     [Module R A] [Module R B] [Module R C] [Module R D]
     [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G] [AddCommMonoid H]
     [Module R E] [Module R F] [Module R G] [Module R H]
     (f : A →ₗ[R] B) (g : C →ₗ[R] D)
     (h : E →ₗ[R] F) (k : G →ₗ[R] H) :
-    (swap_middle_tensor R B D F H).toLinearMap ∘ₗ
+    (swapMiddleTensor R B D F H).toLinearMap ∘ₗ
         (TensorProduct.map (TensorProduct.map f g) (TensorProduct.map h k)) ∘ₗ
-          (swap_middle_tensor R A C E G).symm.toLinearMap =
+          (swapMiddleTensor R A C E G).symm.toLinearMap =
       TensorProduct.map (TensorProduct.map f h) (TensorProduct.map g k) := by
   apply TensorProduct.ext_fourfold'
   simp
 
-lemma swap_middle_tensor_adjoint
+lemma swapMiddleTensor_adjoint
     {𝕜 E F G H : Type*} [RCLike 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedAddCommGroup G] [NormedAddCommGroup H]
@@ -224,8 +224,8 @@ lemma swap_middle_tensor_adjoint
     [InnerProductSpace 𝕜 G] [InnerProductSpace 𝕜 H]
     [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     [FiniteDimensional 𝕜 G] [FiniteDimensional 𝕜 H] :
-    LinearMap.adjoint (swap_middle_tensor 𝕜 E F G H).toLinearMap =
-      (swap_middle_tensor 𝕜 E F G H).symm.toLinearMap := by
+    LinearMap.adjoint (swapMiddleTensor 𝕜 E F G H).toLinearMap =
+      (swapMiddleTensor 𝕜 E F G H).symm.toLinearMap := by
   apply TensorProduct.ext_fourfold'
   intros x y z w
   rw [TensorProduct.inner_ext_fourfold_iff']

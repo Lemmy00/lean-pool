@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.RoseTree.Defs
 import LeanPool.QuasiBorelSpaces.RoseTree.Basic
 
+/-!
+# LeanPool.QuasiBorelSpaces.Rose.Encoding
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Rose.Encoding`.
+-/
+
 
 namespace Rose
 

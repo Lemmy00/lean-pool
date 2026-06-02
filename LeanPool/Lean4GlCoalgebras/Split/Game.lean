@@ -7,19 +7,19 @@ Authors: Madeleine Gignoux
 import LeanPool.Lean4GlCoalgebras.Pdl.Game
 import LeanPool.Lean4GlCoalgebras.Split.Proof
 
-namespace Split
-
-/-- Auxiliary declaration used in the GL coalgebra development. -/
-abbrev Builder := Player.A
-/-- Auxiliary declaration used in the GL coalgebra development. -/
-abbrev Prover := Player.B
-
 /-! ## The GL-split game.
 
 Builder-Prover game for constructive counter-models/proofs. Builder gets a rule application `R` and
 plays an applicable sequent `Γ` in order to construct a counter-model. Prover get a sequent `Γ`
 and plays rule applications `R` in order to construct a proof.
 -/
+
+namespace Split
+
+/-- Auxiliary declaration used in the GL coalgebra development. -/
+abbrev Builder := Player.A
+/-- Auxiliary declaration used in the GL coalgebra development. -/
+abbrev Prover := Player.B
 
 -- `ruleApps` performs a large exhaustive case split over split formulas.
 /-- The available rule applications for a sequent `Γ`. -/

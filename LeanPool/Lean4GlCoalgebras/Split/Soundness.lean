@@ -721,7 +721,7 @@ lemma has_children_of_chain_model {𝕏 : Proof}
   exact g2 k k_prop
 
 /-- Progressing subchain of an eventually increasing chain. -/
-noncomputable def inc_chain_eventual_inc_chain {β}
+noncomputable def incChainEventualIncChain {β}
   {Q : β → β → Prop}
   {g : ℕ → β}
   (Q_prop : ∀ n, ∃ m, Q (g n) (g m))
@@ -729,22 +729,22 @@ noncomputable def inc_chain_eventual_inc_chain {β}
   match n with
    | 0 => ⟨g (Q_prop 0).choose, by simp⟩
    | n + 1 =>
-      match inc_chain_eventual_inc_chain Q_prop n with
+      match incChainEventualIncChain Q_prop n with
         | ⟨ih, ih_prop⟩ => ⟨g (Q_prop ih_prop.choose).choose, by simp⟩
 
 /-- An eventually progressing chain has an progressing subchain. -/
 lemma inc_chain_eventual_inc_chain_prop {β}
   {Q : β → β → Prop} {g : ℕ → β}
   (Q_prop : ∀ n, ∃ m, Q (g n) (g m)) :
-  ∀ n, Q (inc_chain_eventual_inc_chain Q_prop n).1
-         (inc_chain_eventual_inc_chain Q_prop (n + 1)).1
+  ∀ n, Q (incChainEventualIncChain Q_prop n).1
+         (incChainEventualIncChain Q_prop (n + 1)).1
    := by
     intro n
     conv =>
       congr
       · skip
-      · unfold inc_chain_eventual_inc_chain
-    rcases inc_chain_eventual_inc_chain Q_prop n with ⟨ih, ih_prop⟩
+      · unfold incChainEventualIncChain
+    rcases incChainEventualIncChain Q_prop n with ⟨ih, ih_prop⟩
     change Q ih (g (Q_prop ih_prop.choose).choose)
     have := (Q_prop ih_prop.choose).choose_spec
     convert this
@@ -758,7 +758,7 @@ lemma soundness (Γ : SplitSequent) : SplitSequent.isTrue Γ → ⊨ Γ := by
   simp only [SplitSequent.isValid, not_forall] at h
   have ⟨W, M, w, w_prop⟩ := h
   apply (wellFounded_iff_isEmpty_descending_chain.1 M.con_wf).false
-  use fun k ↦ (@inc_chain_eventual_inc_chain _ M.R (fun n ↦ (chain prop w_prop n).2.1)
+  use fun k ↦ (@incChainEventualIncChain _ M.R (fun n ↦ (chain prop w_prop n).2.1)
     (by
       intro n
       have ⟨m, m_prop⟩ := has_children_of_chain_model prop w_prop n
@@ -776,7 +776,7 @@ end ExtSkip
 This soundness lemma follows by converting any GL-split proof into a GL-split cut proof. -/
 
 /-- Converts structure morphism for GL-split proof into one for GL-split cut proofs. -/
-@[simp] def α_conv (𝕏 : Split.Proof) : 𝕏.X → ExtSkip.T.obj 𝕏.X := fun x ↦
+@[simp] def αConv (𝕏 : Split.Proof) : 𝕏.X → ExtSkip.T.obj 𝕏.X := fun x ↦
   match Split.r 𝕏.α x with
     | .topₗ Δ in_Δ => ⟨.topₗ Δ in_Δ, Split.p 𝕏.α x⟩
     | .topᵣ Δ in_Δ => ⟨.topᵣ Δ in_Δ, Split.p 𝕏.α x⟩
@@ -799,37 +799,37 @@ lemma SplitProofIsExtSkipProof (Γ : SplitSequent) :
   have := 𝕏.X
   use {
     X := 𝕏.X
-    α := α_conv 𝕏
+    α := αConv 𝕏
     step x := by
       have helper :
-          ∀ x, ExtSkip.f (ExtSkip.r (α_conv 𝕏) x) = Split.f (Split.r 𝕏.α x) := by
+          ∀ x, ExtSkip.f (ExtSkip.r (αConv 𝕏) x) = Split.f (Split.r 𝕏.α x) := by
         intro x
         cases r_def : Split.r 𝕏.α x <;>
-          simp_all only [α_conv, ExtSkip.r, ExtSkip.f, Split.f]
+          simp_all only [αConv, ExtSkip.r, ExtSkip.f, Split.f]
       have := 𝕏.step x
       cases r_def : Split.r 𝕏.α x <;>
-        simp_all only [α_conv, ExtSkip.r, ExtSkip.p, Split.fₙ_alternate,
+        simp_all only [αConv, ExtSkip.r, ExtSkip.p, Split.fₙ_alternate,
           ExtSkip.fₙ_alternate]
     path x := by
-      have h : ∀ x, (ExtSkip.r (α_conv 𝕏) x).isBox ↔ (Split.r 𝕏.α x).isBox := by
+      have h : ∀ x, (ExtSkip.r (αConv 𝕏) x).isBox ↔ (Split.r 𝕏.α x).isBox := by
         intro x
         cases r_def : Split.r 𝕏.α x <;>
-          simp_all only [α_conv, ExtSkip.r, ExtSkip.RuleApp.isBox, Split.RuleApp.isBox]
+          simp_all only [αConv, ExtSkip.r, ExtSkip.RuleApp.isBox, Split.RuleApp.isBox]
       suffices hpath :
           ∀ (f : ℕ → 𝕏.X),
             f 0 = x →
-            (∀ n, ExtSkip.edge (α_conv 𝕏) (f n) (f (n + 1))) →
+            (∀ n, ExtSkip.edge (αConv 𝕏) (f n) (f (n + 1))) →
             ∀ n, ∃ m, (Split.r 𝕏.α (f (n + m))).isBox by
         simpa [h] using hpath
       intro f base step n
       apply Split.inf_path_has_inf_boxes f ?_ n
       convert step
-      unfold ExtSkip.edge Split.edge α_conv
+      unfold ExtSkip.edge Split.edge αConv
       simp [ExtSkip.p]
       grind}
   use x
   simp [←prop]
-  cases r_def : Split.r 𝕏.α x <;> simp_all only [α_conv, ExtSkip.r, ExtSkip.f, Split.f]
+  cases r_def : Split.r 𝕏.α x <;> simp_all only [αConv, ExtSkip.r, ExtSkip.f, Split.f]
 
 namespace Split
 

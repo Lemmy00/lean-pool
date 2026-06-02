@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Yunzhou Xie and contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yunzhou Xie and contributors
+Authors: Yunzhou Xie, contributors
 -/
 
 import LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Equiv
@@ -492,6 +492,6 @@ instance : IsSimpleRing (CrossProductAlgebra f) := by
 
 variable (f) in
 /-- The cross product algebra as a central simple algebra. -/
-def asCSA [IsGalois F K] : CSA F := ⟨.of F (CrossProductAlgebra f)⟩
+def asCSA : CSA F := ⟨.of F (CrossProductAlgebra f)⟩
 
 end CrossProductAlgebra

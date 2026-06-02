@@ -8,6 +8,11 @@ import Mathlib.Data.Fintype.Defs
 import LeanPool.Lean4GlCoalgebras.Interpolation.Interpolants
 import LeanPool.Lean4GlCoalgebras.Split.ProofTransformations
 
+/-! # Partial Left Interpolation Proofs
+
+All of the left and right partial interpolation proofs, split apart based on rule application. These
+are split apart since otherwise the file runs very slow. -/
+
 open Split
 
 /-- Given a node `x`, defines what the root of the left interpolation proof should look like,
@@ -42,7 +47,7 @@ noncomputable def rightEquationSequent {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
 
 /- ## From split system to extended system -/
 /-- Transforms rule applications in the split system into applications in the extended system. -/
-def Split_to_Ext {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : Split.RuleApp → Ext.RuleApp x τ
+def splitToExt {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : Split.RuleApp → Ext.RuleApp x τ
   | .topₗ _ in_Δ => .topₗ _ in_Δ
   | .topᵣ _ in_Δ => .topᵣ _ in_Δ
   | .axₗₗ _ _ in_Δ => .axₗₗ _ _ in_Δ
@@ -56,13 +61,8 @@ def Split_to_Ext {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : Split.RuleApp → Ext.
   | .boxₗ _ _ in_Δ => .boxₗ _ _ in_Δ
   | .boxᵣ _ _ in_Δ => .boxᵣ _ _ in_Δ
 
-/-! # Partial Left Interpolation Proofs
-
-All of the left and right partial interpolation proofs, split apart based on rule application. These
-are split apart since otherwise the file runs very slow. -/
-
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_topₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftTopₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ in_Δ} (rule_def : r 𝕏.α x = RuleApp.topₗ Δ in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) where
     X := Unit
@@ -74,7 +74,7 @@ noncomputable def partialLeft_topₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_topᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftTopᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ in_Δ} (rule_def : r 𝕏.α x = RuleApp.topᵣ Δ in_Δ)
    : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) where
     X := Unit
@@ -87,7 +87,7 @@ noncomputable def partialLeft_topᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_axₗₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftAxₗₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axₗₗ Δ n in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) where
     X := Unit
@@ -98,7 +98,7 @@ noncomputable def partialLeft_axₗₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_axₗᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftAxₗᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axₗᵣ Δ n in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) where
     X := Unit
@@ -131,7 +131,7 @@ noncomputable def partialLeft_axₗᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_axᵣₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftAxᵣₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axᵣₗ Δ n in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) where
     X := Unit
@@ -163,7 +163,7 @@ noncomputable def partialLeft_axᵣₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_axᵣᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftAxᵣᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axᵣᵣ Δ n in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) where
     X := Unit
@@ -176,7 +176,7 @@ noncomputable def partialLeft_axᵣᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_orₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftOrₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.orₗ Δ φ ψ in_Δ)
 : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
     match p_def : p 𝕏.α x with
@@ -208,7 +208,7 @@ noncomputable def partialLeft_orₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x :
         | y :: z :: l => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_orᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftOrᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.orᵣ Δ φ ψ in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -225,7 +225,7 @@ noncomputable def partialLeft_orᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x :
     | _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_andₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftAndₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.andₗ Δ φ ψ in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -336,7 +336,7 @@ noncomputable def partialLeft_andₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
   | _ :: _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_andᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftAndᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.andᵣ Δ φ ψ in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -372,7 +372,7 @@ noncomputable def partialLeft_andᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
   | _ :: _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_boxₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftBoxₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ in_Δ} (rule_def : r 𝕏.α x = RuleApp.boxₗ Δ φ in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -421,7 +421,7 @@ noncomputable def partialLeft_boxₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
   | _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialLeft_boxᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialLeftBoxᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ in_Δ} (rule_def : r 𝕏.α x = RuleApp.boxᵣ Δ φ in_Δ)
   : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -457,18 +457,18 @@ noncomputable def partialLeft_boxᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
 noncomputable def partialEquationLeft {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
     (x : 𝕏.X) : Ext.PreProof x (@leftInterpolantSequent 𝕏 _) :=
   match rule_def : (r 𝕏.α x) with
-    | .topₗ _ _ => partialLeft_topₗ x rule_def
-    | .topᵣ _ _ => partialLeft_topᵣ x rule_def
-    | .axₗₗ _ _ _ => partialLeft_axₗₗ x rule_def
-    | .axₗᵣ _ _ _ => partialLeft_axₗᵣ x rule_def
-    | .axᵣₗ _ _ _ => partialLeft_axᵣₗ x rule_def
-    | .axᵣᵣ _ _ _ => partialLeft_axᵣᵣ x rule_def
-    | .orₗ _ _ _ _ => partialLeft_orₗ x rule_def
-    | .orᵣ _ _ _ _ => partialLeft_orᵣ x rule_def
-    | .andₗ _ _ _ _ => partialLeft_andₗ x rule_def
-    | .andᵣ _ _ _ _ => partialLeft_andᵣ x rule_def
-    | .boxₗ _ _ _ => partialLeft_boxₗ x rule_def
-    | .boxᵣ _ _ _ => partialLeft_boxᵣ x rule_def
+    | .topₗ _ _ => partialLeftTopₗ x rule_def
+    | .topᵣ _ _ => partialLeftTopᵣ x rule_def
+    | .axₗₗ _ _ _ => partialLeftAxₗₗ x rule_def
+    | .axₗᵣ _ _ _ => partialLeftAxₗᵣ x rule_def
+    | .axᵣₗ _ _ _ => partialLeftAxᵣₗ x rule_def
+    | .axᵣᵣ _ _ _ => partialLeftAxᵣᵣ x rule_def
+    | .orₗ _ _ _ _ => partialLeftOrₗ x rule_def
+    | .orᵣ _ _ _ _ => partialLeftOrᵣ x rule_def
+    | .andₗ _ _ _ _ => partialLeftAndₗ x rule_def
+    | .andᵣ _ _ _ _ => partialLeftAndᵣ x rule_def
+    | .boxₗ _ _ _ => partialLeftBoxₗ x rule_def
+    | .boxᵣ _ _ _ => partialLeftBoxᵣ x rule_def
 
 private def partialEquationLeft_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
     (x : 𝕏.X) :
@@ -478,17 +478,17 @@ private def partialEquationLeft_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype �
   split <;> simp_all only [List.empty_eq, Finset.union_insert, Finset.union_singleton,
     List.map_eq_cons_iff, List.map_eq_nil_iff, exists_eq_right_right, ↓existsAndEq,
     true_and, Ext.Proves, Ext.r]
-  · simp [partialLeft_topₗ, Ext.f]
-  · simp [partialLeft_topᵣ, Ext.f]
-  · simp [partialLeft_axₗₗ, Ext.f]
-  · simp [partialLeft_axₗᵣ, Ext.f]
-  · simp [partialLeft_axᵣₗ, Ext.f]
-  · simp [partialLeft_axᵣᵣ, Ext.f]
-  · simp [partialLeft_orₗ]
+  · simp [partialLeftTopₗ, Ext.f]
+  · simp [partialLeftTopᵣ, Ext.f]
+  · simp [partialLeftAxₗₗ, Ext.f]
+  · simp [partialLeftAxₗᵣ, Ext.f]
+  · simp [partialLeftAxᵣₗ, Ext.f]
+  · simp [partialLeftAxᵣᵣ, Ext.f]
+  · simp [partialLeftOrₗ]
     split <;> simp_all only [List.cons.injEq, and_true, exists_eq_left', Ext.f,
       List.ne_cons_self, false_and, exists_false, reduceCtorEq, and_false]
   · rename_i rule_def
-    simp only [partialLeft_orᵣ, List.empty_eq, Lean.Elab.WF.paramLet]
+    simp only [partialLeftOrᵣ, List.empty_eq, Lean.Elab.WF.paramLet]
     have ⟨y, p_def, prop⟩ := 𝕏_h
     split <;> simp_all only [List.cons.injEq, and_true, exists_eq_left', Ext.f,
       List.ne_cons_self, reduceCtorEq, and_false]
@@ -500,7 +500,7 @@ private def partialEquationLeft_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype �
       aesop
   · rename_i rule_def
     have ⟨y, z, p_def, prop⟩ := 𝕏_h
-    simp only [partialLeft_andₗ, Ext.T, Fin.isValue, List.empty_eq, Lean.Elab.WF.paramLet]
+    simp only [partialLeftAndₗ, Ext.T, Fin.isValue, List.empty_eq, Lean.Elab.WF.paramLet]
     split <;> simp_all only [List.cons.injEq, and_true, ↓existsAndEq,
       exists_eq_left', Fin.isValue, List.nil_eq, reduceCtorEq, List.ne_cons_self, and_false]
     have ⟨eq₁, eq₂⟩ := p_def
@@ -510,13 +510,13 @@ private def partialEquationLeft_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype �
       simp [Ext.f]
     · rw [dif_neg eq]
       simp [Ext.f]
-  · simp [partialLeft_andᵣ]
+  · simp [partialLeftAndᵣ]
     split <;> simp_all only [List.cons.injEq, and_true, ↓existsAndEq, Ext.f,
       List.nil_eq, reduceCtorEq, false_and, exists_false, List.ne_cons_self, and_false]
-  · simp [partialLeft_boxₗ]
+  · simp [partialLeftBoxₗ]
     split <;> simp_all only [List.cons.injEq, and_true, exists_eq_left', Ext.f,
       List.ne_cons_self, false_and, exists_false, reduceCtorEq, and_false]
-  · simp [partialLeft_boxᵣ]
+  · simp [partialLeftBoxᵣ]
     split <;> simp_all only [List.cons.injEq, and_true, exists_eq_left', Ext.f,
       List.ne_cons_self, false_and, exists_false, reduceCtorEq, and_false]
 
@@ -537,16 +537,16 @@ noncomputable def partialInterpolationLeft {𝕏 : Proof} [fin_X : Fintype 𝕏.
     let y₂ := equiv.1.choose_spec.choose
     have y₂_prop := equiv.1.choose_spec.choose_spec
     have split_to_ext_isBox {𝕐 : Split.Proof} {x : 𝕐.X} {τ} (r : Split.RuleApp) :
-        r.isBox → (@Split_to_Ext _ x τ r).isBox := by
-      unfold Split_to_Ext
+        r.isBox → (@splitToExt _ x τ r).isBox := by
+      unfold splitToExt
       cases r <;> simp [RuleApp.isBox, Ext.RuleApp.isBox]
     have split_to_ext_f {𝕐 : Split.Proof} {x : 𝕐.X} {τ} (r : Split.RuleApp) :
-        Ext.f (@Split_to_Ext _ x τ r) = f r := by
-      unfold Split_to_Ext
+        Ext.f (@splitToExt _ x τ r) = f r := by
+      unfold splitToExt
       cases r <;> simp [f, Ext.f]
     have split_to_ext_fₙ {𝕐 : Split.Proof} {x : 𝕐.X} {τ} (r : Split.RuleApp) :
-        Ext.fₙ (@Split_to_Ext _ x τ r) = fₙ r := by
-      unfold Split_to_Ext
+        Ext.fₙ (@splitToExt _ x τ r) = fₙ r := by
+      unfold splitToExt
       cases r <;> simp [fₙ_alternate, Ext.fₙ_alternate]
     { X := Unit ⊕ 𝕐₁.X ⊕ 𝕐₂.X
       α | Sum.inl u =>
@@ -555,7 +555,7 @@ noncomputable def partialInterpolationLeft {𝕏 : Proof} [fin_X : Fintype 𝕏.
         | Sum.inr (Sum.inl z₁) =>
           ⟨Ext.r 𝕐₁.α z₁, List.map (Sum.inr ∘ Sum.inl) (Ext.p 𝕐₁.α z₁)⟩
         | Sum.inr (Sum.inr z₂) =>
-          ⟨Split_to_Ext (r 𝕐₂.α z₂), List.map (Sum.inr ∘ Sum.inr) (p 𝕐₂.α z₂)⟩
+          ⟨splitToExt (r 𝕐₂.α z₂), List.map (Sum.inr ∘ Sum.inr) (p 𝕐₂.α z₂)⟩
       step
         | Sum.inl u => by
           simp only [Ext.r, Ext.T, Ext.p, List.map_cons, split_to_ext_f,
@@ -575,7 +575,7 @@ noncomputable def partialInterpolationLeft {𝕏 : Proof} [fin_X : Fintype 𝕏.
           split
           all_goals
             rename_i eq
-            cases r_def : r 𝕐₂.α z₂ <;> simp [Ext.r, r_def, Split_to_Ext] at eq
+            cases r_def : r 𝕐₂.α z₂ <;> simp [Ext.r, r_def, splitToExt] at eq
             all_goals
               replace 𝕐₂_h := by simpa [r_def] using 𝕐₂_h
               simp only [Ext.T, Ext.p, 𝕐₂_h, List.map_nil, List.empty_eq, List.map_map,
@@ -809,7 +809,7 @@ All of the left and right partial interpolation proofs, split apart based on rul
 are split apart since otherwise the file runs very slow. -/
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_topₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightTopₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ in_Δ} (rule_def : r 𝕏.α x = RuleApp.topₗ Δ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) where
     X := Unit
@@ -822,7 +822,7 @@ noncomputable def partialRight_topₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_topᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightTopᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ in_Δ} (rule_def : r 𝕏.α x = RuleApp.topᵣ Δ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) where
     X := Unit
@@ -834,7 +834,7 @@ noncomputable def partialRight_topᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_axₗₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightAxₗₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axₗₗ Δ n in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) where
     X := Unit
@@ -847,7 +847,7 @@ noncomputable def partialRight_axₗₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] 
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_axₗᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightAxₗᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axₗᵣ Δ n in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) where
     X := Unit
@@ -881,7 +881,7 @@ noncomputable def partialRight_axₗᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] 
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_axᵣₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightAxᵣₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axᵣₗ Δ n in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) where
     X := Unit
@@ -914,7 +914,7 @@ noncomputable def partialRight_axᵣₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] 
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_axᵣᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightAxᵣᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ n in_Δ} (rule_def : r 𝕏.α x = RuleApp.axᵣᵣ Δ n in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) where
     X := Unit
@@ -925,7 +925,7 @@ noncomputable def partialRight_axᵣᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] 
     path u f := by exact False.elim (by simpa [Ext.edge, Ext.p] using f.2)
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_orₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightOrₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.orₗ Δ φ ψ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
     match p_def : p 𝕏.α x with
@@ -943,7 +943,7 @@ noncomputable def partialRight_orₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
         | y :: z :: l => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_orᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightOrᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.orᵣ Δ φ ψ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -974,7 +974,7 @@ noncomputable def partialRight_orᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x 
     | _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_andₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightAndₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.andₗ Δ φ ψ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -1011,7 +1011,7 @@ noncomputable def partialRight_andₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x
   | _ :: _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_andᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightAndᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ ψ in_Δ} (rule_def : r 𝕏.α x = RuleApp.andᵣ Δ φ ψ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -1130,7 +1130,7 @@ noncomputable def partialRight_andᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x
   | _ :: _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_boxₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightBoxₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ in_Δ} (rule_def : r 𝕏.α x = RuleApp.boxₗ Δ φ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -1165,7 +1165,7 @@ noncomputable def partialRight_boxₗ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x
   | _ :: _ :: _ => by have := 𝕏.step x; simp [rule_def] at this; simp_all
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-noncomputable def partialRight_boxᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
+noncomputable def partialRightBoxᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X)
     {Δ φ in_Δ} (rule_def : r 𝕏.α x = RuleApp.boxᵣ Δ φ in_Δ)
   : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
   match p_def : p 𝕏.α x with
@@ -1218,18 +1218,18 @@ noncomputable def partialRight_boxᵣ {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x
 noncomputable def partialEquationRight {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
     (x : 𝕏.X) : Ext.PreProof x (@rightInterpolantSequent 𝕏 _) :=
   match rule_def : (r 𝕏.α x) with
-    | .topₗ _ _ => partialRight_topₗ x rule_def
-    | .topᵣ _ _ => partialRight_topᵣ x rule_def
-    | .axₗₗ _ _ _ => partialRight_axₗₗ x rule_def
-    | .axₗᵣ _ _ _ => partialRight_axₗᵣ x rule_def
-    | .axᵣₗ _ _ _ => partialRight_axᵣₗ x rule_def
-    | .axᵣᵣ _ _ _ => partialRight_axᵣᵣ x rule_def
-    | .orₗ _ _ _ _ => partialRight_orₗ x rule_def
-    | .orᵣ _ _ _ _ => partialRight_orᵣ x rule_def
-    | .andₗ _ _ _ _ => partialRight_andₗ x rule_def
-    | .andᵣ _ _ _ _ => partialRight_andᵣ x rule_def
-    | .boxₗ _ _ _ => partialRight_boxₗ x rule_def
-    | .boxᵣ _ _ _ => partialRight_boxᵣ x rule_def
+    | .topₗ _ _ => partialRightTopₗ x rule_def
+    | .topᵣ _ _ => partialRightTopᵣ x rule_def
+    | .axₗₗ _ _ _ => partialRightAxₗₗ x rule_def
+    | .axₗᵣ _ _ _ => partialRightAxₗᵣ x rule_def
+    | .axᵣₗ _ _ _ => partialRightAxᵣₗ x rule_def
+    | .axᵣᵣ _ _ _ => partialRightAxᵣᵣ x rule_def
+    | .orₗ _ _ _ _ => partialRightOrₗ x rule_def
+    | .orᵣ _ _ _ _ => partialRightOrᵣ x rule_def
+    | .andₗ _ _ _ _ => partialRightAndₗ x rule_def
+    | .andᵣ _ _ _ _ => partialRightAndᵣ x rule_def
+    | .boxₗ _ _ _ => partialRightBoxₗ x rule_def
+    | .boxᵣ _ _ _ => partialRightBoxᵣ x rule_def
 
 private def partialEquationRight_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype 𝕏.X]
     (x : 𝕏.X) :
@@ -1239,14 +1239,14 @@ private def partialEquationRight_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype �
   split <;> simp_all only [List.empty_eq, Finset.union_insert, Finset.union_singleton,
     List.map_eq_cons_iff, List.map_eq_nil_iff, exists_eq_right_right, ↓existsAndEq,
     true_and, Ext.Proves, Ext.r]
-  · simp [partialRight_topₗ, Ext.f]
-  · simp [partialRight_topᵣ, Ext.f]
-  · simp [partialRight_axₗₗ, Ext.f]
-  · simp [partialRight_axₗᵣ, Ext.f]
-  · simp [partialRight_axᵣₗ, Ext.f]
-  · simp [partialRight_axᵣᵣ, Ext.f]
+  · simp [partialRightTopₗ, Ext.f]
+  · simp [partialRightTopᵣ, Ext.f]
+  · simp [partialRightAxₗₗ, Ext.f]
+  · simp [partialRightAxₗᵣ, Ext.f]
+  · simp [partialRightAxᵣₗ, Ext.f]
+  · simp [partialRightAxᵣᵣ, Ext.f]
   · rename_i rule_def
-    simp only [partialRight_orₗ, List.empty_eq, Lean.Elab.WF.paramLet]
+    simp only [partialRightOrₗ, List.empty_eq, Lean.Elab.WF.paramLet]
     have ⟨y, p_def, prop⟩ := 𝕏_h
     split <;> simp_all only [List.cons.injEq, and_true, exists_eq_left', Ext.f,
       List.ne_cons_self, reduceCtorEq, and_false]
@@ -1256,13 +1256,13 @@ private def partialEquationRight_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype �
     · simp [equation]; split <;> simp_all
     · simp [f, fₙ, fₚ]
       aesop
-  · simp [partialRight_orᵣ]
+  · simp [partialRightOrᵣ]
     split <;> simp_all [Ext.f]
-  · simp [partialRight_andₗ]
+  · simp [partialRightAndₗ]
     split <;> simp_all [Ext.f]
   · rename_i rule_def
     have ⟨y, z, p_def, prop⟩ := 𝕏_h
-    simp only [partialRight_andᵣ, Ext.T, Fin.isValue, List.empty_eq, Lean.Elab.WF.paramLet]
+    simp only [partialRightAndᵣ, Ext.T, Fin.isValue, List.empty_eq, Lean.Elab.WF.paramLet]
     split <;> simp_all only [List.cons.injEq, and_true, ↓existsAndEq, Fin.isValue,
       List.nil_eq, reduceCtorEq, List.ne_cons_self, and_false]
     have ⟨eq₁, eq₂⟩ := p_def
@@ -1272,9 +1272,9 @@ private def partialEquationRight_proves_eq_aux {𝕏 : Proof} [fin_X : Fintype �
       simp [Ext.f]
     · rw [dif_neg eq]
       simp [Ext.f]
-  · simp [partialRight_boxₗ]
+  · simp [partialRightBoxₗ]
     split <;> simp_all [Ext.f]
-  · simp [partialRight_boxᵣ]
+  · simp [partialRightBoxᵣ]
     split <;> simp_all [Ext.f]
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
@@ -1294,16 +1294,16 @@ noncomputable def partialInterpolationRight {𝕏 : Proof} [fin_X : Fintype 𝕏
     let y₂ := equiv.2.choose_spec.choose
     have y₂_prop := equiv.2.choose_spec.choose_spec
     have split_to_ext_isBox {𝕐 : Split.Proof} {x : 𝕐.X} {τ} (r : Split.RuleApp) :
-        r.isBox → (@Split_to_Ext _ x τ r).isBox := by
-      unfold Split_to_Ext
+        r.isBox → (@splitToExt _ x τ r).isBox := by
+      unfold splitToExt
       cases r <;> simp [RuleApp.isBox, Ext.RuleApp.isBox]
     have split_to_ext_f {𝕐 : Split.Proof} {x : 𝕐.X} {τ} (r : Split.RuleApp) :
-        Ext.f (@Split_to_Ext _ x τ r) = f r := by
-      unfold Split_to_Ext
+        Ext.f (@splitToExt _ x τ r) = f r := by
+      unfold splitToExt
       cases r <;> simp [f, Ext.f]
     have split_to_ext_fₙ {𝕐 : Split.Proof} {x : 𝕐.X} {τ} (r : Split.RuleApp) :
-        Ext.fₙ (@Split_to_Ext _ x τ r) = fₙ r := by
-      unfold Split_to_Ext
+        Ext.fₙ (@splitToExt _ x τ r) = fₙ r := by
+      unfold splitToExt
       cases r <;> simp [fₙ_alternate, Ext.fₙ_alternate]
     { X := Unit ⊕ 𝕐₁.X ⊕ 𝕐₂.X
       α | Sum.inl u =>
@@ -1312,7 +1312,7 @@ noncomputable def partialInterpolationRight {𝕏 : Proof} [fin_X : Fintype 𝕏
         | Sum.inr (Sum.inl z₁) =>
           ⟨Ext.r 𝕐₁.α z₁, List.map (Sum.inr ∘ Sum.inl) (Ext.p 𝕐₁.α z₁)⟩
         | Sum.inr (Sum.inr z₂) =>
-          ⟨Split_to_Ext (r 𝕐₂.α z₂), List.map (Sum.inr ∘ Sum.inr) (p 𝕐₂.α z₂)⟩
+          ⟨splitToExt (r 𝕐₂.α z₂), List.map (Sum.inr ∘ Sum.inr) (p 𝕐₂.α z₂)⟩
       step
         | Sum.inl u => by
           simp only [Ext.r, Ext.T, Ext.p, List.map_cons, split_to_ext_f,
@@ -1332,7 +1332,7 @@ noncomputable def partialInterpolationRight {𝕏 : Proof} [fin_X : Fintype 𝕏
           split
           all_goals
             rename_i eq
-            cases r_def : r 𝕐₂.α z₂ <;> simp [Ext.r, r_def, Split_to_Ext] at eq
+            cases r_def : r 𝕐₂.α z₂ <;> simp [Ext.r, r_def, splitToExt] at eq
             all_goals
               replace 𝕐₂_h := by simpa [r_def] using 𝕐₂_h
               simp only [Ext.T, Ext.p, 𝕐₂_h, List.map_nil, List.empty_eq, List.map_map,
@@ -1560,28 +1560,28 @@ noncomputable def partialInterpolationRight {𝕏 : Proof} [fin_X : Fintype 𝕏
                 simp [fn_def]}
 
 lemma Split_to_Ext_isBox {𝕏 : Split.Proof} {x : 𝕏.X} {τ} (r : Split.RuleApp) :
-    r.isBox → (@Split_to_Ext _ x τ r).isBox := by
-  unfold Split_to_Ext
+    r.isBox → (@splitToExt _ x τ r).isBox := by
+  unfold splitToExt
   cases r <;> simp [RuleApp.isBox, Ext.RuleApp.isBox]
 
 lemma Split_to_Ext_notNonAxLeaf {𝕏 : Split.Proof} {x : 𝕏.X} {τ} (r : Split.RuleApp) :
-    ¬ (@Split_to_Ext _ x τ r).isNonAxLeaf := by
-  unfold Split_to_Ext
+    ¬ (@splitToExt _ x τ r).isNonAxLeaf := by
+  unfold splitToExt
   cases r <;> simp [Ext.RuleApp.isNonAxLeaf]
 
 lemma Split_to_Ext_f {𝕏 : Split.Proof} {x : 𝕏.X} {τ} (r : Split.RuleApp) :
-    Ext.f (@Split_to_Ext _ x τ r) = f r := by
-  unfold Split_to_Ext
+    Ext.f (@splitToExt _ x τ r) = f r := by
+  unfold splitToExt
   cases r <;> simp [f, Ext.f]
 
 lemma Split_to_Ext_fₚ {𝕏 : Split.Proof} {x : 𝕏.X} {τ} (r : Split.RuleApp) :
-    Ext.fₚ (@Split_to_Ext _ x τ r) = fₚ r := by
-  unfold Split_to_Ext
+    Ext.fₚ (@splitToExt _ x τ r) = fₚ r := by
+  unfold splitToExt
   cases r <;> simp [fₚ, Ext.fₚ]
 
 lemma Split_to_Ext_fₙ {𝕏 : Split.Proof} {x : 𝕏.X} {τ} (r : Split.RuleApp) :
-    Ext.fₙ (@Split_to_Ext _ x τ r) = fₙ r := by
-  unfold Split_to_Ext
+    Ext.fₙ (@splitToExt _ x τ r) = fₙ r := by
+  unfold splitToExt
   cases r <;> simp [fₙ_alternate, Ext.fₙ_alternate]
 
 lemma partialEquationLeft_proves_eq {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X) :
@@ -1613,7 +1613,7 @@ theorem partialInterpolationLeft_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X
         (Ext.r (partialInterpolationLeft x).α (f ⟨n, by simp⟩)).isNonAxLeaf →
           (∀ (m : Fin n), Ext.edge (partialInterpolationLeft x).α (f m.castSucc) (f m.succ)) →
             ∃ m, (Ext.r (partialInterpolationLeft x).α (f m)).isBox := by
-  intro is_box n
+  intro isBox n
   have 𝕏_h := 𝕏.step x
   cases r_def : r 𝕏.α x <;> simp_all only [RuleApp.isBox, Bool.false_eq_true]
   case boxₗ =>
@@ -1623,7 +1623,7 @@ theorem partialInterpolationLeft_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X
       split <;> simp_all only [RuleApp.boxₗ.injEq, reduceCtorEq]
       intro f f_zero f_last f_succ
       use 0
-      simp [partialLeft_boxₗ, f_zero]
+      simp [partialLeftBoxₗ, f_zero]
       split <;> simp_all
       simp [Ext.r, Ext.RuleApp.isBox]
     · unfold partialInterpolationLeft
@@ -1642,7 +1642,7 @@ theorem partialInterpolationLeft_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X
         rcases step with l | r
         · rw [l]
           simp [Ext.r]
-          simp [partialEquationLeft, partialLeft_boxₗ]
+          simp [partialEquationLeft, partialLeftBoxₗ]
           split <;> simp_all
           split <;> simp_all [Ext.RuleApp.isBox]
         · exfalso
@@ -1689,7 +1689,7 @@ theorem partialInterpolationLeft_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X
       split <;> simp_all only [RuleApp.boxᵣ.injEq, reduceCtorEq]
       intro f f_zero f_last f_succ
       use 0
-      simp [partialLeft_boxᵣ, f_zero]
+      simp [partialLeftBoxᵣ, f_zero]
       split <;> simp_all
       simp [Ext.r, Ext.RuleApp.isBox]
     · unfold partialInterpolationLeft
@@ -1708,7 +1708,7 @@ theorem partialInterpolationLeft_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X
         rcases step with l | r
         · rw [l]
           simp [Ext.r]
-          simp [partialEquationLeft, partialLeft_boxᵣ]
+          simp [partialEquationLeft, partialLeftBoxᵣ]
           split <;> simp_all
           split <;> simp_all [Ext.RuleApp.isBox]
         · exfalso
@@ -1784,7 +1784,7 @@ theorem partialInterpolationRight_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.
         (Ext.r (partialInterpolationRight x).α (f ⟨n, by simp⟩)).isNonAxLeaf →
           (∀ (m : Fin n), Ext.edge (partialInterpolationRight x).α (f m.castSucc) (f m.succ)) →
             ∃ m, (Ext.r (partialInterpolationRight x).α (f m)).isBox := by
-  intro is_box n
+  intro isBox n
   have 𝕏_h := 𝕏.step x
   cases r_def : r 𝕏.α x <;> simp_all only [RuleApp.isBox, Bool.false_eq_true]
   case boxₗ =>
@@ -1794,7 +1794,7 @@ theorem partialInterpolationRight_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.
       split <;> simp_all only [RuleApp.boxₗ.injEq, reduceCtorEq]
       intro f f_zero f_last f_succ
       use 0
-      simp [partialRight_boxₗ, f_zero]
+      simp [partialRightBoxₗ, f_zero]
       split <;> simp_all
       simp [Ext.r, Ext.RuleApp.isBox]
     · unfold partialInterpolationRight
@@ -1813,7 +1813,7 @@ theorem partialInterpolationRight_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.
         rcases step with l | r
         · rw [l]
           simp [Ext.r]
-          simp [partialEquationRight, partialRight_boxₗ]
+          simp [partialEquationRight, partialRightBoxₗ]
           split <;> simp_all
           split <;> simp_all [Ext.RuleApp.isBox]
         · exfalso
@@ -1860,7 +1860,7 @@ theorem partialInterpolationRight_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.
       split <;> simp_all only [RuleApp.boxᵣ.injEq, reduceCtorEq]
       intro f f_zero f_last f_succ
       use 0
-      simp [partialRight_boxᵣ, f_zero]
+      simp [partialRightBoxᵣ, f_zero]
       split <;> simp_all
       simp [Ext.r, Ext.RuleApp.isBox]
     · unfold partialInterpolationRight
@@ -1879,7 +1879,7 @@ theorem partialInterpolationRight_box_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.
         rcases step with l | r
         · rw [l]
           simp [Ext.r]
-          simp [partialEquationRight, partialRight_boxᵣ]
+          simp [partialEquationRight, partialRightBoxᵣ]
           split <;> simp_all
           split <;> simp_all [Ext.RuleApp.isBox]
         · exfalso

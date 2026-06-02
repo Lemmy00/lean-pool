@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Directed
 
+/-!
+# LeanPool.BrauerGroupNew.Subfield.Defs
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Subfield.Defs`.
+-/
+
 open Function TensorProduct MulOpposite
 
 /-- A subalgebra whose carrier is commutative and contains inverses of all nonzero elements. -/

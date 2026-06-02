@@ -6,6 +6,12 @@ Authors: Christopher Boone
 
 import LeanPool.ZhangYeungInequality.Delta
 
+/-!
+# LeanPool.ZhangYeungInequality.Test.Delta
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.Test.Delta`.
+-/
+
 namespace ZhangYeungTest
 
 open MeasureTheory ProbabilityTheory

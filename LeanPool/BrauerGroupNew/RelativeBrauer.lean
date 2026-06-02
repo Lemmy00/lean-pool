@@ -40,21 +40,21 @@ lemma BrauerGroup.split_iff (A : CSA F) : isSplit F A K ↔
     rintro ⟨n, hn, ⟨iso⟩⟩
     simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.map'_mk'']
     change _ = Quotient.mk'' _
-    simp only [Quotient.eq'', one_in']
-    exact ⟨1, n, one_ne_zero, hn.1, ⟨dim_one_iso (K ⊗[F] A) |>.trans iso⟩⟩,
+    simp only [Quotient.eq'', oneIn']
+    exact ⟨1, n, one_ne_zero, hn.1, ⟨dimOneIso (K ⊗[F] A) |>.trans iso⟩⟩,
     fun hA ↦ by
       simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.map'_mk''] at hA
       change _ = Quotient.mk'' _ at hA
-      simp only [Quotient.eq'', one_in'] at hA
+      simp only [Quotient.eq'', oneIn'] at hA
       change IsBrauerEquivalent _ _ at hA
       obtain ⟨n, m, hn, hm, ⟨iso⟩⟩ := hA
-      let p : ℕ := Wedderburn_Artin_algebra_version K (K ⊗[F] A) |>.choose
-      let hp := Wedderburn_Artin_algebra_version K (K ⊗[F] A) |>.choose_spec.1
-      let D := Wedderburn_Artin_algebra_version K (K ⊗[F] A) |>.choose_spec.2.choose
-      letI := Wedderburn_Artin_algebra_version K (K ⊗[F] A) |>.choose_spec.2.choose_spec.choose
-      letI := Wedderburn_Artin_algebra_version K (K ⊗[F] A) |>.choose_spec.2.choose_spec
+      let p : ℕ := WedderburnArtin_algebra_version K (K ⊗[F] A) |>.choose
+      let hp := WedderburnArtin_algebra_version K (K ⊗[F] A) |>.choose_spec.1
+      let D := WedderburnArtin_algebra_version K (K ⊗[F] A) |>.choose_spec.2.choose
+      letI := WedderburnArtin_algebra_version K (K ⊗[F] A) |>.choose_spec.2.choose_spec.choose
+      letI := WedderburnArtin_algebra_version K (K ⊗[F] A) |>.choose_spec.2.choose_spec
         |>.choose_spec.choose
-      let iso' := Wedderburn_Artin_algebra_version K (K ⊗[F] A) |>.choose_spec
+      let iso' := WedderburnArtin_algebra_version K (K ⊗[F] A) |>.choose_spec
         |>.2.choose_spec.choose_spec.choose_spec.some
       change K ⊗[F] A ≃ₐ[K] Matrix (Fin p) (Fin p) D at iso'
       have e := Matrix.reindexAlgEquiv K _ (finProdFinEquiv.symm) |>.trans <|
@@ -69,9 +69,9 @@ lemma BrauerGroup.split_iff (A : CSA F) : isSplit F A K ↔
       have D_findim := is_fin_dim_of_wdb K (K ⊗[F] A) hp D iso'
       haveI : NeZero (p * p * n) := ⟨by simpa [hn]⟩
       haveI : NeZero (p * m) := ⟨by simpa [hm]⟩
-      have := Wedderburn_Artin_uniqueness₀ K (Matrix (Fin (p * p * n)) (Fin (p * p * n)) D)
+      have := WedderburnArtin_uniqueness₀ K (Matrix (Fin (p * p * n)) (Fin (p * p * n)) D)
         (p * p * n) (p * m) D AlgEquiv.refl K e.symm
-      exact ⟨p, ⟨hp⟩, ⟨iso'.trans <| Wedderburn_Artin_uniqueness₀ K
+      exact ⟨p, ⟨hp⟩, ⟨iso'.trans <| WedderburnArtin_uniqueness₀ K
         (Matrix (Fin (p * p * n)) (Fin (p * p * n)) D)
         (p * p * n) (p * m) D .refl K e.symm |>.some.mapMatrix⟩⟩⟩
 
@@ -107,15 +107,15 @@ lemma exists_common_division_algebra (A B : CSA.{u, u} K) (h : IsBrauerEquivalen
       (m n : ℕ) (_ : NeZero m) (_ : NeZero n),
       Nonempty (A ≃ₐ[K] Matrix (Fin m) (Fin m) D) ∧
       Nonempty (B ≃ₐ[K] Matrix (Fin n) (Fin n) D) := by
-  obtain ⟨n, hn, SA, _, _, ⟨isoA⟩⟩ := Wedderburn_Artin_algebra_version K A
+  obtain ⟨n, hn, SA, _, _, ⟨isoA⟩⟩ := WedderburnArtin_algebra_version K A
   haveI : Algebra.IsCentral K (Matrix (Fin n) (Fin n) SA) := isoA.isCentral
   haveI : Algebra.IsCentral K SA := is_central_of_wdb _ _ _ _ hn isoA
   have : FiniteDimensional K (Matrix (Fin n) (Fin n) SA) :=
     Module.Finite.of_injective isoA.symm.toLinearMap isoA.symm.injective
   have : FiniteDimensional K SA := is_fin_dim_of_wdb _ _ hn _ isoA
   have eq1 : IsBrauerEquivalent ⟨.of K SA⟩ A :=
-    ⟨n, 1, hn, one_ne_zero, ⟨AlgEquiv.symm <| AlgEquiv.trans (dim_one_iso A) isoA⟩⟩
-  obtain ⟨m, hm, SB, _, _, ⟨isoB⟩⟩ := Wedderburn_Artin_algebra_version K B
+    ⟨n, 1, hn, one_ne_zero, ⟨AlgEquiv.symm <| AlgEquiv.trans (dimOneIso A) isoA⟩⟩
+  obtain ⟨m, hm, SB, _, _, ⟨isoB⟩⟩ := WedderburnArtin_algebra_version K B
   haveI : Algebra.IsCentral K (Matrix (Fin m) (Fin m) SB) := isoB.isCentral
   haveI : Algebra.IsCentral K SB := is_central_of_wdb _ _ _ _ hm isoB
   have : FiniteDimensional K (Matrix (Fin m) (Fin m) SB) :=
@@ -128,10 +128,10 @@ lemma exists_common_division_algebra (A B : CSA.{u, u} K) (h : IsBrauerEquivalen
   haveI : NeZero a' := ⟨ha'⟩
   haveI : NeZero a := ⟨ha⟩
   have : NeZero m := ⟨hm⟩
-  obtain ⟨isoAB⟩ := Wedderburn_Artin_uniqueness₀ K (Matrix (Fin a') (Fin a') B) a (a' * m)
+  obtain ⟨isoAB⟩ := WedderburnArtin_uniqueness₀ K (Matrix (Fin a') (Fin a') B) a (a' * m)
     SA e.symm SB <|
       (AlgEquiv.mapMatrix ‹_›).trans <| (Matrix.compAlgEquiv _ _ _ _).trans <|
-        IsBrauerEquivalent.matrix_eqv' _ _ _
+        IsBrauerEquivalent.matrixEqv' _ _ _
   exact ⟨SA, inferInstance, inferInstance, n, m, ⟨hn⟩, ⟨hm⟩, ⟨isoA⟩,
     ⟨isoB.trans isoAB.symm.mapMatrix⟩⟩
 

@@ -9,6 +9,12 @@ module
 public import Mathlib.Probability.UniformOn
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Card
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.UniformOn
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.PFR.Mathlib.Probability.UniformOn`.
+-/
+
 public section
 
 open Function MeasureTheory Measure

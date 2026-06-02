@@ -8,6 +8,10 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 import LeanPool.LeanPolyABC.Corollaries.FltCatalan
 
+/-!
+# LeanPool.LeanPolyABC.Corollaries.NoParametrization
+-/
+
 noncomputable section
 
 open scoped Polynomial

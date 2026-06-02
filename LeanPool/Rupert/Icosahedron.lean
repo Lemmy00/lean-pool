@@ -11,6 +11,12 @@ import LeanPool.Rupert.MatrixSimps
 import LeanPool.Rupert.Quaternion
 import LeanPool.Rupert.Equivalences.RupertEquivRupertPrime
 
+/-!
+# LeanPool.Rupert.Icosahedron
+
+Imported Lean Pool material for `LeanPool.Rupert.Icosahedron`.
+-/
+
 namespace Icosahedron
 
 open scoped Matrix goldenRatio

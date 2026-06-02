@@ -14,7 +14,7 @@ import Mathlib.Data.Fintype.Defs
 import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic
+import Aesop
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Finset.Lattice.Basic
 

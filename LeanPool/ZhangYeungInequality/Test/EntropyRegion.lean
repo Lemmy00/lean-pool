@@ -7,6 +7,12 @@ Authors: Christopher Boone
 import LeanPool.ZhangYeungInequality.EntropyRegion
 import LeanPool.ZhangYeungInequality.Theorem4
 
+/-!
+# LeanPool.ZhangYeungInequality.Test.EntropyRegion
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.Test.EntropyRegion`.
+-/
+
 namespace ZhangYeungTest
 
 open MeasureTheory ProbabilityTheory
@@ -20,26 +26,26 @@ section EntropyFunction
 
 example {Ω : Type*} [MeasurableSpace Ω] {n : ℕ} {S : Fin n → Type u}
     [∀ i, MeasurableSpace (S i)] (X : ∀ i : Fin n, Ω → S i) (μ : Measure Ω) :
-    entropyFn_n X μ = fun α : Finset (Fin n) => H[(fun ω : Ω => fun i : α => X i.1 ω); μ] :=
+    entropyFnN X μ = fun α : Finset (Fin n) => H[(fun ω : Ω => fun i : α => X i.1 ω); μ] :=
   rfl
 
 example {Ω : Type*} [MeasurableSpace Ω] {S : Fin 4 → Type u}
     [∀ i, MeasurableSpace (S i)] (X : ∀ i : Fin 4, Ω → S i) (μ : Measure Ω) :
-    entropyFn X μ = entropyFn_n X μ :=
+    entropyFn X μ = entropyFnN X μ :=
   rfl
 
 end EntropyFunction
 
 section Regions
 
-example (n : ℕ) : shannonRegion_n n = {F | shannonCone_n F} :=
+example (n : ℕ) : shannonRegionN n = {F | shannonConeN F} :=
   rfl
 
 example (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
-  entropyRegion_n.{u} n
+  entropyRegionN.{u} n
 
 example (n : ℕ) :
-    almostEntropicRegion_n.{u} n = closure (entropyRegion_n.{u} n) :=
+    almostEntropicRegionN.{u} n = closure (entropyRegionN.{u} n) :=
   rfl
 
 example
@@ -49,7 +55,7 @@ example
     [∀ i, MeasurableSingletonClass (S i)]
     (X : ∀ i : Fin n, Ω → S i) (hX : ∀ i, Measurable (X i))
     (μ : Measure Ω) [IsProbabilityMeasure μ] :
-    entropyFn_n X μ ∈ entropyRegion_n.{u} n := by
+    entropyFnN X μ ∈ entropyRegionN.{u} n := by
   exact
     ⟨Ω, inferInstance, μ, inferInstance, S, inferInstance, inferInstance,
       inferInstance, X, hX, rfl⟩
@@ -59,7 +65,7 @@ example {n : ℕ} (hn : 4 ≤ n) :
   rfl
 
 example (F : Finset (Fin 4) → ℝ) :
-    shannonCone_n F ↔ shannonCone F :=
+    shannonConeN F ↔ shannonCone F :=
   Iff.rfl
 
 end Regions
@@ -67,7 +73,7 @@ end Regions
 section Restriction
 
 example {n : ℕ} (hn : 4 ≤ n) :
-    restrictFirstFour hn (F_witness_n hn) = F_witness :=
+    restrictFirstFour hn (FWitnessN hn) = FWitness :=
   restrictFirstFour_witness_n hn
 
 end Restriction
