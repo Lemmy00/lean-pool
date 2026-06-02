@@ -13,6 +13,12 @@ import LeanPool.QuasiBorelSpaces.Pi
 import LeanPool.QuasiBorelSpaces.ProbabilityMeasure
 import LeanPool.QuasiBorelSpaces.Sigma
 
+/-!
+# LeanPool.QuasiBorelSpaces.Rose
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Rose`.
+-/
+
 variable {A B C : Type*} [QuasiBorelSpace A] [QuasiBorelSpace B] [QuasiBorelSpace C]
 
 namespace Rose.Encoding

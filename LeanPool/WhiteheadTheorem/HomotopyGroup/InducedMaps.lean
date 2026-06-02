@@ -10,6 +10,12 @@ import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 
+/-!
+# LeanPool.WhiteheadTheorem.HomotopyGroup.InducedMaps
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.HomotopyGroup.InducedMaps`.
+-/
+
 
 open CategoryTheory
 open scoped Topology Topology.Homotopy

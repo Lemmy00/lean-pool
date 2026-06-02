@@ -6,6 +6,13 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Directed
+
+Imported Lean Pool material for
+`LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Directed`.
+-/
+
 namespace Subalgebra
 variable {R A ι : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {K : ι → Subalgebra R A}
   {s : Set ι}

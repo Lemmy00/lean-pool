@@ -45,8 +45,8 @@ theorem jensen_T_card_eq_residue_card :
   rw [T_card_eq, T_residueField_card]
 
 open MvPowerSeries in
-lemma conj_I_le_ker_ccf :
-    conj_I ≤ RingHom.ker (MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ)) := by
+lemma conjI_le_ker_ccf :
+    conjI ≤ RingHom.ker (MvPowerSeries.constantCoeff (σ := Fin 3) (R := ℂ)) := by
   apply Ideal.span_le.mpr
   intro g hg
   simp only [Set.mem_singleton_iff] at hg
@@ -57,16 +57,16 @@ lemma conj_I_le_ker_ccf :
 open MvPowerSeries in
 lemma mk_in_maxIdeal (f : MvPowerSeries (Fin 3) ℂ)
     (hf : MvPowerSeries.constantCoeff f = 0) :
-    Ideal.Quotient.mk conj_I f ∈ IsLocalRing.maximalIdeal T := by
+    Ideal.Quotient.mk conjI f ∈ IsLocalRing.maximalIdeal T := by
   rw [IsLocalRing.mem_maximalIdeal]
   intro ⟨u, hu⟩
   obtain ⟨g, hg⟩ := Ideal.Quotient.mk_surjective u.inv
-  have hmul : f * g - 1 ∈ conj_I := by
+  have hmul : f * g - 1 ∈ conjI := by
     rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem, map_mul, map_one]
-    calc Ideal.Quotient.mk conj_I f * Ideal.Quotient.mk conj_I g
+    calc Ideal.Quotient.mk conjI f * Ideal.Quotient.mk conjI g
         = ↑u * u.inv := by rw [← hu, ← hg]
       _ = 1 := u.val_inv
-  have h0 := conj_I_le_ker_ccf hmul
+  have h0 := conjI_le_ker_ccf hmul
   rw [RingHom.mem_ker, map_sub, map_mul, map_one, hf, zero_mul, zero_sub] at h0
   exact one_ne_zero (neg_eq_zero.mp h0)
 
@@ -126,8 +126,8 @@ lemma coeff_gen_zero_of_le_single (s : Fin 3) (b : Fin 3 →₀ ℕ)
   rw [hX0sq, hX1X2, sub_self]
 
 open MvPowerSeries in
-lemma mk_X1_ne_zero' : (Ideal.Quotient.mk conj_I (X 1) : T) ≠ 0 := by
-  rw [Ne, Ideal.Quotient.eq_zero_iff_mem, conj_I, Ideal.mem_span_singleton]
+lemma mk_X1_ne_zero' : (Ideal.Quotient.mk conjI (X 1) : T) ≠ 0 := by
+  rw [Ne, Ideal.Quotient.eq_zero_iff_mem, conjI, Ideal.mem_span_singleton]
   intro ⟨h, hh⟩
   have hlhs : (MvPowerSeries.coeff (Finsupp.single 1 1))
       (X (1 : Fin 3) : MvPowerSeries (Fin 3) ℂ) = 1 := by simp [MvPowerSeries.coeff_X]
@@ -148,8 +148,8 @@ lemma mk_X1_ne_zero' : (Ideal.Quotient.mk conj_I (X 1) : T) ≠ 0 := by
     (congr_arg (MvPowerSeries.coeff (Finsupp.single 1 1)) hh) |>.trans hrhs)
 
 open MvPowerSeries in
-lemma mk_X2_ne_zero' : (Ideal.Quotient.mk conj_I (X 2) : T) ≠ 0 := by
-  rw [Ne, Ideal.Quotient.eq_zero_iff_mem, conj_I, Ideal.mem_span_singleton]
+lemma mk_X2_ne_zero' : (Ideal.Quotient.mk conjI (X 2) : T) ≠ 0 := by
+  rw [Ne, Ideal.Quotient.eq_zero_iff_mem, conjI, Ideal.mem_span_singleton]
   intro ⟨h, hh⟩
   have hlhs : (MvPowerSeries.coeff (Finsupp.single 2 1))
       (X (2 : Fin 3) : MvPowerSeries (Fin 3) ℂ) = 1 := by simp [MvPowerSeries.coeff_X]
@@ -301,9 +301,9 @@ lemma coeff_gen_mul_zero' (k : MvPowerSeries (Fin 3) ℂ)
 
 open MvPowerSeries in
 lemma coeff_f_vanish' (f g : MvPowerSeries (Fin 3) ℂ)
-    (hmem : X 2 * f - X 1 * g ∈ conj_I) (d : Fin 3 →₀ ℕ)
+    (hmem : X 2 * f - X 1 * g ∈ conjI) (d : Fin 3 →₀ ℕ)
     (hd1 : d 1 = 0) (hd0 : d 0 < 2) : coeff d f = 0 := by
-  rw [conj_I, Ideal.mem_span_singleton] at hmem
+  rw [conjI, Ideal.mem_span_singleton] at hmem
   obtain ⟨k, hk⟩ := hmem
   set e := d + Finsupp.single 2 1 with he_def
   have he0 : e 0 = d 0 := by simp [he_def, Finsupp.add_apply]
@@ -337,8 +337,8 @@ lemma coeff_f_vanish' (f g : MvPowerSeries (Fin 3) ℂ)
 
 open MvPowerSeries in
 lemma key_decomp' (f g : MvPowerSeries (Fin 3) ℂ)
-    (hmem : X 2 * f - X 1 * g ∈ conj_I) :
-    f - X 1 * (shiftX1' f + X 2 * divR' f) ∈ conj_I := by
+    (hmem : X 2 * f - X 1 * g ∈ conjI) :
+    f - X 1 * (shiftX1' f + X 2 * divR' f) ∈ conjI := by
   -- Step 1: f - X₁ * shiftX1' f = X₀² * divR' f
   have hrest : f - X 1 * shiftX1' f = (X (0 : Fin 3)) ^ 2 * divR' f := by
     ext d
@@ -354,7 +354,7 @@ lemma key_decomp' (f g : MvPowerSeries (Fin 3) ℂ)
   have heq : f - X 1 * (shiftX1' f + X 2 * divR' f) =
     (X 0 ^ 2 - X 1 * X 2 : MvPowerSeries (Fin 3) ℂ) * divR' f := by
     linear_combination hrest
-  rw [heq, conj_I, Ideal.mem_span_singleton]
+  rw [heq, conjI, Ideal.mem_span_singleton]
   exact ⟨divR' f, rfl⟩
 
 /-- depth T ≥ 2: the images of y and z form a regular sequence in M.
@@ -364,8 +364,8 @@ theorem jensen_T_depth_ge_two :
       b ∈ IsLocalRing.maximalIdeal T ∧
       RingTheory.Sequence.IsRegular T [a, b] := by
   open MvPowerSeries in
-  refine ⟨Ideal.Quotient.mk conj_I (X 1),
-    Ideal.Quotient.mk conj_I (X 2),
+  refine ⟨Ideal.Quotient.mk conjI (X 1),
+    Ideal.Quotient.mk conjI (X 2),
     mk_in_maxIdeal _ (by simp [MvPowerSeries.constantCoeff_X]),
     mk_in_maxIdeal _ (by simp [MvPowerSeries.constantCoeff_X]),
     ?_⟩
@@ -385,16 +385,16 @@ theorem jensen_T_depth_ge_two :
     obtain ⟨t, _, ht⟩ := hx
     obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective x
     obtain ⟨g, rfl⟩ := Ideal.Quotient.mk_surjective t
-    have hmem : X 2 * f - X 1 * g ∈ conj_I := by
-      have : Ideal.Quotient.mk conj_I (X 2 * f - X 1 * g) = 0 := by
+    have hmem : X 2 * f - X 1 * g ∈ conjI := by
+      have : Ideal.Quotient.mk conjI (X 2 * f - X 1 * g) = 0 := by
         simp only [map_sub, map_mul]
         exact sub_eq_zero.mpr ht.symm
       rwa [Ideal.Quotient.eq_zero_iff_mem] at this
-    refine ⟨Ideal.Quotient.mk conj_I (shiftX1' f + X 2 * divR' f),
+    refine ⟨Ideal.Quotient.mk conjI (shiftX1' f + X 2 * divR' f),
       Submodule.mem_top, ?_⟩
-    change Ideal.Quotient.mk conj_I (X 1) *
-      Ideal.Quotient.mk conj_I (shiftX1' f + X 2 * divR' f) =
-      Ideal.Quotient.mk conj_I f
+    change Ideal.Quotient.mk conjI (X 1) *
+      Ideal.Quotient.mk conjI (shiftX1' f + X 2 * divR' f) =
+      Ideal.Quotient.mk conjI f
     rw [← map_mul, eq_comm, ← sub_eq_zero, ← map_sub]
     exact Ideal.Quotient.eq_zero_iff_mem.mpr (key_decomp' f g hmem)
 
@@ -651,7 +651,7 @@ theorem jensen_construction
     have hP_lt_M : P < IsLocalRing.maximalIdeal T :=
       lt_of_le_of_ne (IsLocalRing.le_maximalIdeal hP.ne_top) hP_ne_M
     haveI : P.FiniteHeight := Ideal.finiteHeight_of_isNoetherianRing P
-    have hP_ht_lt := Ideal.height_strict_mono_of_is_prime hP_lt_M
+    have hP_ht_lt := Ideal.height_strict_mono_of_isPrime hP_lt_M
     have hM_ht : (IsLocalRing.maximalIdeal T).height = 2 := by
       have h := IsLocalRing.maximalIdeal_height_eq_ringKrullDim (R := T)
       rw [T_ringKrullDim] at h

@@ -28,12 +28,12 @@ theorem Finset.val.map_coe' {α β γ : Type _} (f : α → β) (s : Finset α) 
     (s.val.map f).map (fun x : β => (x : γ)) = s.val.map (fun x => (f x : γ)) :=
   Finset.val.map_coe f s
 
-noncomputable instance multisetCoeTC_RToRCLike {𝕜 : Type _} [RCLike 𝕜] :
+noncomputable instance multisetCoeTCRToRCLike {𝕜 : Type _} [RCLike 𝕜] :
   CoeTC (Multiset ℝ) (Multiset 𝕜) :=
 @multisetCoeTC ℝ 𝕜 ⟨RCLike.ofReal⟩
 noncomputable instance multisetCoeRToRCLike {𝕜 : Type _} [RCLike 𝕜] :
   Coe (Multiset ℝ) (Multiset 𝕜) where
-  coe := (@multisetCoeTC_RToRCLike 𝕜 _).coe
+  coe := (@multisetCoeTCRToRCLike 𝕜 _).coe
 
 namespace Matrix
 
@@ -43,30 +43,30 @@ open scoped Matrix
 
 /-- Choose a scalar and Hermitian matrix witnessing that an almost-Hermitian matrix is scalar
 Hermitian. -/
-noncomputable def _root_.Matrix.IsAlmostHermitian.scalar_matrix {n : Type _} {x : Matrix n n 𝕜}
+noncomputable def _root_.Matrix.IsAlmostHermitian.scalarMatrix {n : Type _} {x : Matrix n n 𝕜}
     (hx : x.IsAlmostHermitian) : 𝕜 × (Matrix n n 𝕜) := by
   choose! α y hy using hx
   exact ⟨α, y⟩
 
 /-- The scalar chosen from an almost-Hermitian witness. -/
 noncomputable def _root_.Matrix.IsAlmostHermitian.scalar {n : Type _} {x : Matrix n n 𝕜}
-    (hx : x.IsAlmostHermitian) : 𝕜 := hx.scalar_matrix.1
+    (hx : x.IsAlmostHermitian) : 𝕜 := hx.scalarMatrix.1
 
 /-- The Hermitian matrix chosen from an almost-Hermitian witness. -/
 noncomputable def _root_.Matrix.IsAlmostHermitian.matrix {n : Type _} {x : Matrix n n 𝕜}
-    (hx : x.IsAlmostHermitian) : Matrix n n 𝕜 := hx.scalar_matrix.2
+    (hx : x.IsAlmostHermitian) : Matrix n n 𝕜 := hx.scalarMatrix.2
 
 theorem _root_.Matrix.IsAlmostHermitian.eq_smul_matrix {n : Type _} {x : Matrix n n 𝕜}
     (hx : x.IsAlmostHermitian) : x = hx.scalar • hx.matrix :=
   by
-  rw [IsAlmostHermitian.scalar, IsAlmostHermitian.matrix, IsAlmostHermitian.scalar_matrix]
+  rw [IsAlmostHermitian.scalar, IsAlmostHermitian.matrix, IsAlmostHermitian.scalarMatrix]
   generalize_proofs
   simp_all
 
 theorem _root_.Matrix.IsAlmostHermitian.matrix_isHermitian {n : Type _} {x : Matrix n n 𝕜}
     (hx : x.IsAlmostHermitian) : hx.matrix.IsHermitian :=
   by
-  rw [IsAlmostHermitian.matrix, IsAlmostHermitian.scalar_matrix]
+  rw [IsAlmostHermitian.matrix, IsAlmostHermitian.scalarMatrix]
   generalize_proofs
   simp_all
 

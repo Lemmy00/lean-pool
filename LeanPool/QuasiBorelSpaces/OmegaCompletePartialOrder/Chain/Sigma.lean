@@ -9,6 +9,12 @@ import Mathlib.Data.Sigma.Order
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.OmegaCompletePartialOrder
 
+/-!
+# LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Sigma
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Sigma`.
+-/
+
 
 namespace OmegaCompletePartialOrder.Chain.Sigma
 
@@ -29,7 +35,7 @@ def distrib (c : Chain ((i : I) × P i)) : (i : I) × Chain (P i) where
   fst := (c 0).fst
   snd.toFun n :=
     have : (c 0).fst = (c n).fst := by
-      have := c.monotone (zero_le n)
+      have := c.monotone (Nat.zero_le n)
       rw [Sigma.le_def] at this
       exact this.choose
     this ▸ (c n).snd
@@ -52,7 +58,7 @@ lemma inj_distrib (c : Chain (Sigma P)) : inj (distrib c).snd = c := by
   funext n
   change (⟨(c 0).fst, _⟩ : Sigma P) = c n
   have hfst : (c 0).fst = (c n).fst := by
-    have := (OrderHomClass.mono c) (zero_le n)
+    have := (OrderHomClass.mono c) (Nat.zero_le n)
     rw [Sigma.le_def] at this
     exact this.choose
   refine Sigma.ext hfst ?_

@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Basic
 import LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Chain.Option
 
+/-!
+# LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Option
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.OmegaCompletePartialOrder.Option`.
+-/
+
 
 /-
 Faithful ωCPO structure on `Option A` (bottom element `none`, supremum of a
@@ -19,7 +25,7 @@ namespace OmegaCompletePartialOrder.Option
 
 variable [OmegaCompletePartialOrder A]
 
-noncomputable instance : OmegaCompletePartialOrder (Option A) where
+noncomputable instance instOptionLeanPool : OmegaCompletePartialOrder (Option A) where
   ωSup c := Option.map ωSup (Chain.Option.distrib c)
   le_ωSup c i := by
     cases c using Chain.Option.distrib_cases with

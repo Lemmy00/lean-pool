@@ -10,6 +10,12 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.MatIps
 import LeanPool.Monlib4.QuantumGraph.QamA
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
 
+/-!
+# LeanPool.Monlib4.QuantumGraph.QamAExample
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph.QamAExample`.
+-/
+
 section
 
 /-!

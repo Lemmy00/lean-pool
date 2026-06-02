@@ -21,7 +21,7 @@ namespace OmegaCompletePartialOrder.Sum
 variable {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 
 @[simps! -isSimp]
-noncomputable instance : OmegaCompletePartialOrder (Sum α β) where
+noncomputable instance instSumLeanPool : OmegaCompletePartialOrder (Sum α β) where
   ωSup c := Sum.map ωSup ωSup (Chain.Sum.distrib c)
   le_ωSup c i := by
     cases c using Chain.Sum.distrib_cases with

@@ -5,6 +5,12 @@ Authors: Vincent Trélat
 -/
 
 import Mathlib.SetTheory.ZFC.Basic
+
+/-!
+# LeanPool.ZFLean.Basic
+
+Imported Lean Pool material for `LeanPool.ZFLean.Basic`.
+-/
 noncomputable section
 
 namespace ZFSet

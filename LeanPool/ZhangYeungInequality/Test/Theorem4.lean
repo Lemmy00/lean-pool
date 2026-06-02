@@ -6,6 +6,12 @@ Authors: Christopher Boone
 
 import LeanPool.ZhangYeungInequality.Theorem4
 
+/-!
+# LeanPool.ZhangYeungInequality.Test.Theorem4
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.Test.Theorem4`.
+-/
+
 namespace ZhangYeungTest
 
 open MeasureTheory ProbabilityTheory
@@ -18,22 +24,22 @@ universe u
 
 section SetFunctionCalculus
 
-/- Pinned signature: `I_F` is a three-argument real-valued function of `F`
+/- Pinned signature: `IF` is a three-argument real-valued function of `F`
 and two `Finset (Fin 4)` arguments. -/
 example (F : Finset (Fin 4) → ℝ) (α β : Finset (Fin 4)) :
-    I_F F α β = F α + F β - F (α ∪ β) :=
+    IF F α β = F α + F β - F (α ∪ β) :=
   rfl
 
-/- Pinned signature: `condI_F` is a four-argument real-valued function of `F`
+/- Pinned signature: `condIF` is a four-argument real-valued function of `F`
 and three `Finset (Fin 4)` arguments. -/
 example (F : Finset (Fin 4) → ℝ) (α β γ : Finset (Fin 4)) :
-    condI_F F α β γ = F (α ∪ γ) + F (β ∪ γ) - F (α ∪ β ∪ γ) - F γ :=
+    condIF F α β γ = F (α ∪ γ) + F (β ∪ γ) - F (α ∪ β ∪ γ) - F γ :=
   rfl
 
-/- Pinned signature: `delta_F` is a five-argument real-valued function of `F`
+/- Pinned signature: `deltaF` is a five-argument real-valued function of `F`
 and four `Fin 4` indices. -/
 example (F : Finset (Fin 4) → ℝ) (i j k l : Fin 4) :
-    delta_F F i j k l = I_F F {i} {j} - condI_F F {i} {j} {k} - condI_F F {i} {j} {l} :=
+    deltaF F i j k l = IF F {i} {j} - condIF F {i} {j} {k} - condIF F {i} {j} {l} :=
   rfl
 
 end SetFunctionCalculus
@@ -51,8 +57,8 @@ example (F : Finset (Fin 4) → ℝ) :
 /- Pinned signature: `zhangYeungAt F i j k l` is paper eq. (21) at the labeling `(i, j, k, l)`. -/
 example (F : Finset (Fin 4) → ℝ) (i j k l : Fin 4) :
     zhangYeungAt F i j k l ↔
-      delta_F F i j k l ≤ (1 / 2) * (I_F F {k} {l} + I_F F {k} ({i} ∪ {j})
-        + condI_F F {i} {j} {k} - condI_F F {i} {j} {l}) :=
+      deltaF F i j k l ≤ (1 / 2) * (IF F {k} {l} + IF F {k} ({i} ∪ {j})
+        + condIF F {i} {j} {k} - condIF F {i} {j} {l}) :=
   Iff.rfl
 
 /- Pinned signature: `zhangYeungHolds F` quantifies over `Equiv.Perm (Fin 4)`. -/
@@ -66,12 +72,12 @@ end Predicates
 
 section Witness
 
-/- Pinned signature: `F_witness_ℚ` is a `Finset (Fin 4) → ℚ` five-case function. -/
-example : F_witness_ℚ (∅ : Finset (Fin 4)) = 0 := rfl
+/- Pinned signature: `FWitnessℚ` is a `Finset (Fin 4) → ℚ` five-case function. -/
+example : FWitnessℚ (∅ : Finset (Fin 4)) = 0 := rfl
 
-/- Pinned signature: `F_witness` is the `ℝ`-cast of `F_witness_ℚ`. -/
-example (S : Finset (Fin 4)) : F_witness S = (F_witness_ℚ S : ℝ) :=
-  F_witness_eq_cast S
+/- Pinned signature: `FWitness` is the `ℝ`-cast of `FWitnessℚ`. -/
+example (S : Finset (Fin 4)) : FWitness S = (FWitnessℚ S : ℝ) :=
+  FWitness_eq_cast S
 
 end Witness
 
@@ -79,9 +85,9 @@ end Witness
 
 section MainStatements
 
-example : shannonCone F_witness := shannonCone_of_witness
+example : shannonCone FWitness := shannonCone_of_witness
 
-example : ¬ zhangYeungHolds F_witness := not_zhangYeungHolds_witness
+example : ¬ zhangYeungHolds FWitness := not_zhangYeungHolds_witness
 
 example : ∃ F : Finset (Fin 4) → ℝ, shannonCone F ∧ ¬ zhangYeungHolds F :=
   shannon_incomplete
@@ -109,7 +115,7 @@ example :
 
 example :
     ∃ F : Finset (Fin 4) → ℝ,
-      F ∈ shannonRegion_n 4 ∧ F ∉ almostEntropicRegion_n.{u} 4 :=
+      F ∈ shannonRegionN 4 ∧ F ∉ almostEntropicRegionN.{u} 4 :=
   theorem4.{u}
 
 end MainStatements
@@ -117,26 +123,26 @@ end MainStatements
 /-! ### Concrete evaluation of the `ℚ`-valued witness
 
 The witness values at the 16 subsets of `Fin 4`, as a compile-time regression
-against accidental edits to `F_witness_ℚ`. Each value follows the paper's
+against accidental edits to `FWitnessℚ`. Each value follows the paper's
 table on lines 368-377 at `a = 1`. -/
 
 section WitnessEvaluation
 
-example : F_witness_ℚ ({0} : Finset (Fin 4)) = 2 := by decide
-example : F_witness_ℚ ({1} : Finset (Fin 4)) = 2 := by decide
-example : F_witness_ℚ ({2} : Finset (Fin 4)) = 2 := by decide
-example : F_witness_ℚ ({3} : Finset (Fin 4)) = 2 := by decide
-example : F_witness_ℚ ({0, 1} : Finset (Fin 4)) = 4 := by decide
-example : F_witness_ℚ ({0, 2} : Finset (Fin 4)) = 3 := by decide
-example : F_witness_ℚ ({0, 3} : Finset (Fin 4)) = 3 := by decide
-example : F_witness_ℚ ({1, 2} : Finset (Fin 4)) = 3 := by decide
-example : F_witness_ℚ ({1, 3} : Finset (Fin 4)) = 3 := by decide
-example : F_witness_ℚ ({2, 3} : Finset (Fin 4)) = 3 := by decide
-example : F_witness_ℚ ({0, 1, 2} : Finset (Fin 4)) = 4 := by decide
-example : F_witness_ℚ ({0, 1, 3} : Finset (Fin 4)) = 4 := by decide
-example : F_witness_ℚ ({0, 2, 3} : Finset (Fin 4)) = 4 := by decide
-example : F_witness_ℚ ({1, 2, 3} : Finset (Fin 4)) = 4 := by decide
-example : F_witness_ℚ ({0, 1, 2, 3} : Finset (Fin 4)) = 4 := by decide
+example : FWitnessℚ ({0} : Finset (Fin 4)) = 2 := by decide
+example : FWitnessℚ ({1} : Finset (Fin 4)) = 2 := by decide
+example : FWitnessℚ ({2} : Finset (Fin 4)) = 2 := by decide
+example : FWitnessℚ ({3} : Finset (Fin 4)) = 2 := by decide
+example : FWitnessℚ ({0, 1} : Finset (Fin 4)) = 4 := by decide
+example : FWitnessℚ ({0, 2} : Finset (Fin 4)) = 3 := by decide
+example : FWitnessℚ ({0, 3} : Finset (Fin 4)) = 3 := by decide
+example : FWitnessℚ ({1, 2} : Finset (Fin 4)) = 3 := by decide
+example : FWitnessℚ ({1, 3} : Finset (Fin 4)) = 3 := by decide
+example : FWitnessℚ ({2, 3} : Finset (Fin 4)) = 3 := by decide
+example : FWitnessℚ ({0, 1, 2} : Finset (Fin 4)) = 4 := by decide
+example : FWitnessℚ ({0, 1, 3} : Finset (Fin 4)) = 4 := by decide
+example : FWitnessℚ ({0, 2, 3} : Finset (Fin 4)) = 4 := by decide
+example : FWitnessℚ ({1, 2, 3} : Finset (Fin 4)) = 4 := by decide
+example : FWitnessℚ ({0, 1, 2, 3} : Finset (Fin 4)) = 4 := by decide
 
 end WitnessEvaluation
 
@@ -177,7 +183,7 @@ example {F_seq : ℕ → Finset (Fin 4) → ℝ} {F : Finset (Fin 4) → ℝ}
     zhangYeungHolds F :=
   zhangYeungHolds_of_tendsto h_seq h_lim
 
-/- Pinned signature: `theorem4_seqClosure` shows `F_witness` is not even a
+/- Pinned signature: `theorem4_seqClosure` shows `FWitness` is not even a
 pointwise limit of `tildeΓ_4` members. -/
 example :
     ∃ F : Finset (Fin 4) → ℝ, shannonCone F ∧
@@ -196,31 +202,31 @@ section NExtensionStretch
 /- Pinned signature: `shannon_incomplete_ge_four` states the paper's `n ≥ 4`
 separation in the `Fin n`-indexed cone predicates. -/
 example (n : ℕ) (hn : 4 ≤ n) :
-    ∃ F : Finset (Fin n) → ℝ, shannonCone_n F ∧ ¬ zhangYeungHolds_n F :=
+    ∃ F : Finset (Fin n) → ℝ, shannonConeN F ∧ ¬ zhangYeungHoldsN F :=
   shannon_incomplete_ge_four n hn
 
 /- Pinned signature: `theorem4_ge_four` states the exact paper-level `n ≥ 4`
 closure separation. -/
 example (n : ℕ) (hn : 4 ≤ n) :
     ∃ F : Finset (Fin n) → ℝ,
-      F ∈ shannonRegion_n n ∧ F ∉ almostEntropicRegion_n.{u} n :=
+      F ∈ shannonRegionN n ∧ F ∉ almostEntropicRegionN.{u} n :=
   theorem4_ge_four.{u} n hn
 
-/- Pinned signature: `F_witness_n` is the lifted witness. -/
-example {n : ℕ} (hn : 4 ≤ n) : shannonCone_n (F_witness_n hn) :=
+/- Pinned signature: `FWitnessN` is the lifted witness. -/
+example {n : ℕ} (hn : 4 ≤ n) : shannonConeN (FWitnessN hn) :=
   shannonCone_of_witness_n hn
 
-example {n : ℕ} (hn : 4 ≤ n) : ¬ zhangYeungHolds_n (F_witness_n hn) :=
+example {n : ℕ} (hn : 4 ≤ n) : ¬ zhangYeungHoldsN (FWitnessN hn) :=
   not_zhangYeungHolds_witness_n hn
 
 /- Pinned signature: at `n = 4`, the generic predicates coincide with the
 Fin-4 predicates by definition; checked here against `shannonCone` and an
 arbitrary permutation's `zhangYeungAt` form. -/
 example (F : Finset (Fin 4) → ℝ) :
-    shannonCone_n F ↔ shannonCone F := Iff.rfl
+    shannonConeN F ↔ shannonCone F := Iff.rfl
 
 example (F : Finset (Fin 4) → ℝ) (i j k l : Fin 4) :
-    zhangYeungAt_n F i j k l ↔ zhangYeungAt F i j k l := Iff.rfl
+    zhangYeungAtN F i j k l ↔ zhangYeungAt F i j k l := Iff.rfl
 
 end NExtensionStretch
 

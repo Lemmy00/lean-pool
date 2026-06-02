@@ -39,13 +39,13 @@ variable {E 𝕜 : Type _} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpa
 
 theorem orthogonalProjection_eq_linear_proj' {K : Submodule 𝕜 E} [K.HasOrthogonalProjection] :
     (K.orthogonalProjection : E →ₗ[𝕜] K) =
-      Submodule.linearProjOfIsCompl K _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
+      Submodule.projectionOnto K _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
   Submodule.toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl
 
 theorem orthogonalProjection_eq_linear_proj''
     {K : Submodule 𝕜 E} [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
-      Submodule.linearProjOfIsCompl K _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x :=
+      Submodule.projectionOnto K _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x :=
   Submodule.orthogonalProjection_apply_eq_linearProjOfIsCompl x
 
 /-- The orthogonal projection onto a submodule as an endomorphism of the ambient space. -/
@@ -76,18 +76,16 @@ theorem orthogonalProjection'_eq (U : Submodule 𝕜 E) [U.HasOrthogonalProjecti
 
 theorem orthogonal_projection'_eq_linear_proj {K : Submodule 𝕜 E} [K.HasOrthogonalProjection] :
     (K.subtypeL.comp K.orthogonalProjection : E →ₗ[𝕜] E) =
-     (K.subtype).comp
-        (K.linearProjOfIsCompl Kᗮ
-          Submodule.isCompl_orthogonal_of_hasOrthogonalProjection) :=
-  by simpa [Submodule.starProjection, Submodule.IsCompl.projection] using
+      (K.subtype).comp
+        (K.projectionOnto Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection) :=
+  by simpa [Submodule.starProjection, Submodule.projection] using
     Submodule.toLinearMap_starProjection_eq_isComplProjection (K := K)
 
 theorem orthogonalProjection'_eq_linear_proj'
     {K : Submodule 𝕜 E} [K.HasOrthogonalProjection] (x : E) :
     (orthogonalProjection' K : E →ₗ[𝕜] E) x =
       (K.subtype).comp
-        (K.linearProjOfIsCompl Kᗮ
-          Submodule.isCompl_orthogonal_of_hasOrthogonalProjection) x :=
+        (K.projectionOnto Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection) x :=
   by
   rw [← orthogonal_projection'_eq_linear_proj]
   rfl

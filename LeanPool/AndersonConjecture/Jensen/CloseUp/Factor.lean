@@ -41,25 +41,25 @@ private def close_up_aux_factor_proof
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     (ih_a : ∀ (y : R.carrier), DvdNotUnit y a →
       ∀ (s : Finset R.carrier),
-      gcd_complexity s ≤ m →
+      gcdComplexity s ≤ m →
       s.card = n'' + 1 + 1 + 1 → y ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
     {c : R.carrier}
     (hc : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)))
@@ -185,15 +185,15 @@ private def close_up_aux_factor_proof
               _ = y := hy_eq.symm
           rw [show t_set = s.image div_q from rfl,
             Finset.card_image_of_injOn hinj, hs_eq]
-        have ht_gcd : gcd_complexity t_set ≤ m := le_trans (by
-          change gcd_complexity t_set ≤ gcd_complexity s
+        have ht_gcd : gcdComplexity t_set ≤ m := le_trans (by
+          change gcdComplexity t_set ≤ gcdComplexity s
           have hinj : Set.InjOn div_q ↑s := fun x hx y hy hxy => by
             have hx_eq := hdiv_spec x (Finset.mem_coe.mp hx)
             have hy_eq := hdiv_spec y (Finset.mem_coe.mp hy)
             calc x = q * div_q x := hx_eq
               _ = q * div_q y := by rw [hxy]
               _ = y := hy_eq.symm
-          exact gcd_complexity_div_le q hq s hq_dvd_all div_q hdiv_spec hinj) hs_gcd
+          exact gcdComplexity_div_le q hq s hq_dvd_all div_q hdiv_spec hinj) hs_gcd
         exact ih_a (div_q a) hdvd t_set
           ht_gcd ht_card ha'_mem c' hc'_mem
   · -- Sub-case B1: q does not divide a, q | c. Factor out q from s' and c.
@@ -306,21 +306,21 @@ private def close_up_aux_factor_proof
       obtain ⟨b₀, hb₀⟩ := ht_ne
       suffices h_nested : ∀ (b : R.carrier) (rest : Finset R.carrier),
           rest.card ≤ n'' + 1 + 1 → a ∉ rest → b ∈ rest →
-          gcd_complexity (insert a rest) ≤ gcd_complexity s → ∀ (c_n : R.carrier),
+          gcdComplexity (insert a rest) ≤ gcdComplexity s → ∀ (c_n : R.carrier),
           (c_n : T) ∈ Ideal.map R.carrier.subtype
             (span (↑(insert a rest) : Set R.carrier)) →
           ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
             (⟨(c_n : T), hle c_n.2⟩ : S.carrier) ∈
               Ideal.map (Subring.inclusion hle) (span (↑(insert a rest) : Set R.carrier)) from by
         refine h_nested b₀ t_set' (Finset.card_image_le.trans hs'_card) ha_t hb₀ ?_ c' hc'_mem
-        -- gcd_complexity (insert a t_set') ≤ gcd_complexity s
-        show gcd_complexity (insert a t_set') ≤ gcd_complexity s
+        -- gcdComplexity (insert a t_set') ≤ gcdComplexity s
+        show gcdComplexity (insert a t_set') ≤ gcdComplexity s
         letI : NormalizationMonoid R.carrier :=
           UniqueFactorizationMonoid.normalizationMonoid
         have ha_not_s' : a ∉ s' := by
           rw [hs'_def]
           simp [Finset.mem_erase]
-        unfold gcd_complexity
+        unfold gcdComplexity
         rw [hs_insert, Finset.sum_insert ha_not_s',
             Finset.sum_insert ha_t]
         apply Nat.add_le_add_left
@@ -391,25 +391,25 @@ theorem close_up_aux_factor
       letI : IsDomain R.carrier := NSubring.isDomain R
       letI : UniqueFactorizationMonoid R.carrier := R.isUFD
       ∀ (a : R.carrier) (s : Finset R.carrier),
-      gcd_complexity s ≤ m_1 →
+      gcdComplexity s ≤ m_1 →
       s.card = n'' + 1 + 1 + 1 → a ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     (ih_a : ∀ (y : R.carrier), DvdNotUnit y a →
       ∀ (s : Finset R.carrier),
-      gcd_complexity s ≤ m →
+      gcdComplexity s ≤ m →
       s.card = n'' + 1 + 1 + 1 → y ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (hs_eq : s.card = n'' + 1 + 1 + 1) (ha_mem : a ∈ s)
     {c : R.carrier}
     (hc : (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)))

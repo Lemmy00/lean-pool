@@ -5,7 +5,7 @@ Authors: Monica Omar
 -/
 import LeanPool.Monlib4.LinearAlgebra.Ips.Functional
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PosDefRpow
-import LeanPool.Monlib4.LinearAlgebra.Mul''
+import LeanPool.Monlib4.LinearAlgebra.MulPrimePrime
 import LeanPool.Monlib4.LinearAlgebra.Ips.Basic
 import LeanPool.Monlib4.LinearAlgebra.PiDirectSum
 import LeanPool.Monlib4.LinearAlgebra.ToMatrixOfEquiv
@@ -134,7 +134,7 @@ theorem Module.Dual.pi.matrixBlock_apply {i : k} : Module.Dual.pi.matrixBlock ψ
 --   map_smul' r a := by
 --     simp only [Pi.smul_apply, _root_.map_smul]
 --     rfl
---   map_mul' a b := by
+--   mapMul' a b := by
 --     simp only [Pi.mul_apply, _root_.map_mul]
 --     rfl
 --   map_star' a := by
@@ -151,12 +151,12 @@ theorem Module.Dual.pi.matrixBlock_apply {i : k} : Module.Dual.pi.matrixBlock ψ
 -- noncomputable def StarAlgEquiv.pi.unitary {𝕜 : Type _} [RCLike 𝕜] {k : Type _} [Fintype k]
 --     [DecidableEq k] {s : k → Type _} [∀ i : k, Fintype (s i)] [∀ i : k, DecidableEq (s i)]
 --     (f : ∀ i, Matrix (s i) (s i) 𝕜 ≃⋆ₐ[𝕜] Matrix (s i) (s i) 𝕜) : ∀ i, unitaryGroup (s i) 𝕜 :=
---   fun i => (f i).of_matrix_unitary
+--   fun i => (f i).ofMatrixUnitary
 
 -- theorem StarAlgEquiv.pi.unitary_apply {𝕜 : Type _} [RCLike 𝕜] {k : Type _} [Fintype k]
 --     [DecidableEq k] {s : k → Type _} [∀ i : k, Fintype (s i)] [∀ i : k, DecidableEq (s i)]
 --     (f : ∀ i, Matrix (s i) (s i) 𝕜 ≃⋆ₐ[𝕜] Matrix (s i) (s i) 𝕜) (a : k) :
---     (StarAlgEquiv.pi.unitary f) a = (f a).of_matrix_unitary :=
+--     (StarAlgEquiv.pi.unitary f) a = (f a).ofMatrixUnitary :=
 --   rfl
 
 -- /-- any decomposable $^*$-isomorphism is an inner automorphism -/
@@ -171,7 +171,7 @@ theorem Module.Dual.pi.matrixBlock_apply {i : k} : Module.Dual.pi.matrixBlock ψ
 -- StarAlgEquiv.pi_apply,
 --     StarAlgEquiv.pi.unitary_apply]
 --   intros a_1 i
---   rw [← Unitary.coe_star, ← @unitary.innerAutStarAlg_apply 𝕜 _ _ _ _ _ (f _).of_matrix_unitary
+--   rw [← Unitary.coe_star, ← @unitary.innerAutStarAlg_apply 𝕜 _ _ _ _ _ (f _).ofMatrixUnitary
 -- (a_1 _)]
 --   congr
 --   exact StarAlgEquiv.eq_innerAut _
@@ -272,7 +272,7 @@ rfl
 
 theorem inner_eq' (hφ : φ.IsFaithfulPosMap) (x y : Matrix n n ℂ) :
   withMatrixInner[φ] (⟪x, y⟫_ℂ = (φ.matrix * xᴴ * y).trace) := by
-rw [inner_eq, φ.apply, Matrix.mul_assoc]
+  rw [inner_eq, φ.apply, Matrix.mul_assoc]
 
 /-- The density matrix of a faithful positive functional is positive definite. -/
 theorem matrixIsPosDef (hφ : φ.IsFaithfulPosMap) : PosDef φ.matrix :=
@@ -438,14 +438,14 @@ by
 
 theorem starAlgEquiv_unitary_commute_iff [φ.IsFaithfulPosMap]
     (f : Matrix n n ℂ ≃⋆ₐ[ℂ] Matrix n n ℂ) :
-    Commute φ.matrix f.of_matrix_unitary ↔ f φ.matrix = φ.matrix :=
+    Commute φ.matrix f.ofMatrixUnitary ↔ f φ.matrix = φ.matrix :=
   by
   letI : _root_.NormedAddCommGroup (Matrix n n ℂ) := Module.Dual.NormedAddCommGroup φ
   letI : _root_.InnerProductSpace ℂ (Matrix n n ℂ) := Module.Dual.InnerProductSpace (φ := φ)
   rw [Commute, SemiconjBy]
   nth_rw 3 [← StarAlgEquiv.eq_innerAut f]
   rw [innerAutStarAlg_apply, ← unitaryGroup.star_coe_eq_coe_star]
-  nth_rw 2 [unitaryGroup.injective_hMul f.of_matrix_unitary]
+  nth_rw 2 [unitaryGroup.injective_hMul f.ofMatrixUnitary]
   simp_rw [Matrix.mul_assoc, UnitaryGroup.star_mul_self, Matrix.mul_one, eq_comm]
 
 /-- Let `f` be a  star-algebraic equivalence on matrix algebras. Then tfae:
@@ -466,7 +466,7 @@ theorem starAlgEquiv_is_isometry_tFAE [hφ : φ.IsFaithfulPosMap] [Nontrivial n]
               Matrix n n ℂ →ₗ[ℂ] Matrix n n ℂ) =
           f.symm.toLinearMap,
         φ ∘ₗ f.toLinearMap = φ, ∀ x y, ⟪f x, f y⟫_ℂ = ⟪x, y⟫_ℂ,
-        ∀ x : Matrix n n ℂ, ‖f x‖ = ‖x‖, Commute φ.matrix f.of_matrix_unitary]) :=
+        ∀ x : Matrix n n ℂ, ‖f x‖ = ‖x‖, Commute φ.matrix f.ofMatrixUnitary]) :=
   by
   letI : _root_.NormedAddCommGroup (Matrix n n ℂ) := Module.Dual.NormedAddCommGroup φ
   letI : _root_.InnerProductSpace ℂ (Matrix n n ℂ) := Module.Dual.InnerProductSpace (φ := φ)
@@ -700,12 +700,6 @@ protected theorem toMatrixLinEquiv_symm_apply (hφ : φ.IsFaithfulPosMap) (hψ :
 --   hφ.toMatrixLinEquiv hφ = hφ.toMatrix :=
 -- rfl
 
-@[simp]
-lemma _root_.AlgEquiv.toLinearEquiv_coe {R M₁ M₂ : Type*} [CommSemiring R]
-  [Semiring M₁] [Algebra R M₁] [Semiring M₂] [Algebra R M₂]
-  (φ : M₁ ≃ₐ[R] M₂) :
-  φ.toLinearEquiv = φ :=
-rfl
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j k l) -/
 protected theorem toMatrix_symm_apply (hφ : φ.IsFaithfulPosMap)
@@ -1423,7 +1417,7 @@ theorem Matrix.inner_star_left [hφ : φ.IsFaithfulPosMap] (a x : ℍ) :
   letI : _root_.InnerProductSpace ℂ ℍ := Module.Dual.InnerProductSpace (φ := φ)
   rw [← inner_conj_symm, Matrix.inner_star_right, inner_conj_symm]
 
-theorem one_inner [hφ : φ.IsFaithfulPosMap] (a : ℍ) :
+theorem oneInner [hφ : φ.IsFaithfulPosMap] (a : ℍ) :
     withMatrixInner[φ] (⟪1, a⟫_ℂ = (φ.matrix * a).trace) := by
   letI : _root_.NormedAddCommGroup ℍ := Module.Dual.NormedAddCommGroup φ
   letI : _root_.InnerProductSpace ℂ ℍ := Module.Dual.InnerProductSpace (φ := φ)

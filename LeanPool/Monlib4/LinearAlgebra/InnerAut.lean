@@ -101,7 +101,7 @@ theorem innerAutStarAlg_symm' {K R : Type _} [Semiring R] [StarMul R]
   rw [innerAutStarAlg_symm]
   rfl
 
-instance (R : Type*) [Monoid R] [StarMul R] :
+instance instCoeTCSubtypeMemSubmonoidLeanPool (R : Type*) [Monoid R] [StarMul R] :
     CoeTC (unitary R) R :=
   ⟨fun x => x⟩
 
@@ -210,12 +210,13 @@ theorem innerAut_star_apply [DecidableEq n] (U : unitaryGroup n 𝕜) (x : Matri
 theorem innerAut_conjTranspose [DecidableEq n] (U : unitaryGroup n 𝕜)
     (x : Matrix n n 𝕜) :
     (innerAut U x)ᴴ = innerAut U xᴴ := by
-  simpa only [innerAut_coe] using (map_star (innerAutStarAlg U) x).symm
+  change star ((innerAutStarAlg U) x) = (innerAutStarAlg U) (star x)
+  exact (map_star (innerAutStarAlg U) x).symm
 
 theorem innerAut_comp_innerAut [DecidableEq n] (U₁ U₂ : unitaryGroup n 𝕜) :
     innerAut U₁ ∘ₗ innerAut U₂ = innerAut (U₁ * U₂) := by
   simp_rw [LinearMap.ext_iff, LinearMap.comp_apply, innerAut_apply, UnitaryGroup.inv_apply,
-    UnitaryGroup.mul_apply, Matrix.star_mul, Matrix.mul_assoc, forall_true_iff]
+    UnitaryGroup.mul_apply, star_mul, Matrix.mul_assoc, forall_true_iff]
 
 theorem innerAut_apply_innerAut [DecidableEq n] (U₁ U₂ : unitaryGroup n 𝕜)
     (x : Matrix n n 𝕜) :
@@ -537,15 +538,15 @@ theorem _root_.StarAlgEquiv.of_matrix_is_inner
   norm_num
 
 /-- A unitary matrix implementing a star-algebra equivalence of full matrix algebras. -/
-noncomputable def _root_.StarAlgEquiv.of_matrix_unitary
+noncomputable def _root_.StarAlgEquiv.ofMatrixUnitary
     (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) : unitaryGroup n 𝕜 := by
   choose U _ using f.of_matrix_is_inner
   exact U
 
 lemma _root_.StarAlgEquiv.eq_innerAut
     (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
-    innerAutStarAlg f.of_matrix_unitary = f := by
-  rw [StarAlgEquiv.of_matrix_unitary]
+    innerAutStarAlg f.ofMatrixUnitary = f := by
+  rw [StarAlgEquiv.ofMatrixUnitary]
   generalize_proofs
   expose_names
   exact pf_1
@@ -638,7 +639,9 @@ theorem _root_.Matrix.innerAut_commutes_with_map_lid_symm (U : Matrix.unitaryGro
       (TensorProduct.lid 𝕜 (Matrix n n 𝕜)).symm.toLinearMap ∘ₗ innerAut U := by
   simp_rw [LinearMap.ext_iff, LinearMap.comp_apply,
     LinearEquiv.coe_coe, TensorProduct.lid_symm_apply, TensorProduct.map_tmul,
-    Module.End.one_apply, forall_const]
+    Module.End.one_apply]
+  intro x
+  rfl
 
 theorem _root_.Matrix.innerAut_commutes_with_lid_comm (U : Matrix.unitaryGroup n 𝕜) :
     (TensorProduct.lid 𝕜 (Matrix n n 𝕜)).toLinearMap ∘ₗ

@@ -9,6 +9,12 @@ import Mathlib.RingTheory.Coalgebra.CoassocSimps
 import Mathlib.Algebra.Algebra.Bilinear
 import LeanPool.Monlib4.LinearAlgebra.TensorProduct.BasicLemmas
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.Coalgebra.Lemmas
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.Coalgebra.Lemmas`.
+-/
+
 theorem TensorProduct.map_left_up {R A B C D : Type*}
   [CommSemiring R]
   [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
@@ -535,5 +541,5 @@ by
   intro r a
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
     TensorProduct.lid_tmul, TensorProduct.rid_symm_apply, TensorProduct.comm_tmul]
-  simpa using
-    (TensorProduct.tmul_smul (R := R) (R' := R) (M := A) (N := R) r a (1 : R)).symm
+  simpa only [smul_eq_mul, mul_one] using
+    TensorProduct.smul_tmul (R := R) (R' := R) (M := A) (N := R) r a (1 : R)

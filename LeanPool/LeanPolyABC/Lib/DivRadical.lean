@@ -10,6 +10,10 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 import LeanPool.LeanPolyABC.Lib.Radical
 import LeanPool.LeanPolyABC.Lib.Wronskian
 
+/-!
+# LeanPool.LeanPolyABC.Lib.DivRadical
+-/
+
 /-
 On `a.divRadical = a / radical a`. The purpose of this file is to prove our "main lemma" that
 `a.divRadical` divides `a'` for any nonzero polynomial `a`.

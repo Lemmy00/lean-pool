@@ -23,9 +23,9 @@ open Cardinal Ideal MvPowerSeries Pointwise
 ## Helper lemmas for T conditions
 -/
 
-lemma conj_I_ccf_zero (f : MvPowerSeries (Fin 3) ℂ)
-    (hf : f ∈ conj_I) : MvPowerSeries.constantCoeff f = 0 := by
-  have hle : conj_I ≤ RingHom.ker MvPowerSeries.constantCoeff := by
+lemma conjI_ccf_zero (f : MvPowerSeries (Fin 3) ℂ)
+    (hf : f ∈ conjI) : MvPowerSeries.constantCoeff f = 0 := by
+  have hle : conjI ≤ RingHom.ker MvPowerSeries.constantCoeff := by
     apply Ideal.span_le.mpr
     intro g hg
     simp only [Set.mem_singleton_iff] at hg
@@ -36,26 +36,26 @@ lemma conj_I_ccf_zero (f : MvPowerSeries (Fin 3) ℂ)
 
 lemma mk_mem_maxIdeal (f : MvPowerSeries (Fin 3) ℂ)
     (hf : MvPowerSeries.constantCoeff f = 0) :
-    Ideal.Quotient.mk conj_I f ∈ IsLocalRing.maximalIdeal T := by
+    Ideal.Quotient.mk conjI f ∈ IsLocalRing.maximalIdeal T := by
   rw [IsLocalRing.mem_maximalIdeal]
   intro ⟨u, hu⟩
   obtain ⟨g, hg⟩ := Ideal.Quotient.mk_surjective u.inv
-  have hmul : f * g - 1 ∈ conj_I := by
+  have hmul : f * g - 1 ∈ conjI := by
     rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem, map_mul, map_one]
-    calc Ideal.Quotient.mk conj_I f * Ideal.Quotient.mk conj_I g
+    calc Ideal.Quotient.mk conjI f * Ideal.Quotient.mk conjI g
         = ↑u * u.inv := by rw [← hu, ← hg]
       _ = 1 := u.val_inv
   have h0 : MvPowerSeries.constantCoeff (f * g - 1) = 0 :=
-    conj_I_ccf_zero _ hmul
+    conjI_ccf_zero _ hmul
   simp only [map_sub, map_mul, map_one, hf, zero_mul, zero_sub] at h0
   exact one_ne_zero (neg_eq_zero.mp h0)
 
-lemma coeff_conj_I_zero_of_deg_le_one
+lemma coeff_conjI_zero_of_deg_le_one
     (m : Fin 3 →₀ ℕ)
     (hm : ∀ i, m i ≤ (Finsupp.single (1 : Fin 3) 1) i)
-    (f : MvPowerSeries (Fin 3) ℂ) (hf : f ∈ conj_I) :
+    (f : MvPowerSeries (Fin 3) ℂ) (hf : f ∈ conjI) :
     (coeff m) f = 0 := by
-  rw [conj_I, mem_span_singleton] at hf
+  rw [conjI, mem_span_singleton] at hf
   obtain ⟨h, rfl⟩ := hf
   rw [coeff_mul]
   apply Finset.sum_eq_zero
@@ -105,13 +105,13 @@ lemma coeff_conj_I_zero_of_deg_le_one
   rw [hX0sq, hX1X2]
 
 lemma mk_X1_ne_zero :
-    (Ideal.Quotient.mk conj_I (X 1) : T) ≠ 0 := by
+    (Ideal.Quotient.mk conjI (X 1) : T) ≠ 0 := by
   rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
   intro hf
   have h1 : (coeff (Finsupp.single 1 1 : Fin 3 →₀ ℕ)) (X (1 : Fin 3) : MvPowerSeries (Fin 3) ℂ)
       = 1 := by
     simp [coeff_X]
-  have h2 := coeff_conj_I_zero_of_deg_le_one _ (fun _ => le_refl _) _ hf
+  have h2 := coeff_conjI_zero_of_deg_le_one _ (fun _ => le_refl _) _ hf
   rw [h1] at h2
   exact one_ne_zero h2
 
@@ -132,27 +132,27 @@ lemma T_smulRegular_of_ne_zero (a : T) (ha : a ≠ 0) :
 
 We show that mk(X 2) is smul-regular on the quotient module T/(mk(X 1)·T).
 
-**Proof idea**: Lift to MvPowerSeries (Fin 3) ℂ. If X₂f − X₁g ∈ conj_I, then
+**Proof idea**: Lift to MvPowerSeries (Fin 3) ℂ. If X₂f − X₁g ∈ conjI, then
 f(a,0,c) = 0 for a < 2 (coefficient argument at the generator's degree).
 Define shiftX1(f)(m) = f(m + single 1 1) (removes the X₁≥1 part) and
 divR(f)(m) = f(m₀+2, 0, m₂) when m₁=0 (the X₀² quotient of the X₁=0 slice).
 Then f − X₁·shiftX1(f) = X₀²·divR(f) (coefficient identity using the vanishing),
 so f = X₁·(shiftX1(f) + X₂·divR(f)) + (X₀²−X₁X₂)·divR(f), giving
-f ∈ (X₁) + conj_I and hence mk(f) ∈ mk(X₁)·⊤.
+f ∈ (X₁) + conjI and hence mk(f) ∈ mk(X₁)·⊤.
 -/
 
 /-- Shift X₁-exponent by 1: (shiftX1 f)(m) = f(m + single 1 1). -/
-def shiftX1'_app (f : MvPowerSeries (Fin 3) ℂ) : MvPowerSeries (Fin 3) ℂ :=
+def shiftX1'App (f : MvPowerSeries (Fin 3) ℂ) : MvPowerSeries (Fin 3) ℂ :=
   fun m => f (m + Finsupp.single 1 1)
 
 /-- The "X₁=0 restriction divided by X₀²":
     (divR f)(m) = f(m₀+2, 0, m₂) when m₁=0, else 0. -/
-def divR'_app (f : MvPowerSeries (Fin 3) ℂ) : MvPowerSeries (Fin 3) ℂ :=
+def divR'App (f : MvPowerSeries (Fin 3) ℂ) : MvPowerSeries (Fin 3) ℂ :=
   fun m => if m 1 = 0 then f (Finsupp.update m 0 (m 0 + 2)) else 0
 
-/-- LHS coefficient: (f - X₁ · shiftX1'_app f)(d) = f(d) when d₁=0, else 0. -/
+/-- LHS coefficient: (f - X₁ · shiftX1'App f)(d) = f(d) when d₁=0, else 0. -/
 lemma coeff_lhs (f : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ) :
-    coeff d (f - X 1 * shiftX1'_app f) = if d 1 = 0 then coeff d f else 0 := by
+    coeff d (f - X 1 * shiftX1'App f) = if d 1 = 0 then coeff d f else 0 := by
   simp only [map_sub]
   rw [show (X (1 : Fin 3) : MvPowerSeries (Fin 3) ℂ) =
     MvPowerSeries.monomial (R := ℂ) (Finsupp.single 1 1) 1 from rfl]
@@ -163,8 +163,8 @@ lemma coeff_lhs (f : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ) :
       simp [Finsupp.single_eq_same] at this
       omega
     simp only [hle, ite_true, one_mul, hd1, ite_false, sub_eq_zero]
-    change f d = shiftX1'_app f (d - Finsupp.single 1 1)
-    simp only [shiftX1'_app]
+    change f d = shiftX1'App f (d - Finsupp.single 1 1)
+    simp only [shiftX1'App]
     rw [tsub_add_cancel_of_le hle]
   · have hd1 : d 1 = 0 := by
       by_contra h
@@ -178,9 +178,9 @@ lemma coeff_lhs (f : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ) :
       · simp [show (1 : Fin 3) ≠ i from fun h => hi h.symm]
     simp [hle, hd1]
 
-/-- RHS coefficient: (X₀² · divR'_app f)(d) = f(d) when d₀≥2 and d₁=0, else 0. -/
+/-- RHS coefficient: (X₀² · divR'App f)(d) = f(d) when d₀≥2 and d₁=0, else 0. -/
 lemma coeff_rhs (f : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ) :
-    coeff d (X (0 : Fin 3) ^ 2 * divR'_app f) =
+    coeff d (X (0 : Fin 3) ^ 2 * divR'App f) =
       if 2 ≤ d 0 ∧ d 1 = 0 then coeff d f else 0 := by
   rw [show (X (0 : Fin 3) : MvPowerSeries (Fin 3) ℂ) ^ 2 =
     MvPowerSeries.monomial (R := ℂ) (Finsupp.single 0 2) 1 from
@@ -194,8 +194,8 @@ lemma coeff_rhs (f : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ) :
     simp only [hle, ite_true, one_mul]
     by_cases hd1 : d 1 = 0
     · simp only [hd0, hd1, true_and, ite_true]
-      change divR'_app f (d - Finsupp.single 0 2) = f d
-      unfold divR'_app
+      change divR'App f (d - Finsupp.single 0 2) = f d
+      unfold divR'App
       set d' := (d - Finsupp.single (0 : Fin 3) 2 : Fin 3 →₀ ℕ) with hd'_def
       have hsub1 : d' 1 = 0 := by
         simp [hd'_def, Finsupp.tsub_apply, hd1]
@@ -205,8 +205,8 @@ lemma coeff_rhs (f : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ) :
       simp only [Finsupp.update_apply, hd'_def, Finsupp.tsub_apply, Finsupp.single_apply]
       fin_cases i <;> simp_all
     · simp only [hd1, and_false, ite_false]
-      change divR'_app f (d - Finsupp.single 0 2) = 0
-      unfold divR'_app
+      change divR'App f (d - Finsupp.single 0 2) = 0
+      unfold divR'App
       set d' := (d - Finsupp.single (0 : Fin 3) 2 : Fin 3 →₀ ℕ) with hd'_def
       have hsub1 : d' 1 = d 1 := by
         simp [hd'_def, Finsupp.tsub_apply]
@@ -266,9 +266,9 @@ lemma coeff_gen_mul_zero (k : MvPowerSeries (Fin 3) ℂ) (d : Fin 3 →₀ ℕ)
 
 /-- Vanishing of f at low X₀-degree when X₁-index is 0, derived from hmem. -/
 lemma coeff_f_vanish (f g : MvPowerSeries (Fin 3) ℂ)
-    (hmem : X 2 * f - X 1 * g ∈ conj_I) (d : Fin 3 →₀ ℕ)
+    (hmem : X 2 * f - X 1 * g ∈ conjI) (d : Fin 3 →₀ ℕ)
     (hd1 : d 1 = 0) (hd0 : d 0 < 2) : coeff d f = 0 := by
-  rw [conj_I, mem_span_singleton] at hmem
+  rw [conjI, mem_span_singleton] at hmem
   obtain ⟨k, hk⟩ := hmem
   set e := d + Finsupp.single 2 1 with he_def
   have he0 : e 0 = d 0 := by simp [he_def, Finsupp.add_apply]
@@ -300,15 +300,15 @@ lemma coeff_f_vanish (f g : MvPowerSeries (Fin 3) ℂ)
   rw [hlhs, hrhs] at he
   exact he
 
-/-- The coefficient identity: when X₂f − X₁g ∈ conj_I, the "X₁=0 restriction" of f
+/-- The coefficient identity: when X₂f − X₁g ∈ conjI, the "X₁=0 restriction" of f
     is divisible by X₀², yielding f − X₁·(shift) = X₀²·(quotient).
     The proof uses three facts:
-    1. (f − X₁·shiftX1'_app f)(d) = f(d) when d₁=0, 0 when d₁≥1
-    2. (X₀²·divR'_app f)(d) = f(d) when d₀≥2 and d₁=0, 0 otherwise
+    1. (f − X₁·shiftX1'App f)(d) = f(d) when d₁=0, 0 when d₁≥1
+    2. (X₀²·divR'App f)(d) = f(d) when d₀≥2 and d₁=0, 0 otherwise
     3. f(d₀, 0, d₂) = 0 for d₀ < 2 (from the hypothesis, using coeff at d + single 2 1) -/
 lemma rest_eq_X0sq_divR (f g : MvPowerSeries (Fin 3) ℂ)
-    (hmem : X 2 * f - X 1 * g ∈ conj_I) :
-    f - X 1 * shiftX1'_app f = (X (0 : Fin 3)) ^ 2 * divR'_app f := by
+    (hmem : X 2 * f - X 1 * g ∈ conjI) :
+    f - X 1 * shiftX1'App f = (X (0 : Fin 3)) ^ 2 * divR'App f := by
   ext d
   rw [coeff_lhs, coeff_rhs]
   by_cases hd1 : d 1 = 0
@@ -320,14 +320,14 @@ lemma rest_eq_X0sq_divR (f g : MvPowerSeries (Fin 3) ℂ)
   · rw [if_neg hd1, if_neg (fun h => hd1 h.2)]
 
 lemma key_decomp'_app (f g : MvPowerSeries (Fin 3) ℂ)
-    (hmem : X 2 * f - X 1 * g ∈ conj_I) :
-    f - X 1 * (shiftX1'_app f + X 2 * divR'_app f) ∈ conj_I := by
+    (hmem : X 2 * f - X 1 * g ∈ conjI) :
+    f - X 1 * (shiftX1'App f + X 2 * divR'App f) ∈ conjI := by
   have h := rest_eq_X0sq_divR f g hmem
-  have heq : f - X 1 * (shiftX1'_app f + X 2 * divR'_app f) =
-    (X 0 ^ 2 - X 1 * X 2 : MvPowerSeries (Fin 3) ℂ) * divR'_app f := by
+  have heq : f - X 1 * (shiftX1'App f + X 2 * divR'App f) =
+    (X 0 ^ 2 - X 1 * X 2 : MvPowerSeries (Fin 3) ℂ) * divR'App f := by
     linear_combination h
-  rw [heq, conj_I, Ideal.mem_span_singleton]
-  exact ⟨divR'_app f, rfl⟩
+  rw [heq, conjI, Ideal.mem_span_singleton]
+  exact ⟨divR'App f, rfl⟩
 
 /-- T has depth ≥ 2: there exists a regular sequence of length 2 in M.
 Since T = ℂ[[x,y,z]]/(x²-yz) is Cohen-Macaulay of dimension 2,
@@ -336,7 +336,7 @@ theorem T_depth_ge_two :
     ∃ (a b : T), a ∈ IsLocalRing.maximalIdeal T ∧
       b ∈ IsLocalRing.maximalIdeal T ∧
       RingTheory.Sequence.IsRegular T [a, b] := by
-  refine ⟨Ideal.Quotient.mk conj_I (X 1), Ideal.Quotient.mk conj_I (X 2),
+  refine ⟨Ideal.Quotient.mk conjI (X 1), Ideal.Quotient.mk conjI (X 2),
     mk_mem_maxIdeal _ (by simp [MvPowerSeries.constantCoeff_X]),
     mk_mem_maxIdeal _ (by simp [MvPowerSeries.constantCoeff_X]), ?_⟩
   apply RingTheory.Sequence.IsRegular.of_isWeaklyRegular_of_mem_maximalIdeal
@@ -354,15 +354,15 @@ theorem T_depth_ge_two :
     obtain ⟨t, _, ht⟩ := hx
     obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective x
     obtain ⟨g, rfl⟩ := Ideal.Quotient.mk_surjective t
-    have hmem : X 2 * f - X 1 * g ∈ conj_I := by
-      have : Ideal.Quotient.mk conj_I (X 2 * f - X 1 * g) = 0 := by
+    have hmem : X 2 * f - X 1 * g ∈ conjI := by
+      have : Ideal.Quotient.mk conjI (X 2 * f - X 1 * g) = 0 := by
         simp only [map_sub, map_mul]
         exact sub_eq_zero.mpr ht.symm
       rwa [Ideal.Quotient.eq_zero_iff_mem] at this
-    refine ⟨Ideal.Quotient.mk conj_I (shiftX1'_app f + X 2 * divR'_app f), Submodule.mem_top, ?_⟩
-    change Ideal.Quotient.mk conj_I (X 1) *
-      Ideal.Quotient.mk conj_I (shiftX1'_app f + X 2 * divR'_app f) =
-      Ideal.Quotient.mk conj_I f
+    refine ⟨Ideal.Quotient.mk conjI (shiftX1'App f + X 2 * divR'App f), Submodule.mem_top, ?_⟩
+    change Ideal.Quotient.mk conjI (X 1) *
+      Ideal.Quotient.mk conjI (shiftX1'App f + X 2 * divR'App f) =
+      Ideal.Quotient.mk conjI f
     rw [← map_mul, eq_comm, ← sub_eq_zero, ← map_sub]
     exact Ideal.Quotient.eq_zero_iff_mem.mpr (key_decomp'_app f g hmem)
 
@@ -379,7 +379,7 @@ unit (constantCoeff = (n : ℂ) ≠ 0), and units map to units under
 the quotient map. -/
 theorem T_no_integer_zerodivisor
     (n : ℤ) (hn : n ≠ 0) : (algebraMap ℤ T n) ≠ 0 := by
-  change Ideal.Quotient.mk conj_I
+  change Ideal.Quotient.mk conjI
     (algebraMap ℤ (MvPowerSeries (Fin 3) ℂ) n) ≠ 0
   have hunit : IsUnit (algebraMap ℤ (MvPowerSeries (Fin 3) ℂ) n) := by
     rw [MvPowerSeries.isUnit_iff_constantCoeff]
@@ -388,7 +388,7 @@ theorem T_no_integer_zerodivisor
       simp [map_intCast]
     rw [this]
     exact isUnit_iff_ne_zero.mpr (Int.cast_ne_zero.mpr hn)
-  exact (hunit.map (Ideal.Quotient.mk conj_I)).ne_zero
+  exact (hunit.map (Ideal.Quotient.mk conjI)).ne_zero
 
 /-- All primes P ≠ M in T have height ≤ 1.
 Since ringKrullDim T = 2 and T is a local ring, height(M) = 2.
@@ -405,7 +405,7 @@ theorem T_prime_height_le_one (P : Ideal T) [hP : P.IsPrime]
     intro htop
     rw [htop, WithBot.coe_top] at hle
     exact absurd (top_le_iff.mp hle) (by decide)
-  have hstrict := Ideal.height_strict_mono_of_is_prime hlt
+  have hstrict := Ideal.height_strict_mono_of_isPrime hlt
   have hmaxht : (IsLocalRing.maximalIdeal T).height = 2 := by
     have h := IsLocalRing.maximalIdeal_height_eq_ringKrullDim (R := T)
     rw [T_ringKrullDim] at h

@@ -5,6 +5,12 @@ Authors: Monica Omar
 -/
 import Mathlib.Data.Matrix.Basic
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.Matrix.Cast
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.Matrix.Cast`.
+-/
+
 variable {R k : Type*} {s : k → Type _}
 
 theorem Matrix.cast_apply {i j : k} (x : Matrix (s i) (s i) R) (h : i = j) (p q : s j) :

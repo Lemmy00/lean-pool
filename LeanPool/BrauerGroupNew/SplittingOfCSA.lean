@@ -30,7 +30,7 @@ variable (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
 open scoped TensorProduct
 open RingCon
 
-instance module_over_over (A : CSA k) (I : TwoSidedIdeal A) :
+instance moduleOverOver (A : CSA k) (I : TwoSidedIdeal A) :
     Module k I := Module.compHom I (algebraMap k A)
 
 theorem is_simple_A [IsSimpleRing (K ⊗[k] A)] : IsSimpleRing A := IsSimpleRing.right_of_tensor k K A
@@ -125,12 +125,12 @@ theorem centralsimple_over_extension_iff
   · apply centralSimple_over_extension_iff_nontrivial
 
 /-- Scalar extension of a central simple algebra is again a central simple algebra. -/
-def extension_CSA (A : CSA k) : CSA K where
+def extensionCSA (A : CSA k) : CSA K where
   toAlgCat := .of K (K ⊗[k] A)
   fin_dim := Module.Finite.base_change k K A.carrier
 
 /-- Descend a central simple algebra structure from a finite scalar extension. -/
-def extension_inv [FiniteDimensional k A]
+def extensionInv [FiniteDimensional k A]
     [Algebra.IsCentral K (K ⊗[k] A)] [IsSimpleRing (K ⊗[k] A)]
     [FiniteDimensional K (K ⊗[k] A)]
     [FiniteDimensional k K] : CSA k where
@@ -170,9 +170,9 @@ theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
     haveI := hk_bar.1
     obtain ⟨n, hn, ⟨iso⟩⟩ := simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
     refine ⟨n, hn, ?_⟩
-    use lemma_tto.ℒℒ n k k_bar A iso
+    use lemmaTto.ℒℒ n k k_bar A iso
     have : NeZero n := ⟨hn⟩
-    exact ⟨_, _, inferInstance, ⟨lemma_tto.isoRestrict n k k_bar A iso⟩⟩
+    exact ⟨_, _, inferInstance, ⟨lemmaTto.isoRestrict n k k_bar A iso⟩⟩
   · rintro ⟨n, hn, L, _, _, _, ⟨iso⟩⟩
     have : NeZero n := ⟨hn⟩
     refine (centralsimple_over_extension_iff k A L).mpr <| ⟨iso.symm.isCentral, ⟨?_⟩⟩
@@ -216,7 +216,7 @@ def isSplit (L : Type u) [Field L] [Algebra k L] : Prop :=
   Nonempty (L ⊗[k] A ≃ₐ[L] Matrix (Fin n) (Fin n) L)
 
 /-- Any algebraic closure splits a central simple algebra. -/
-def split_by_alg_closure (A : CSA k) : split k A k_bar where
+def splitByAlgClosure (A : CSA k) : split k A k_bar where
   n := deg k k_bar A
   iso := by
     haveI := hk_bar.1
@@ -236,13 +236,13 @@ def split_by_alg_closure (A : CSA k) : split k A k_bar where
     exact iso'.trans e
 
 /-- Splitting is preserved after extending the splitting field. -/
-def extension_over_split (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algebra k L]
+def extensionOverSplit (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algebra k L]
     (hA : split k A L) [Algebra L L'] [Algebra k L'] [IsScalarTower k L L'] : split k A L' where
   n := deg k k_bar A
   iso := by
     obtain ⟨n, iso⟩ := hA
     let e1 : L' ⊗[k] A ≃ₐ[L] L' ⊗[L] (L ⊗[k] A) := {
-      __ := absorb_eqv k L L' A
+      __ := absorbEqv k L L' A
       commutes' _ := rfl
     }
     let e2 := e1.trans <| Algebra.TensorProduct.congr .refl iso
@@ -253,7 +253,7 @@ def extension_over_split (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algeb
           Algebra.algebraMap_self, RingHom.id_apply, Equiv.toFun_as_coe, EquivLike.coe_coe]
         simp only [AlgEquiv.toEquiv_eq_coe, AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply,
           AlgEquiv.refl_toAlgHom, e2, e1]
-        erw [absorb_eqv_apply, Algebra.TensorProduct.map_tmul]
+        erw [absorbEqv_apply, Algebra.TensorProduct.map_tmul]
         simp only [AlgHom.coe_id, id_eq, Algebra.TensorProduct.one_def.symm, map_one]
     }
     let e4 : L' ⊗[L] Matrix (Fin n) (Fin n) L ≃ₐ[L'] Matrix (Fin n) (Fin n) L' := {
@@ -278,13 +278,13 @@ def extension_over_split (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algeb
     exact (e3.trans e4).trans <| Matrix.reindexAlgEquiv L' _ (finCongr e5)
 
 /-- Splitting of an algebra is preserved after extending the splitting field. -/
-theorem extension_over_split' (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
+theorem extensionOverSplit' (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
     [IsAlgClosure k k_bar] (A : Type u) [Ring A] [IsSimpleRing A] [Algebra k A]
     [Algebra.IsCentral k A] [FiniteDimensional k A] (L L' : Type u) [Field L] [Field L']
     [Algebra k L] (hA : isSplit k A L) [Algebra L L'] [Algebra k L'] [IsScalarTower k L L'] :
     isSplit k A L' := by
   obtain ⟨n, hn, ⟨e⟩⟩ := hA
-  obtain ⟨n, e⟩ := extension_over_split k k_bar ⟨.of k A⟩ L L' ⟨n, e⟩
+  obtain ⟨n, e⟩ := extensionOverSplit k k_bar ⟨.of k A⟩ L L' ⟨n, e⟩
   let e5 : n = deg k k_bar ⟨.of k A⟩ := by
       have := deg_sq_eq_dim k k_bar ⟨.of k A⟩
       rw [pow_two] at this

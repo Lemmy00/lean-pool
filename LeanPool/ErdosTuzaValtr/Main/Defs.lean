@@ -9,6 +9,12 @@ import Mathlib.Data.Finset.Basic
 import LeanPool.ErdosTuzaValtr.Config.Default
 import LeanPool.ErdosTuzaValtr.Etv.Default
 
+/-!
+# LeanPool.ErdosTuzaValtr.Main.Defs
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Main.Defs`.
+-/
+
 noncomputable section
 
 variable {α : Type _} [LinearOrder α] (C : Config α)

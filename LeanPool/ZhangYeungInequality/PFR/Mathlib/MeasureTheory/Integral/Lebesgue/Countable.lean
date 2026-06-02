@@ -8,6 +8,13 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Integral.Lebesgue.Countable`.
+-/
+
 public section
 
 open ENNReal

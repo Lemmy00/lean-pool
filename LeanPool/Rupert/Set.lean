@@ -6,6 +6,12 @@ Authors: David Renshaw
 
 import LeanPool.Rupert.Basic
 
+/-!
+# LeanPool.Rupert.Set
+
+Imported Lean Pool material for `LeanPool.Rupert.Set`.
+-/
+
 open scoped Matrix
 
 /-- The Rupert Property for a pair of subsets X, Y of ℝ³. X has the
@@ -15,10 +21,10 @@ open scoped Matrix
     a subset of the interior of the other. This definition rules out
     trivial cases of a set fitting inside itself. -/
 def IsRupertPair (inner outer : Set ℝ³) : Prop :=
-   ∃ inner_rot ∈ SO3, ∃ inner_offset : ℝ², ∃ outer_rot ∈ SO3,
-   let inner_shadow := { inner_offset + proj_xy (inner_rot.toEuclideanLin p) | p ∈ inner }
-   let outer_shadow := { proj_xy (outer_rot.toEuclideanLin p) | p ∈  outer }
-   closure inner_shadow ⊆ interior outer_shadow
+   ∃ innerRot ∈ SO3, ∃ innerOffset : ℝ², ∃ outerRot ∈ SO3,
+   let inner_shadow := { innerOffset + projXy (innerRot.toEuclideanLin p) | p ∈ inner }
+   let outerShadow := { projXy (outerRot.toEuclideanLin p) | p ∈  outer }
+   closure inner_shadow ⊆ interior outerShadow
 
 /-- The Rupert Property for a subset S of ℝ³. S has the Rupert property if there
     are rotations and translations such that one 2-dimensional "shadow" of S can

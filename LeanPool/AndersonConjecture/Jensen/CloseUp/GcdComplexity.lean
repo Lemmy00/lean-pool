@@ -26,19 +26,19 @@ variable {T : Type*} [CommRing T] [IsLocalRing T] [IsNoetherianRing T] [IsDomain
 /-- "GCD complexity" of a finite set `s` in a UFD subring `R`: the sum over `x ∈ s`
 of the number of (normalized) irreducible factors of `x`. Used as a termination
 measure in the close-up construction. -/
-noncomputable def gcd_complexity {R : Subring T}
+noncomputable def gcdComplexity {R : Subring T}
     [UniqueFactorizationMonoid R] (s : Finset R) : ℕ :=
   @Finset.sum _ _ _ s fun x =>
     @Multiset.card _
       (@UniqueFactorizationMonoid.normalizedFactors
         R _ UniqueFactorizationMonoid.normalizationMonoid _ x)
 
-/-- `gcd_complexity` for a finite set in an N-subring, supplying the domain and
+/-- `gcdComplexity` for a finite set in an N-subring, supplying the domain and
 UFD instances from the N-subring structure. -/
-noncomputable def gcd_complexity_nsub (R : NSubring T) (s : Finset R.carrier) : ℕ :=
+noncomputable def gcdComplexityNsub (R : NSubring T) (s : Finset R.carrier) : ℕ :=
   haveI : IsDomain R.carrier := NSubring.isDomain R
   haveI : UniqueFactorizationMonoid R.carrier := R.isUFD
-  gcd_complexity s
+  gcdComplexity s
 
 lemma normalizedFactors_card_inclusion
     (R S₁ : NSubring T) (hAext : IsAExtension R S₁)
@@ -111,7 +111,6 @@ lemma span_eq_mul_span_image_div {R₀ : Type*} [CommRing R₀]
         rw [(hdiv_spec x hx).symm]
         exact Ideal.subset_span (Finset.mem_coe.mpr hx))
       (by
-         change p * 0 ∈ _
          rw [mul_zero]
          exact zero_mem _)
       (fun x y _ _ hx hy => by
@@ -150,7 +149,6 @@ lemma prime_mul_span_insert_le {R₀ : Type*} [CommRing R₀]
         exact Ideal.subset_span (Finset.mem_coe.mpr
           (Finset.mem_insert_of_mem hxo)))
     (by
-       change q' * 0 ∈ _
        rw [mul_zero]
        exact zero_mem _)
     (fun x y _ _ hx hy => by
@@ -233,17 +231,17 @@ lemma nzd_element_in_span_prime
   exact Ideal.mem_span_singleton.mp h_t_mem
 
 omit [IsLocalRing T] [IsNoetherianRing T] in
-lemma gcd_complexity_div_le {R₀ : Subring T}
-    [IsDomain R₀] [UniqueFactorizationMonoid R₀]
+lemma gcdComplexity_div_le {R₀ : Subring T}
+    [UniqueFactorizationMonoid R₀]
     [DecidableEq R₀]
     (q : R₀) (hq : Prime q) (s : Finset R₀)
     (_hq_dvd : ∀ x ∈ s, q ∣ x)
     (div_f : R₀ → R₀)
     (hdiv : ∀ x ∈ s, x = q * div_f x)
     (hinj : Set.InjOn div_f ↑s) :
-    gcd_complexity (s.image div_f) ≤ gcd_complexity s := by
+    gcdComplexity (s.image div_f) ≤ gcdComplexity s := by
   letI : NormalizationMonoid R₀ := UniqueFactorizationMonoid.normalizationMonoid
-  unfold gcd_complexity
+  unfold gcdComplexity
   rw [Finset.sum_image hinj]
   apply Finset.sum_le_sum
   intro x hx

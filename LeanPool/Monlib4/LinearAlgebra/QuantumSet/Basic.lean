@@ -126,15 +126,15 @@ class QuantumSet (A : Type _) [ha : starAlgebra A]
   /-- The index type of the fixed orthonormal basis. -/
   n : Type*
   /-- The fixed basis index type is finite. -/
-  n_isFintype : Fintype n
+  nIsFintype : Fintype n
   /-- The fixed basis index type has decidable equality. -/
-  n_isDecidableEq : DecidableEq n
+  nIsDecidableEq : DecidableEq n
   /-- A fixed orthonormal basis of the quantum set. -/
   onb : OrthonormalBasis n ℂ A
 
 attribute [instance] QuantumSet.toInnerProductAlgebra
-attribute [reducible, instance] QuantumSet.n_isFintype
-attribute [reducible, instance] QuantumSet.n_isDecidableEq
+attribute [reducible, instance] QuantumSet.nIsFintype
+attribute [reducible, instance] QuantumSet.nIsDecidableEq
 attribute [simp] QuantumSet.inner_star_left
 attribute [simp] QuantumSet.modAut_isSymmetric
 
@@ -224,8 +224,8 @@ noncomputable instance Complex.quantumSet : QuantumSet ℂ where
     simp_rw [RCLike.inner_apply, modAut, map_mul, RCLike.star_def, AlgEquiv.one_apply, mul_comm z]
     rw [mul_assoc, mul_comm]
   n := Fin 1
-  n_isFintype := Fin.fintype 1
-  n_isDecidableEq := inferInstance
+  nIsFintype := Fin.fintype 1
+  nIsDecidableEq := inferInstance
   onb := by
     refine (Module.Basis.singleton (Fin 1) ℂ).toOrthonormalBasis (orthonormal_iff_ite.mpr ?_)
     intro i j
@@ -287,7 +287,7 @@ theorem QuantumSet.modAut_isCoalgHom
 @[reducible, instance]
 noncomputable def QuantumSet.isFrobeniusAlgebra [QuantumSet A] :
     FrobeniusAlgebra ℂ A :=
-  FiniteDimensionalCoAlgebra_isFrobeniusAlgebra_of
+  FiniteDimensionalCoAlgebraIsFrobeniusAlgebraOf
     ⟨fun x => ha.modAut (-k A) (star x), fun x y z => inner_star_left x y z⟩
 
 variable {B : Type*} [hb : _root_.starAlgebra B]
@@ -370,7 +370,7 @@ namespace QuantumSet
 open scoped TensorProduct
 
 /-- The matrix-coordinate map used to identify linear maps with a tensor product. -/
-noncomputable def Psi_toFun [hA : QuantumSet A] [hB : QuantumSet B]
+noncomputable def PsiToFun [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) :
     (A →ₗ[ℂ] B) →ₗ[ℂ] (B ⊗[ℂ] Aᵐᵒᵖ) where
   toFun x :=
@@ -382,11 +382,11 @@ noncomputable def Psi_toFun [hA : QuantumSet A] [hB : QuantumSet B]
     simp_rw [_root_.map_smul, Matrix.smul_apply, smul_eq_mul, ← smul_smul, ← Finset.smul_sum,
       RingHom.id_apply]
 
-theorem Psi_toFun_apply [hA : QuantumSet A] [hB : QuantumSet B]
+theorem PsiToFun_apply [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) (b : A) (a : B) :
-    Psi_toFun t r (rankOne ℂ a b).toLinearMap =
+    PsiToFun t r (rankOne ℂ a b).toLinearMap =
       hb.modAut t a ⊗ₜ[ℂ] MulOpposite.op (star (ha.modAut r b)) := by
-  simp_rw [Psi_toFun, LinearMap.coe_mk, AddHom.coe_mk,
+  simp_rw [PsiToFun, LinearMap.coe_mk, AddHom.coe_mk,
     LinearMap.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
     OrthonormalBasis.repr_apply_apply,
     ContinuousLinearMap.coe_coe, rankOne_apply, inner_smul_right, OrthonormalBasis.coe_toBasis,
@@ -398,8 +398,8 @@ theorem Psi_toFun_apply [hA : QuantumSet A] [hB : QuantumSet B]
 
 local notation "|" a "⟩⟨" b "|" => @rankOne ℂ _ _ _ _ _ _ _ a b
 
-/-- The inverse coordinate map to `QuantumSet.Psi_toFun`. -/
-noncomputable def Psi_invFun [hA : QuantumSet A] [hB : QuantumSet B]
+/-- The inverse coordinate map to `QuantumSet.PsiToFun`. -/
+noncomputable def PsiInvFun [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) :
     (A ⊗[ℂ] Bᵐᵒᵖ) →ₗ[ℂ] (B →ₗ[ℂ] A) where
   toFun x :=
@@ -411,11 +411,11 @@ noncomputable def Psi_invFun [hA : QuantumSet A] [hB : QuantumSet B]
     simp_rw [_root_.map_smul, Finsupp.smul_apply, smul_eq_mul, ← smul_smul, ← Finset.smul_sum,
       RingHom.id_apply]
 
-theorem Psi_invFun_apply [hA : QuantumSet A] [hB : QuantumSet B]
+theorem PsiInvFun_apply [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) (x : A) (y : Bᵐᵒᵖ) :
-    Psi_invFun t r (x ⊗ₜ[ℂ] y) =
+    PsiInvFun t r (x ⊗ₜ[ℂ] y) =
       |ha.modAut (-t) x⟩⟨hb.modAut (-r) (star (MulOpposite.unop y))| := by
-  simp_rw [Psi_invFun, LinearMap.coe_mk, AddHom.coe_mk,
+  simp_rw [PsiInvFun, LinearMap.coe_mk, AddHom.coe_mk,
     Module.Basis.tensorProduct_repr_tmul_apply,
     smul_eq_mul, mul_comm,
     ← rankOne_lm_smul_smul, ← rankOne_lm_sum_sum, ←
@@ -424,18 +424,18 @@ theorem Psi_invFun_apply [hA : QuantumSet A] [hB : QuantumSet B]
 
 theorem Psi_left_inv [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) (x : B) (y : A) :
-    Psi_invFun (A := B) (B := A) t r (Psi_toFun t r |x⟩⟨y|) =
+    PsiInvFun (A := B) (B := A) t r (PsiToFun t r |x⟩⟨y|) =
       (|x⟩⟨y|).toLinearMap := by
-  simp_rw [Psi_toFun_apply, Psi_invFun_apply, MulOpposite.unop_op, star_star, modAut_apply_modAut,
+  simp_rw [PsiToFun_apply, PsiInvFun_apply, MulOpposite.unop_op, star_star, modAut_apply_modAut,
     neg_add_cancel, starAlgebra.modAut_zero]
   simp only [AlgEquiv.one_apply]
 
 theorem Psi_right_inv [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) (x : B) (y : Aᵐᵒᵖ) :
-    Psi_toFun (A := A) (B := B) t r
-        (Psi_invFun (A := B) (B := A) t r (x ⊗ₜ[ℂ] y)) =
+    PsiToFun (A := A) (B := B) t r
+        (PsiInvFun (A := B) (B := A) t r (x ⊗ₜ[ℂ] y)) =
       x ⊗ₜ[ℂ] y := by
-  rw [Psi_invFun_apply, Psi_toFun_apply]
+  rw [PsiInvFun_apply, PsiToFun_apply]
   simp_rw [modAut_apply_modAut, add_neg_cancel, starAlgebra.modAut_zero]
   simp only [AlgEquiv.one_apply, star_star, MulOpposite.op_unop]
 
@@ -443,8 +443,8 @@ theorem Psi_right_inv [hA : QuantumSet A] [hB : QuantumSet B]
 @[simps]
 noncomputable def Psi [hA : QuantumSet A] [hB : QuantumSet B]
     (t r : ℝ) : (A →ₗ[ℂ] B) ≃ₗ[ℂ] (B ⊗[ℂ] Aᵐᵒᵖ) where
-  toFun x := Psi_toFun t r x
-  invFun x := Psi_invFun (A := B) (B := A) t r x
+  toFun x := PsiToFun t r x
+  invFun x := PsiInvFun (A := B) (B := A) t r x
   left_inv x := by
     obtain ⟨α, β, rfl⟩ := LinearMap.exists_sum_rankOne x
     simp only [map_sum, Psi_left_inv]
@@ -798,7 +798,7 @@ theorem _root_.QuantumSet.starAlgEquiv_commutes_with_modAut_of_isometry'
 
 theorem QuantumSet.Psi_apply_one_one [QuantumSet A] [QuantumSet B] (t r : ℝ) :
     QuantumSet.Psi t r (rankOne ℂ (1 : B) (1 : A)) = (1 : B ⊗[ℂ] Aᵐᵒᵖ) := by
-  simp only [Psi_apply, Psi_toFun_apply, _root_.map_one,
+  simp only [Psi_apply, PsiToFun_apply, _root_.map_one,
     star_one, MulOpposite.op_one, Algebra.TensorProduct.one_def]
 
 theorem QuantumSet.Psi_symm_apply_one [QuantumSet A] [QuantumSet B] (t r : ℝ) :
@@ -806,7 +806,7 @@ theorem QuantumSet.Psi_symm_apply_one [QuantumSet A] [QuantumSet B] (t r : ℝ) 
   rw [← QuantumSet.Psi_apply_one_one t r, LinearEquiv.symm_apply_apply]
 
 /-- The `Psi` equivalence with tensor factors swapped back from the opposite space. -/
-@[simps!]
+@[simps! -isSimp]
 noncomputable abbrev Upsilon [QuantumSet A] [QuantumSet B] :
     (A →ₗ[ℂ] B) ≃ₗ[ℂ] (A ⊗[ℂ] B) :=
   (Psi 0 (k A + 1)).trans ((tenSwap ℂ).trans (LinearEquiv.lTensor _ (unop ℂ)))
@@ -847,7 +847,7 @@ theorem tenSwap_lTensor_comul_one_eq_Psi [QuantumSet A] [QuantumSet B] (f : A �
   intro x y
   rw [TensorProduct.inner_ext_iff']
   intro a b
-  simp only [LinearEquiv.coe_coe, Psi_apply, Psi_toFun_apply, tenSwap_Psi_aux_apply,
+  simp only [LinearEquiv.coe_coe, Psi_apply, PsiToFun_apply, tenSwap_Psi_aux_apply,
     starAlgebra.modAut_zero, AlgEquiv.one_apply]
   obtain ⟨α, β, h⟩ := TensorProduct.eq_span (Coalgebra.comul 1 : A ⊗[ℂ] A)
   rw [← h]
@@ -884,7 +884,7 @@ theorem map_op_comul_one_eq_Psi [QuantumSet A] [QuantumSet B] (f : A →ₗ[ℂ]
   intro x y
   rw [TensorProduct.inner_ext_iff']
   intro a b
-  simp only [LinearEquiv.coe_coe, Psi_apply, Psi_toFun_apply, map_op_comul_one_aux_apply,
+  simp only [LinearEquiv.coe_coe, Psi_apply, PsiToFun_apply, map_op_comul_one_aux_apply,
     starAlgebra.modAut_zero, AlgEquiv.one_apply]
   obtain ⟨α, β, h⟩ := TensorProduct.eq_span (Coalgebra.comul 1 : A ⊗[ℂ] A)
   rw [← h]
@@ -925,7 +925,7 @@ theorem Psi_inv_comp_swap_lTensor_op_comp_comul_eq_rmul [QuantumSet A] :
   obtain ⟨α, β, h⟩ := TensorProduct.eq_span (Coalgebra.comul x : A ⊗[ℂ] A)
   rw [← h]
   simp_rw [map_sum, LinearMap.sum_apply, inner_sum, LinearMap.lTensor_tmul,
-    LinearEquiv.coe_toLinearMap, op_apply, tenSwap_apply', Psi_invFun_apply,
+    LinearEquiv.coe_toLinearMap, op_apply, tenSwap_apply', PsiInvFun_apply,
     ContinuousLinearMap.coe_coe, rankOne_apply, neg_zero, starAlgebra.modAut_zero,
     AlgEquiv.one_apply, MulOpposite.unop_op, inner_smul_right, neg_add,
     ← inner_conj_symm _ y, ← sub_eq_add_neg, ← QuantumSet.inner_modAut_right_conj,
@@ -959,7 +959,7 @@ private lemma rmulMapLmul_apply_Upsilon_aux_apply [QuantumSet A] [QuantumSet B]
 
 lemma Upsilon_rankOne [QuantumSet A] [QuantumSet B] (a : A) (b : B) :
     Upsilon (rankOne ℂ a b).toLinearMap = (modAut (-k B - 1) (star b)) ⊗ₜ[ℂ] a := by
-  rw [Upsilon_apply, QuantumSet.Psi_toFun_apply, TensorProduct.comm_tmul,
+  rw [Upsilon_apply, QuantumSet.PsiToFun_apply, TensorProduct.comm_tmul,
     TensorProduct.map_tmul, LinearEquiv.lTensor_tmul, starAlgebra.modAut_star,
     starAlgebra.modAut_zero]
   ring_nf
@@ -971,7 +971,7 @@ lemma Upsilon_symm_tmul [QuantumSet A] [QuantumSet B] (a : A) (b : B) :
   rw [Upsilon_symm_apply]
   simp only [LinearEquiv.lTensor_symm_tmul, LinearEquiv.symm_symm, op_apply,
     TensorProduct.map_tmul, LinearEquiv.coe_coe, unop_apply, MulOpposite.unop_op,
-    TensorProduct.comm_tmul, QuantumSet.Psi_invFun_apply, starAlgebra.modAut_zero, neg_zero]
+    TensorProduct.comm_tmul, QuantumSet.PsiInvFun_apply, starAlgebra.modAut_zero, neg_zero]
   ring_nf
   rfl
 
@@ -994,7 +994,7 @@ lemma rmulMapLmul_apply_Upsilon_eq [QuantumSet A] [QuantumSet B] (x : A →ₗ[�
   obtain ⟨α, β, h⟩ := TensorProduct.eq_span (Coalgebra.comul a : A ⊗[ℂ] A)
   simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
     Psi_apply, LinearEquiv.TensorProduct.map_apply, LinearMap.rTensor_tmul,
-    Psi_toFun_apply, TensorProduct.comm_tmul,
+    PsiToFun_apply, TensorProduct.comm_tmul,
     TensorProduct.map_tmul, ← h, map_sum, TensorProduct.sum_tmul,
     map_sum, sum_inner]
   simp only [LinearMap.lTensor_tmul, ContinuousLinearMap.coe_coe, rankOne_apply_apply_apply,

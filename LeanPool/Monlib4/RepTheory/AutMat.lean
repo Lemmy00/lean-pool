@@ -371,7 +371,7 @@ def IsInner {R E : Type*} [CommSemiring R] [Semiring E]
 
 /-- Product of algebra equivalences, acting componentwise on a product algebra. -/
 @[simps]
-def prod_map {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
+def prodMap {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
     [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
     [Algebra K R₁] [Algebra K R₂] [Algebra K R₃] [Algebra K R₄]
     (f : R₁ ≃ₐ[K] R₂) (g : R₃ ≃ₐ[K] R₄) :
@@ -449,7 +449,7 @@ def OrderedPiMat (R k : Type*) (t n : k → Type*)
   let _ := h
   Π i : k, Π _ : t i, Mat R (n i)
 
-instance Prod.invertible_fst {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
+instance Prod.invertibleFst {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
     {a : R₁ × R₂} [ha : Invertible a] :
     Invertible a.1 := by
   use (⅟ a).1
@@ -459,7 +459,7 @@ instance Prod.invertible_fst {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
     rw [Prod.mul_def, Prod.mk_eq_one] at this
     simp_rw [this]
 
-instance Prod.invertible_snd {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
+instance Prod.invertibleSnd {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
     {a : R₁ × R₂} [ha : Invertible a] :
     Invertible a.2 := by
   use (⅟ a).2
@@ -474,7 +474,7 @@ instance Prod.invertible {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
     Invertible (a, b) :=
   ⟨(⅟ a, ⅟ b), by simp, by simp⟩
 
-instance Pi.invertible_i {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+instance Pi.invertibleI {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     {a : ∀ i, R i} [ha : Invertible a] (i : ι) :
     Invertible (a i) := by
   use (⅟ a) i
@@ -493,12 +493,12 @@ instance Pi.invertible {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
 
 namespace AlgEquiv
 
-theorem prod_isInner_iff_prod_map {K R₁ R₂ : Type*} [CommSemiring K]
+theorem prod_isInner_iff_prodMap {K R₁ R₂ : Type*} [CommSemiring K]
     [Semiring R₁] [Semiring R₂] [Algebra K R₁] [Algebra K R₂]
     (f : (R₁ × R₂) ≃ₐ[K] (R₁ × R₂)) :
     AlgEquiv.IsInner f ↔
       ∃ (a : R₁) (_ha : Invertible a) (b : R₂) (_hb : Invertible b),
-        f = AlgEquiv.prod_map (Algebra.autInner a) (Algebra.autInner b) := by
+        f = AlgEquiv.prodMap (Algebra.autInner a) (Algebra.autInner b) := by
   constructor
   · rintro ⟨a, _ha, h⟩
     use a.1, by infer_instance, a.2, by infer_instance
@@ -603,7 +603,7 @@ lemma PiMat.center {R ι : Type*} [CommSemiring R] {n : ι → Type*}
   Matrix.pi_center
 
 omit [Fintype n] in
-private theorem matrix.one_ne_zero {R : Type _} [Semiring R] [One R] [Zero R]
+private theorem matrix.one_ne_zero {R : Type _} [Semiring R]
     [NeZero (1 : R)] [DecidableEq n] [hn : Nonempty n] :
     (1 : Matrix n n R) ≠ 0 := by
   simp_rw [ne_eq, ← Matrix.eq_zero, Matrix.one_apply, ite_eq_right_iff, _root_.one_ne_zero,
@@ -816,7 +816,7 @@ theorem Fin.fintwo_of_neZero {i : Fin 2} (hi : i ≠ 0) : i = 1 := by
     one_ne_zero, not_false_eq_true, and_self]
 
 /-- Split a nonempty finite dependent product of matrix algebras into its head and tail. -/
-def matrixPiFin_algEquiv_PiFinTwo {𝕜 : Type*} [CommSemiring 𝕜]
+def matrixPiFinAlgEquivPiFinTwo {𝕜 : Type*} [CommSemiring 𝕜]
     {k : ℕ} {n : Fin (k + 1) → Type*}
     [∀ i, Fintype (n i)] [∀ i, DecidableEq (n i)] :
     (Π i : Fin (k + 1), Mat 𝕜 (n i)) ≃ₐ[𝕜]
@@ -840,18 +840,18 @@ def matrixPiFin_algEquiv_PiFinTwo {𝕜 : Type*} [CommSemiring 𝕜]
   map_mul' _ _ := by rfl
   commutes' _ := by rfl
 
-theorem matrixPiFin_algEquiv_PiFinTwo_apply {𝕜 : Type*} [CommSemiring 𝕜]
+theorem matrixPiFinAlgEquivPiFinTwo_apply {𝕜 : Type*} [CommSemiring 𝕜]
     {k : ℕ} {n : Fin (k + 1) → Type*}
     [∀ i, Fintype (n i)] [∀ i, DecidableEq (n i)]
     (x : Π i : Fin (k + 1), Mat 𝕜 (n i)) :
-    matrixPiFin_algEquiv_PiFinTwo x = (x 0, fun j : Fin k => x j.succ) :=
+    matrixPiFinAlgEquivPiFinTwo x = (x 0, fun j : Fin k => x j.succ) :=
   rfl
 
-theorem matrixPiFin_algEquiv_PiFinTwo_symm_apply {𝕜 : Type*} [CommSemiring 𝕜]
+theorem matrixPiFinAlgEquivPiFinTwo_symm_apply {𝕜 : Type*} [CommSemiring 𝕜]
     {k : ℕ} {n : Fin (k + 1) → Type*}
     [∀ i, Fintype (n i)] [∀ i, DecidableEq (n i)]
     (x : Mat 𝕜 (n 0) × (Π j : Fin k, Mat 𝕜 (n j.succ))) (i : Fin (k + 1)) :
-    matrixPiFin_algEquiv_PiFinTwo.symm x i =
+    matrixPiFinAlgEquivPiFinTwo.symm x i =
       if h : i = 0 then fun a b => x.1 (by rw [← h]; exact a) (by rw [← h]; exact b)
       else by
         rw [← Fin.succ_pred i h]
@@ -862,7 +862,7 @@ theorem matrixPiFin_algEquiv_PiFinTwo_symm_apply {𝕜 : Type*} [CommSemiring �
   aesop
 
 /-- Identify a two-term dependent product of matrix algebras with a binary product. -/
-def matrixPiFinTwo_algEquiv_prod {𝕜 : Type*} [CommSemiring 𝕜]
+def matrixPiFinTwoAlgEquivProd {𝕜 : Type*} [CommSemiring 𝕜]
     {n : Fin 2 → Type*} [∀ i, Fintype (n i)] [∀ i, DecidableEq (n i)] :
     (Π i : Fin 2, Mat 𝕜 (n i)) ≃ₐ[𝕜]
       (Mat 𝕜 (n 0) × Mat 𝕜 (n 1)) where
@@ -889,17 +889,17 @@ def matrixPiFinTwo_algEquiv_prod {𝕜 : Type*} [CommSemiring 𝕜]
     rfl
 
 @[simp]
-theorem matrixPiFinTwo_algEquiv_prod_apply {𝕜 : Type*} [CommSemiring 𝕜]
+theorem matrixPiFinTwoAlgEquivProd_apply {𝕜 : Type*} [CommSemiring 𝕜]
     {n : Fin 2 → Type*} [∀ i, Fintype (n i)] [∀ i, DecidableEq (n i)]
     (x : Π i : Fin 2, Mat 𝕜 (n i)) :
-    matrixPiFinTwo_algEquiv_prod x = (x 0, x 1) :=
+    matrixPiFinTwoAlgEquivProd x = (x 0, x 1) :=
   rfl
 
 @[simp]
-theorem matrixPiFinTwo_algEquiv_prod_symm_apply {𝕜 : Type*} [CommSemiring 𝕜]
+theorem matrixPiFinTwoAlgEquivProd_symm_apply {𝕜 : Type*} [CommSemiring 𝕜]
     {n : Fin 2 → Type*} [∀ i, Fintype (n i)] [∀ i, DecidableEq (n i)]
     (x : Mat 𝕜 (n 0) × Mat 𝕜 (n 1)) (i : Fin 2) :
-    matrixPiFinTwo_algEquiv_prod.symm x i =
+    matrixPiFinTwoAlgEquivProd.symm x i =
       if h : i = 0 then fun a b =>
         x.1 (by rw [← h]; exact a) (by rw [← h]; exact b)
       else fun a b => x.2 (by rw [← Fin.fintwo_of_neZero h]; exact a)
@@ -915,28 +915,28 @@ theorem matrixPiFinTwo_algAut_apply_piSingle {𝕜 : Type*} [Field 𝕜]
       (Π i : Fin 2, Mat 𝕜 (n i))) :
     ∃ σ : Equiv.Perm (Fin 2),
       ∀ i, f (Pi.single (σ i) 1) = Pi.single i 1 := by
-  let f' := matrixPiFinTwo_algEquiv_prod.symm.trans
-    (f.trans matrixPiFinTwo_algEquiv_prod)
+  let f' := matrixPiFinTwoAlgEquivProd.symm.trans
+    (f.trans matrixPiFinTwoAlgEquivProd)
   have this1 :
-      matrixPiFinTwo_algEquiv_prod.symm
+      matrixPiFinTwoAlgEquivProd.symm
         ((1 : Matrix (n 0) (n 0) 𝕜), (0 : Matrix (n 1) (n 1) 𝕜)) =
         Pi.single 0 1 := by
     refine funext ?h
-    rw [Fin.forall_fin_two, matrixPiFinTwo_algEquiv_prod_symm_apply]
+    rw [Fin.forall_fin_two, matrixPiFinTwoAlgEquivProd_symm_apply]
     simp only [Fin.isValue]
     simp only [↓reduceDIte, Pi.single_eq_same,
-      matrixPiFinTwo_algEquiv_prod_symm_apply, Fin.isValue, one_ne_zero,
+      matrixPiFinTwoAlgEquivProd_symm_apply, Fin.isValue, one_ne_zero,
       ne_eq, not_false_eq_true, Pi.single_eq_of_ne]
     trivial
   have this2 :
-      matrixPiFinTwo_algEquiv_prod.symm
+      matrixPiFinTwoAlgEquivProd.symm
         ((0 : Matrix (n 0) (n 0) 𝕜), (1 : Matrix (n 1) (n 1) 𝕜)) =
         Pi.single 1 1 := by
     refine funext ?_
-    rw [Fin.forall_fin_two, matrixPiFinTwo_algEquiv_prod_symm_apply]
+    rw [Fin.forall_fin_two, matrixPiFinTwoAlgEquivProd_symm_apply]
     simp only [Fin.isValue]
     simp only [↓reduceDIte, Pi.single_eq_same,
-      matrixPiFinTwo_algEquiv_prod_symm_apply, Fin.isValue, one_ne_zero]
+      matrixPiFinTwoAlgEquivProd_symm_apply, Fin.isValue, one_ne_zero]
     trivial
   obtain (⟨h1, h2⟩ | ⟨h1, h2⟩) := f'.matrix_prod_aut
   · simp_rw [f', AlgEquiv.trans_apply, this1, this2, @eq_comm _ _] at h1 h2
@@ -951,8 +951,8 @@ theorem matrixPiFinTwo_algAut_apply_piSingle {𝕜 : Type*} [Field 𝕜]
     use Equiv.swap 0 1
     rw [Fin.forall_fin_two]
     constructor
-    · simpa [Equiv.swap_apply_def] using h2.symm
-    · simpa [Equiv.swap_apply_def] using h1.symm
+    · exact h2.symm
+    · exact h1.symm
 
 theorem Algebra.prod_one_zero_mul {R₁ R₂ : Type*} [Semiring R₁]
     [Semiring R₂] (a : R₁ × R₂) :
@@ -968,7 +968,7 @@ namespace AlgEquiv
 
 /-- Extract the first component of a product algebra equivalence that fixes
 `(1, 0)`. -/
-def of_prod_map₁₁ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
+def ofProdMap₁₁ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
     [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
     [Algebra K R₁] [Algebra K R₂] [Algebra K R₃] [Algebra K R₄]
     (f : (R₁ × R₂) ≃ₐ[K] (R₃ × R₄))
@@ -1006,7 +1006,7 @@ def of_prod_map₁₁ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
 
 /-- Extract the second component of a product algebra equivalence that fixes
 `(0, 1)`. -/
-def of_prod_map₂₂ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
+def ofProdMap₂₂ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
     [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
     [Algebra K R₁] [Algebra K R₂] [Algebra K R₃] [Algebra K R₄]
     (f : (R₁ × R₂) ≃ₐ[K] (R₃ × R₄))
@@ -1044,7 +1044,7 @@ def of_prod_map₂₂ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
 
 /-- Extract the off-diagonal component of a product algebra equivalence that
 sends `(1, 0)` to `(0, 1)`. -/
-def of_prod_map₁₂ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
+def ofProdMap₁₂ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
     [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
     [Algebra K R₁] [Algebra K R₂] [Algebra K R₃] [Algebra K R₄]
     (f : (R₁ × R₂) ≃ₐ[K] (R₃ × R₄))
@@ -1079,7 +1079,7 @@ def of_prod_map₁₂ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
 
 /-- Extract the off-diagonal component of a product algebra equivalence that
 sends `(0, 1)` to `(1, 0)`. -/
-def of_prod_map₂₁ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
+def ofProdMap₂₁ {K R₁ R₂ R₃ R₄ : Type*} [CommSemiring K]
     [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
     [Algebra K R₁] [Algebra K R₂] [Algebra K R₃] [Algebra K R₄]
     (f : (R₁ × R₂) ≃ₐ[K] (R₃ × R₄))
@@ -1120,20 +1120,20 @@ theorem AlgEquiv.matrix_prod_aut' {𝕜 n m : Type*} [Field 𝕜] [Fintype n]
       (Matrix n n 𝕜 × Matrix m m 𝕜)) :
     (∃ (f₁ : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜)
         (f₂ : Matrix m m 𝕜 ≃ₐ[𝕜] Matrix m m 𝕜),
-      f = AlgEquiv.prod_map f₁ f₂)
+      f = AlgEquiv.prodMap f₁ f₂)
     ∨
     (∃ (g₁ : Matrix m m 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜)
         (g₂ : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix m m 𝕜),
-      f = g₁.prod_map g₂ ∘ Prod.swap) := by
+      f = g₁.prodMap g₂ ∘ Prod.swap) := by
   rcases AlgEquiv.matrix_prod_aut f with (h | h)
   · left
     let f₁ : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜 :=
-      AlgEquiv.of_prod_map₁₁ f h.1
+      AlgEquiv.ofProdMap₁₁ f h.1
     let f₂ : Matrix m m 𝕜 ≃ₐ[𝕜] Matrix m m 𝕜 :=
-      AlgEquiv.of_prod_map₂₂ f h.2
+      AlgEquiv.ofProdMap₂₂ f h.2
     use f₁, f₂
     ext1 x
-    simp_rw [AlgEquiv.prod_map_apply, Prod.map_apply']
+    simp_rw [AlgEquiv.prodMap_apply, Prod.map_apply']
     calc
       f x = f (x.1, 0) + f (0, x.2) := by
         rw [← map_add, Prod.fst_add_snd]
@@ -1149,12 +1149,12 @@ theorem AlgEquiv.matrix_prod_aut' {𝕜 n m : Type*} [Field 𝕜] [Fintype n]
         simp only [Prod.mk_add_mk, add_zero, zero_add]
   · right
     let g₁ : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix m m 𝕜 :=
-      AlgEquiv.of_prod_map₁₂ f h.1
+      AlgEquiv.ofProdMap₁₂ f h.1
     let g₂ : Matrix m m 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜 :=
-      AlgEquiv.of_prod_map₂₁ f h.2
+      AlgEquiv.ofProdMap₂₁ f h.2
     use g₂, g₁
     ext1 x
-    simp_rw [Function.comp_apply, Prod.swap, AlgEquiv.prod_map_apply,
+    simp_rw [Function.comp_apply, Prod.swap, AlgEquiv.prodMap_apply,
       Prod.map_apply]
     calc
       f x = f (0, x.2) + f (x.1, 0) := by
@@ -1177,7 +1177,7 @@ theorem AlgEquiv.matrix_fintype_card_eq_of {𝕜 n m : Type*} [Field 𝕜]
         (Matrix n n 𝕜 × Matrix m m 𝕜)}
     (hf : f (0, 1) = (1, 0)) :
     Fintype.card n = Fintype.card m := by
-  let f' := AlgEquiv.of_prod_map₂₁ f hf
+  let f' := AlgEquiv.ofProdMap₂₁ f hf
   have := LinearEquiv.finrank_eq f'.toLinearEquiv
   simp only [Module.finrank_matrix, ← pow_two, Module.finrank_self, mul_one,
     zero_le, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀] at this

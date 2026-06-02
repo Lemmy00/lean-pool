@@ -8,6 +8,12 @@ import LeanPool.QuasiBorelSpaces.RoseTree.Defs
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Control.Traversable.Instances
 
+/-!
+# LeanPool.QuasiBorelSpaces.RoseTree.Basic
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.RoseTree.Basic`.
+-/
+
 
 universe u
 

@@ -7,6 +7,12 @@ Authors: Alex J. Best
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Common
 
+/-!
+# LeanPool.EcTateLean.Init.Data.Int.Lemmas
+
+Imported Lean Pool material for `LeanPool.EcTateLean.Init.Data.Int.Lemmas`.
+-/
+
 lemma mod_neg_right (m k : Int) : m % (-k) = m % k := by simp
 -- lemma div_neg_left (m k : Int) : (-m) / k = -(m / k) := by simp
 lemma div_neg_right (m k : Int) : m / (-k) = -(m / k) := by simp

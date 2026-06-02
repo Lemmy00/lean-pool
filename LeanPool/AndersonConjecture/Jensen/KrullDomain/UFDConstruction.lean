@@ -575,7 +575,7 @@ private def build_ufd_proof_proof
       rw [← hq'_eq]
       exact Q.mul_mem_right _ hq'Q
     have hr_in_P : r ∈ P := by
-      have := IsLocalization.comap_map_of_isPrime_disjoint
+      have := IsLocalization.under_map_of_isPrime_disjoint
         (Submonoid.powers s) (Localization.Away s) hP_prime hdisj
       rw [← this]
       exact Ideal.mem_comap.mpr hr_in_Q
@@ -839,7 +839,7 @@ omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
 every prime element of R maps to a prime element of S_sub. -/
 include T in theorem build_primes_preserved
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
-    (S_sub : Subring T) [IsDomain S_sub] [IsLocalRing S_sub] [UniqueFactorizationMonoid S_sub]
+    (S_sub : Subring T) [IsLocalRing S_sub] [UniqueFactorizationMonoid S_sub]
     (hR_le : R.carrier ≤ S_sub)
     (hx₁_trans : Transcendental R.carrier x₁)
     (hx₂_trans : Transcendental R.carrier x₂)

@@ -106,7 +106,9 @@ private lemma mutualInfo_pair_swap_right
     (hX : Measurable X) (hY : Measurable Y) (hZ : Measurable Z)
     (μ : Measure Ω) [IsProbabilityMeasure μ] :
     I[X : ⟨Y, Z⟩; μ] = I[X : ⟨Z, Y⟩; μ] := by
-  simpa using (mutualInfo_comp_right_of_injective hX (hY.prodMk hZ) μ
+  change I[X : fun a => (Y a, Z a); μ] =
+    I[X : Prod.swap ∘ (fun a => (Y a, Z a)); μ]
+  exact (mutualInfo_comp_right_of_injective hX (hY.prodMk hZ) μ
     (f := Prod.swap) Prod.swap_injective).symm
 
 /-- Measurability of the `(tuple, (z, u)) ↦ (z, u)` projection. -/
@@ -336,9 +338,9 @@ theorem _root_.ZhangYeung.theorem5
   have hCondProj :
       CondIndepFun (X' i) (fun ω' => fun k : Fin n => XstarCoord k ω') (fun ω' => (Z' ω',
         U' ω')) ν := by
-    simpa [X', XstarCoord, Z', U'] using
-      (ZhangYeung.condIndepFun_comp (φ := fun x => x i) (ψ := id)
-        (measurable_pi_apply i) measurable_id hCond)
+    change CondIndepFun ((fun x => x i) ∘ Xprime) Xstar V ν
+    exact (ZhangYeung.condIndepFun_comp (φ := fun x => x i) (ψ := id)
+      (measurable_pi_apply i) measurable_id hCond)
   have hDP :
       I[X' i : (fun ω' => fun k : Fin n => XstarCoord k ω'); ν]
         ≤ I[X' i : (fun ω' => (Z' ω', U' ω')); ν] :=
@@ -354,7 +356,7 @@ theorem _root_.ZhangYeung.theorem5
   have hTupleSecond :
       IdentDistrib (fun ω' => fun k : Fin n => XstarCoord k ω') (fun ω => fun k :
         Fin n => X k ω) ν μ := by
-    simpa [Xtuple, XstarCoord] using (hSecond.comp measurable_fst)
+    exact hSecond.comp measurable_fst
   have hMargJoint :
       H[(fun ω' => fun k : Fin n => XstarCoord k ω'); ν] =
         H[(fun ω : Ω => fun k : Fin n => X k ω); μ] :=
@@ -362,7 +364,7 @@ theorem _root_.ZhangYeung.theorem5
   have hMargSingle : ∀ k : Fin n, H[XstarCoord k; ν] = H[X k; μ] := by
     intro k
     have hCoord : IdentDistrib (XstarCoord k) (X k) ν μ := by
-      simpa [Xtuple, XstarCoord] using (hTupleSecond.comp (measurable_pi_apply k))
+      exact hTupleSecond.comp (measurable_pi_apply k)
     exact hCoord.entropy_congr
   have hMargSingles : ∑ k : Fin n, H[XstarCoord k; ν] = ∑ k : Fin n, H[X k; μ] := by
     refine Finset.sum_congr rfl ?_

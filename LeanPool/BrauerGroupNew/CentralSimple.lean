@@ -55,7 +55,8 @@ variable (D : Type v) [Ring D] [Algebra K D]
 \end{proof}
 -/
 open scoped TensorProduct
-instance (B : Type*) [Ring B] [Algebra K B] : Algebra K (Subring.center B) :=
+instance instAlgebraSubtypeMemSubringCenterLeanPool (B : Type*) [Ring B] [Algebra K B] :
+    Algebra K (Subring.center B) :=
   RingHom.toAlgebra <| (algebraMap K B).codRestrict _ fun x ↦ by
     rw [Subring.mem_center_iff]
     exact fun y ↦ Algebra.commutes x y |>.symm
@@ -479,7 +480,6 @@ lemma _root_.IsCentralSimple.TensorProduct.map_comap_le_span_of_isSimple_isCentr
       specialize LI s (fun i =>
         if i = i₀ then 1
         else if h : i ∈ s.erase i₀ then k i h else 0) (by
-        dsimp only
         simp_rw [ite_smul, one_smul, dite_smul, zero_smul]
         rw [Finset.sum_ite,
           show ∑ x ∈ Finset.filter (fun x ↦ x = i₀) s, 𝒜 x = ∑ x ∈ {i₀}, 𝒜 x by
@@ -612,10 +612,10 @@ theorem CSA_implies_CSA (K : Type*) (B : Type*) [Field K] [Ring B] [Algebra K B]
       ext i j
       simp only [Matrix.diagonal_apply, Matrix.smul_apply, Matrix.one_apply, smul_ite, smul_zero]
       split_ifs
-      · change _ = d • (1 : D)
-        simp only [smul_eq_mul, mul_one]
+      · change d = (⟨d, hd⟩ : Subalgebra.center K D).1 * (1 : D)
+        simp
       · rfl)
   refine ⟨k, ?_⟩
   apply_fun (· 0 0) at hk
-  simpa using hk
+  simpa [Matrix.algebraMap_matrix_apply] using hk
 end CSA_implies_CSA

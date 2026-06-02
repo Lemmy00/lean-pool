@@ -8,6 +8,12 @@ import Mathlib.Probability.CDF
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Measure
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Quantile
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Quantile`.
+-/
+
 
 namespace MeasureTheory
 
@@ -71,8 +77,7 @@ private lemma measurable_cdf
   apply Measurable.subtype_mk
   apply Measurable.ennreal_toReal
   apply Measure.measurable_apply
-  · change ProbabilityTheory.IsSFiniteKernel ⟨μ, hμ⟩
-    infer_instance
+  · infer_instance
   · simp only [Set.mem_Iic]
     fun_prop
 

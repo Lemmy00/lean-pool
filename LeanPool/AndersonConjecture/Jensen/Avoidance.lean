@@ -25,7 +25,7 @@ noncomputable section
 
 open Cardinal Ideal Set Pointwise
 
--- Classical decidability is used pervasively (`dite` in `avoid_step`, `by_cases`, etc.).
+-- Classical decidability is used pervasively (`dite` in `avoidStep`, `by_cases`, etc.).
 attribute [local instance 20] Classical.propDecidable
 
 variable {T : Type*} [CommRing T] [IsLocalRing T]
@@ -128,7 +128,7 @@ lemma mem_of_mem_sup_pow [IsNoetherianRing T]
 /-- Step function for the Cauchy sequence construction.
 Given current value `u` and precision level `q`, produces `(u', q')` that avoids
 `P + {r}` with separation at level `q'`. -/
-def avoid_step [IsNoetherianRing T]
+def avoidStep [IsNoetherianRing T]
     (I P : Ideal T) (hP : P.IsPrime) (hP_ne : P ≠ IsLocalRing.maximalIdeal T)
     (r : T) (ea : ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P)
     (u : T) (q : ℕ) : T × ℕ :=
@@ -140,8 +140,8 @@ def avoid_step [IsNoetherianRing T]
   else
     (u, max (q + 1) (separation_for_translate P hP hP_ne u r hmem).choose)
 
-/-- Build the Cauchy sequence `(u_n, q_n)` by iterating `avoid_step`. -/
-def build_seq [IsNoetherianRing T]
+/-- Build the Cauchy sequence `(u_n, q_n)` by iterating `avoidStep`. -/
+def buildSeq [IsNoetherianRing T]
     (I : Ideal T)
     {C : Set (Ideal T)} (hC_prime : ∀ P ∈ C, P.IsPrime)
     (hC_ne_max : ∀ P ∈ C, P ≠ IsLocalRing.maximalIdeal T)
@@ -150,24 +150,24 @@ def build_seq [IsNoetherianRing T]
     : ℕ → T × ℕ
   | 0 => (0, 0)
   | n + 1 =>
-    let prev := build_seq I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
-    avoid_step I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
+    let prev := buildSeq I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
+    avoidStep I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
       (r_of n) (exists_avoid _ (hP_mem n)) prev.1 prev.2
 
--- Properties of avoid_step
-lemma avoid_step_q_inc [IsNoetherianRing T]
+-- Properties of avoidStep
+lemma avoidStep_q_inc [IsNoetherianRing T]
     (I P : Ideal T) (hP : P.IsPrime) (hP_ne : P ≠ IsLocalRing.maximalIdeal T)
     (r : T) (ea : ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P) (u : T) (q : ℕ) :
-    (avoid_step I P hP hP_ne r ea u q).2 ≥ q + 1 := by
-  unfold avoid_step
+    (avoidStep I P hP hP_ne r ea u q).2 ≥ q + 1 := by
+  unfold avoidStep
   split <;> exact le_max_left _ _
 
-lemma avoid_step_diff [IsNoetherianRing T]
+lemma avoidStep_diff [IsNoetherianRing T]
     (I P : Ideal T) (hP : P.IsPrime) (hP_ne : P ≠ IsLocalRing.maximalIdeal T)
     (r : T) (ea : ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P) (u : T) (q : ℕ) :
-    (avoid_step I P hP hP_ne r ea u q).1 - u ∈
+    (avoidStep I P hP hP_ne r ea u q).1 - u ∈
       I * IsLocalRing.maximalIdeal T ^ q := by
-  simp only [avoid_step]
+  simp only [avoidStep]
   split
   · dsimp
     rw [show u + (ea q).choose - u = (ea q).choose from by ring]
@@ -175,21 +175,21 @@ lemma avoid_step_diff [IsNoetherianRing T]
   · dsimp
     simp [(I * IsLocalRing.maximalIdeal T ^ q).zero_mem]
 
-lemma avoid_step_avoids [IsNoetherianRing T]
+lemma avoidStep_avoids [IsNoetherianRing T]
     (I P : Ideal T) (hP : P.IsPrime) (hP_ne : P ≠ IsLocalRing.maximalIdeal T)
     (r : T) (ea : ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P) (u : T) (q : ℕ) :
-    (avoid_step I P hP hP_ne r ea u q).1 ∉ (P : Set T) + ({r} : Set T) := by
-  unfold avoid_step
+    (avoidStep I P hP hP_ne r ea u q).1 ∉ (P : Set T) + ({r} : Set T) := by
+  unfold avoidStep
   split
   · exact not_mem_add_singleton_of_add ‹_› (ea q).choose_spec.2
   · exact ‹_›
 
-lemma avoid_step_sep [IsNoetherianRing T]
+lemma avoidStep_sep [IsNoetherianRing T]
     (I P : Ideal T) (hP : P.IsPrime) (hP_ne : P ≠ IsLocalRing.maximalIdeal T)
     (r : T) (ea : ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P) (u : T) (q : ℕ) :
-    ∀ m ∈ IsLocalRing.maximalIdeal T ^ (avoid_step I P hP hP_ne r ea u q).2,
-      (avoid_step I P hP hP_ne r ea u q).1 + m ∉ (P : Set T) + ({r} : Set T) := by
-  unfold avoid_step
+    ∀ m ∈ IsLocalRing.maximalIdeal T ^ (avoidStep I P hP hP_ne r ea u q).2,
+      (avoidStep I P hP hP_ne r ea u q).1 + m ∉ (P : Set T) + ({r} : Set T) := by
+  unfold avoidStep
   split
   · intro m hm
     have havoid := not_mem_add_singleton_of_add ‹_› (ea q).choose_spec.2
@@ -201,51 +201,51 @@ lemma avoid_step_sep [IsNoetherianRing T]
     apply hN
     exact Ideal.pow_le_pow_right (le_max_right _ _) hm
 
-lemma build_seq_q_inc [IsNoetherianRing T]
+lemma buildSeqQInc [IsNoetherianRing T]
     (I : Ideal T)
     {C : Set (Ideal T)} (hC_prime : ∀ P ∈ C, P.IsPrime)
     (hC_ne_max : ∀ P ∈ C, P ≠ IsLocalRing.maximalIdeal T)
     (ea : ∀ P ∈ C, ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P)
     (P_of : ℕ → Ideal T) (r_of : ℕ → T) (hP_mem : ∀ n, P_of n ∈ C) (n : ℕ) :
-    (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).2 ≥
-    (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem n).2 + 1 := by
-  exact avoid_step_q_inc I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
+    (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).2 ≥
+    (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem n).2 + 1 := by
+  exact avoidStep_q_inc I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
     (r_of n) (ea _ (hP_mem n)) _ _
 
-lemma build_seq_diff [IsNoetherianRing T]
+lemma buildSeqDiff [IsNoetherianRing T]
     (I : Ideal T)
     {C : Set (Ideal T)} (hC_prime : ∀ P ∈ C, P.IsPrime)
     (hC_ne_max : ∀ P ∈ C, P ≠ IsLocalRing.maximalIdeal T)
     (ea : ∀ P ∈ C, ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P)
     (P_of : ℕ → Ideal T) (r_of : ℕ → T) (hP_mem : ∀ n, P_of n ∈ C) (n : ℕ) :
-    (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).1 -
-    (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem n).1 ∈
-    I * IsLocalRing.maximalIdeal T ^ (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem n).2 := by
-  exact avoid_step_diff I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
+    (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).1 -
+    (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem n).1 ∈
+    I * IsLocalRing.maximalIdeal T ^ (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem n).2 := by
+  exact avoidStep_diff I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
     (r_of n) (ea _ (hP_mem n)) _ _
 
-lemma build_seq_avoids [IsNoetherianRing T]
+lemma buildSeqAvoids [IsNoetherianRing T]
     (I : Ideal T)
     {C : Set (Ideal T)} (hC_prime : ∀ P ∈ C, P.IsPrime)
     (hC_ne_max : ∀ P ∈ C, P ≠ IsLocalRing.maximalIdeal T)
     (ea : ∀ P ∈ C, ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P)
     (P_of : ℕ → Ideal T) (r_of : ℕ → T) (hP_mem : ∀ n, P_of n ∈ C) (n : ℕ) :
-    (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).1 ∉
+    (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).1 ∉
     (P_of n : Set T) + ({r_of n} : Set T) := by
-  exact avoid_step_avoids I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
+  exact avoidStep_avoids I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
     (r_of n) (ea _ (hP_mem n)) _ _
 
-lemma build_seq_sep [IsNoetherianRing T]
+lemma buildSeqSep [IsNoetherianRing T]
     (I : Ideal T)
     {C : Set (Ideal T)} (hC_prime : ∀ P ∈ C, P.IsPrime)
     (hC_ne_max : ∀ P ∈ C, P ≠ IsLocalRing.maximalIdeal T)
     (ea : ∀ P ∈ C, ∀ n, ∃ z ∈ I * IsLocalRing.maximalIdeal T ^ n, z ∉ P)
     (P_of : ℕ → Ideal T) (r_of : ℕ → T) (hP_mem : ∀ n, P_of n ∈ C) (n : ℕ) :
     ∀ m ∈ IsLocalRing.maximalIdeal T ^
-        (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).2,
-      (build_seq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).1 + m ∉
+        (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).2,
+      (buildSeq I hC_prime hC_ne_max ea P_of r_of hP_mem (n + 1)).1 + m ∉
       (P_of n : Set T) + ({r_of n} : Set T) := by
-  exact avoid_step_sep I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
+  exact avoidStep_sep I (P_of n) (hC_prime _ (hP_mem n)) (hC_ne_max _ (hP_mem n))
     (r_of n) (ea _ (hP_mem n)) _ _
 
 /-!
@@ -322,12 +322,12 @@ theorem countable_avoidance
   let r_of : ℕ → T := fun n => (enum n).val.2
   have hP_mem : ∀ n, P_of n ∈ C := fun n => (Set.mem_prod.mp (enum n).property).1
   have hr_mem : ∀ n, r_of n ∈ D := fun n => (Set.mem_prod.mp (enum n).property).2
-  -- Build the Cauchy sequence (u_n, q_n) using build_seq
-  let S := build_seq I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem
+  -- Build the Cauchy sequence (u_n, q_n) using buildSeq
+  let S := buildSeq I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem
   let u_seq : ℕ → T := fun n => (S n).1
   let q_seq : ℕ → ℕ := fun n => (S n).2
   have hq_inc : ∀ n, q_seq (n + 1) ≥ q_seq n + 1 := fun n =>
-    build_seq_q_inc I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
+    buildSeqQInc I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
   have hq_ge : ∀ n, q_seq n ≥ n := by
     intro n
     induction n with
@@ -336,7 +336,7 @@ theorem countable_avoidance
                    omega
   have hu_diff : ∀ n, u_seq (n + 1) - u_seq n ∈ 𝔪 ^ q_seq n :=
     fun n => Ideal.mul_le_left
-      (build_seq_diff I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n)
+      (buildSeqDiff I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n)
   have hu_mem : ∀ n, u_seq n ∈ I := by
     intro n
     induction n with
@@ -345,12 +345,12 @@ theorem countable_avoidance
       have : u_seq (k + 1) = u_seq k + (u_seq (k + 1) - u_seq k) := by ring
       rw [this]
       exact I.add_mem ih (Ideal.mul_le_right
-        (build_seq_diff I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem k))
+        (buildSeqDiff I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem k))
   have hu_avoids : ∀ n, u_seq (n + 1) ∉ (P_of n : Set T) + ({r_of n} : Set T) :=
-    fun n => build_seq_avoids I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
+    fun n => buildSeqAvoids I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
   have hu_sep : ∀ n, ∀ m ∈ 𝔪 ^ q_seq (n + 1),
       u_seq (n + 1) + m ∉ (P_of n : Set T) + ({r_of n} : Set T) :=
-    fun n => build_seq_sep I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
+    fun n => buildSeqSep I hC_prime hC_ne_max exists_avoid P_of r_of hP_mem n
   -- Cauchy property: u(b) - u(a) ∈ 𝔪^a for a ≤ b
   have hu_cauchy_telescope : ∀ a b, a ≤ b → u_seq b - u_seq a ∈ 𝔪 ^ a := by
     intro a b hab
@@ -529,7 +529,6 @@ lemma ideal_avoidance_of_card_lt_aux [IsNoetherianRing T] :
       exact hs_avoid P ⟨hP, SetLike.mem_coe.mpr hgP⟩ hsP
     apply ha₀
     refine ⟨⟨P, hP⟩, ?_⟩
-    change forbidden ⟨P, hP⟩ = (Ideal.Quotient.mk (IsLocalRing.maximalIdeal T)) a₀
     simp only [forbidden]
     rw [dif_pos ⟨a₀, hmem⟩]
     have hex := (⟨a₀, hmem⟩ : ∃ a : T, g + a * s_elem ∈ (P : Ideal T))

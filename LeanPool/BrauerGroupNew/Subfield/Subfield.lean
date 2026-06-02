@@ -8,6 +8,12 @@ import LeanPool.BrauerGroupNew.DoubleCentralizer
 import LeanPool.BrauerGroupNew.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import LeanPool.BrauerGroupNew.Subfield.Defs
 
+/-!
+# LeanPool.BrauerGroupNew.Subfield.Subfield
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Subfield.Subfield`.
+-/
+
 universe u
 
 section cors_of_DC

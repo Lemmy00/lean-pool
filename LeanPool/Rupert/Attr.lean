@@ -9,5 +9,11 @@ import Lean.Meta.Tactic.Simp.SimpTheorems
 import Lean.Meta.Tactic.Simp.RegisterCommand
 import Lean.LabelAttribute
 
+/-!
+# LeanPool.Rupert.Attr
+
+Imported Lean Pool material for `LeanPool.Rupert.Attr`.
+-/
+
 /-- Simp set for evaluating concrete matrices in Rupert certificates. -/
 register_simp_attr matrix_simps

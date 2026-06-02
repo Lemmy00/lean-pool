@@ -5,6 +5,13 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 -/
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
+/-!
+# LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+
+Imported Lean Pool material for
+`LeanPool.BrauerGroupNew.Mathlib.RingTheory.NonUnitalSubsemiring.Defs`.
+-/
+
 variable {R : Type*} [NonUnitalSemiring R]
 
 @[simp]

@@ -6,7 +6,13 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Instances
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Instances`.
+-/
+
 
 namespace MeasureTheory
-instance : MeasurableSpace PEmpty := ⊤
+instance instMeasurableSpacePEmptyLeanPool : MeasurableSpace PEmpty := ⊤
 end MeasureTheory

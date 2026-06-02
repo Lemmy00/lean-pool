@@ -9,6 +9,12 @@ import Mathlib.Data.Opposite
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Opposite
 
+/-!
+# LeanPool.Monlib4.LinearAlgebra.LinearMapOp
+
+Imported Lean Pool material for `LeanPool.Monlib4.LinearAlgebra.LinearMapOp`.
+-/
+
 /-- Push a semilinear map between modules through the multiplicative opposite. -/
 @[simps]
 def LinearMap.op {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S}

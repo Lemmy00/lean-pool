@@ -121,7 +121,7 @@ theorem Matrix.IsHermitian.nonneg_eigenvalues_of_posSemidef [Fintype n] [Decidab
 
 /-- A matrix is invertible when its associated linear map is bijective. -/
 @[reducible]
-noncomputable def Matrix.invertible_of_bij_toLin' [Fintype n] [DecidableEq n]
+noncomputable def Matrix.invertibleOfBijToLin' [Fintype n] [DecidableEq n]
     {Q : Matrix n n 𝕜} (h : Function.Bijective (toLin' Q)) :
     Invertible Q := by
   have h : Invertible (toLin' Q) := by
@@ -144,13 +144,13 @@ lemma Matrix.bij_toLin'_of_invertible [Fintype n] [DecidableEq n]
     Invertible.invOf_mul_self, mul_invOf_self, toLin'_one, and_self,
     LinearMap.id_apply, forall_true_iff]
 
-theorem Matrix.PosSemidef.invertible_iff_posDef {n : Type*} [Fintype n]
+theorem Matrix.PosSemidef.invertibleIff_posDef {n : Type*} [Fintype n]
     [DecidableEq n] {x : Matrix n n 𝕜} (hx : x.PosSemidef) :
     Function.Bijective (toLin' x) ↔ x.PosDef := by
   have hbij_isUnit : Function.Bijective (toLin' x) ↔ IsUnit x := by
     constructor
     · intro h
-      exact (nonempty_invertible_iff_isUnit x).mp ⟨Matrix.invertible_of_bij_toLin' h⟩
+      exact (nonempty_invertible_iff_isUnit x).mp ⟨Matrix.invertibleOfBijToLin' h⟩
     · intro h
       rcases (nonempty_invertible_iff_isUnit x).mpr h with ⟨hInv⟩
       exact Matrix.bij_toLin'_of_invertible hInv
@@ -329,7 +329,10 @@ theorem Matrix.posSemidef_iff_eq_rankOne'' [Fintype n] [DecidableEq n]
     exact ⟨m, hm, fun i => (v i : n → 𝕜), by simpa only [← rankOne.Pi.toMatrix''] using hv⟩
   · rintro ⟨m, hm, v, hv⟩
     exact ⟨m, hm, fun i => (EuclideanSpace.equiv n 𝕜).symm (v i),
-      by simpa only [rankOne.Pi.toMatrix''] using hv⟩
+      by
+        rw [hv]
+        simp_rw [rankOne.Pi.toMatrix'']
+        rfl⟩
 
 /-- For complex matrices, positive semidefiniteness is equivalent to nonnegative quadratic
 forms. -/

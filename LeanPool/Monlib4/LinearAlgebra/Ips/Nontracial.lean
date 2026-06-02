@@ -3,7 +3,7 @@ Copyright (c) 2023 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import LeanPool.Monlib4.LinearAlgebra.Mul''
+import LeanPool.Monlib4.LinearAlgebra.MulPrimePrime
 import LeanPool.Monlib4.LinearAlgebra.Matrix.PosDefRpow
 import LeanPool.Monlib4.LinearAlgebra.InnerAut
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape

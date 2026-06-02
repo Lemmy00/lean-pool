@@ -8,12 +8,18 @@ import LeanPool.QuasiBorelSpaces.MeasureTheory.StandardBorelSpace
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Sum
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Option
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Option`.
+-/
+
 
 variable {A B C : Type*} [MeasurableSpace A] [MeasurableSpace B] [MeasurableSpace C]
 
 namespace MeasureTheory.Option
 
-instance [MeasurableSpace A] : MeasurableSpace (Option A) :=
+instance instMeasurableSpaceOptionLeanPool : MeasurableSpace (Option A) :=
   MeasurableSpace.comap (Option.elim' (Sum.inl ()) Sum.inr) inferInstance
 
 instance [DiscreteMeasurableSpace A] : DiscreteMeasurableSpace (Option A) where

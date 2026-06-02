@@ -127,7 +127,7 @@ instance : ConcreteCategory.{u} FieldCat (fun R S ↦ R →+* S) where
 An example where this is needed is in applying
 `PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective`.
 -/
-unif_hint forget_obj_eq_coe (R R' : FieldCat) where
+unif_hint forgetObjEqCoe (R R' : FieldCat) where
   R ≟ R' ⊢
   (forget FieldCat).obj R ≟ FieldCat.carrier R'
 
@@ -181,7 +181,7 @@ instance forgetReflectIsos : (forget FieldCat).ReflectsIsomorphisms where
 --   forget_faithful := _
 
 -- -- Porting note: Hinting to Lean that `forget R` and `R` are the same
--- unif_hint forget_obj_eq_coe (R : FieldCat) where ⊢
+-- unif_hint forgetObjEqCoe (R : FieldCat) where ⊢
 --   (forget FieldCat).obj R ≟ R
 
 -- instance instField (X : FieldCat) : Field X := X.str

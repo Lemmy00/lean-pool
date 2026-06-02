@@ -9,6 +9,13 @@ module
 public import Mathlib.MeasureTheory.Measure.Real
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Prod
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Real
+
+Imported Lean Pool material for
+`LeanPool.ZhangYeungInequality.PFR.Mathlib.MeasureTheory.Measure.Real`.
+-/
+
 public section
 
 open Function Set

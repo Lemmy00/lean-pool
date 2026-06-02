@@ -223,10 +223,11 @@ lemma adjoin_height_case_bot
     IsLocalization.isPrime_of_isPrime_disjoint M' (Polynomial K) J' hJ'_prime hJ'_disj
   have hJ_map_ne : Ideal.map (algebraMap _ (Polynomial K)) J ≠ ⊥ := by
     intro h
-    have hsat := IsLocalization.comap_map_of_isPrime_disjoint M' (Polynomial K) hJ_prime hJ_disj
+    have hsat := IsLocalization.under_map_of_isPrime_disjoint M' (Polynomial K) hJ_prime hJ_disj
     rw [h] at hsat
-    have : Ideal.comap (algebraMap (Polynomial R.carrier) (Polynomial K)) ⊥ = ⊥ :=
-      Ideal.comap_bot_of_injective _ hψ_inj
+    have : Ideal.under (Polynomial R.carrier) (⊥ : Ideal (Polynomial K)) = ⊥ := by
+      simpa [Ideal.under_def] using
+        Ideal.comap_bot_of_injective (algebraMap (Polynomial R.carrier) (Polynomial K)) hψ_inj
     rw [this] at hsat
     exact hJ_ne hsat.symm
   -- K[X] is a PID, dim ≤ 1: nonzero prime ≤ prime implies equality
@@ -235,9 +236,9 @@ lemma adjoin_height_case_bot
     have : Ring.DimensionLEOne (Polynomial K) :=
       Ring.DimensionLEOne.principal_ideal_ring _
     (Ring.DimensionLeOne.prime_le_prime_iff_eq hJ_map_ne).mp (Ideal.map_mono hJJ')
-  have hJ_sat := IsLocalization.comap_map_of_isPrime_disjoint
+  have hJ_sat := IsLocalization.under_map_of_isPrime_disjoint
     M' (Polynomial K) hJ_prime hJ_disj
-  have hJ'_sat := IsLocalization.comap_map_of_isPrime_disjoint
+  have hJ'_sat := IsLocalization.under_map_of_isPrime_disjoint
     M' (Polynomial K) hJ'_prime hJ'_disj
   exact absurd (hJ_sat.symm.trans (hmap_eq ▸ hJ'_sat)) hJJ'_ne
 
@@ -317,17 +318,16 @@ lemma adjoin_height_case_ne_bot
       have hbot_lt_span : (⊥ : Ideal R.carrier) < Ideal.span {p₀} := by
         rw [bot_lt_iff_ne_bot, ne_eq, Ideal.span_singleton_eq_bot]
         exact hp₀_ne
-      rw [Ideal.height_eq_primeHeight] at hR_bound
-      have h2 : (2 : ℕ∞) ≤ (P.comap R.carrier.subtype).primeHeight :=
+      have h2 : (2 : ℕ∞) ≤ (P.comap R.carrier.subtype).height :=
         calc (2 : ℕ∞) = 0 + 1 + 1 := by norm_num
-          _ ≤ (⊥ : Ideal R.carrier).primeHeight + 1 + 1 := by
+          _ ≤ (⊥ : Ideal R.carrier).height + 1 + 1 := by
               gcongr
-              exact zero_le _
-          _ ≤ (Ideal.span {p₀}).primeHeight + 1 := by
+              exact zero_le
+          _ ≤ (Ideal.span {p₀}).height + 1 := by
               gcongr
-              exact Ideal.primeHeight_add_one_le_of_lt hbot_lt_span
-          _ ≤ (P.comap R.carrier.subtype).primeHeight :=
-              Ideal.primeHeight_add_one_le_of_lt hspan_lt
+              exact Ideal.height_add_one_le_of_lt_of_isPrime hbot_lt_span
+          _ ≤ (P.comap R.carrier.subtype).height :=
+              Ideal.height_add_one_le_of_lt_of_isPrime hspan_lt
       exact not_lt.mpr h2 (by exact_mod_cast hR_bound.trans_lt (by norm_num))
     · exact Ideal.span_le.mpr (Set.singleton_subset_iff.mpr hp₀_mem_PR)
   have hker : ∀ (f : Polynomial R.carrier), (aeval x f : T) ∈ (P : Set T) →

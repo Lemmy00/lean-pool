@@ -97,14 +97,12 @@ lemma ωScottContinuous_lintegral
   · apply MeasureTheory.lintegral_mono
     intro c
     apply hf₁.monotone (⟨h, le_rfl⟩ : (a, c) ≤ (b, c))
-  · simp only [ωSup, Chain.coe_map, OrderHom.coe_mk, Function.comp_apply]
+  · change ∫⁻ y, f (ωSup c) y ∂μ = ⨆ n, ∫⁻ y, f (c n) y ∂μ
     rw [← MeasureTheory.lintegral_iSup]
     · apply MeasureTheory.lintegral_congr fun b ↦ ?_
       rw [(by simp : f (ωSup c) b = f (ωSup c) (ωSup (Chain.const b)))]
       apply Eq.trans (hf₁.map_ωSup (Chain.zip c (Chain.const b)))
-      simp only [
-        ωSup, Chain.coe_map, OrderHom.coe_mk, Function.comp_apply,
-        Chain.zip_apply, Chain.const_apply]
+      rfl
     · fun_prop
     · intro i j h a
       apply hf₁.monotone

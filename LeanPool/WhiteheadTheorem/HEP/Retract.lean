@@ -10,6 +10,12 @@ import LeanPool.WhiteheadTheorem.Shapes.UnitInterval
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Topology.Homotopy.Contractible
 
+/-!
+# LeanPool.WhiteheadTheorem.HEP.Retract
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.HEP.Retract`.
+-/
+
 
 open TopCat
 open scoped Topology unitInterval

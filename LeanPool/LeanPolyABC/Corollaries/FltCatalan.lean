@@ -13,6 +13,10 @@ import Mathlib.Logic.Lemmas
 import LeanPool.LeanPolyABC.MasonStothers
 import Mathlib.RingTheory.Coprime.Basic
 
+/-!
+# LeanPool.LeanPolyABC.Corollaries.FltCatalan
+-/
+
 noncomputable section
 
 open scoped Polynomial

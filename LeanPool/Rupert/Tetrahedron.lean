@@ -11,6 +11,12 @@ import LeanPool.Rupert.Quaternion
 import LeanPool.Rupert.Equivalences.RupertEquivRupertPrime
 import LeanPool.Rupert.FinCases
 
+/-!
+# LeanPool.Rupert.Tetrahedron
+
+Imported Lean Pool material for `LeanPool.Rupert.Tetrahedron`.
+-/
+
 namespace Tetrahedron
 
 open scoped Matrix
@@ -23,35 +29,35 @@ def vertices : Fin 4 → ℝ³ :=
     !₂[-1, -1,  1]]
 
 /-- Quaternion certificate for the outer tetrahedron rotation. -/
-def outer_quat : Quaternion ℝ := ⟨0.338990, -0.426182, 0.173602, -0.820558⟩
+def outerQuat : Quaternion ℝ := ⟨0.338990, -0.426182, 0.173602, -0.820558⟩
 
 /-- Rotation matrix for the outer tetrahedron. -/
-noncomputable def outer_rot := matrix_of_quat outer_quat
+noncomputable def outerRot := matrixOfQuat outerQuat
 
-lemma outer_rot_so3 : outer_rot ∈ SO3 := by
-  have h : outer_quat.normSq ≠ 0 := by norm_num [outer_quat, Quaternion.normSq_def]
-  exact matrix_of_quat_is_s03 h
+lemma outerRot_so3 : outerRot ∈ SO3 := by
+  have h : outerQuat.normSq ≠ 0 := by norm_num [outerQuat, Quaternion.normSq_def]
+  exact matrixOfQuat_is_s03 h
 
 /-- Quaternion certificate for the inner tetrahedron rotation. -/
-def inner_quat : Quaternion ℝ := ⟨0.857701, -0.119161, 0.443971, 0.230299⟩
+def innerQuat : Quaternion ℝ := ⟨0.857701, -0.119161, 0.443971, 0.230299⟩
 
 /-- Rotation matrix for the inner tetrahedron. -/
-noncomputable def inner_rot := matrix_of_quat inner_quat
+noncomputable def innerRot := matrixOfQuat innerQuat
 
-lemma inner_rot_so3 : inner_rot ∈ SO3 := by
-  have h : inner_quat.normSq ≠ 0 := by norm_num [inner_quat, Quaternion.normSq_def]
-  exact matrix_of_quat_is_s03 h
+lemma innerRot_so3 : innerRot ∈ SO3 := by
+  have h : innerQuat.normSq ≠ 0 := by norm_num [innerQuat, Quaternion.normSq_def]
+  exact matrixOfQuat_is_s03 h
 
 /-- Translation offset for the inner tetrahedron shadow. -/
-def inner_offset : ℝ² := !₂[0.098412,-0.165800]
+def innerOffset : ℝ² := !₂[0.098412,-0.165800]
 
 theorem rupert : IsRupert vertices := by
   rw [rupert_iff_rupert']
-  use inner_rot, inner_rot_so3, inner_offset, outer_rot, outer_rot_so3
-  intro inner_shadow outer_shadow
+  use innerRot, innerRot_so3, innerOffset, outerRot, outerRot_so3
+  intro inner_shadow outerShadow
   let ε₀ : ℝ := 0.001
   have hε₀ : ε₀ ∈ Set.Ioo 0 1 := by norm_num
-  have hb : Metric.ball 0 ε₀ ⊆ convexHull ℝ outer_shadow := by
+  have hb : Metric.ball 0 ε₀ ⊆ convexHull ℝ outerShadow := by
     refine Convex.ball_in_hull_of_corners_in_hull hε₀ ?_ ?_ ?_ ?_ <;>
       apply mem_convexHull_iff_exists_fintype.mpr <;>
       use Fin 4, inferInstance
@@ -74,12 +80,12 @@ theorem rupert : IsRupert vertices := by
             35930786947771/108251262955000]
     ]
     all_goals
-      use fun i ↦ proj_xy (outer_rot.toEuclideanLin (vertices i))
+      use fun i ↦ projXy (outerRot.toEuclideanLin (vertices i))
       refine ⟨?_, ?_, ?_, ?_⟩
       · intro i; fin_cases i <;> norm_num
       · simp [Fin.sum_univ_four]; norm_num
       · exact fun i ↦ ⟨i, rfl⟩
-      · simp only [proj_xy, outer_rot, matrix_of_quat, outer_quat, vertices, Fin.sum_univ_four,
+      · simp only [projXy, outerRot, matrixOfQuat, outerQuat, vertices, Fin.sum_univ_four,
                    ε₀, matrix_simps]
         ext i; fin_cases i <;> norm_num
   intro v hv
@@ -111,14 +117,14 @@ theorem rupert : IsRupert vertices := by
           2351884362789884221156292593/13530030747431979580288854750]
   ]
   all_goals
-    use fun i ↦ (1 - ε₁) • (proj_xy (outer_rot.toEuclideanLin (vertices i)))
+    use fun i ↦ (1 - ε₁) • (projXy (outerRot.toEuclideanLin (vertices i)))
     refine ⟨?_, ?_, ?_, ?_⟩
     · intro i; fin_cases i <;> norm_num
     · simp only [Fin.sum_univ_four, matrix_simps]; norm_num
-    · exact fun i ↦ ⟨proj_xy (outer_rot.toEuclideanLin (vertices i)), by simp [outer_shadow]⟩
+    · exact fun i ↦ ⟨projXy (outerRot.toEuclideanLin (vertices i)), by simp [outerShadow]⟩
     · rw [←hy]
-      simp only [proj_xy, outer_rot, matrix_of_quat, outer_quat, vertices, Fin.sum_univ_four,
-                 inner_offset, inner_rot, inner_quat, ε₁, matrix_simps]
+      simp only [projXy, outerRot, matrixOfQuat, outerQuat, vertices, Fin.sum_univ_four,
+                 innerOffset, innerRot, innerQuat, ε₁, matrix_simps]
       ext i; fin_cases i <;> norm_num
 
 end Tetrahedron

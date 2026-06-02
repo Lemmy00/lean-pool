@@ -6,6 +6,12 @@ Authors: Jiazhen Xia
 
 import LeanPool.WhiteheadTheorem.HomotopyGroup.InducedMaps
 
+/-!
+# LeanPool.WhiteheadTheorem.Defs
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Defs`.
+-/
+
 
 open CategoryTheory
 open scoped ContinuousMap

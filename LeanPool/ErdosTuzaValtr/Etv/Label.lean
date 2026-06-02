@@ -8,6 +8,12 @@ import Mathlib.Data.Finset.Basic
 import LeanPool.ErdosTuzaValtr.Lib.Core.Rel3
 import LeanPool.ErdosTuzaValtr.Config.Default
 
+/-!
+# LeanPool.ErdosTuzaValtr.Etv.Label
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Etv.Label`.
+-/
+
 variable {α : Type _} [LinearOrder α] (C : Config α)
 
 /-- A labeling of the edges of `S` by a slope predicate compatible with the cup relation. -/

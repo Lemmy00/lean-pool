@@ -10,6 +10,12 @@ import LeanPool.ErdosTuzaValtr.Lib.List.Default
 import LeanPool.ErdosTuzaValtr.Etv.Default
 import LeanPool.ErdosTuzaValtr.Main.Lemmas.JoinN2N3N2
 
+/-!
+# LeanPool.ErdosTuzaValtr.Main.Lemmas.JoinN2N3JoinN3N2
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Main.Lemmas.JoinN2N3JoinN3N2`.
+-/
+
 open OrderDual
 
 variable {α : Type _} [LinearOrder α] (C : Config α)

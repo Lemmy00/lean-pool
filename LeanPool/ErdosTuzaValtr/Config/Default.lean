@@ -7,3 +7,9 @@ Authors: Jineon Baek
 import LeanPool.ErdosTuzaValtr.Config.Defs
 import LeanPool.ErdosTuzaValtr.Config.Lemmas
 import LeanPool.ErdosTuzaValtr.Config.Mirror
+
+/-!
+# LeanPool.ErdosTuzaValtr.Config.Default
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Config.Default`.
+-/

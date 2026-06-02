@@ -24,9 +24,9 @@ labeling.
 
 The milestone lands four ingredients:
 
-- **Parts (a), (b)** -- pure set-function arithmetic. The witness `F_witness_ℚ : Finset
+- **Parts (a), (b)** -- pure set-function arithmetic. The witness `FWitnessℚ : Finset
   (Fin 4) →
-  ℚ` satisfies `shannonCone F_witness` and fails `zhangYeungHolds F_witness`. Both are
+  ℚ` satisfies `shannonCone FWitness` and fails `zhangYeungHolds FWitness`. Both are
   decidable
   finite checks.
 - **Part (c), the bridge** -- for any four discrete random variables `X : ∀ i : Fin 4, Ω
@@ -45,15 +45,15 @@ The milestone lands four ingredients:
 
 ## Main definitions
 
-- `ZhangYeung.I_F`, `ZhangYeung.condI_F`, `ZhangYeung.delta_F`: the set-function
+- `ZhangYeung.IF`, `ZhangYeung.condIF`, `ZhangYeung.deltaF`: the set-function
   information-theoretic calculus (unconditional mutual info, conditional mutual info,
   and the
   Zhang-Yeung delta at the set-function level).
 - `ZhangYeung.shannonCone`: the Shannon outer bound `Γ_4` (paper eq. 11) stated as a
   predicate on
   `Finset (Fin 4) → ℝ`.
-- `ZhangYeung.shannonRegion_n`, `ZhangYeung.entropyRegion_n`,
-  `ZhangYeung.almostEntropicRegion_n`:
+- `ZhangYeung.shannonRegionN`, `ZhangYeung.entropyRegionN`,
+  `ZhangYeung.almostEntropicRegionN`:
   the set-level Shannon, entropic, and almost-entropic regions on `Finset (Fin n) → ℝ`.
 - `ZhangYeung.zhangYeungAt`: the Zhang-Yeung inequality (paper eq. 21) at a specific
   4-tuple
@@ -61,18 +61,18 @@ The milestone lands four ingredients:
 - `ZhangYeung.zhangYeungHolds`: the Zhang-Yeung cone `tildeΓ_4` (paper eq. 25),
   expressed as
   `zhangYeungAt` at every permutation of `Fin 4`.
-- `ZhangYeung.F_witness_ℚ`: the paper's `n = 4` counterexample, as a `ℚ`-valued set
+- `ZhangYeung.FWitnessℚ`: the paper's `n = 4` counterexample, as a `ℚ`-valued set
   function with
   `a = 1`.
-- `ZhangYeung.F_witness`: the `ℝ`-cast of `F_witness_ℚ`.
-- `ZhangYeung.entropyFn`, `ZhangYeung.entropyFn_n`: the four-variable and generic
+- `ZhangYeung.FWitness`: the `ℝ`-cast of `FWitnessℚ`.
+- `ZhangYeung.entropyFn`, `ZhangYeung.entropyFnN`: the four-variable and generic
   set-function
   views of joint entropy.
 
 ## Main statements
 
-- `ZhangYeung.shannonCone_of_witness` -- Part (a): `F_witness` lies in the Shannon cone.
-- `ZhangYeung.not_zhangYeungHolds_witness` -- Part (b): `F_witness` fails the
+- `ZhangYeung.shannonCone_of_witness` -- Part (a): `FWitness` lies in the Shannon cone.
+- `ZhangYeung.not_zhangYeungHolds_witness` -- Part (b): `FWitness` fails the
   Zhang-Yeung
   inequality at the canonical permutation.
 - `ZhangYeung.shannon_incomplete` -- intermediate form: there exists a set function in
@@ -81,7 +81,7 @@ The milestone lands four ingredients:
 - `ZhangYeung.zhangYeungAt_entropyFn`, `ZhangYeung.zhangYeungHolds_of_entropy` -- Part
   (c), the
   bridge: every entropy function of four discrete random variables lies in `tildeΓ_4`.
-- `ZhangYeung.theorem4_finite` -- the finite auxiliary separation, excluding `F_witness`
+- `ZhangYeung.theorem4_finite` -- the finite auxiliary separation, excluding `FWitness`
   from the
   literal entropy region.
 - `ZhangYeung.theorem4` -- the exact paper-level `n = 4` statement `∃ F ∈ Γ_4, F ∉
@@ -100,9 +100,9 @@ The milestone lands four ingredients:
 
 The witness is defined first over `ℚ` so that Parts (a) and (b) reduce to finite
 rational
-arithmetic before casting to `ℝ` at the witness boundary. `F_witness` is a plain
+arithmetic before casting to `ℝ` at the witness boundary. `FWitness` is a plain
 pointwise cast
-`fun S => (F_witness_ℚ S : ℝ)`; the companion lemma `F_witness_eq_cast` trivializes
+`fun S => (FWitnessℚ S : ℝ)`; the companion lemma `FWitness_eq_cast` trivializes
 downstream
 `push_cast`/`norm_cast` work. Fixing `a = 1` collapses the paper's parametric family
 into a single
@@ -132,7 +132,7 @@ a standard
 transport. The
 exact theorem then packages this bridge through `ZhangYeung/EntropyRegion.lean`:
 `closure (Γ_4^*)`
-sits inside the closed Zhang-Yeung region, while `F_witness` sits outside it.
+sits inside the closed Zhang-Yeung region, while `FWitness` sits outside it.
 
 ## References
 
@@ -167,33 +167,33 @@ do not
 require any measure-theoretic context. -/
 
 /--
-Set-function mutual information: `I_F(α; β) = F α + F β - F (α ∪ β)`. When `F` is the
+Set-function mutual information: `IF(α; β) = F α + F β - F (α ∪ β)`. When `F` is the
 entropy
 function of a discrete random-variable family (with `F ∅ = 0`), this coincides with
 `I[X_α : X_β]`.
 -/
-def I_F (F : Finset (Fin 4) → ℝ) (α β : Finset (Fin 4)) : ℝ :=
+def IF (F : Finset (Fin 4) → ℝ) (α β : Finset (Fin 4)) : ℝ :=
   F α + F β - F (α ∪ β)
 
 /--
-Set-function conditional mutual information: `condI_F(α; β | γ) = F (α ∪ γ) + F (β ∪ γ)
+Set-function conditional mutual information: `condIF(α; β | γ) = F (α ∪ γ) + F (β ∪ γ)
 - F (α ∪ β
 ∪ γ) - F γ`. When `F` is the entropy function of a discrete random-variable family, this
 coincides
 with `I[X_α : X_β | X_γ]`.
 -/
-def condI_F (F : Finset (Fin 4) → ℝ) (α β γ : Finset (Fin 4)) : ℝ :=
+def condIF (F : Finset (Fin 4) → ℝ) (α β γ : Finset (Fin 4)) : ℝ :=
   F (α ∪ γ) + F (β ∪ γ) - F (α ∪ β ∪ γ) - F γ
 
 /--
-Set-function Zhang-Yeung delta at a 4-tuple of coordinates: `delta_F(i, j | k, l) =
-I_F({i}; {j}) -
-condI_F({i}; {j} | {k}) - condI_F({i}; {j} | {l})`. Mirrors `ZhangYeung.delta` at the
+Set-function Zhang-Yeung delta at a 4-tuple of coordinates: `deltaF(i, j | k, l) =
+IF({i}; {j}) -
+condIF({i}; {j} | {k}) - condIF({i}; {j} | {l})`. Mirrors `ZhangYeung.delta` at the
 set-function
 level.
 -/
-def delta_F (F : Finset (Fin 4) → ℝ) (i j k l : Fin 4) : ℝ :=
-  I_F F {i} {j} - condI_F F {i} {j} {k} - condI_F F {i} {j} {l}
+def deltaF (F : Finset (Fin 4) → ℝ) (i j k l : Fin 4) : ℝ :=
+  IF F {i} {j} - condIF F {i} {j} {k} - condIF F {i} {j} {l}
 
 /-! ### Shannon and Zhang-Yeung cone predicates -/
 
@@ -209,14 +209,14 @@ def shannonCone (F : Finset (Fin 4) → ℝ) : Prop :=
 
 /-- The Zhang-Yeung inequality at a specific 4-tuple labeling (paper eq. 21):
 
-  `delta_F F i j k l ≤ (1/2) * (I_F F {k} {l} + I_F F {k} ({i} ∪ {j}) + condI_F F {i}
+  `deltaF F i j k l ≤ (1/2) * (IF F {k} {l} + IF F {k} ({i} ∪ {j}) + condIF F {i}
   {j} {k} -
-  condI_F F {i} {j} {l})`.
+  condIF F {i} {j} {l})`.
 
 This is the set-function-level restatement of `ZhangYeung.zhangYeung`. -/
 def zhangYeungAt (F : Finset (Fin 4) → ℝ) (i j k l : Fin 4) : Prop :=
-  delta_F F i j k l ≤ (1 / 2) * (I_F F {k} {l} + I_F F {k} ({i} ∪ {j})
-    + condI_F F {i} {j} {k} - condI_F F {i} {j} {l})
+  deltaF F i j k l ≤ (1 / 2) * (IF F {k} {l} + IF F {k} ({i} ∪ {j})
+    + condIF F {i} {j} {k} - condIF F {i} {j} {l})
 
 /--
 The Zhang-Yeung cone `tildeΓ_4` from [@zhangyeung1998, eq. 25]: a set function `F` lies
@@ -229,7 +229,7 @@ def zhangYeungHolds (F : Finset (Fin 4) → ℝ) : Prop :=
 
 /-! ### The paper's `n = 4` counterexample witness
 
-The witness `F_witness_ℚ` is the `a = 1` specialization of the parametric witness on
+The witness `FWitnessℚ` is the `a = 1` specialization of the parametric witness on
 paper lines
 368-377: zero on the empty set, `2` on singletons, `4` on `{0, 1}`, `3` on the other
 five pairs,
@@ -243,13 +243,13 @@ reducible on all 16 subsets of `Fin 4`. -/
 to `a =
 1`):
 
-  `F_witness_ℚ ∅ = 0`, `F_witness_ℚ {i} = 2`, `F_witness_ℚ {0, 1} = 4`, `F_witness_ℚ {i,
+  `FWitnessℚ ∅ = 0`, `FWitnessℚ {i} = 2`, `FWitnessℚ {0, 1} = 4`, `FWitnessℚ {i,
   j} = 3`
-  for other pairs, `F_witness_ℚ S = 4` for triples and the 4-set.
+  for other pairs, `FWitnessℚ S = 4` for triples and the 4-set.
 
 Living over `ℚ` so the witness arithmetic stays exact before the final cast to `ℝ`.
 -/
-def F_witness_ℚ : Finset (Fin 4) → ℚ := fun S =>
+def FWitnessℚ : Finset (Fin 4) → ℚ := fun S =>
   if S.card = 0 then 0
   else if S.card = 1 then 2
   else if S = ({0, 1} : Finset (Fin 4)) then 4
@@ -257,19 +257,19 @@ def F_witness_ℚ : Finset (Fin 4) → ℚ := fun S =>
   else 4
 
 /--
-The `ℝ`-cast of `F_witness_ℚ`, used in the main statements `shannonCone_of_witness`,
+The `ℝ`-cast of `FWitnessℚ`, used in the main statements `shannonCone_of_witness`,
 `not_zhangYeungHolds_witness`, `shannon_incomplete`, `theorem4_finite`, `theorem4`, and
 `theorem4_ge_four`.
 -/
-noncomputable def F_witness : Finset (Fin 4) → ℝ := fun S => (F_witness_ℚ S : ℝ)
+noncomputable def FWitness : Finset (Fin 4) → ℝ := fun S => (FWitnessℚ S : ℝ)
 
 /--
-Definitional-shape lemma: `F_witness` is the pointwise `ℚ → ℝ` cast of `F_witness_ℚ`.
+Definitional-shape lemma: `FWitness` is the pointwise `ℚ → ℝ` cast of `FWitnessℚ`.
 Used to push
-`F_witness` into `F_witness_ℚ`-shaped goals before closing them over `ℚ`.
+`FWitness` into `FWitnessℚ`-shaped goals before closing them over `ℚ`.
 -/
-lemma F_witness_eq_cast (S : Finset (Fin 4)) :
-    F_witness S = (F_witness_ℚ S : ℝ) := rfl
+lemma FWitness_eq_cast (S : Finset (Fin 4)) :
+    FWitness S = (FWitnessℚ S : ℝ) := rfl
 
 private def pair01 : Finset (Fin 4) := {0, 1}
 
@@ -287,15 +287,15 @@ private lemma fullBonus_nonneg (S : Finset (Fin 4)) : 0 ≤ fullBonus S := by
 private lemma pairBonus_nonneg (S : Finset (Fin 4)) : 0 ≤ pairBonus S := by
   by_cases h : S = pair01 <;> simp [pairBonus, h]
 
-private lemma F_witness_ℚ_eq_base_add_pair :
-    ∀ S : Finset (Fin 4), F_witness_ℚ S = baseWitness S + pairBonus S := by
+private lemma FWitnessℚ_eq_base_add_pair :
+    ∀ S : Finset (Fin 4), FWitnessℚ S = baseWitness S + pairBonus S := by
   intro S
   by_cases h0 : S.card = 0
   · have hEmpty : S = ∅ := Finset.card_eq_zero.mp h0
     subst hEmpty
     have hFull : (∅ : Finset (Fin 4)) ≠ Finset.univ := by decide
     have hPairLit : (∅ : Finset (Fin 4)) ≠ ({0, 1} : Finset (Fin 4)) := by decide
-    simp [F_witness_ℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, pair01, hFull, hPairLit]
+    simp [FWitnessℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, pair01, hFull, hPairLit]
   · by_cases h1 : S.card = 1
     · have hPair : S ≠ pair01 := by
         intro h
@@ -306,13 +306,13 @@ private lemma F_witness_ℚ_eq_base_add_pair :
         rw [h] at h1
         norm_num at h1
       have hNonempty : S.Nonempty := Finset.card_pos.mp (Nat.pos_of_ne_zero h0)
-      simp [F_witness_ℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, h1, hPair, hFull,
+      simp [FWitnessℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, h1, hPair, hFull,
         hNonempty]
       norm_num
     · by_cases hPair : S = pair01
       · subst hPair
         have hFullLit : ({0, 1} : Finset (Fin 4)) ≠ Finset.univ := by decide
-        simp [F_witness_ℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, pair01, hFullLit]
+        simp [FWitnessℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, pair01, hFullLit]
         norm_num
       · by_cases h2 : S.card = 2
         · have hFull : S ≠ Finset.univ := by
@@ -321,7 +321,7 @@ private lemma F_witness_ℚ_eq_base_add_pair :
             norm_num at h2
           have hNonempty : S.Nonempty := Finset.card_pos.mp (Nat.pos_of_ne_zero h0)
           have hPairLit : S ≠ ({0, 1} : Finset (Fin 4)) := by simpa [pair01] using hPair
-          simp [F_witness_ℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, h2, hPair,
+          simp [FWitnessℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, h2, hPair,
             hPairLit, hFull, hNonempty]
           norm_num
         · have hCardLe : S.card ≤ 4 := by simpa using Finset.card_le_univ S
@@ -334,7 +334,7 @@ private lemma F_witness_ℚ_eq_base_add_pair :
                 norm_num at h3
               have hNonempty : S.Nonempty := Finset.card_pos.mp (Nat.pos_of_ne_zero h0)
               have hPairLit : S ≠ ({0, 1} : Finset (Fin 4)) := by simpa [pair01] using hPair
-              simp [F_witness_ℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, h3, hPair,
+              simp [FWitnessℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, h3, hPair,
                 hPairLit, hFull, hNonempty]
               norm_num
           | inr h4 =>
@@ -344,7 +344,7 @@ private lemma F_witness_ℚ_eq_base_add_pair :
               have hPairUnivLit : (Finset.univ : Finset (Fin 4)) ≠ ({0,
                 1} : Finset (Fin 4)) := by decide
               have hNonempty : S.Nonempty := Finset.card_pos.mp (Nat.pos_of_ne_zero h0)
-              simp [F_witness_ℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, hFull,
+              simp [FWitnessℚ, baseWitness, nonemptyBonus, fullBonus, pairBonus, hFull,
                 hPairUniv, hPairUnivLit]
 
 private lemma card_modular (α β : Finset (Fin 4)) :
@@ -464,41 +464,41 @@ private lemma pairBonus_submodular_outside_exceptional :
         · exact False.elim (hExceptional (exceptional_of_inter_pair α β hInter hα hβ))
         · simp [pairBonus, hα, hβ, hUnion, hInter]
 
-private lemma F_witness_ℚ_submodular :
+private lemma FWitnessℚ_submodular :
     ∀ α β : Finset (Fin 4),
-      F_witness_ℚ (α ∪ β) + F_witness_ℚ (α ∩ β) ≤ F_witness_ℚ α +
-        F_witness_ℚ β := by
+      FWitnessℚ (α ∪ β) + FWitnessℚ (α ∩ β) ≤ FWitnessℚ α +
+        FWitnessℚ β := by
   intro α β
   by_cases hExceptional : PairBonusExceptional α β
   · rcases hExceptional with h01 | h10 | h012013 | h013012
     · rcases h01 with ⟨rfl, rfl⟩
-      have hUnion : F_witness_ℚ (({0} : Finset (Fin 4)) ∪ {1}) = 4 := by decide
-      have hInter : F_witness_ℚ (({0} : Finset (Fin 4)) ∩ {1}) = 0 := by decide
-      have h0 : F_witness_ℚ ({0} : Finset (Fin 4)) = 2 := by decide
-      have h1 : F_witness_ℚ ({1} : Finset (Fin 4)) = 2 := by decide
+      have hUnion : FWitnessℚ (({0} : Finset (Fin 4)) ∪ {1}) = 4 := by decide
+      have hInter : FWitnessℚ (({0} : Finset (Fin 4)) ∩ {1}) = 0 := by decide
+      have h0 : FWitnessℚ ({0} : Finset (Fin 4)) = 2 := by decide
+      have h1 : FWitnessℚ ({1} : Finset (Fin 4)) = 2 := by decide
       rw [hUnion, hInter, h0, h1]
       norm_num
     · rcases h10 with ⟨rfl, rfl⟩
-      have hUnion : F_witness_ℚ (({1} : Finset (Fin 4)) ∪ {0}) = 4 := by decide
-      have hInter : F_witness_ℚ (({1} : Finset (Fin 4)) ∩ {0}) = 0 := by decide
-      have h1 : F_witness_ℚ ({1} : Finset (Fin 4)) = 2 := by decide
-      have h0 : F_witness_ℚ ({0} : Finset (Fin 4)) = 2 := by decide
+      have hUnion : FWitnessℚ (({1} : Finset (Fin 4)) ∪ {0}) = 4 := by decide
+      have hInter : FWitnessℚ (({1} : Finset (Fin 4)) ∩ {0}) = 0 := by decide
+      have h1 : FWitnessℚ ({1} : Finset (Fin 4)) = 2 := by decide
+      have h0 : FWitnessℚ ({0} : Finset (Fin 4)) = 2 := by decide
       rw [hUnion, hInter, h1, h0]
       norm_num
     · rcases h012013 with ⟨rfl, rfl⟩
-      have hUnion : F_witness_ℚ (({0, 1, 2} : Finset (Fin 4)) ∪ {0, 1, 3}) = 4 := by decide
-      have hInter : F_witness_ℚ (({0, 1, 2} : Finset (Fin 4)) ∩ {0, 1, 3}) = 4 := by decide
-      have h012 : F_witness_ℚ ({0, 1, 2} : Finset (Fin 4)) = 4 := by decide
-      have h013 : F_witness_ℚ ({0, 1, 3} : Finset (Fin 4)) = 4 := by decide
+      have hUnion : FWitnessℚ (({0, 1, 2} : Finset (Fin 4)) ∪ {0, 1, 3}) = 4 := by decide
+      have hInter : FWitnessℚ (({0, 1, 2} : Finset (Fin 4)) ∩ {0, 1, 3}) = 4 := by decide
+      have h012 : FWitnessℚ ({0, 1, 2} : Finset (Fin 4)) = 4 := by decide
+      have h013 : FWitnessℚ ({0, 1, 3} : Finset (Fin 4)) = 4 := by decide
       rw [hUnion, hInter, h012, h013]
     · rcases h013012 with ⟨rfl, rfl⟩
-      have hUnion : F_witness_ℚ (({0, 1, 3} : Finset (Fin 4)) ∪ {0, 1, 2}) = 4 := by decide
-      have hInter : F_witness_ℚ (({0, 1, 3} : Finset (Fin 4)) ∩ {0, 1, 2}) = 4 := by decide
-      have h013 : F_witness_ℚ ({0, 1, 3} : Finset (Fin 4)) = 4 := by decide
-      have h012 : F_witness_ℚ ({0, 1, 2} : Finset (Fin 4)) = 4 := by decide
+      have hUnion : FWitnessℚ (({0, 1, 3} : Finset (Fin 4)) ∪ {0, 1, 2}) = 4 := by decide
+      have hInter : FWitnessℚ (({0, 1, 3} : Finset (Fin 4)) ∩ {0, 1, 2}) = 4 := by decide
+      have h013 : FWitnessℚ ({0, 1, 3} : Finset (Fin 4)) = 4 := by decide
+      have h012 : FWitnessℚ ({0, 1, 2} : Finset (Fin 4)) = 4 := by decide
       rw [hUnion, hInter, h013, h012]
-  · rw [F_witness_ℚ_eq_base_add_pair (α ∪ β), F_witness_ℚ_eq_base_add_pair (α ∩ β),
-      F_witness_ℚ_eq_base_add_pair α, F_witness_ℚ_eq_base_add_pair β]
+  · rw [FWitnessℚ_eq_base_add_pair (α ∪ β), FWitnessℚ_eq_base_add_pair (α ∩ β),
+      FWitnessℚ_eq_base_add_pair α, FWitnessℚ_eq_base_add_pair β]
     have hBase := baseWitness_submodular α β
     have hPair := pairBonus_submodular_outside_exceptional α β hExceptional
     linarith
@@ -514,22 +514,22 @@ submodularity is proved structurally by decomposing the witness into a cardinali
 profile plus one
 exceptional pair bonus.
 -/
-theorem shannonCone_of_witness : shannonCone F_witness := by
+theorem shannonCone_of_witness : shannonCone FWitness := by
   refine ⟨?_, ?_, ?_⟩
-  · -- `F_witness ∅ = 0`
-    change ((F_witness_ℚ ∅ : ℚ) : ℝ) = 0
-    have h : F_witness_ℚ ∅ = 0 := by decide
+  · -- `FWitness ∅ = 0`
+    change ((FWitnessℚ ∅ : ℚ) : ℝ) = 0
+    have h : FWitnessℚ ∅ = 0 := by decide
     exact_mod_cast h
   · -- Monotonicity.
     intro α β hαβ
-    have h : ∀ α β : Finset (Fin 4), α ⊆ β → F_witness_ℚ α ≤ F_witness_ℚ β := by
+    have h : ∀ α β : Finset (Fin 4), α ⊆ β → FWitnessℚ α ≤ FWitnessℚ β := by
       decide
-    simp only [F_witness_eq_cast]
+    simp only [FWitness_eq_cast]
     exact_mod_cast h α β hαβ
   · -- Submodularity.
     intro α β
-    simp only [F_witness_eq_cast]
-    exact_mod_cast F_witness_ℚ_submodular α β
+    simp only [FWitness_eq_cast]
+    exact_mod_cast FWitnessℚ_submodular α β
 
 /-! ### Part (b): the witness violates the Zhang-Yeung inequality -/
 
@@ -544,22 +544,22 @@ can consume
 it without reproducing the concrete witness evaluation block.
 -/
 private lemma not_zhangYeungAt_witness_canonical :
-    ¬ zhangYeungAt F_witness 2 3 0 1 := by
+    ¬ zhangYeungAt FWitness 2 3 0 1 := by
   intro h
-  simp only [zhangYeungAt, delta_F, I_F, condI_F, F_witness_eq_cast] at h
-  have h00 : F_witness_ℚ ({0} : Finset (Fin 4)) = 2 := by decide
-  have h11 : F_witness_ℚ ({1} : Finset (Fin 4)) = 2 := by decide
-  have h22 : F_witness_ℚ ({2} : Finset (Fin 4)) = 2 := by decide
-  have h33 : F_witness_ℚ ({3} : Finset (Fin 4)) = 2 := by decide
-  have h01 : F_witness_ℚ (({0} : Finset (Fin 4)) ∪ {1}) = 4 := by decide
-  have h02 : F_witness_ℚ (({2} : Finset (Fin 4)) ∪ {0}) = 3 := by decide
-  have h03 : F_witness_ℚ (({3} : Finset (Fin 4)) ∪ {0}) = 3 := by decide
-  have h12 : F_witness_ℚ (({2} : Finset (Fin 4)) ∪ {1}) = 3 := by decide
-  have h13 : F_witness_ℚ (({3} : Finset (Fin 4)) ∪ {1}) = 3 := by decide
-  have h23 : F_witness_ℚ (({2} : Finset (Fin 4)) ∪ {3}) = 3 := by decide
-  have h023 : F_witness_ℚ (({2} : Finset (Fin 4)) ∪ {3} ∪ {0}) = 4 := by decide
-  have h123 : F_witness_ℚ (({2} : Finset (Fin 4)) ∪ {3} ∪ {1}) = 4 := by decide
-  have h023' : F_witness_ℚ (({0} : Finset (Fin 4)) ∪ (({2} : Finset (Fin 4)) ∪ {3})) = 4 := by
+  simp only [zhangYeungAt, deltaF, IF, condIF, FWitness_eq_cast] at h
+  have h00 : FWitnessℚ ({0} : Finset (Fin 4)) = 2 := by decide
+  have h11 : FWitnessℚ ({1} : Finset (Fin 4)) = 2 := by decide
+  have h22 : FWitnessℚ ({2} : Finset (Fin 4)) = 2 := by decide
+  have h33 : FWitnessℚ ({3} : Finset (Fin 4)) = 2 := by decide
+  have h01 : FWitnessℚ (({0} : Finset (Fin 4)) ∪ {1}) = 4 := by decide
+  have h02 : FWitnessℚ (({2} : Finset (Fin 4)) ∪ {0}) = 3 := by decide
+  have h03 : FWitnessℚ (({3} : Finset (Fin 4)) ∪ {0}) = 3 := by decide
+  have h12 : FWitnessℚ (({2} : Finset (Fin 4)) ∪ {1}) = 3 := by decide
+  have h13 : FWitnessℚ (({3} : Finset (Fin 4)) ∪ {1}) = 3 := by decide
+  have h23 : FWitnessℚ (({2} : Finset (Fin 4)) ∪ {3}) = 3 := by decide
+  have h023 : FWitnessℚ (({2} : Finset (Fin 4)) ∪ {3} ∪ {0}) = 4 := by decide
+  have h123 : FWitnessℚ (({2} : Finset (Fin 4)) ∪ {3} ∪ {1}) = 4 := by decide
+  have h023' : FWitnessℚ (({0} : Finset (Fin 4)) ∪ (({2} : Finset (Fin 4)) ∪ {3})) = 4 := by
     decide
   rw [h00, h11, h22, h33, h01, h02, h03, h12, h13, h23, h023, h123, h023'] at h
   norm_num at h
@@ -573,7 +573,7 @@ Equiv.swap 0 2 * Equiv.swap 1 3`; after permutation evaluation the obligation is
 canonical
 failure `not_zhangYeungAt_witness_canonical`.
 -/
-theorem not_zhangYeungHolds_witness : ¬ zhangYeungHolds F_witness := by
+theorem not_zhangYeungHolds_witness : ¬ zhangYeungHolds FWitness := by
   intro h
   specialize h (Equiv.swap (0 : Fin 4) 2 * Equiv.swap (1 : Fin 4) 3)
   rw [show (Equiv.swap (0 : Fin 4) 2 * Equiv.swap (1 : Fin 4) 3) 0 = 2 from by decide,
@@ -592,7 +592,7 @@ packages the exact closure statement from the paper.
 -/
 theorem shannon_incomplete :
     ∃ F : Finset (Fin 4) → ℝ, shannonCone F ∧ ¬ zhangYeungHolds F :=
-  ⟨F_witness, shannonCone_of_witness, not_zhangYeungHolds_witness⟩
+  ⟨FWitness, shannonCone_of_witness, not_zhangYeungHolds_witness⟩
 
 /-!
 ### Part (c): the bridge from the random-variable form (M3) to the set-function form
@@ -615,7 +615,7 @@ subsingleton;
 the joint tuple is constant, and its entropy is zero.
 -/
 lemma entropyFn_empty : entropyFn X μ ∅ = 0 := by
-  simp only [entropyFn, entropyFn_n]
+  simp only [entropyFn, entropyFnN]
   haveI : IsEmpty {j : Fin 4 // j ∈ (∅ : Finset (Fin 4))} :=
     ⟨fun ⟨j, hj⟩ => Finset.notMem_empty j hj⟩
   haveI : Nonempty Ω := nonempty_of_isProbabilityMeasure μ
@@ -637,7 +637,7 @@ over the single-element subset `{i}` is, up to a measurable bijection into `S i`
 lemma entropyFn_singleton (hX : ∀ i, Measurable (X i)) (i : Fin 4) :
     entropyFn X μ {i} = H[X i; μ] := by
   letI : ∀ i, Fintype (S i) := fun i => Fintype.ofFinite (S i)
-  simp only [entropyFn, entropyFn_n]
+  simp only [entropyFn, entropyFnN]
   -- Projection π : (∀ j : {i}, S j.1) → S i sending g to its value at ⟨i, mem⟩.
   let π : (∀ j : ({i} : Finset (Fin 4)), S j.1) → S i :=
     fun g => g ⟨i, Finset.mem_singleton.mpr rfl⟩
@@ -668,7 +668,7 @@ lemma entropyFn_pair (hX : ∀ i, Measurable (X i))
     {i j : Fin 4} (h : i ≠ j) :
     entropyFn X μ {i, j} = H[⟨X i, X j⟩; μ] := by
   letI : ∀ i, Fintype (S i) := fun i => Fintype.ofFinite (S i)
-  simp only [entropyFn, entropyFn_n]
+  simp only [entropyFn, entropyFnN]
   -- Projection π : (∀ k : {i, j}, S k.1) → S i × S j evaluating at both indices.
   have hi : i ∈ ({i, j} : Finset (Fin 4)) := by simp
   have hj : j ∈ ({i, j} : Finset (Fin 4)) := by simp
@@ -704,7 +704,7 @@ lemma entropyFn_triple (hX : ∀ i, Measurable (X i))
     {i j k : Fin 4} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k) :
     entropyFn X μ {i, j, k} = H[⟨X i, ⟨X j, X k⟩⟩; μ] := by
   letI : ∀ i, Fintype (S i) := fun i => Fintype.ofFinite (S i)
-  simp only [entropyFn, entropyFn_n]
+  simp only [entropyFn, entropyFnN]
   have hi : i ∈ ({i, j, k} : Finset (Fin 4)) := by simp
   have hj : j ∈ ({i, j, k} : Finset (Fin 4)) := by simp
   have hk : k ∈ ({i, j, k} : Finset (Fin 4)) := by simp
@@ -741,7 +741,7 @@ lemma entropyFn_quad (hX : ∀ i, Measurable (X i)) :
     entropyFn X μ ({0, 1, 2, 3} : Finset (Fin 4))
       = H[⟨X 0, ⟨X 1, ⟨X 2, X 3⟩⟩⟩; μ] := by
   letI : ∀ i, Fintype (S i) := fun i => Fintype.ofFinite (S i)
-  simp only [entropyFn, entropyFn_n]
+  simp only [entropyFn, entropyFnN]
   have h0 : (0 : Fin 4) ∈ ({0, 1, 2, 3} : Finset (Fin 4)) := by decide
   have h1 : (1 : Fin 4) ∈ ({0, 1, 2, 3} : Finset (Fin 4)) := by decide
   have h2 : (2 : Fin 4) ∈ ({0, 1, 2, 3} : Finset (Fin 4)) := by decide
@@ -814,7 +814,7 @@ lemma _root_.ZhangYeung.zhangYeungAt_entropyFn
       ← entropy_assoc (hX (π 0)) (hX (π 1)) (hX (π 2)) μ,
       ← entropy_assoc (hX (π 0)) (hX (π 1)) (hX (π 3)) μ] at hM3
   -- Unfold the set-function calculus on the goal.
-  unfold zhangYeungAt delta_F I_F condI_F
+  unfold zhangYeungAt deltaF IF condIF
   -- Collapse `{x} ∪ s` and `insert a s ∪ t` to canonical `insert`-form so the
   -- `entropyFn_pair`/`entropyFn_triple` bridges fire without further massage.
   simp only [Finset.singleton_union, Finset.insert_union]
@@ -862,7 +862,7 @@ theorem _root_.ZhangYeung.theorem4_finite :
         [∀ i, MeasurableSingletonClass (S i)]
         (X : ∀ i : Fin 4, Ω → S i) (_ : ∀ i, Measurable (X i)),
         F ≠ entropyFn X μ := by
-  refine ⟨F_witness, shannonCone_of_witness, ?_⟩
+  refine ⟨FWitness, shannonCone_of_witness, ?_⟩
   intro Ω _ μ _ S _ _ _ X hX heq
   apply not_zhangYeungHolds_witness
   rw [heq]
@@ -884,41 +884,41 @@ retained
 separately as `theorem4_seqClosure`. -/
 
 /--
-`I_F` is jointly continuous in the set-function argument under pointwise convergence.
+`IF` is jointly continuous in the set-function argument under pointwise convergence.
 -/
-private lemma I_F_tendsto
+private lemma IF_tendsto
     {F_seq : ℕ → Finset (Fin 4) → ℝ} {F : Finset (Fin 4) → ℝ}
     (h : ∀ α, Filter.Tendsto (fun k => F_seq k α) Filter.atTop (𝓝 (F α)))
     (α β : Finset (Fin 4)) :
-    Filter.Tendsto (fun k => I_F (F_seq k) α β) Filter.atTop (𝓝 (I_F F α β)) := by
-  simp only [I_F]
+    Filter.Tendsto (fun k => IF (F_seq k) α β) Filter.atTop (𝓝 (IF F α β)) := by
+  simp only [IF]
   exact ((h α).add (h β)).sub (h _)
 
 /--
-`condI_F` is jointly continuous in the set-function argument under pointwise
+`condIF` is jointly continuous in the set-function argument under pointwise
 convergence.
 -/
-private lemma condI_F_tendsto
+private lemma condIF_tendsto
     {F_seq : ℕ → Finset (Fin 4) → ℝ} {F : Finset (Fin 4) → ℝ}
     (h : ∀ α, Filter.Tendsto (fun k => F_seq k α) Filter.atTop (𝓝 (F α)))
     (α β γ : Finset (Fin 4)) :
-    Filter.Tendsto (fun k => condI_F (F_seq k) α β γ) Filter.atTop (𝓝 (condI_F F α β
+    Filter.Tendsto (fun k => condIF (F_seq k) α β γ) Filter.atTop (𝓝 (condIF F α β
       γ)) := by
-  simp only [condI_F]
+  simp only [condIF]
   exact (((h _).add (h _)).sub (h _)).sub (h _)
 
 /--
-`delta_F` is jointly continuous in the set-function argument under pointwise
+`deltaF` is jointly continuous in the set-function argument under pointwise
 convergence.
 -/
-private lemma delta_F_tendsto
+private lemma deltaF_tendsto
     {F_seq : ℕ → Finset (Fin 4) → ℝ} {F : Finset (Fin 4) → ℝ}
     (h : ∀ α, Filter.Tendsto (fun k => F_seq k α) Filter.atTop (𝓝 (F α)))
     (i j k l : Fin 4) :
-    Filter.Tendsto (fun n => delta_F (F_seq n) i j k l) Filter.atTop
-      (𝓝 (delta_F F i j k l)) := by
-  simp only [delta_F]
-  exact ((I_F_tendsto h _ _).sub (condI_F_tendsto h _ _ _)).sub (condI_F_tendsto h _ _ _)
+    Filter.Tendsto (fun n => deltaF (F_seq n) i j k l) Filter.atTop
+      (𝓝 (deltaF F i j k l)) := by
+  simp only [deltaF]
+  exact ((IF_tendsto h _ _).sub (condIF_tendsto h _ _ _)).sub (condIF_tendsto h _ _ _)
 
 /--
 `zhangYeungHolds` is closed under pointwise convergence: if each `F_seq k` lies in
@@ -935,47 +935,47 @@ lemma _root_.ZhangYeung.zhangYeungHolds_of_tendsto
     (h_lim : ∀ α, Filter.Tendsto (fun k => F_seq k α) Filter.atTop (𝓝 (F α))) :
     zhangYeungHolds F := by
   intro π
-  have h_LHS := delta_F_tendsto h_lim (π 0) (π 1) (π 2) (π 3)
+  have h_LHS := deltaF_tendsto h_lim (π 0) (π 1) (π 2) (π 3)
   have h_RHS :
       Filter.Tendsto
-        (fun k => (1 / 2 : ℝ) * (I_F (F_seq k) {π 2} {π 3}
-              + I_F (F_seq k) {π 2} ({π 0} ∪ {π 1})
-              + condI_F (F_seq k) {π 0} {π 1} {π 2}
-              - condI_F (F_seq k) {π 0} {π 1} {π 3}))
+        (fun k => (1 / 2 : ℝ) * (IF (F_seq k) {π 2} {π 3}
+              + IF (F_seq k) {π 2} ({π 0} ∪ {π 1})
+              + condIF (F_seq k) {π 0} {π 1} {π 2}
+              - condIF (F_seq k) {π 0} {π 1} {π 3}))
         Filter.atTop
-        (𝓝 ((1 / 2 : ℝ) * (I_F F {π 2} {π 3}
-            + I_F F {π 2} ({π 0} ∪ {π 1})
-            + condI_F F {π 0} {π 1} {π 2}
-            - condI_F F {π 0} {π 1} {π 3}))) := by
+        (𝓝 ((1 / 2 : ℝ) * (IF F {π 2} {π 3}
+            + IF F {π 2} ({π 0} ∪ {π 1})
+            + condIF F {π 0} {π 1} {π 2}
+            - condIF F {π 0} {π 1} {π 3}))) := by
     refine Filter.Tendsto.const_mul _ ?_
-    exact (((I_F_tendsto h_lim _ _).add (I_F_tendsto h_lim _ _)).add
-      (condI_F_tendsto h_lim _ _ _)).sub (condI_F_tendsto h_lim _ _ _)
+    exact (((IF_tendsto h_lim _ _).add (IF_tendsto h_lim _ _)).add
+      (condIF_tendsto h_lim _ _ _)).sub (condIF_tendsto h_lim _ _ _)
   exact le_of_tendsto_of_tendsto' h_LHS h_RHS (fun k => h_seq k π)
 
-private lemma continuous_I_F (α β : Finset (Fin 4)) :
-    Continuous (fun F : Finset (Fin 4) → ℝ => I_F F α β) := by
-  simpa [I_F] using ((continuous_apply α).add (continuous_apply β)).sub (continuous_apply (α
+private lemma continuous_IF (α β : Finset (Fin 4)) :
+    Continuous (fun F : Finset (Fin 4) → ℝ => IF F α β) := by
+  simpa [IF] using ((continuous_apply α).add (continuous_apply β)).sub (continuous_apply (α
     ∪ β))
 
-private lemma continuous_condI_F (α β γ : Finset (Fin 4)) :
-    Continuous (fun F : Finset (Fin 4) → ℝ => condI_F F α β γ) := by
-  simpa [condI_F, Finset.union_assoc] using
+private lemma continuous_condIF (α β γ : Finset (Fin 4)) :
+    Continuous (fun F : Finset (Fin 4) → ℝ => condIF F α β γ) := by
+  simpa [condIF, Finset.union_assoc] using
     (((continuous_apply (α ∪ γ)).add (continuous_apply (β ∪ γ))).sub
       (continuous_apply (α ∪ (β ∪ γ)))).sub (continuous_apply γ)
 
-private lemma continuous_delta_F (i j k l : Fin 4) :
-    Continuous (fun F : Finset (Fin 4) → ℝ => delta_F F i j k l) := by
-  simpa [delta_F] using
-    ((continuous_I_F {i} {j}).sub (continuous_condI_F {i} {j} {k})).sub
-      (continuous_condI_F {i} {j} {l})
+private lemma continuous_deltaF (i j k l : Fin 4) :
+    Continuous (fun F : Finset (Fin 4) → ℝ => deltaF F i j k l) := by
+  simpa [deltaF] using
+    ((continuous_IF {i} {j}).sub (continuous_condIF {i} {j} {k})).sub
+      (continuous_condIF {i} {j} {l})
 
 private lemma isClosed_zhangYeungAt_set (π : Equiv.Perm (Fin 4)) :
     IsClosed {F : Finset (Fin 4) → ℝ | zhangYeungAt F (π 0) (π 1) (π 2) (π 3)} := by
   unfold zhangYeungAt
-  refine isClosed_le (continuous_delta_F _ _ _ _) ?_
+  refine isClosed_le (continuous_deltaF _ _ _ _) ?_
   refine continuous_const.mul ?_
-  exact (((continuous_I_F {π 2} {π 3}).add (continuous_I_F {π 2} ({π 0} ∪ {π 1}))).add
-    (continuous_condI_F {π 0} {π 1} {π 2})).sub (continuous_condI_F {π 0} {π 1} {π 3})
+  exact (((continuous_IF {π 2} {π 3}).add (continuous_IF {π 2} ({π 0} ∪ {π 1}))).add
+    (continuous_condIF {π 0} {π 1} {π 2})).sub (continuous_condIF {π 0} {π 1} {π 3})
 
 private def zhangYeungRegion_4 : Set (Finset (Fin 4) → ℝ) :=
   {F | zhangYeungHolds F}
@@ -995,7 +995,7 @@ private lemma isClosed_zhangYeungRegion_4 : IsClosed zhangYeungRegion_4 := by
 
 /-- Every entropic point in dimension `4` lies in the closed Zhang-Yeung region. -/
 private lemma entropyRegion_four_subset_zhangYeungRegion_4 :
-    entropyRegion_n.{u} 4 ⊆ zhangYeungRegion_4 := by
+    entropyRegionN.{u} 4 ⊆ zhangYeungRegion_4 := by
   intro F hF
   rcases hF with ⟨Ω, hΩ, μ, hμ, S, hS, hFin, hMSC, X, hX, h_eq⟩
   letI : MeasurableSpace Ω := hΩ
@@ -1008,12 +1008,12 @@ private lemma entropyRegion_four_subset_zhangYeungRegion_4 :
 
 /-- Every almost-entropic point in dimension `4` lies in the Zhang-Yeung region. -/
 private lemma almostEntropicRegion_four_subset_zhangYeungRegion_4 :
-    almostEntropicRegion_n.{u} 4 ⊆ zhangYeungRegion_4 := by
-  simpa [almostEntropicRegion_n] using
+    almostEntropicRegionN.{u} 4 ⊆ zhangYeungRegion_4 := by
+  simpa [almostEntropicRegionN] using
     (closure_minimal entropyRegion_four_subset_zhangYeungRegion_4 isClosed_zhangYeungRegion_4)
 
 /-- The witness is not almost entropic in dimension `4`. -/
-private lemma not_mem_almostEntropicRegion_witness : F_witness ∉ almostEntropicRegion_n.{u} 4 :=
+private lemma not_mem_almostEntropicRegion_witness : FWitness ∉ almostEntropicRegionN.{u} 4 :=
   by
   intro hF
   exact not_zhangYeungHolds_witness (almostEntropicRegion_four_subset_zhangYeungRegion_4 hF)
@@ -1025,19 +1025,19 @@ contains the closure of the entropic region: there exists a set function in `Γ_
 is not
 almost entropic. The non-membership claim is universe-polymorphic: for every universe
 `u`,
-`F_witness ∉ almostEntropicRegion_n.{u} 4`, since the closedness argument in
+`FWitness ∉ almostEntropicRegionN.{u} 4`, since the closedness argument in
 `zhangYeungRegion_4`
 lives entirely at the level of `Finset (Fin 4) → ℝ`.
 -/
 theorem _root_.ZhangYeung.theorem4 :
     ∃ F : Finset (Fin 4) → ℝ,
-      F ∈ shannonRegion_n 4 ∧ F ∉ almostEntropicRegion_n.{u} 4 := by
-  refine ⟨F_witness, ?_, not_mem_almostEntropicRegion_witness⟩
-  change shannonCone_n F_witness
-  simpa using shannonCone_of_witness
+      F ∈ shannonRegionN 4 ∧ F ∉ almostEntropicRegionN.{u} 4 := by
+  refine ⟨FWitness, ?_, not_mem_almostEntropicRegion_witness⟩
+  change shannonConeN FWitness
+  exact shannonCone_of_witness
 
 /--
-Sequence-level strengthening of the witness exclusion: `F_witness` is not the pointwise
+Sequence-level strengthening of the witness exclusion: `FWitness` is not the pointwise
 limit of
 any sequence of set functions in `tildeΓ_4`. This auxiliary is stronger than `theorem4`,
 but it is
@@ -1049,13 +1049,13 @@ theorem _root_.ZhangYeung.theorem4_seqClosure :
         (∀ k, zhangYeungHolds (F_seq k)) →
         (∀ α, Filter.Tendsto (fun k => F_seq k α) Filter.atTop (𝓝 (F α))) →
         False := by
-  refine ⟨F_witness, shannonCone_of_witness, ?_⟩
+  refine ⟨FWitness, shannonCone_of_witness, ?_⟩
   intro F_seq h_seq h_lim
   exact not_zhangYeungHolds_witness (zhangYeungHolds_of_tendsto h_seq h_lim)
 
 /-! ### `n ≥ 4` extension
 
-The witness `F_witness_n` is the lift of `F_witness` along the canonical embedding `Fin
+The witness `FWitnessN` is the lift of `FWitness` along the canonical embedding `Fin
 4 ↪ Fin n`
 via `Finset.preimage`. It still lies in the Shannon cone and still violates the
 Zhang-Yeung
@@ -1064,19 +1064,19 @@ Fin.castLE hn 0,
 Fin.castLE hn 1)`. The exact paper-level `n ≥ 4` theorem then follows by restricting any
 hypothetical almost-entropic realization back down to the first four coordinates. The
 generic cone
-predicates `zhangYeungAt_n` and `zhangYeungHolds_n` consumed below live in
+predicates `zhangYeungAtN` and `zhangYeungHoldsN` consumed below live in
 `ZhangYeung.EntropyRegion`. -/
 
 /--
-The `n = 4` witness lifted to `Fin n` for `n ≥ 4`: `F_witness_n hn α` evaluates
-`F_witness` on the
-preimage of `α` under the canonical embedding `Fin 4 ↪ Fin n`. Equivalent to `F_witness`
+The `n = 4` witness lifted to `Fin n` for `n ≥ 4`: `FWitnessN hn α` evaluates
+`FWitness` on the
+preimage of `α` under the canonical embedding `Fin 4 ↪ Fin n`. Equivalent to `FWitness`
 applied to
 the intersection of `α` with the initial segment `{0, 1, 2, 3 : Fin n}`.
 -/
-noncomputable def _root_.ZhangYeung.F_witness_n
+noncomputable def _root_.ZhangYeung.FWitnessN
     {n : ℕ} (hn : 4 ≤ n) (α : Finset (Fin n)) : ℝ :=
-  F_witness (α.preimage (Fin.castLE hn) (Fin.castLE_injective hn).injOn)
+  FWitness (α.preimage (Fin.castLE hn) (Fin.castLE_injective hn).injOn)
 
 /--
 The lifted witness lies in `Γ_n`: each Shannon-cone axiom transports across
@@ -1086,11 +1086,11 @@ reduces to
 the base `shannonCone_of_witness`.
 -/
 theorem _root_.ZhangYeung.shannonCone_of_witness_n {n : ℕ} (hn : 4 ≤ n) :
-    shannonCone_n (F_witness_n hn) := by
+    shannonConeN (FWitnessN hn) := by
   refine ⟨?_, ?_, ?_⟩
-  · simpa [F_witness_n] using shannonCone_of_witness.1
+  · simpa [FWitnessN] using shannonCone_of_witness.1
   · intro α β hαβ
-    simpa [F_witness_n] using shannonCone_of_witness.2.1 _ _
+    simpa [FWitnessN] using shannonCone_of_witness.2.1 _ _
       (Finset.monotone_preimage (Fin.castLE_injective hn) hαβ)
   · intro α β
     have h_inter :
@@ -1099,7 +1099,7 @@ theorem _root_.ZhangYeung.shannonCone_of_witness_n {n : ℕ} (hn : 4 ≤ n) :
           (α ∩ β).preimage (Fin.castLE hn) (Fin.castLE_injective hn).injOn := by
       ext i
       simp [Finset.mem_preimage]
-    rw [F_witness_n, F_witness_n, F_witness_n, F_witness_n]
+    rw [FWitnessN, FWitnessN, FWitnessN, FWitnessN]
     rw [Finset.preimage_union, ← h_inter]
     exact shannonCone_of_witness.2.2
       (α.preimage (Fin.castLE hn) (Fin.castLE_injective hn).injOn)
@@ -1118,33 +1118,33 @@ Restricting the lifted witness back to the first four coordinates recovers the b
 witness.
 -/
 theorem _root_.ZhangYeung.restrictFirstFour_witness_n {n : ℕ} (hn : 4 ≤ n) :
-    restrictFirstFour hn (F_witness_n hn) = F_witness := by
+    restrictFirstFour hn (FWitnessN hn) = FWitness := by
   ext α
-  unfold restrictFirstFour F_witness_n
+  unfold restrictFirstFour FWitnessN
   congr
   simpa using (Finset.preimage_map (Fin.castLEEmb hn) α)
 
 /--
 The Zhang-Yeung inequality at the lifted canonical labeling pulls back to the base
 labeling: every
-set-function operation in `zhangYeungAt_n F_witness_n` reduces through `Finset.preimage`
+set-function operation in `zhangYeungAtN FWitnessN` reduces through `Finset.preimage`
 to the
-corresponding `zhangYeungAt F_witness` operation on `Fin 4`.
+corresponding `zhangYeungAt FWitness` operation on `Fin 4`.
 -/
-private lemma zhangYeungAt_n_witness_castLE {n : ℕ} (hn : 4 ≤ n) (i j k l : Fin 4) :
-    zhangYeungAt_n (F_witness_n hn) (Fin.castLE hn i) (Fin.castLE hn j)
+private lemma zhangYeungAtN_witness_castLE {n : ℕ} (hn : 4 ≤ n) (i j k l : Fin 4) :
+    zhangYeungAtN (FWitnessN hn) (Fin.castLE hn i) (Fin.castLE hn j)
         (Fin.castLE hn k) (Fin.castLE hn l)
-      ↔ zhangYeungAt F_witness i j k l := by
-  unfold zhangYeungAt_n zhangYeungAt delta_F_n delta_F I_F_n I_F condI_F_n condI_F F_witness_n
+      ↔ zhangYeungAt FWitness i j k l := by
+  unfold zhangYeungAtN zhangYeungAt deltaFN deltaF IFN IF condIFN condIF FWitnessN
   simp only [Finset.preimage_union, preimage_singleton_castLE]
 
 /--
-Part (b) lifted to `Fin n`: the lifted witness fails `zhangYeungHolds_n` at the lifted
+Part (b) lifted to `Fin n`: the lifted witness fails `zhangYeungHoldsN` at the lifted
 canonical
 labeling.
 -/
 theorem _root_.ZhangYeung.not_zhangYeungHolds_witness_n {n : ℕ} (hn : 4 ≤ n) :
-    ¬ zhangYeungHolds_n (F_witness_n hn) := by
+    ¬ zhangYeungHoldsN (FWitnessN hn) := by
   intro h
   have inj := Fin.castLE_injective hn
   have d23 : (Fin.castLE hn 2 : Fin n) ≠ Fin.castLE hn 3 :=
@@ -1161,7 +1161,7 @@ theorem _root_.ZhangYeung.not_zhangYeungHolds_witness_n {n : ℕ} (hn : 4 ≤ n)
     fun e => absurd (inj e) (by decide)
   have hat := h (Fin.castLE hn 2) (Fin.castLE hn 3) (Fin.castLE hn 0) (Fin.castLE hn 1)
     d23 d20 d21 d30 d31 d01
-  exact not_zhangYeungAt_witness_canonical ((zhangYeungAt_n_witness_castLE hn 2 3 0 1).mp hat)
+  exact not_zhangYeungAt_witness_canonical ((zhangYeungAtN_witness_castLE hn 2 3 0 1).mp hat)
 
 /--
 Stronger cone-level corollary for `n ≥ 4`: the lifted witness separates `Γ_n` from the
@@ -1171,8 +1171,8 @@ strengthens the
 exact paper-level theorem `theorem4_ge_four`.
 -/
 theorem _root_.ZhangYeung.shannon_incomplete_ge_four (n : ℕ) (hn : 4 ≤ n) :
-    ∃ F : Finset (Fin n) → ℝ, shannonCone_n F ∧ ¬ zhangYeungHolds_n F :=
-  ⟨F_witness_n hn, shannonCone_of_witness_n hn, not_zhangYeungHolds_witness_n hn⟩
+    ∃ F : Finset (Fin n) → ℝ, shannonConeN F ∧ ¬ zhangYeungHoldsN F :=
+  ⟨FWitnessN hn, shannonCone_of_witness_n hn, not_zhangYeungHolds_witness_n hn⟩
 
 /--
 **Theorem 4 of [@zhangyeung1998, §II, eq. 26]** for all `n ≥ 4`. The Shannon outer bound
@@ -1181,19 +1181,19 @@ strictly contains the closure of the entropic region: there exists a set functio
 `Γ_n` that is
 not almost entropic. The non-membership claim is universe-polymorphic: for every
 universe `u`,
-`F_witness_n hn ∉ almostEntropicRegion_n.{u} n`, by restricting any hypothetical
+`FWitnessN hn ∉ almostEntropicRegionN.{u} n`, by restricting any hypothetical
 almost-entropic
 realization back down to the first four coordinates and applying the `n = 4` exclusion.
 -/
 theorem _root_.ZhangYeung.theorem4_ge_four (n : ℕ) (hn : 4 ≤ n) :
     ∃ F : Finset (Fin n) → ℝ,
-      F ∈ shannonRegion_n n ∧ F ∉ almostEntropicRegion_n.{u} n := by
-  refine ⟨F_witness_n hn, ?_, ?_⟩
-  · change shannonCone_n (F_witness_n hn)
+      F ∈ shannonRegionN n ∧ F ∉ almostEntropicRegionN.{u} n := by
+  refine ⟨FWitnessN hn, ?_, ?_⟩
+  · change shannonConeN (FWitnessN hn)
     exact shannonCone_of_witness_n hn
   · intro hF
-    have h_restrict : F_witness ∈ almostEntropicRegion_n.{u} 4 := by
-      simpa [restrictFirstFour_witness_n hn] using restrictFirstFour_mem_almostEntropicRegion_n
+    have h_restrict : FWitness ∈ almostEntropicRegionN.{u} 4 := by
+      simpa [restrictFirstFour_witness_n hn] using restrictFirstFour_mem_almostEntropicRegionN
         hn hF
     exact not_mem_almostEntropicRegion_witness h_restrict
 

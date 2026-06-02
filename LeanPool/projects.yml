@@ -1043,11 +1043,11 @@ projects:
       github_repo: ivankobe/FactorizationSystems
     status: verified
     main_declarations:
-      - CategoryTheory.FactorizationSystem_characterization
+      - CategoryTheory.FactorizationSystemCharacterization
     main_results:
       - declaration: CategoryTheory.FactorizationSystem
         informal: Defines factorization systems on a category with specified left and right classes.
-      - declaration: CategoryTheory.FactorizationSystem_characterization
+      - declaration: CategoryTheory.FactorizationSystemCharacterization
         informal: Constructs a factorization system from repleteness, weak factorizations, and orthogonality.
       - declaration: CategoryTheory.orthogonal
         informal: Defines orthogonality of two morphisms by existence and uniqueness of diagonal fillers.
@@ -1416,9 +1416,9 @@ projects:
       github_repo: jjdishere/neukirch
     status: verified
     main_declarations:
-      - NumberField.ramificationIdx_mul_inertiaDeg_of_isGalois
+      - NumberField.ramificationIdx_mul_inertiaDegOfIsGalois
     main_results:
-      - declaration: NumberField.ramificationIdx_mul_inertiaDeg_of_isGalois
+      - declaration: NumberField.ramificationIdx_mul_inertiaDegOfIsGalois
         informal: "Proves the fundamental identity g·e·f = [L : K] for a Galois extension of number fields."
       - declaration: NumberField.finrank_eq_ramificationIdx_mul_inertiaDeg
         informal: "Shows that when P is the unique prime over p, the degree [L : K] equals the ramification index times the inertia degree."
@@ -1426,7 +1426,7 @@ projects:
         informal: Proves the Galois group acts transitively on the primes lying over a fixed prime.
       - declaration: NumberField.DecompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg
         informal: Computes the order of the decomposition group as the product of the ramification index and inertia degree.
-      - declaration: NumberField.InertiaField_aut_equiv_ResidueField_aut
+      - declaration: NumberField.InertiaFieldAutEquivResidueFieldAut
         informal: Identifies the Galois group of the inertia field over K with the Galois group of the residue field extension.
       - declaration: NumberField.InertiaGroup_card_eq_ramificationIdx
         informal: Computes the order of the inertia group as the ramification index of p in L.
@@ -1462,7 +1462,7 @@ projects:
     status: verified
     main_declarations:
       - Model
-      - Model.Field.is_singular_point_singular_point
+      - Model.Field.isSingularPoint_singularPoint
     main_results:
       - declaration: Model
         informal: Defines a Weierstrass model of a possibly singular elliptic curve by its five a-invariants.
@@ -1474,7 +1474,7 @@ projects:
         informal: Expresses the discriminant as an explicit combination of the Weierstrass polynomial and its partial derivatives, witnessing membership in the Jacobian ideal.
       - declaration: Model.discr_eq_zero_of_singular
         informal: Proves that a model with a singular point has vanishing discriminant.
-      - declaration: Model.Field.is_singular_point_singular_point
+      - declaration: Model.Field.isSingularPoint_singularPoint
         informal: Proves that the explicitly constructed singular point of a singular model over a perfect field is indeed a singular point (Connell, Proposition 1.5.4).
         source_ref: "Ian Connell, Elliptic Curve Handbook, February 1999, Proposition 1.5.4."
       - declaration: Model.Field.move_singular_point_to_origin
@@ -1495,7 +1495,8 @@ projects:
     branch: combinatorial geometry
     entry_module: LeanPool.Monsky
     authors:
-      - Dhyan Aranha and contributors
+      - Dhyan Aranha
+      - contributors
     source:
       title: On dividing a square into triangles
       authors:
@@ -1688,19 +1689,19 @@ projects:
       github_repo: Whysoserioushah/BrauerGroup_new
     status: verified
     main_declarations:
-      - BrauerGroup.Bruaer_Group
+      - BrauerGroup.BruaerGroup
       - BrauerGroupHom.Br
-      - Wedderburn_Artin
+      - WedderburnArtin
     main_results:
-      - declaration: BrauerGroup.Bruaer_Group
+      - declaration: BrauerGroup.BruaerGroup
         informal: Constructs the Brauer group of a field from Brauer equivalence classes of central simple algebras.
       - declaration: BrauerGroupHom.Br
         informal: Constructs the Brauer group functor from fields to commutative groups via scalar extension.
-      - declaration: Wedderburn_Artin
+      - declaration: WedderburnArtin
         informal: Proves a Wedderburn-Artin decomposition for simple Artinian rings as matrix algebras over division rings.
       - declaration: trivialBrauer
         informal: Proves that every element of the Brauer group of a finite field is trivial.
-      - declaration: Wedderburn_Artin_algebra_version
+      - declaration: WedderburnArtin_algebra_version
         informal: Gives an algebra equivalence form of Wedderburn-Artin for finite-dimensional central simple algebras.
       - declaration: IsCentralSimple.TensorProduct.simple
         informal: Proves simplicity of tensor products of central simple algebras over a field.

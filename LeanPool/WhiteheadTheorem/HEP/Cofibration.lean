@@ -12,6 +12,12 @@ import LeanPool.WhiteheadTheorem.Exponential
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 import Mathlib.CategoryTheory.LiftingProperties.Limits
 
+/-!
+# LeanPool.WhiteheadTheorem.HEP.Cofibration
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.HEP.Cofibration`.
+-/
+
 open CategoryTheory TopCat
 open scoped Topology unitInterval
 
@@ -76,7 +82,7 @@ variable {C : Type u} [Category.{v, u} C] {A Z Y : C}
   -- [∀ m, Limits.HasColimit (Functor.ofSequence fun n ↦ i (m + n))]
   (p : Z ⟶ Y) [lp : ∀ n, HasLiftingProperty (i n) p]
 
-namespace Limits.Cocone.ofSequence_of_hasLiftingProperty
+namespace Limits.Cocone.ofSequenceOfHasLiftingProperty
 
 /--
 The cocone has a natural transformation from `Functor.ofSequence i`
@@ -111,31 +117,40 @@ noncomputable def app (h : X 0 ⟶ Z) (f : Limits.colimit (Functor.ofSequence i)
         have := Limits.colimit.w (Functor.ofSequence i) <| homOfLE <| Nat.le_succ <| n + 1
         simp only [Functor.ofSequence_map_homOfLE_succ] at this; exact this ⟩⟩
 
-/-- `ofSequence_of_hasLiftingProperty` -/
-noncomputable def _root_.Limits.Cocone.ofSequence_of_hasLiftingProperty
+/-- `ofSequenceOfHasLiftingProperty` -/
+noncomputable def _root_.Limits.Cocone.ofSequenceOfHasLiftingProperty
     (h : X 0 ⟶ Z) (f : Limits.colimit (Functor.ofSequence i) ⟶ Y)
     (bigSq : CommSq h (Limits.colimit.ι (Functor.ofSequence i) 0) p f) :
     Limits.Cocone (Functor.ofSequence i) where
   pt := Z
   ι := NatTrans.ofSequence (fun n ↦ (app i p h f bigSq n).val) fun n ↦ by
-    simp only [app, Functor.ofSequence_obj, Functor.const_obj_obj, homOfLE_leOfHom,
-      Functor.ofSequence_map_homOfLE_succ, Functor.const_obj_map, Category.comp_id]
-    generalize_proofs _ _ liftStruct   -- reuse `⋯` (an omitted proof)
-    exact liftStruct.some.fac_left
+    simp only [app, homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ,
+      Functor.const_obj_map]
+    change i n ≫ ((lp n).sq_hasLift (app i p h f bigSq n).property).exists_lift.some.l =
+      (app i p h f bigSq n).val ≫ 𝟙 Z
+    simpa only [Category.comp_id] using
+      ((lp n).sq_hasLift (app i p h f bigSq n).property).exists_lift.some.fac_left
 
-end Limits.Cocone.ofSequence_of_hasLiftingProperty
+end Limits.Cocone.ofSequenceOfHasLiftingProperty
 
 /-- Postcompose a cocone `cc` with a morphism `cc.pt ⟶ Y`,
 giving a cocone whose point is `Y`. (Does mathlib have this?) -/
 def CategoryTheory.Limits.Cocone.postcompose {J C : Type*} [Category J] [Category C] {F : J ⥤ C}
-    (cc : Limits.Cocone F) {Y : C} (p : cc.pt ⟶ Y) : Limits.Cocone F where
-  pt := Y
-  ι := { app j := cc.ι.app j ≫ p }
+    (cc : Limits.Cocone F) {Y' : C} (p : cc.pt ⟶ Y') : Limits.Cocone F where
+  pt := Y'
+  ι :=
+    { app j := cc.ι.app j ≫ p
+      naturality := by
+        intro X Y f
+        change F.map f ≫ cc.ι.app Y ≫ p = (cc.ι.app X ≫ p) ≫ 𝟙 Y'
+        rw [Category.comp_id]
+        exact (Category.assoc (F.map f) (cc.ι.app Y) p).symm.trans
+          (congrArg (fun q => q ≫ p) (cc.w f)) }
 
 instance HasLiftingProperty.of_colimit_ofSequence_zero :
     HasLiftingProperty (Limits.colimit.ι (Functor.ofSequence i) 0) p := ⟨fun {h f} sq ↦ by
   change X 0 ⟶ _ at h
-  let ccz := Limits.Cocone.ofSequence_of_hasLiftingProperty i p h f sq -- a cocone whose point is Z
+  let ccz := Limits.Cocone.ofSequenceOfHasLiftingProperty i p h f sq -- a cocone whose point is Z
   let H := Limits.colimit.desc (Functor.ofSequence i) ccz
   refine ⟨H, ?_, ?_⟩
   · change Limits.colimit.ι (Functor.ofSequence i) 0 ≫ H = h
@@ -151,10 +166,13 @@ instance HasLiftingProperty.of_colimit_ofSequence_zero :
       | zero => convert sq.w.symm
       | succ n =>
           dsimp [ccy, Limits.Cocone.postcompose, ccz]
-          dsimp [Limits.Cocone.ofSequence_of_hasLiftingProperty]
-          dsimp [Limits.Cocone.ofSequence_of_hasLiftingProperty.app]
-          generalize_proofs _ _ liftStruct
-          exact liftStruct.some.fac_right.symm
+          simp only [Limits.Cocone.ofSequenceOfHasLiftingProperty, NatTrans.ofSequence_app]
+          let lift :=
+            ((lp n).sq_hasLift
+              (Limits.Cocone.ofSequenceOfHasLiftingProperty.app i p h f sq n).property)
+              |>.exists_lift.some
+          change cc.cocone.ι.app (n + 1) ≫ f = lift.l ≫ p
+          exact lift.fac_right.symm
     have uniq_desc_p : Limits.colimit.desc (Functor.ofSequence i) ccz ≫ p
         = cc.isColimit.desc ccy := by
       apply cc.isColimit.uniq ccy; intro n
@@ -177,11 +195,7 @@ noncomputable abbrev coconeDropFirst
   pt := cc.pt
   ι := NatTrans.ofSequence (fun n ↦ cc.ι.app (n + 1))
         (fun n ↦ by
-          simp only [Functor.ofSequence_obj, Functor.const_obj_obj, homOfLE_leOfHom,
-            Functor.ofSequence_map_homOfLE_succ, Functor.const_obj_map, Category.comp_id]
-          rw [← cc.w <| homOfLE <| Nat.le_succ <| n + 1]
-          simp_all only [Functor.ofSequence_obj, Nat.succ_eq_add_one,
-            homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ] )
+          exact (cc.w (homOfLE (Nat.le_succ (n + 1)))).trans (Category.comp_id _).symm )
 
 /-- `coconeUndropFirst` -/
 noncomputable abbrev coconeUndropFirst
@@ -195,16 +209,9 @@ noncomputable abbrev coconeUndropFirst
         | n + 1 => cc'.ι.app n )
       (fun n ↦ match n with
         | 0 => by
-            simp only [Functor.ofSequence_obj, Nat.reduceAdd, Functor.const_obj_obj,
-              homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ, Functor.const_obj_map,
-              Category.comp_id]
+            exact (Category.comp_id (i 0 ≫ cc'.ι.app 0)).symm
         | n + 1 => by
-            simp only [Functor.ofSequence_obj, Functor.const_obj_obj, homOfLE_leOfHom,
-              Functor.ofSequence_map_homOfLE_succ, Functor.const_obj_map, Category.comp_id]
-            rw [← cc'.w <| homOfLE <| Nat.le_succ n]
-            congr 1
-            simp_all only [Nat.succ_eq_add_one, homOfLE_leOfHom,
-              Functor.ofSequence_map_homOfLE_succ] )
+            exact (cc'.w (homOfLE (Nat.le_succ n))).trans (Category.comp_id _).symm )
 
 /-- Undrop (recover) the first morphism of
 `Limits.colimit.cocone (Functor.ofSequence fun n ↦ i (n + 1))` -/
@@ -221,26 +228,27 @@ noncomputable abbrev colimitCoconeUndropFirst :
     { desc cc' :=
         Limits.colimit.desc (Functor.ofSequence i') <| Functor.ofSequence.coconeDropFirst i cc'
       fac cc' n := by
-        simp only [Functor.ofSequence_obj, Functor.const_obj_obj]
-        simp_all only [Limits.colimit.cocone_x, Functor.ofSequence_obj, Functor.const_obj_obj,
-          homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ, Limits.colimit.cocone_ι,
-          NatTrans.ofSequence_app, cc, i']
-        split
-        next x =>
-          rw [Category.assoc]
-          have h1 := Limits.colimit.ι_desc (Functor.ofSequence.coconeDropFirst i cc') 0
-          have h_step : i 0 ≫ (Functor.ofSequence.coconeDropFirst i cc').ι.app 0 =
-              cc'.ι.app 0 := by
-            change i 0 ≫ cc'.ι.app 1 = cc'.ι.app 0
-            rw [← cc'.w <| homOfLE <| Nat.le_succ 0]; rfl
-          have step1 : i 0 ≫ Limits.colimit.ι (Functor.ofSequence (fun n ↦ i (n + 1))) 0 ≫
-              Limits.colimit.desc (Functor.ofSequence (fun n ↦ i (n + 1)))
-                (Functor.ofSequence.coconeDropFirst i cc') =
-              i 0 ≫ (Functor.ofSequence.coconeDropFirst i cc').ι.app 0 := by
-            congr 1
-          exact step1.trans h_step
-        next x n =>
-          exact Limits.colimit.ι_desc (Functor.ofSequence.coconeDropFirst i cc') n
+        cases n with
+        | zero =>
+            dsimp [cc, coconeUndropFirst]
+            simp only [NatTrans.ofSequence_app, Functor.ofSequence_map_homOfLE_succ]
+            have hdesc := Limits.colimit.ι_desc (Functor.ofSequence.coconeDropFirst i cc') 0
+            have step1 : (i 0 ≫ Limits.colimit.ι (Functor.ofSequence i') 0) ≫
+                Limits.colimit.desc (Functor.ofSequence i')
+                  (Functor.ofSequence.coconeDropFirst i cc') =
+                i 0 ≫ (Functor.ofSequence.coconeDropFirst i cc').ι.app 0 := by
+              rw [Category.assoc]
+              exact congrArg (fun q => i 0 ≫ q) hdesc
+            have hstep : i 0 ≫ (Functor.ofSequence.coconeDropFirst i cc').ι.app 0 =
+                cc'.ι.app 0 := by
+              change (Functor.ofSequence i).map (homOfLE (Nat.le_succ 0)) ≫
+                cc'.ι.app 1 = cc'.ι.app 0
+              exact cc'.w (homOfLE (Nat.le_succ 0))
+            exact step1.trans hstep
+        | succ n =>
+            dsimp [cc, coconeUndropFirst]
+            simp only [NatTrans.ofSequence_app]
+            exact Limits.colimit.ι_desc (Functor.ofSequence.coconeDropFirst i cc') n
       uniq cc' M hM := by
         apply Limits.colimit.hom_ext
         intro n

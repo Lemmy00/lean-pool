@@ -10,6 +10,12 @@ public import Mathlib.Data.Set.Card
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Basic
 public import LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Insert
 
+/-!
+# LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Card
+
+Imported Lean Pool material for `LeanPool.ZhangYeungInequality.PFR.Mathlib.Data.Set.Card`.
+-/
+
 public section
 
 namespace Set

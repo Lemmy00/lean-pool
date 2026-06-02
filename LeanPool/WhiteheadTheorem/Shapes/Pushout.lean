@@ -7,6 +7,12 @@ Authors: Jiazhen Xia
 import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
+
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.Pushout
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.Pushout`.
+-/
 -- import Mathlib.Topology.Category.TopCat.Limits.Pullbacks  -- does not contain pushouts
 
 /-!
@@ -150,7 +156,7 @@ lemma injective_pushoutInr' : Function.Injective <| pushoutInr' f g := by
       exact fun ⦃a₁ a₂⦄ a ↦ a
     exact Function.Injective.of_comp this
 
-lemma pushout_inr_neq_pushout_inr_of_mem_compl_range_of_mem_range :
+lemma pushoutInr_neq_pushoutInr_of_mem_compl_range_of_mem_range :
     ∀ z ∈ (Set.range g)ᶜ, ∀ z' ∈ Set.range g, (pushout.inr f g) z ≠ (pushout.inr f g) z' := by
   haveI : ∀ z : Z, Decidable (z ∈ Set.range g) := fun _ ↦ Classical.dec _
   obtain emp | nemp := Set.eq_empty_or_nonempty (Set.range g)ᶜ
@@ -182,8 +188,8 @@ lemma pushout_inr_neq_pushout_inr_of_mem_compl_range_of_mem_range :
       fun a ↦ h (congrArg f a)
     exact this p_neq
 
-/-- TODO: re-use the code in `pushout_inr_neq_pushout_inr_of_mem_compl_range_of_mem_range` -/
-lemma pushout_inr_neq_pushout_inl_of_mem_compl_range :
+/-- TODO: re-use the code in `pushoutInr_neq_pushoutInr_of_mem_compl_range_of_mem_range` -/
+lemma pushoutInr_neq_pushoutInl_of_mem_compl_range :
     ∀ z ∈ (Set.range g)ᶜ, ∀ y : Y, (pushout.inr f g) z ≠ (pushout.inl f g) y := by
   haveI : ∀ z : Z, Decidable (z ∈ Set.range g) := fun _ ↦ Classical.dec _
   obtain emp | nemp := Set.eq_empty_or_nonempty (Set.range g)ᶜ
@@ -272,7 +278,7 @@ lemma isOpenMap_pushoutInr' (hg : IsClosed {z | z ∈ Set.range g}) :
       rw [this]
       apply Set.disjoint_image_image
       intro z hz y hy
-      convert pushout_inr_neq_pushout_inl_of_mem_compl_range f g z z.property y
+      convert pushoutInr_neq_pushoutInl_of_mem_compl_range f g z z.property y
     rw [this]
     exact isOpen_empty
   · simp only []
@@ -282,7 +288,7 @@ lemma isOpenMap_pushoutInr' (hg : IsClosed {z | z ∈ Set.range g}) :
       apply Function.Injective.preimage_image_of_restrict
       · exact injective_pushoutInr' f g
       · intro z hz z' hz'
-        exact pushout_inr_neq_pushout_inr_of_mem_compl_range_of_mem_range f g
+        exact pushoutInr_neq_pushoutInr_of_mem_compl_range_of_mem_range f g
           z hz z' (Set.notMem_compl_iff.mp hz')
     rw [this]
     apply IsOpen.isOpenMap_subtype_val (isOpen_compl_iff.mpr hg)

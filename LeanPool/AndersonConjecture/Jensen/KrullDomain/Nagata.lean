@@ -122,7 +122,7 @@ theorem nagata_criterion [WfDvdMonoid R₀]
       rw [← hq'_eq]
       exact Q.mul_mem_right _ hq'Q
     have hr_in_P : r ∈ P := by
-      have := IsLocalization.comap_map_of_isPrime_disjoint
+      have := IsLocalization.under_map_of_isPrime_disjoint
         (Submonoid.powers p) (Localization.Away p) hPprime hdisj
       rw [← this]
       exact Ideal.mem_comap.mpr hr_in_Q

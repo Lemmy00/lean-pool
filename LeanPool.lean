@@ -544,7 +544,7 @@ import LeanPool.Monlib4.LinearAlgebra.Ips.Strict
 import LeanPool.Monlib4.LinearAlgebra.Ips.Symm
 import LeanPool.Monlib4.LinearAlgebra.Ips.TensorHilbert
 import LeanPool.Monlib4.LinearAlgebra.Ips.Vn
-import LeanPool.Monlib4.LinearAlgebra.IsProj'
+import LeanPool.Monlib4.LinearAlgebra.IsProjPrime
 import LeanPool.Monlib4.LinearAlgebra.IsReal
 import LeanPool.Monlib4.LinearAlgebra.KroneckerToTensor
 import LeanPool.Monlib4.LinearAlgebra.LinearMapOp
@@ -561,7 +561,7 @@ import LeanPool.Monlib4.LinearAlgebra.Matrix.PosEqLinearMapIsPositive
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Reshape
 import LeanPool.Monlib4.LinearAlgebra.Matrix.Spectra
 import LeanPool.Monlib4.LinearAlgebra.Matrix.StarOrderedRing
-import LeanPool.Monlib4.LinearAlgebra.Mul''
+import LeanPool.Monlib4.LinearAlgebra.MulPrimePrime
 import LeanPool.Monlib4.LinearAlgebra.MyBimodule
 import LeanPool.Monlib4.LinearAlgebra.MySpec
 import LeanPool.Monlib4.LinearAlgebra.Nacgor

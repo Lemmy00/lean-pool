@@ -10,6 +10,12 @@ import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 
+/-!
+# LeanPool.BrauerGroupNew.Azumaya.Mul
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Azumaya.Mul`.
+-/
+
 suppress_compilation
 
 open Function
@@ -59,29 +65,29 @@ abbrev projection1 : ((Fin (nn R M) → R) →ₗ[R] P) →ₗ[R] (M →ₗ[R] P
   map_smul' := by simp [LinearMap.smul_comp]
 
 /-- Hom(M, P) ⊗ Hom(N, Q) →ₗ[R] Hom(Rⁿ, P) ⊗ Hom(Rᵐ, Q) -/
-abbrev tensor_inclusion1 :
+abbrev tensorInclusion1 :
     (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R]
       ((Fin (nn R M) → R) →ₗ[R] P) ⊗[R] ((Fin (nn R N) → R) →ₗ[R] Q) :=
   TensorProduct.map (inclusion1 R M P) (inclusion1 R N Q)
 
 /-- Tensor product of the two first projection maps. -/
-abbrev tensor_projection1 := TensorProduct.map (projection1 R M P) (projection1 R N Q)
+abbrev tensorProjection1 := TensorProduct.map (projection1 R M P) (projection1 R N Q)
 
 lemma projection_inlusion1 : (projection1 R M P).comp (inclusion1 R M P) = LinearMap.id := by
   ext f : 1
   simp [LinearMap.comp_assoc, fg]
 
-lemma tensor_inclusion1_projection1 : (tensor_projection1 R M N P Q).comp
-    (tensor_inclusion1 R M N P Q) = LinearMap.id := by
+lemma tensorInclusion1_projection1 : (tensorProjection1 R M N P Q).comp
+    (tensorInclusion1 R M N P Q) = LinearMap.id := by
   simp [← TensorProduct.map_comp, projection_inlusion1]
 
-lemma tensor_inclusion1_projection1_apply (x : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
-    tensor_projection1 R M N P Q (tensor_inclusion1 R M N P Q x) = x :=
-  DFunLike.congr_fun (tensor_inclusion1_projection1 R M N P Q) x
+lemma tensorInclusion1_projection1_apply (x : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
+    tensorProjection1 R M N P Q (tensorInclusion1 R M N P Q x) = x :=
+  DFunLike.congr_fun (tensorInclusion1_projection1 R M N P Q) x
 
-lemma tensor_inclusion1_inj : Function.Injective (tensor_inclusion1 R M N P Q) := by
-  exact Function.LeftInverse.injective (g := tensor_projection1 R M N P Q)
-    <| DFunLike.congr_fun <| tensor_inclusion1_projection1 R M N P Q
+lemma tensorInclusion1_inj : Function.Injective (tensorInclusion1 R M N P Q) := by
+  exact Function.LeftInverse.injective (g := tensorProjection1 R M N P Q)
+    <| DFunLike.congr_fun <| tensorInclusion1_projection1 R M N P Q
 
 open TensorProduct in
 lemma Tensor_isDirectSummand : ∃(s0 : M ⊗[R] N →ₗ[R] (Fin (nn R M) → R) ⊗[R] (Fin (nn R N) → R))
@@ -100,7 +106,7 @@ abbrev projection2 : (Fin (nn R M) → R) ⊗[R] (Fin (nn R N) → R) →ₗ[R] 
 
 variable {M N} in
 /-- Precomposition with `projection2` on homs out of `M ⊗ N`. -/
-abbrev tensor_inclusion2 : (M ⊗[R] N →ₗ[R] P ⊗[R] Q) →ₗ[R]
+abbrev tensorInclusion2 : (M ⊗[R] N →ₗ[R] P ⊗[R] Q) →ₗ[R]
     ((Fin (nn R M) → R) ⊗[R] (Fin (nn R N) → R) →ₗ[R] P ⊗[R] Q) where
   toFun := fun f ↦ f.comp projection2
   map_add' := by simp [LinearMap.add_comp]
@@ -108,7 +114,7 @@ abbrev tensor_inclusion2 : (M ⊗[R] N →ₗ[R] P ⊗[R] Q) →ₗ[R]
 
 variable {M N} in
 /-- Precomposition with `inclusion2` on homs out of the finite free tensor product. -/
-abbrev tensor_projection2 : ((Fin (nn R M) → R) ⊗[R] (Fin (nn R N) → R) →ₗ[R]
+abbrev tensorProjection2 : ((Fin (nn R M) → R) ⊗[R] (Fin (nn R N) → R) →ₗ[R]
     P ⊗[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[R] P ⊗[R] Q) where
   toFun := fun f ↦ f.comp inclusion2
   map_add' := by simp [LinearMap.add_comp]
@@ -121,14 +127,14 @@ lemma projection2_inclusion2 : (projection2).comp (inclusion2) =
 lemma projection2_inclusion2_apply (x : M ⊗[R] N) : (projection2) ((inclusion2) x) = x :=
   DFunLike.congr_fun (projection2_inclusion2 R M N) x
 
-lemma tensor_projection2_inclusion2 : (tensor_projection2 R P Q).comp (tensor_inclusion2 R P Q) =
+lemma tensorProjection2_inclusion2 : (tensorProjection2 R P Q).comp (tensorInclusion2 R P Q) =
     LinearMap.id (R := R) (M := M ⊗[R] N →ₗ[R] P ⊗[R] Q) := by
   ext f : 1
   simp [LinearMap.comp_assoc, projection2_inclusion2]
 
-lemma tensor_inclusion2_inj : Function.Injective (tensor_inclusion2 R (M := M) (N := N) P Q) := by
-  exact Function.LeftInverse.injective (g := tensor_projection2 R P Q)
-    <| DFunLike.congr_fun <| tensor_projection2_inclusion2 R M N P Q
+lemma tensorInclusion2_inj : Function.Injective (tensorInclusion2 R (M := M) (N := N) P Q) := by
+  exact Function.LeftInverse.injective (g := tensorProjection2 R P Q)
+    <| DFunLike.congr_fun <| tensorProjection2_inclusion2 R M N P Q
 
 /-- This proves the following square commutes:
                `TensorProduct.homTensorHomMap`
@@ -140,8 +146,8 @@ Hom(M, P) ⊗ Hom(N, Q) ---------------> Hom(M ⊗ N, P ⊗ Q)
 Hom(Rⁿ, P) ⊗ Hom(Rᵐ, Q) -------------> Hom(Rⁿ ⊗ Rᵐ, P ⊗ Q)
 -/
 lemma comm_square2 : (homTensorHomEquiv R (Fin (nn R M) → R) (Fin (nn R N) → R) P Q).toLinearMap ∘ₗ
-    tensor_inclusion1 R M N P Q =
-      tensor_inclusion2 R P Q ∘ₗ TensorProduct.homTensorHomMap _ M N P Q := by
+    tensorInclusion1 R M N P Q =
+      tensorInclusion2 R P Q ∘ₗ TensorProduct.homTensorHomMap _ M N P Q := by
   ext f g : 4
   apply LinearMap.ext
   intro v
@@ -151,20 +157,20 @@ lemma comm_square2 : (homTensorHomEquiv R (Fin (nn R M) → R) (Fin (nn R N) →
 
 lemma comm_square2_apply (f : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
   (homTensorHomEquiv R (Fin (nn R M) → R) (Fin (nn R N) → R) P Q).toLinearMap
-    (tensor_inclusion1 R M N P Q f) =
-      tensor_inclusion2 R P Q (TensorProduct.homTensorHomMap _ M N P Q f) :=
+    (tensorInclusion1 R M N P Q f) =
+      tensorInclusion2 R P Q (TensorProduct.homTensorHomMap _ M N P Q f) :=
   DFunLike.congr_fun (comm_square2 R M N P Q) f
 
 lemma homTensorHomMap_inj : Function.Injective (TensorProduct.homTensorHomMap (.id R) M N P Q) := by
-  apply Function.Injective.of_comp (f := tensor_inclusion2 R P Q)
+  apply Function.Injective.of_comp (f := tensorInclusion2 R P Q)
   rw [← LinearMap.coe_comp, ← comm_square2]
-  exact Function.Injective.comp (f := tensor_inclusion1 R M N P Q)
+  exact Function.Injective.comp (f := tensorInclusion1 R M N P Q)
     (homTensorHomEquiv R (Fin (nn R M) → R) (Fin (nn R N) → R) P Q).injective <|
-    tensor_inclusion1_inj R M N P Q
+    tensorInclusion1_inj R M N P Q
 
 lemma comm_square3 : (homTensorHomEquiv R _ _ _ _).toLinearMap ∘ₗ
-    tensor_inclusion1 R M N P Q ∘ₗ tensor_projection1 R M N P Q = tensor_inclusion2 R P Q ∘ₗ
-    tensor_projection2 R P Q ∘ₗ (homTensorHomEquiv R _ _ _ _).toLinearMap := by
+    tensorInclusion1 R M N P Q ∘ₗ tensorProjection1 R M N P Q = tensorInclusion2 R P Q ∘ₗ
+    tensorProjection2 R P Q ∘ₗ (homTensorHomEquiv R _ _ _ _).toLinearMap := by
   ext f g : 4
   apply LinearMap.ext
   intro v
@@ -173,27 +179,27 @@ lemma comm_square3 : (homTensorHomEquiv R _ _ _ _).toLinearMap ∘ₗ
   simp
 
 lemma comm_square3_apply (f : ((Fin (nn R M) → R) →ₗ[R] P) ⊗[R] ((Fin (nn R N) → R) →ₗ[R] Q)) :
-    (homTensorHomEquiv R _ _ _ _) (tensor_inclusion1 R M N P Q (tensor_projection1 R M N P Q f)) =
-    tensor_inclusion2 R P Q (tensor_projection2 R P Q (homTensorHomEquiv R _ _ _ _ f)) :=
+    (homTensorHomEquiv R _ _ _ _) (tensorInclusion1 R M N P Q (tensorProjection1 R M N P Q f)) =
+    tensorInclusion2 R P Q (tensorProjection2 R P Q (homTensorHomEquiv R _ _ _ _ f)) :=
   DFunLike.congr_fun (comm_square3 R M N P Q) f
 
 lemma comm_square1 :
-    tensor_projection1 R M N P Q ∘ₗ (homTensorHomEquiv R _ _ P Q).symm.toLinearMap ∘ₗ
-      tensor_inclusion2 R P Q ∘ₗ TensorProduct.homTensorHomMap _ M N P Q =
+    tensorProjection1 R M N P Q ∘ₗ (homTensorHomEquiv R _ _ P Q).symm.toLinearMap ∘ₗ
+      tensorInclusion2 R P Q ∘ₗ TensorProduct.homTensorHomMap _ M N P Q =
         .id (R := R) (M := (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) := by
   rw [← comm_square2]
   apply LinearMap.ext
   simp [-homTensorHomEquiv_toLinearMap, -homTensorHomEquiv_apply,
-    tensor_inclusion1_projection1_apply]
+    tensorInclusion1_projection1_apply]
 
 lemma comm_square4 :
-    TensorProduct.homTensorHomMap _ M N P Q ∘ₗ tensor_projection1 R M N P Q ∘ₗ
-      (homTensorHomEquiv R _ _ _ _).symm.toLinearMap ∘ₗ tensor_inclusion2 R P Q =
+    TensorProduct.homTensorHomMap _ M N P Q ∘ₗ tensorProjection1 R M N P Q ∘ₗ
+      (homTensorHomEquiv R _ _ _ _).symm.toLinearMap ∘ₗ tensorInclusion2 R P Q =
         .id (R := R) (M := (M ⊗[R] N) →ₗ[R] P ⊗[R] Q) := by
   apply LinearMap.ext
   intro fgfg
   simp only [LinearMap.comp_apply]
-  apply tensor_inclusion2_inj
+  apply tensorInclusion2_inj
   rw [← comm_square2_apply, LinearEquiv.coe_toLinearMap, comm_square3_apply]
   simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe,
     LinearEquiv.apply_symm_apply, LinearMap.id_coe, id_eq]
@@ -201,8 +207,8 @@ lemma comm_square4 :
   simp [projection2_inclusion2_apply]
 
 lemma homTensorHomMap_surj : Surjective (TensorProduct.homTensorHomMap (.id R) M N P Q) := by
-  apply Function.Surjective.of_comp (g := (tensor_projection1 R M N P Q ∘ₗ
-    (homTensorHomEquiv R _ _ _ _).symm.toLinearMap ∘ₗ tensor_inclusion2 R P Q))
+  apply Function.Surjective.of_comp (g := (tensorProjection1 R M N P Q ∘ₗ
+    (homTensorHomEquiv R _ _ _ _).symm.toLinearMap ∘ₗ tensorInclusion2 R P Q))
   rw [← LinearMap.coe_comp, comm_square4]
   exact CharacterModule.surjective_of_dual_injective LinearMap.id fun ⦃a₁ a₂⦄ a ↦ a
 
@@ -315,7 +321,8 @@ lemma top_square_comm'' (A B : Azumaya R) :
     (e (R := R) (A := A) (B := B)).toLinearEquiv.toLinearMap := by
   ext a b c d a' b'
   dsimp
-  simp only [AlgHom.mulLeftRight_apply, Algebra.TensorProduct.tmul_mul_tmul, unop_op]
+  simp [AlgHom.mulLeftRight_apply, Algebra.TensorProduct.tmul_mul_tmul,
+    TensorProduct.homTensorHomMap_apply, unop_op]
 
 lemma top_square_comm (A B : Azumaya R) :
     (TensorProduct.homTensorHomMap _ A B A B) ∘ (Algebra.TensorProduct.congr
@@ -481,19 +488,19 @@ variable (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
 open MulOpposite
 
 /-- Tensor inclusion on endomorphism algebras induced by `inclusion'`. -/
-abbrev tensor_inclusion1' : (Module.End R M) ⊗[R] (Module.End R M)ᵐᵒᵖ →ₗ[R]
+abbrev tensorInclusion1' : (Module.End R M) ⊗[R] (Module.End R M)ᵐᵒᵖ →ₗ[R]
     (Module.End R (Fin (nn R M) → R)) ⊗[R] (Module.End R (Fin (nn R M) → R))ᵐᵒᵖ :=
   TensorProduct.map (inclusion' R M) <|
     (opLinearEquiv R).toLinearMap ∘ₗ (inclusion' R M) ∘ₗ (opLinearEquiv R).symm.toLinearMap
 
 /-- Tensor projection on endomorphism algebras induced by `projection'`. -/
-abbrev tensor_projection1' :
+abbrev tensorProjection1' :
     Module.End R (Fin (nn R M) → R) ⊗[R] (Module.End R (Fin (nn R M) → R))ᵐᵒᵖ →ₗ[R]
       Module.End R M ⊗[R] (Module.End R M)ᵐᵒᵖ :=
   TensorProduct.map (projection' R M) <|
     (opLinearEquiv R).toLinearMap ∘ₗ (projection' R M) ∘ₗ (opLinearEquiv R).symm.toLinearMap
 
-lemma tensor_projection_inclusion1' : tensor_projection1' R M ∘ₗ tensor_inclusion1' R M = .id := by
+lemma tensor_projection_inclusion1' : tensorProjection1' R M ∘ₗ tensorInclusion1' R M = .id := by
   ext f g
   simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
     TensorProduct.curry_apply, LinearMap.coe_comp, comp_apply, TensorProduct.map_tmul,
@@ -503,8 +510,8 @@ lemma tensor_projection_inclusion1' : tensor_projection1' R M ∘ₗ tensor_incl
   rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp]
   rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp, op_unop]
 
-lemma tensor_inclusion1'_inj : Function.Injective (tensor_inclusion1' R M) := by
-  exact Function.LeftInverse.injective (g := tensor_projection1' R M)
+lemma tensorInclusion1'_inj : Function.Injective (tensorInclusion1' R M) := by
+  exact Function.LeftInverse.injective (g := tensorProjection1' R M)
     <| DFunLike.congr_fun <| tensor_projection_inclusion1' R M
 
 /-- Inclusion between second endomorphism algebras induced by the free-module splitting. -/
@@ -540,7 +547,7 @@ End R Rⁿ ⊗ (End R Rⁿ)ᵐᵒᵖ ----------> End R (End R Rⁿ)
 lemma comm_square_endend :
     inclusion2' R M ∘ₗ (AlgHom.mulLeftRight R (Module.End R M)).toLinearMap =
     (AlgHom.mulLeftRight R (Module.End R (Fin (nn R M) → R))).toLinearMap ∘ₗ
-      (tensor_inclusion1' R M) := by
+      (tensorInclusion1' R M) := by
   ext f1 g1 : 3
   apply LinearMap.ext
   intro f2
@@ -553,7 +560,7 @@ lemma comm_square_endend :
   simp
 
 lemma comm_square_endend' :
-    (AlgHom.mulLeftRight R (Module.End R M)).toLinearMap ∘ₗ tensor_projection1' R M =
+    (AlgHom.mulLeftRight R (Module.End R M)).toLinearMap ∘ₗ tensorProjection1' R M =
     projection2' R M ∘ₗ
       (AlgHom.mulLeftRight R (Module.End R (Fin (nn R M) → R))).toLinearMap := by
   ext f1 g1 : 3
@@ -583,12 +590,12 @@ lemma inj_endM : Function.Injective (AlgHom.mulLeftRight R (Module.End R M)) := 
   suffices Function.Injective ((inclusion2' R M) ∘ₗ (AlgHom.mulLeftRight _ _).toLinearMap) by
     rw [LinearMap.coe_comp] at this; exact this
   rw [comm_square_endend, LinearMap.coe_comp]
-  exact (EndRn R (nn R M)).isAzumaya.bij.injective.comp <| tensor_inclusion1'_inj R M
+  exact (EndRn R (nn R M)).isAzumaya.bij.injective.comp <| tensorInclusion1'_inj R M
 
 lemma surj_endM : Function.Surjective (AlgHom.mulLeftRight R (Module.End R M)) := by
-  refine .of_comp (g := tensor_projection1' R M) ?_
+  refine .of_comp (g := tensorProjection1' R M) ?_
   change Function.Surjective
-    ((AlgHom.mulLeftRight R (Module.End R M)).toLinearMap ∘ₗ tensor_projection1' R M)
+    ((AlgHom.mulLeftRight R (Module.End R M)).toLinearMap ∘ₗ tensorProjection1' R M)
   rw [comm_square_endend', LinearMap.coe_comp]
   exact (projection2'_surj R M).comp (EndRn R (nn R M)).isAzumaya.bij.surjective
 

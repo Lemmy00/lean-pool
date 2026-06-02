@@ -7,6 +7,12 @@ Authors: Jiazhen Xia
 import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Category.TopCat.Basic
+
+/-!
+# LeanPool.WhiteheadTheorem.Shapes.Maps
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.Maps`.
+-/
 -- import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 open scoped Topology unitInterval CategoryTheory
@@ -83,8 +89,8 @@ lemma set_neq_zero_eq_compl_range_i₀ (X : TopCat.{u}) :
     intro a
     simp_all only [not_true_eq_false]
 
-/-- `i₁_to_compl_range_i₀` -/
-def i₁_to_compl_range_i₀ (X : TopCat.{u}) :
+/-- `i₁ToComplRangeI₀` -/
+def i₁ToComplRangeI₀ (X : TopCat.{u}) :
     C(X, (Set.range (Cyl.i₀ X)).compl) where
   toFun x := ⟨Cyl.i₁ _ x, by
       rw [(by rfl: (Set.range (Cyl.i₀ X)).compl = {z | z ∉ Set.range (Cyl.i₀ X)})]
@@ -104,11 +110,11 @@ lemma isClosed_range_i₀ (X : TopCat.{u}) :
   · exact continuous_snd
   · exact continuous_const
 
-lemma isClosedEmbedding_i₁_to_compl_range_i₀ (X : TopCat.{u}) :
-    Topology.IsClosedEmbedding (Cyl.i₁_to_compl_range_i₀ X) := by
+lemma isClosedEmbedding_i₁ToComplRangeI₀ (X : TopCat.{u}) :
+    Topology.IsClosedEmbedding (Cyl.i₁ToComplRangeI₀ X) := by
   apply Topology.IsClosedEmbedding.of_continuous_injective_isClosedMap
     (ContinuousMap.continuous _)
-  · unfold Cyl.i₁_to_compl_range_i₀
+  · unfold Cyl.i₁ToComplRangeI₀
     intro x₁ x₂ hx
     simp_all only [hom_ofHom, ContinuousMap.coe_mk, Subtype.mk.injEq, Prod.mk.injEq, and_true]
   · intro s hs
@@ -118,9 +124,9 @@ lemma isClosedEmbedding_i₁_to_compl_range_i₀ (X : TopCat.{u}) :
       apply isClosed_induced_iff.mpr
       use Subtype.val '' B
       simp_all only [Subtype.val_injective, Set.preimage_image_eq, and_self]
-    change IsClosed ((Cyl.i₁_to_compl_range_i₀ X) '' s)
-    have : Subtype.val '' ((Cyl.i₁_to_compl_range_i₀ X) '' s) = s ×ˢ {1} := by
-      unfold Cyl.i₁_to_compl_range_i₀ Cyl.i₁
+    change IsClosed ((Cyl.i₁ToComplRangeI₀ X) '' s)
+    have : Subtype.val '' ((Cyl.i₁ToComplRangeI₀ X) '' s) = s ×ˢ {1} := by
+      unfold Cyl.i₁ToComplRangeI₀ Cyl.i₁
       simp only [hom_ofHom, ContinuousMap.coe_mk]
       ext x : 1
       simp_all only [Set.mem_image, exists_exists_and_eq_and, Set.mem_prod, Set.mem_singleton_iff]
@@ -133,13 +139,13 @@ lemma isClosedEmbedding_i₁_to_compl_range_i₀ (X : TopCat.{u}) :
         simp_all only
       · intro a_1
         simp_all only
-    have : IsClosed (Subtype.val '' ((Cyl.i₁_to_compl_range_i₀ X) '' s)) := by
+    have : IsClosed (Subtype.val '' ((Cyl.i₁ToComplRangeI₀ X) '' s)) := by
       rw [this]
       exact IsClosed.prod hs isClosed_singleton
     exact isClosed_of_isClosed_subtype_val this
 
 /-- used in `isEmbedding_domIncl` -/
-noncomputable instance decidable_in_range_i₀ :
+noncomputable instance decidableInRangeI₀ :
     ∀ z, Decidable (z ∈ Set.range (Cyl.i₀ X)) := fun z ↦ by
   have : z ∈ Set.range (Cyl.i₀ X) ↔ z.snd = 0 := by
     constructor

@@ -78,10 +78,10 @@ include T in theorem derive_mod_principal_trans
     have hbot_lt := bot_lt_iff_ne_bot.mpr hspan_ne
     have hbot_fin : (⊥ : Ideal R.carrier).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
-    have h0 := @Ideal.height_strict_mono_of_is_prime R.carrier _
+    have h0 := @Ideal.height_strict_mono_of_isPrime R.carrier _
       (⊥ : Ideal R.carrier) (Ideal.span {p}) Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
-    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hspan_ht
+    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hspan_ht
     rw [hspan_ht] at h0
     exact lt_irrefl _ h0
   -- y ∉ P because p ∤ y and (p) = P∩R
@@ -172,10 +172,10 @@ include T in theorem height_bound_wf_descent
     have hbot_fin : (⊥ : Ideal R.carrier).FiniteHeight :=
       ⟨Or.inr (by simp [Ideal.height_bot])⟩
     have h0 : (⊥ : Ideal R.carrier).height < (Ideal.span {p₀}).height :=
-      @Ideal.height_strict_mono_of_is_prime R.carrier _ (⊥ : Ideal R.carrier)
+      @Ideal.height_strict_mono_of_isPrime R.carrier _ (⊥ : Ideal R.carrier)
         (Ideal.span {p₀}) Ideal.isPrime_bot hbot_lt hbot_fin
     rw [Ideal.height_bot] at h0
-    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, ENat.lt_one_iff_eq_zero] at hspan_height
+    rw [show (↑(1 : ℕ) : ℕ∞) = 1 from rfl, Order.lt_one_iff] at hspan_height
     rw [hspan_height] at h0
     exact lt_irrefl _ h0
   have hp₀_P : (↑p₀ : T) ∈ P :=
@@ -279,8 +279,7 @@ contracts to an ideal of height ≤ 1 in S_sub. Uses the K[X] PID argument
 for the P∩R = ⊥ case and well-founded descent for P∩R ≠ ⊥. -/
 private def build_height_bound_proof
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
-    (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
-    [UniqueFactorizationMonoid S_sub]
+    (S_sub : Subring T) [UniqueFactorizationMonoid S_sub]
     (hR_le : R.carrier ≤ S_sub)
     (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
     (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)
@@ -565,11 +564,12 @@ private def build_height_bound_proof
     have hJ_q_map_ne :
         Ideal.map (algebraMap _ (Polynomial K)) J_q ≠ ⊥ := by
       intro h
-      have hsat := IsLocalization.comap_map_of_isPrime_disjoint
+      have hsat := IsLocalization.under_map_of_isPrime_disjoint
         M' (Polynomial K) hJ_q_prime hJ_q_disj
       rw [h] at hsat
-      have hbot : Ideal.comap (algebraMap (Polynomial R.carrier) (Polynomial K)) ⊥ = ⊥ :=
-        Ideal.comap_bot_of_injective _ hψ_inj
+      have hbot : Ideal.under (Polynomial R.carrier) (⊥ : Ideal (Polynomial K)) = ⊥ := by
+        simpa [Ideal.under_def] using
+          Ideal.comap_bot_of_injective (algebraMap (Polynomial R.carrier) (Polynomial K)) hψ_inj
       rw [hbot] at hsat
       exact hJ_q_ne hsat.symm
     haveI : Ring.DimensionLEOne (Polynomial K) :=
@@ -580,9 +580,9 @@ private def build_height_bound_proof
       (Ring.DimensionLeOne.prime_le_prime_iff_eq hJ_q_map_ne).mp
         (Ideal.map_mono hJJ_q)
     -- Saturating back gives J_q = J, contradicting J_q ⊊ J
-    have hJ_sat := IsLocalization.comap_map_of_isPrime_disjoint
+    have hJ_sat := IsLocalization.under_map_of_isPrime_disjoint
       M' (Polynomial K) hJ_prime hJ_disj
-    have hJ_q_sat := IsLocalization.comap_map_of_isPrime_disjoint
+    have hJ_q_sat := IsLocalization.under_map_of_isPrime_disjoint
       M' (Polynomial K) hJ_q_prime hJ_q_disj
     exact absurd (hJ_q_sat.symm.trans (hmap_eq ▸ hJ_sat))
       (ne_of_lt hJJ_strict)
@@ -596,8 +596,7 @@ private def build_height_bound_proof
 omit [IsAdicComplete (IsLocalRing.maximalIdeal T) T] in
 include T in theorem build_height_bound
     (R : NSubring T) (x₁ x₂ : T) (y₁ y₂ : R.carrier)
-    (S_sub : Subring T) [IsDomain S_sub] [WfDvdMonoid S_sub]
-    [UniqueFactorizationMonoid S_sub]
+    (S_sub : Subring T) [UniqueFactorizationMonoid S_sub]
     (hR_le : R.carrier ≤ S_sub)
     (hcoprime : ∀ p : R.carrier, Prime p → ¬(p ∣ y₁ ∧ p ∣ y₂))
     (hy₁ : (↑y₁ : T) ≠ 0) (hy₂ : (↑y₂ : T) ≠ 0)

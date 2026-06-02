@@ -8,6 +8,12 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.FinCases
 
+/-!
+# LeanPool.Rupert.FinCases
+
+Imported Lean Pool material for `LeanPool.Rupert.FinCases`.
+-/
+
 /--
 Lemma for helping with goals such as
 ```

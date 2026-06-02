@@ -8,6 +8,12 @@ import LeanPool.Monlib4.QuantumGraph.Basic
 import LeanPool.Monlib4.QuantumGraph.Example
 import LeanPool.Monlib4.QuantumGraph.Grad
 
+/-!
+# LeanPool.Monlib4.QuantumGraph.OfClassicalGraph
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph.OfClassicalGraph`.
+-/
+
 noncomputable instance {n : Type*} :
   starAlgebra (PiQ (fun _ : n => ℂ)) :=
 piStarAlgebra

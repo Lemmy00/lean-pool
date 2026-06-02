@@ -9,6 +9,12 @@ import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 import Mathlib.CategoryTheory.Functor.OfSequence
+
+/-!
+# LeanPool.WhiteheadTheorem.CWComplex.Basic
+
+Imported Lean Pool material for `LeanPool.WhiteheadTheorem.CWComplex.Basic`.
+-/
 -- import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -91,13 +97,13 @@ noncomputable abbrev sigmaDiskBoundaryIncl (att : AttachCells n X X') :
 using the abbreviation `att.sigmaDiskBoundaryIncl` results in type mismatch,
 which seems to be a universe level issue.
 So the abbreviation is temporarily replaced with the full definition.) -/
-noncomputable abbrev pushout_inl (att : AttachCells.{u} n X X') :=
+noncomputable abbrev pushoutInl (att : AttachCells.{u} n X X') :=
   Limits.pushout.inl att.sigmaAttachMaps
     (Limits.Sigma.map fun (_ : att.cells) ↦ diskBoundaryIncl n)
 --  Limits.pushout.inl att.sigmaAttachMaps att.sigmaDiskBoundaryIncl
 
 /-- The bottom side of the pushout square -/
-noncomputable abbrev pushout_inr (att : AttachCells n X X') :=
+noncomputable abbrev pushoutInr (att : AttachCells n X X') :=
   Limits.pushout.inr att.sigmaAttachMaps
     (Limits.Sigma.map fun (_ : att.cells) ↦ diskBoundaryIncl n)
 -- Limits.pushout.inr att.sigmaAttachMaps att.sigmaDiskBoundaryIncl
@@ -105,7 +111,7 @@ noncomputable abbrev pushout_inr (att : AttachCells n X X') :=
 /-- The pushout square is a pushout. -/
 lemma pushout_isPushout (att : AttachCells n X X') :
     IsPushout att.sigmaAttachMaps (Limits.Sigma.map fun (_ : att.cells) ↦ diskBoundaryIncl n)
-      att.pushout_inl att.pushout_inr :=
+      att.pushoutInl att.pushoutInr :=
   IsPushout.of_hasPushout att.sigmaAttachMaps
     (Limits.Sigma.map fun (_ : att.cells) ↦ diskBoundaryIncl n)
 
@@ -156,11 +162,11 @@ namespace AttachGeneralizedCells
 variable {S D : TopCat.{u}} {f : S ⟶ D} {X X' : TopCat.{u}}
 variable (att : AttachGeneralizedCells f X X') (α : att.cells)
 
-/-- `pushout_inl` -/
-noncomputable abbrev pushout_inl :=
+/-- `pushoutInl` -/
+noncomputable abbrev pushoutInl :=
   Limits.pushout.inl (Limits.Sigma.desc att.attachMaps) (Limits.Sigma.map fun _ ↦ f)
-/-- `pushout_inr` -/
-noncomputable abbrev pushout_inr :=
+/-- `pushoutInr` -/
+noncomputable abbrev pushoutInr :=
   Limits.pushout.inr (Limits.Sigma.desc att.attachMaps) (Limits.Sigma.map fun _ ↦ f)
 
 lemma attachMaps_apply_eq_ι_desc : att.attachMaps α =
@@ -191,8 +197,8 @@ D --> ∐ D --> ⬝ ------> X'
 ```
 -/
 @[reassoc]
-lemma w_cell' : f ≫ Limits.Sigma.ι (fun _ ↦ D) α ≫ att.pushout_inr =
-    Limits.Sigma.ι (fun _ ↦ S) α ≫ Limits.Sigma.desc att.attachMaps ≫ att.pushout_inl := by
+lemma w_cell' : f ≫ Limits.Sigma.ι (fun _ ↦ D) α ≫ att.pushoutInr =
+    Limits.Sigma.ι (fun _ ↦ S) α ≫ Limits.Sigma.desc att.attachMaps ≫ att.pushoutInl := by
   rw [w_sigma_cells_assoc, Limits.pushout.condition]
 
 /--
@@ -205,8 +211,8 @@ D --> ∐ D --> ⬝ ------> X'
 ```
 -/
 @[reassoc]
-lemma w_cell : f ≫ Limits.Sigma.ι (fun _ ↦ D) α ≫ att.pushout_inr =
-    att.attachMaps α ≫ att.pushout_inl := by
+lemma w_cell : f ≫ Limits.Sigma.ι (fun _ ↦ D) α ≫ att.pushoutInr =
+    att.attachMaps α ≫ att.pushoutInl := by
   rw [attachMaps_apply_eq_ι_desc, w_cell']; rfl
 
 end AttachGeneralizedCells

@@ -1,14 +1,33 @@
 /-
 Copyright (c) 2026 Dhyan Aranha and contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dhyan Aranha and contributors
+Authors: Dhyan Aranha, contributors
 -/
 
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Abel
 import LeanPool.Monsky.SegmentCounting
 import LeanPool.Monsky.TriangleCorollary
 import LeanPool.Monsky.MonskyEven
+
+/-!
+# LeanPool.Monsky.MainStatement
+
+Imported Lean Pool material for `LeanPool.Monsky.MainStatement`.
+-/
 
 namespace LeanPool.Monsky
 
@@ -19,10 +38,10 @@ open BigOperators
 
 theorem monsky_theorem (n : ℕ) :
     (∃ (S : Finset Triangle),
-      closed_hull unit_square = ⋃ (Δ ∈ S), closed_hull Δ ∧
-      Set.PairwiseDisjoint (↑S : Set Triangle) open_hull ∧
+      closedHull unitSquare = ⋃ (Δ ∈ S), closedHull Δ ∧
+      Set.PairwiseDisjoint (↑S : Set Triangle) openHull ∧
       (∀ Δ₁ ∈ S, ∀ Δ₂ ∈ S,
-        MeasureTheory.volume (open_hull Δ₁) = MeasureTheory.volume (open_hull Δ₂)) ∧
+        MeasureTheory.volume (openHull Δ₁) = MeasureTheory.volume (openHull Δ₂)) ∧
       S.card = n)
     ↔ (n ≠ 0 ∧ Even n) := by
   constructor
@@ -35,25 +54,24 @@ theorem monsky_theorem (n : ℕ) :
       rw [Nat.not_even_iff_odd] at hOdd
       have ⟨_,Γ,v,hv⟩ := valuation_on_reals
       have ⟨T,hTS,hTrainbow⟩ := monsky_rainbow v S ⟨hCover,hDisjoint⟩ ?_
-      · apply no_odd_rainbow_triangle v T hTrainbow hv ?_
+      · apply no_odd_rainbowTriangle v T hTrainbow hv ?_
         · use n, hOdd
           rw [←hCard]
-          refine equal_area_cover_implies_triangle_area_n S ?_ T hTS
-          -- Refactor is_equal_area_cover to mean actually the hypotheses here
+          refine equal_area_cover_implies_triangleArea_n S ?_ T hTS
+          -- Refactor isEqualAreaCover to mean actually the hypotheses here
           -- So that the rest of the proof one line.
           refine ⟨⟨hCover,hDisjoint⟩, ?_⟩
-          use triangle_area T
+          use triangleArea T
           intro T' hT'S
           specialize hArea T hTS T' hT'S
           have this := congrArg (f := fun x ↦ x.toReal) hArea
-          simp only at this
           rw [volume_open_triangle,volume_open_triangle ] at this
           exact this.symm
       · -- Similarly we should have a seperate lemma that says that for any "equal area cover"
         -- of the triangles all determinants are nonzero.
         intro T hTS hcontra
-        have bla := equal_area_cover_implies_triangle_area_n S ?_ T hTS
-        · rw [triangle_area, hcontra, hCard] at bla
+        have bla := equal_area_cover_implies_triangleArea_n S ?_ T hTS
+        · rw [triangleArea, hcontra, hCard] at bla
           simp only [abs_zero, zero_div, one_div, zero_eq_inv] at bla
           apply Nat.not_odd_iff_even.2 (Even.zero (α := ℕ))
           convert hOdd
@@ -61,14 +79,13 @@ theorem monsky_theorem (n : ℕ) :
           convert bla
           exact AddMonoidWithOne.natCast_zero
         · -- This is exactly the same as above so should be abstracted
-          -- when refactoring is_equal_area_cover.
+          -- when refactoring isEqualAreaCover.
           -- We put it in for now.
           refine ⟨⟨hCover,hDisjoint⟩, ?_⟩
-          use triangle_area T
+          use triangleArea T
           intro T' hT'S
           specialize hArea T hTS T' hT'S
           have this := congrArg (f := fun x ↦ x.toReal) hArea
-          simp only at this
           rw [volume_open_triangle,volume_open_triangle ] at this
           exact this.symm
   · -- Easy direction
@@ -81,7 +98,7 @@ theorem monsky_theorem (n : ℕ) :
     intro T₁ hT₁ T₂ hT₂
     rw [volume_open_triangle', volume_open_triangle']
     have ⟨A,hA⟩ := hScover.2
-    unfold triangle_area at hA
+    unfold triangleArea at hA
     rw [hA _ hT₁, hA _ hT₂]
 
 end Monsky

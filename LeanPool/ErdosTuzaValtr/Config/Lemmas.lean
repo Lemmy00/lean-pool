@@ -9,6 +9,12 @@ import Mathlib.Data.List.Sort
 import Mathlib.Tactic.Linarith
 import LeanPool.ErdosTuzaValtr.Config.Defs
 
+/-!
+# LeanPool.ErdosTuzaValtr.Config.Lemmas
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Config.Lemmas`.
+-/
+
 
 variable {α : Type _} [LinearOrder α] {C : Config α}
 

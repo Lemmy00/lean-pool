@@ -6,6 +6,12 @@ Authors: Yunzhou Xie, Yichen Feng, Jujian Zhang, Yael Dillies
 
 import LeanPool.BrauerGroupNew.Morita.ChangeOfRings
 
+/-!
+# LeanPool.BrauerGroupNew.Morita.TensorProduct
+
+Imported Lean Pool material for `LeanPool.BrauerGroupNew.Morita.TensorProduct`.
+-/
+
 universe u v w
 
 open scoped TensorProduct
@@ -35,7 +41,8 @@ variable (A B C D : Type v) [Ring A] [Ring B] [Ring C] [Ring D]
 
 variable (M : ModuleCat (A ⊗[R] C))
 
-noncomputable instance (N : ModuleCat B) : Module R N := .compHom _ (algebraMap R B)
+noncomputable instance instModuleCarrierLeanPool (N : ModuleCat B) : Module R N :=
+  .compHom _ (algebraMap R B)
 
 instance (N : ModuleCat B) : IsScalarTower R B N := .of_algebraMap_smul fun _ _ ↦ rfl
 
@@ -160,7 +167,7 @@ lemma TensorModule.hom_ext {M N : TensorModule R A C} (f g : M ⟶ N) (h : f.hom
 
 /-- Build an isomorphism of tensor modules from an isomorphism of the underlying modules. -/
 @[simps]
-def TensorModule.Iso_mk {M N : TensorModule R A C} (f : M.carrier ≅ N.carrier)
+def TensorModule.IsoMk {M N : TensorModule R A C} (f : M.carrier ≅ N.carrier)
     (h : ∀ c, f.hom ≫ ModuleCat.ofHom (N.morphism c) =
     ModuleCat.ofHom (M.morphism c) ≫ f.hom) :
   M ≅ N := {
@@ -264,7 +271,7 @@ abbrev fromModuleOverTensor : ModuleCat (A ⊗[R] C) ⥤ TensorModule R A C wher
 /-- The unit component comparing tensor modules with modules over the tensor-product algebra. -/
 abbrev e01 (M : TensorModule R A C) :
     (𝟭 (TensorModule R A C)).obj M ≅ (toModuleOverTensor R A C ⋙
-    fromModuleOverTensor R A C).obj M := TensorModule.Iso_mk R A C
+    fromModuleOverTensor R A C).obj M := TensorModule.IsoMk R A C
   (LinearEquiv.toModuleIso (by
     apply (config := {allowSynthFailures := true, newGoals := .all}) @LinearEquiv.mk
     · apply (config := {allowSynthFailures := true, newGoals := .all}) @LinearMap.mk
@@ -277,8 +284,9 @@ abbrev e01 (M : TensorModule R A C) :
     · exact congrFun rfl
     · exact congrFun rfl)) fun c ↦ by
       ext m
-      simp [Morita.moduleMapAux]
-      rfl
+      change moduleAux R A C M ((1 : A) ⊗ₜ[R] c) m = (M.morphism c) m
+      rw [moduleAux_apply]
+      simp
 
 /-- Naturality of the tensor-module unit comparison. -/
 lemma e01_naturality {X Y : TensorModule R A C} (f : X ⟶ Y) :
@@ -382,26 +390,38 @@ abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
   map_comp f g := by ext1; exact F.map_comp f.hom g.hom
 
 /-- Tensor a Morita equivalence on the left with the identity on the right tensor factor. -/
-abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linear R] :
-    TensorModule R A C ≌ TensorModule R B C where
+abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive]
+    [e.functor.Linear R] : TensorModule R A C ≌ TensorModule R B C where
   functor := toBCfunctor R A B C e.functor
   inverse := toBCfunctor R B A C e.inverse
-  unitIso := NatIso.ofComponents (fun M ↦ TensorModule.Iso_mk _ _ _
-    (e.unitIso.app M.1) fun c ↦ by
-      change (e.unitIso.app M.carrier).hom ≫
-          e.inverse.map (e.functor.map (ModuleCat.ofHom (M.morphism c))) =
-        ModuleCat.ofHom (M.morphism c) ≫ (e.unitIso.app M.carrier).hom
-      exact (e.unitIso.hom.naturality (ModuleCat.ofHom (M.morphism c))).symm) fun {M N} f ↦ by
-      ext
-      simp
-  counitIso := NatIso.ofComponents (fun M ↦ TensorModule.Iso_mk _ _ _
-    (e.counitIso.app M.1) fun c ↦ by
-      change (e.counitIso.app M.carrier).hom ≫ ModuleCat.ofHom (M.morphism c) =
-        e.functor.map (e.inverse.map (ModuleCat.ofHom (M.morphism c))) ≫
-          (e.counitIso.app M.carrier).hom
-      exact (e.counitIso.hom.naturality (ModuleCat.ofHom (M.morphism c))).symm) fun {M N} f ↦ by
-      ext
-      simp
+  unitIso := NatIso.ofComponents
+    (fun M ↦ TensorModule.IsoMk _ _ _
+      (e.unitIso.app M.1) fun c ↦ by
+        change (e.unitIso.app M.carrier).hom ≫
+            e.inverse.map (e.functor.map (ModuleCat.ofHom (M.morphism c))) =
+          ModuleCat.ofHom (M.morphism c) ≫ (e.unitIso.app M.carrier).hom
+        exact (e.unitIso.hom.naturality (ModuleCat.ofHom (M.morphism c))).symm)
+    (fun {M N} f ↦ by
+      ext x
+      change (ModuleCat.Hom.hom (f.hom ≫ e.unitIso.hom.app N.carrier)) x =
+        (ModuleCat.Hom.hom
+          (e.unitIso.hom.app M.carrier ≫ e.inverse.map (e.functor.map f.hom))) x
+      exact LinearMap.ext_iff.mp (ModuleCat.hom_ext_iff.mp
+        (e.unitIso.hom.naturality f.hom)) x)
+  counitIso := NatIso.ofComponents
+    (fun M ↦ TensorModule.IsoMk _ _ _
+      (e.counitIso.app M.1) fun c ↦ by
+        change (e.counitIso.app M.carrier).hom ≫ ModuleCat.ofHom (M.morphism c) =
+          e.functor.map (e.inverse.map (ModuleCat.ofHom (M.morphism c))) ≫
+            (e.counitIso.app M.carrier).hom
+        exact (e.counitIso.hom.naturality (ModuleCat.ofHom (M.morphism c))).symm)
+    (fun {M N} f ↦ by
+      ext x
+      change (ModuleCat.Hom.hom
+          (e.functor.map (e.inverse.map f.hom) ≫ e.counitIso.hom.app N.carrier)) x =
+        (ModuleCat.Hom.hom (e.counitIso.hom.app M.carrier ≫ f.hom)) x
+      exact LinearMap.ext_iff.mp (ModuleCat.hom_ext_iff.mp
+        (e.counitIso.hom.naturality f.hom)) x)
   functor_unitIso_comp M := by ext; simp
 
 instance (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linear R] :
@@ -432,6 +452,8 @@ instance : Functor.Linear R (@ModuleCat.restrictScalars A (A ⊗[R] C) _ _
 instance MoritaTensorAux1_linear (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive]
     [e.functor.Linear R] : (MoritaTensorAux1 R A B C e).functor.Linear R := by
   dsimp [MoritaTensorAux1]
+  change Functor.Linear R ((equivModuleOverTensor R A C).inverse ⋙
+    ((MoritaTensorAux0 R A B C e).functor ⋙ (equivModuleOverTensor R B C).functor))
   infer_instance
 
 /-- Morita equivalence is preserved by tensoring on the right. -/

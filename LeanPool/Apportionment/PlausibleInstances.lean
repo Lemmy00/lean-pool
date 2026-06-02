@@ -16,6 +16,12 @@ you can use the `plausible` tactic with the Apportionment library. For example, 
 import LeanPool.Apportionment
 import Plausible
 
+/-!
+# LeanPool.Apportionment.PlausibleInstances
+
+Imported Lean Pool material for `LeanPool.Apportionment.PlausibleInstances`.
+-/
+
 open Apportionment
 
 example (e : Election 4) : e.votes[0] ≤ 15 + e.votes[1] := by

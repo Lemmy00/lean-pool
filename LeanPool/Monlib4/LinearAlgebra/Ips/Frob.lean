@@ -387,12 +387,12 @@ rfl
 -- Algebra.mul_comp_rTensor_unit
 
 -- m(id ⊗ η)κ⁻¹ = τ
--- theorem LinearMap.mul'_comp_id_map_unit_assoc_eq_lid :
+-- theorem LinearMap.mul'_comp_idMap_unit_assoc_eq_lid :
 --   LinearMap.mul' ℂ ℍ ∘ₗ (id ⊗ₘ η) = TensorProduct.rid ℂ ℍ :=
 -- Algebra.mul_comp_lTensor_unit
 
 -- set_option synthInstance.maxHeartbeats 0 in
--- private theorem linear_map.id_map_mul'_comp_unit_eq [hφ : φ.IsFaithfulPosMap] :
+-- private theorem linear_map.idMapMul'_comp_unit_eq [hφ : φ.IsFaithfulPosMap] :
 --     ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ ((LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) ∘ₗ η))
 --       = ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ (LinearMap.adjoint (LinearMap.mul' ℂ ℍ))) ∘ₗ ((1 : ℍ →ₗ[ℂ] ℍ) ⊗ₘ η)
 -- :=
@@ -404,12 +404,12 @@ rfl
 -- ∘ₗ (TensorProduct.rid ℂ ℍ).symm =
 --       (LinearMap.adjoint (LinearMap.mul' ℂ ℍ)) :=
 --   by
---   rw [linear_map.id_map_mul'_comp_unit_eq]
+--   rw [linear_map.idMapMul'_comp_unit_eq]
 --   have := @frobenius_equation n _ _ φ _
 --   simp_rw [← LinearMap.comp_assoc] at this ⊢
 --   rw [this]
 --   simp_rw [LinearMap.comp_assoc, ← LinearMap.comp_assoc (TensorProduct.rid ℂ ℍ).symm.toLinearMap,
---     LinearMap.mul'_comp_id_map_unit_assoc_eq_lid, LinearMap.comp_assoc,
+--     LinearMap.mul'_comp_idMap_unit_assoc_eq_lid, LinearMap.comp_assoc,
 --     LinearEquiv.comp_coe, LinearEquiv.symm_trans_self,
 --     LinearEquiv.refl_toLinearMap, LinearMap.comp_id]
 

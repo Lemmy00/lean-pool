@@ -189,22 +189,8 @@ private theorem Psi.adjoint_rank_one [hφ : φ.IsFaithfulPosMap] (a b : ℍ) (t 
       (hφ.psi (ψ := φ) t s (LinearMap.adjoint ((|a⟩⟨b|).toLinearMap)) =
         ((hφ.sig (t - s)).toLinearMap ⊗ₘ (hφ.sig (t - s)).op.toLinearMap)
           (tenSwap ℂ (Star.star (hφ.psi (ψ := φ) t s (|a⟩⟨b|).toLinearMap)))) :=
-  by
-  exact withMatrixQuantum[φ] (by
-    rw [ContinuousLinearMap.linearMap_adjoint, rankOne_adjoint]
-    dsimp [Module.Dual.IsFaithfulPosMap.psi]
-    simp_rw [QuantumSet.Psi_toFun_apply, tensor_op_star_apply, unop_apply, op_apply,
-      MulOpposite.unop_op, star_eq_conjTranspose, conjTranspose_conjTranspose, ←
-      LinearMap.comp_apply]
-    simp only [LinearMap.coe_comp, Function.comp_apply]
-    simp only [TensorProduct.comm_tmul, map_tmul, LinearEquiv.coe_coe, unop_apply, op_apply,
-      MulOpposite.unop_op, AlgEquiv.toLinearMap_apply, LinearMap.op_apply]
-    change modAut t b ⊗ₜ[ℂ] MulOpposite.op ((modAut s) a)ᴴ =
-        modAut (t - s) (modAut s b) ⊗ₜ[ℂ]
-          MulOpposite.op (modAut (t - s) ((modAut t) a)ᴴ)
-    rw [← star_eq_conjTranspose, ← star_eq_conjTranspose, starAlgebra.modAut_star,
-      starAlgebra.modAut_star, QuantumSet.modAut_apply_modAut, QuantumSet.modAut_apply_modAut]
-    ring_nf)
+by
+  exact withMatrixQuantum[φ] (Psi.adjoint_apply (A := ℍ) (B := ℍ) t s (|a⟩⟨b|).toLinearMap)
 
 -- set_option maxHeartbeats 0 in
 -- set_option synthInstance.maxHeartbeats 0 in

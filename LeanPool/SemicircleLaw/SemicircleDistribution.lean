@@ -19,7 +19,7 @@ import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.Probability.HasLaw
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.Variance
-import Mathlib.Combinatorics.Enumerative.Catalan
+import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 
 /-!
 # Semicircle Distributions over `ℝ`
@@ -246,7 +246,7 @@ lemma semicirclePDF_lt_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : semicirclePDF μ
 lemma semicirclePDF_ne_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : semicirclePDF μ v x ≠ ∞ :=
   semicirclePDF_lt_top.ne
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_semicirclePDF (μ : ℝ) (v : ℝ≥0) : Measurable (semicirclePDF μ v) :=
   (measurable_semicirclePDFReal _ _).ennreal_ofReal
 

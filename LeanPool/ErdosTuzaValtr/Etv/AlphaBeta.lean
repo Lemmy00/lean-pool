@@ -11,6 +11,12 @@ import Mathlib.Data.List.Chain
 import LeanPool.ErdosTuzaValtr.Etv.Defs
 import LeanPool.ErdosTuzaValtr.Etv.Label
 
+/-!
+# LeanPool.ErdosTuzaValtr.Etv.AlphaBeta
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Etv.AlphaBeta`.
+-/
+
 noncomputable section
 
 variable {α : Type _} [LinearOrder α] {C : Config α} {S : Finset α} (l : C.Label S)

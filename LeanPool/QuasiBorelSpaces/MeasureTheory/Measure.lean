@@ -8,6 +8,12 @@ import Mathlib.Probability.Kernel.MeasurableLIntegral
 import LeanPool.QuasiBorelSpaces.MeasureTheory.Option
 import Mathlib.Probability.Kernel.Defs
 
+/-!
+# LeanPool.QuasiBorelSpaces.MeasureTheory.Measure
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.MeasureTheory.Measure`.
+-/
+
 
 namespace MeasureTheory.Measure
 

@@ -8,6 +8,12 @@ import LeanPool.Monlib4.QuantumGraph.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import LeanPool.Monlib4.QuantumGraph.Example
 
+/-!
+# LeanPool.Monlib4.QuantumGraph.Degree
+
+Imported Lean Pool material for `LeanPool.Monlib4.QuantumGraph.Degree`.
+-/
+
 open scoped InnerProductSpace ComplexOrder
 
 theorem schurProjection.innerOne_map_one_nonneg
@@ -123,7 +129,7 @@ by
   rw [QuantumGraph.Real.innerOne_map_one_eq_norm_pow_four_iff_of_kms
       ((QuantumGraph.real_toSubset_iff (-(1/2))).mpr h) (kms := kms)]
   rw [LinearMap.toSubsetQuantumSet_eq_iff, rankOne_ofSubsetQuantumSet]
-  simp_rw [← QuantumSet.toSubset_algEquiv_symm_eq_toSubset_equiv, map_one]
+  simp_rw [← QuantumSet.toSubsetAlgEquiv_symm_eq_toSubsetEquiv, map_one]
 
 /-- Out-degree operator of a quantum graph. -/
 @[simps]
@@ -430,12 +436,12 @@ theorem Coalgebra.comul_comp_mul_quantumSetSubset
   letI coalgebraSubsetA : Coalgebra ℂ (QuantumSet.subset r A) :=
     FrobeniusAlgebra.toCoalgebra
   Coalgebra.comul ∘ₗ LinearMap.mul' ℂ (QuantumSet.subset r A)
-    = (TensorProduct.map (QuantumSet.toSubset_algEquiv r).toLinearMap
-        (QuantumSet.toSubset_algEquiv r).toLinearMap)
+    = (TensorProduct.map (QuantumSet.toSubsetAlgEquiv r).toLinearMap
+        (QuantumSet.toSubsetAlgEquiv r).toLinearMap)
       ∘ₗ (Coalgebra.comul (R := ℂ) (A := A)
       ∘ₗ (LinearMap.mul' ℂ A))
-      ∘ₗ (TensorProduct.map (QuantumSet.toSubset_algEquiv r).symm.toLinearMap
-          (QuantumSet.toSubset_algEquiv r).symm.toLinearMap) :=
+      ∘ₗ (TensorProduct.map (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap
+          (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap) :=
 by
   letI subsetA : QuantumSet (QuantumSet.subset r A) :=
     QuantumSet.instSubset (A := A) (by infer_instance) r
@@ -451,24 +457,24 @@ by
   calc
     Coalgebra.comul ∘ₗ LinearMap.mul' ℂ (QuantumSet.subset r A)
         = Coalgebra.comul ∘ₗ
-            ((QuantumSet.toSubset_algEquiv r).toLinearMap ∘ₗ
+            ((QuantumSet.toSubsetAlgEquiv r).toLinearMap ∘ₗ
               LinearMap.mul' ℂ A ∘ₗ
-                TensorProduct.map (QuantumSet.toSubset_algEquiv r).symm.toLinearMap
-                  (QuantumSet.toSubset_algEquiv r).symm.toLinearMap) :=
+                TensorProduct.map (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap
+                  (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap) :=
           congrArg (fun f => Coalgebra.comul ∘ₗ f)
             (LinearMap.mul'_quantumSet_subset_eq (A := A) r)
-    _ = (TensorProduct.map (QuantumSet.toSubset_algEquiv r).toLinearMap
-          (QuantumSet.toSubset_algEquiv r).toLinearMap)
+    _ = (TensorProduct.map (QuantumSet.toSubsetAlgEquiv r).toLinearMap
+          (QuantumSet.toSubsetAlgEquiv r).toLinearMap)
         ∘ₗ (Coalgebra.comul (R := ℂ) (A := A)
         ∘ₗ LinearMap.mul' ℂ A)
-        ∘ₗ (TensorProduct.map (QuantumSet.toSubset_algEquiv r).symm.toLinearMap
-            (QuantumSet.toSubset_algEquiv r).symm.toLinearMap) := by
+        ∘ₗ (TensorProduct.map (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap
+            (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap) := by
           rw [QuantumSet.comul_subset_eq r]
           simp only [← LinearMap.comp_assoc]
-          rw [LinearMap.comp_assoc (QuantumSet.toSubset_algEquiv r).toLinearMap
-            (QuantumSet.toSubset_algEquiv r).symm.toLinearMap
-            ((TensorProduct.map (QuantumSet.toSubset_algEquiv r).toLinearMap
-              (QuantumSet.toSubset_algEquiv r).toLinearMap) ∘ₗ
+          rw [LinearMap.comp_assoc (QuantumSet.toSubsetAlgEquiv r).toLinearMap
+            (QuantumSet.toSubsetAlgEquiv r).symm.toLinearMap
+            ((TensorProduct.map (QuantumSet.toSubsetAlgEquiv r).toLinearMap
+              (QuantumSet.toSubsetAlgEquiv r).toLinearMap) ∘ₗ
                 Coalgebra.comul (R := ℂ) (A := A))]
           rw [AlgEquiv.symm_comp_toLinearMap]
           simp only [LinearMap.comp_id, LinearMap.comp_assoc]
@@ -484,8 +490,8 @@ by
   intro h'
   simp only [QuantumGraph.IsRegular, LinearMap.toSubsetQuantumSet_apply]
   rw [LinearMap.toSubsetQuantumSet_adjoint_apply]
-  simp only [LinearMap.comp_apply, ← QuantumSet.toSubset_algEquiv_symm_eq_toSubset_equiv,
-    ← QuantumSet.toSubset_algEquiv_eq_toSubset_equiv, map_one, AlgEquiv.toLinearMap_apply]
+  simp only [LinearMap.comp_apply, ← QuantumSet.toSubsetAlgEquiv_symm_eq_toSubsetEquiv,
+    ← QuantumSet.toSubsetAlgEquiv_eq_toSubsetEquiv, map_one, AlgEquiv.toLinearMap_apply]
   nth_rw 3 [eq_comm]
   nth_rw 4 [eq_comm]
   simp_rw [← AlgEquiv.symm_apply_eq, map_smul, map_one]
@@ -499,9 +505,19 @@ lemma QuantumGraph.zero_le_degree_le_norm_one_sq
   {f : A →ₗ[ℂ] A} (h : QuantumGraph.Real A f) (d : ℂ) (h2 : (h.toQuantumGraph).IsRegular d) :
     0 ≤ d ∧ d ≤ ‖(1 : A)‖ ^ 2 :=
 by
-  letI := QuantumSet.instSubset (A := A) (by infer_instance) 0
+  letI subsetStarAlgebra : starAlgebra (QuantumSet.subset 0 A) :=
+    QuantumSet.subsetStarAlgebra 0
+  letI subsetQuantumSet : QuantumSet (QuantumSet.subset 0 A) :=
+    QuantumSet.instSubset (A := A) (by infer_instance) 0
+  letI : NonUnitalNonAssocSemiring (QuantumSet.subset 0 A) := inferInstance
+  letI : NonUnitalSemiring (QuantumSet.subset 0 A) := inferInstance
+  letI : StarRing (QuantumSet.subset 0 A) := inferInstance
+  letI subsetStarOrderedRing : StarOrderedRing (QuantumSet.subset 0 A) := inferInstance
   rw [QuantumSet.normOne_toSubset 0]
-  exact QuantumGraph.zero_le_degree_le_norm_one_sq_of_gns
+  exact @QuantumGraph.zero_le_degree_le_norm_one_sq_of_gns
+    (QuantumSet.subset 0 A) subsetStarAlgebra subsetQuantumSet inferInstance inferInstance
+    subsetStarOrderedRing
     ((StarOrderedRing.nonneg_iff_toQuantumSetSubset 0).mp h₁) rfl
+    (f.toSubsetQuantumSet 0 0)
     ((QuantumGraph.real_toSubset_iff 0).mpr h) _
     ((QuantumGraph.toSubset_isRegular_iff 0 h.toQuantumGraph d).mp h2)

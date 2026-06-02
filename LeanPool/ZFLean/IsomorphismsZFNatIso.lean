@@ -6,6 +6,12 @@ Authors: Vincent Trélat
 
 import LeanPool.ZFLean.Isomorphisms
 
+/-!
+# LeanPool.ZFLean.IsomorphismsZFNatIso
+
+Imported Lean Pool material for `LeanPool.ZFLean.IsomorphismsZFNatIso`.
+-/
+
 namespace ZFSet
 
 namespace ZFNat
@@ -144,7 +150,6 @@ theorem deletePointIsoMap_bijective {k : ZFNat} {ℓ : ZFSet}
       · have := ZFNat.not_zero_imp_succ (n := k) ?_
         · obtain ⟨s, rfl⟩ := this
           use s, lt_succ
-          dsimp [deletePointIsoMap]
           simp only [mem_sep, pair_mem_prod, mem_sdiff, mem_singleton, π₁_pair, π₂_pair]
           and_intros
           · exact lt_succ
@@ -167,7 +172,6 @@ theorem deletePointIsoMap_bijective {k : ZFNat} {ℓ : ZFSet}
     · by_cases y_lt_ℓ : y ∈ ℓ
       · change Y < L at y_lt_ℓ
         use y, y_mem_k
-        dsimp [deletePointIsoMap]
         simp only [mem_sep, mem_prod, mem_sdiff, mem_singleton, pair_inj,
           exists_eq_right_right', π₁_pair, π₂_pair]
         split_ifs
@@ -265,7 +269,7 @@ theorem iso_eq_iff_proof {n m : ZFNat} : ↑n ≅ᶻ ↑m ↔ n = m where
     | zero =>
       obtain ⟨bij, isfunc, isbij⟩ := iso
       ext z
-      simp_rw [ZFNat.nat_zero_eq, notMem_empty, false_iff]
+      simp_rw [ZFNat.natZero_eq, notMem_empty, false_iff]
       intro contr
       obtain ⟨x, contr, _⟩ := isbij.2 z contr
       nomatch notMem_empty x contr

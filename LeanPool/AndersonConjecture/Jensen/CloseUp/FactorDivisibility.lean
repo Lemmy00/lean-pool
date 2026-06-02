@@ -31,22 +31,22 @@ theorem close_up_aux_factor_dvd_a
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     (m : ℕ)
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     (ih_a : ∀ (y : R.carrier), DvdNotUnit y a →
       ∀ (s : Finset R.carrier),
-      gcd_complexity s ≤ m →
+      gcdComplexity s ≤ m →
       s.card = n'' + 1 + 1 + 1 → y ∈ s → ∀ (c : R.carrier),
       (c : T) ∈ Ideal.map R.carrier.subtype (span (↑s : Set R.carrier)) →
       ∃ S : NSubring T, IsAExtension R S ∧ ∃ (hle : R.carrier ≤ S.carrier),
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {s : Finset R.carrier}
-    (hs_gcd : gcd_complexity s ≤ m)
+    (hs_gcd : gcdComplexity s ≤ m)
     (rest : Finset R.carrier)
     (hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     {q' : R.carrier} (hq' : Prime q')
     (hq'_dvd : ∀ x ∈ rest, q' ∣ x)
     (hq'a : q' ∣ a)
@@ -164,8 +164,8 @@ theorem close_up_aux_factor_dvd_a
             Finset.card_image_le.trans
               (by rw [hins_card])
           omega
-        have ht_gcd : gcd_complexity t_q' ≤ m := le_trans (by
-          change gcd_complexity t_q' ≤ gcd_complexity s
+        have ht_gcd : gcdComplexity t_q' ≤ m := le_trans (by
+          change gcdComplexity t_q' ≤ gcdComplexity s
           apply le_trans _ hgcd_rest
           have hinj_qa : Set.InjOn div_q_a ↑(insert a rest) :=
             fun x hx y hy hxy => by
@@ -174,7 +174,7 @@ theorem close_up_aux_factor_dvd_a
               calc x = q' * div_q_a x := hx_eq
                 _ = q' * div_q_a y := by rw [hxy]
                 _ = y := hy_eq.symm
-          exact gcd_complexity_div_le q' hq' (insert a rest)
+          exact gcdComplexity_div_le q' hq' (insert a rest)
             hq'_dvd_all div_q_a hdiv_a hinj_qa) hs_gcd
         exact ih_a (div_q_a a) hdvd t_q' ht_gcd ht_card_eq ha'_mem c_n' hc_n'_mem
 
@@ -191,18 +191,18 @@ theorem close_up_aux_factor_dvd_c
         (⟨(c : T), hle c.2⟩ : S.carrier) ∈
           Ideal.map (Subring.inclusion hle) (span (↑s : Set R.carrier)))
     {R : NSubring T} (hR_card : Cardinal.mk R.carrier < Cardinal.mk T)
-    [IsDomain R.carrier] [UniqueFactorizationMonoid R.carrier] [DecidableEq R.carrier]
+    [DecidableEq R.carrier]
     {a : R.carrier}
     {s : Finset R.carrier}
     (rest : Finset R.carrier)
     (hrest_card : rest.card ≤ n'' + 1 + 1)
     (ha_rest : a ∉ rest)
     {b : R.carrier} (hb_rest : b ∈ rest)
-    (hgcd_rest : gcd_complexity (insert a rest) ≤ gcd_complexity s)
+    (hgcd_rest : gcdComplexity (insert a rest) ≤ gcdComplexity s)
     (ih_b : ∀ (y : R.carrier), DvdNotUnit y b →
       ∀ (rest : Finset R.carrier),
       rest.card ≤ n'' + 1 + 1 → a ∉ rest → y ∈ rest →
-      gcd_complexity (insert a rest) ≤ gcd_complexity s →
+      gcdComplexity (insert a rest) ≤ gcdComplexity s →
       ∀ (c_n : R.carrier),
       (c_n : T) ∈ Ideal.map R.carrier.subtype
         (span (↑(insert a rest) : Set R.carrier)) →
@@ -381,9 +381,9 @@ theorem close_up_aux_factor_dvd_c
           have hdvd_b : DvdNotUnit (div_q_b b) b :=
             ⟨hdb_zero, ⟨q', hq'.not_unit,
               (hdiv_b b hb_rest).trans (mul_comm q' (div_q_b b))⟩⟩
-          have hgcd_rest' : gcd_complexity (insert a rest') ≤ gcd_complexity s := by
+          have hgcd_rest' : gcdComplexity (insert a rest') ≤ gcdComplexity s := by
             apply le_trans _ hgcd_rest
-            unfold gcd_complexity
+            unfold gcdComplexity
             rw [Finset.sum_insert ha_rest', Finset.sum_insert ha_rest]
             apply Nat.add_le_add_left
             have hinj_qb : Set.InjOn div_q_b ↑rest :=
@@ -393,7 +393,7 @@ theorem close_up_aux_factor_dvd_c
                 calc x = q' * div_q_b x := hx_eq
                   _ = q' * div_q_b y := by rw [hxy]
                   _ = y := hy_eq.symm
-            exact gcd_complexity_div_le q' hq' rest hq'_dvd div_q_b hdiv_b hinj_qb
+            exact gcdComplexity_div_le q' hq' rest hq'_dvd div_q_b hdiv_b hinj_qb
           exact ih_b (div_q_b b) hdvd_b rest' hrest'_card_eq.le ha_rest' hb_rest' hgcd_rest'
             c_n' hc_n'_mem
 

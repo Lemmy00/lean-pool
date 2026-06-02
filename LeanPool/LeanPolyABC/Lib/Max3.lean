@@ -6,6 +6,12 @@ Authors: Seewoo Lee
 
 import Init.Data.Nat.Lemmas
 
+/-!
+# LeanPool.LeanPolyABC.Lib.Max3
+
+Imported Lean Pool material for `LeanPool.LeanPolyABC.Lib.Max3`.
+-/
+
 namespace Nat
 
 /-- The maximum of three natural numbers, `max (max a b) c`. -/

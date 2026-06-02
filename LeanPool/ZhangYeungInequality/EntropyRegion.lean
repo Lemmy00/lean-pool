@@ -11,9 +11,9 @@ import LeanPool.ZhangYeungInequality.Prelude
 
 This module packages the generic `Fin n` set-function surface used by the exact
 entropic-region
-closure form of Theorem 4: the `n`-ary entropy function `entropyFn_n`, the generic cone
+closure form of Theorem 4: the `n`-ary entropy function `entropyFnN`, the generic cone
 predicates
-`zhangYeungAt_n` and `zhangYeungHolds_n`, the Shannon and entropic region sets, and the
+`zhangYeungAtN` and `zhangYeungHoldsN`, the Shannon and entropic region sets, and the
 restriction
 map from `Fin n` down to the first four coordinates. Witness-specific `Fin n` lemmas
 (the lifted
@@ -27,28 +27,28 @@ open scoped Topology
 
 universe u
 
-/-- `I_F` generalized to `Finset (Fin n)`. -/
-def I_F_n {n : ℕ} (F : Finset (Fin n) → ℝ) (α β : Finset (Fin n)) : ℝ :=
+/-- `IF` generalized to `Finset (Fin n)`. -/
+def IFN {n : ℕ} (F : Finset (Fin n) → ℝ) (α β : Finset (Fin n)) : ℝ :=
   F α + F β - F (α ∪ β)
 
-/-- `condI_F` generalized to `Finset (Fin n)`. -/
-def condI_F_n {n : ℕ} (F : Finset (Fin n) → ℝ) (α β γ : Finset (Fin n)) : ℝ :=
+/-- `condIF` generalized to `Finset (Fin n)`. -/
+def condIFN {n : ℕ} (F : Finset (Fin n) → ℝ) (α β γ : Finset (Fin n)) : ℝ :=
   F (α ∪ γ) + F (β ∪ γ) - F (α ∪ β ∪ γ) - F γ
 
-/-- `delta_F` generalized to `Finset (Fin n)`. -/
-def delta_F_n {n : ℕ} (F : Finset (Fin n) → ℝ) (i j k l : Fin n) : ℝ :=
-  I_F_n F {i} {j} - condI_F_n F {i} {j} {k} - condI_F_n F {i} {j} {l}
+/-- `deltaF` generalized to `Finset (Fin n)`. -/
+def deltaFN {n : ℕ} (F : Finset (Fin n) → ℝ) (i j k l : Fin n) : ℝ :=
+  IFN F {i} {j} - condIFN F {i} {j} {k} - condIFN F {i} {j} {l}
 
 /-- `Γ_n` (paper eq. 11) as a predicate on `Finset (Fin n) → ℝ`. -/
-def shannonCone_n {n : ℕ} (F : Finset (Fin n) → ℝ) : Prop :=
+def shannonConeN {n : ℕ} (F : Finset (Fin n) → ℝ) : Prop :=
   F ∅ = 0 ∧
   (∀ α β : Finset (Fin n), α ⊆ β → F α ≤ F β) ∧
   (∀ α β : Finset (Fin n), F (α ∪ β) + F (α ∩ β) ≤ F α + F β)
 
 /-- The Zhang-Yeung inequality at a 4-tuple labeling over `Fin n`. -/
-def zhangYeungAt_n {n : ℕ} (F : Finset (Fin n) → ℝ) (i j k l : Fin n) : Prop :=
-  delta_F_n F i j k l ≤ (1 / 2) * (I_F_n F {k} {l} + I_F_n F {k} ({i} ∪ {j})
-    + condI_F_n F {i} {j} {k} - condI_F_n F {i} {j} {l})
+def zhangYeungAtN {n : ℕ} (F : Finset (Fin n) → ℝ) (i j k l : Fin n) : Prop :=
+  deltaFN F i j k l ≤ (1 / 2) * (IFN F {k} {l} + IFN F {k} ({i} ∪ {j})
+    + condIFN F {i} {j} {k} - condIFN F {i} {j} {l})
 
 /--
 The `Fin n`-indexed Zhang-Yeung cone `tildeΓ_n`: the Zhang-Yeung inequality holds at
@@ -62,22 +62,22 @@ extends to a
 permutation — but it is easier to manipulate in proofs, so the `Fin n` lift uses it in
 place of the
 `Equiv.Perm` form that `zhangYeungHolds` uses at `n = 4`. The point-level predicate
-`zhangYeungAt_n` does agree definitionally with `zhangYeungAt` at `n = 4` (pinned by
+`zhangYeungAtN` does agree definitionally with `zhangYeungAt` at `n = 4` (pinned by
 `Iff.rfl` in
-the test module); the quantifier shapes of `zhangYeungHolds_n` and `zhangYeungHolds`
+the test module); the quantifier shapes of `zhangYeungHoldsN` and `zhangYeungHolds`
 differ, so
 their equivalence at `n = 4` is extensional rather than definitional.
 -/
-def zhangYeungHolds_n {n : ℕ} (F : Finset (Fin n) → ℝ) : Prop :=
+def zhangYeungHoldsN {n : ℕ} (F : Finset (Fin n) → ℝ) : Prop :=
   ∀ i j k l : Fin n, i ≠ j → i ≠ k → i ≠ l → j ≠ k → j ≠ l → k ≠ l →
-    zhangYeungAt_n F i j k l
+    zhangYeungAtN F i j k l
 
 /--
 The entropy function of an `n`-variable random-variable family `X : ∀ i : Fin n, Ω → S
 i`,
 expressed as a set function on `Finset (Fin n)`.
 -/
-noncomputable def entropyFn_n
+noncomputable def entropyFnN
     {Ω : Type*} [MeasurableSpace Ω]
     {n : ℕ} {S : Fin n → Type u}
     [∀ i, MeasurableSpace (S i)]
@@ -87,21 +87,21 @@ noncomputable def entropyFn_n
 /--
 The original four-variable entropy function surface, now as the `n = 4` specialization
 of
-`entropyFn_n`.
+`entropyFnN`.
 -/
 noncomputable abbrev entropyFn
     {Ω : Type*} [MeasurableSpace Ω]
     {S : Fin 4 → Type u}
     [∀ i, MeasurableSpace (S i)]
     (X : ∀ i : Fin 4, Ω → S i) (μ : Measure Ω) : Finset (Fin 4) → ℝ :=
-  entropyFn_n X μ
+  entropyFnN X μ
 
 /--
 The Shannon outer bound `Γ_n`, packaged as a set. Membership is definitionally
-`shannonCone_n`.
+`shannonConeN`.
 -/
-def shannonRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
-  {F | shannonCone_n F}
+def shannonRegionN (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
+  {F | shannonConeN F}
 
 /--
 The entropic region `Γ_n^*`, packaged as the set of actual entropy functions of `n`
@@ -110,21 +110,21 @@ variables. The quantified probability space and codomain family range over the a
 universe
 `u`, so a `Type u` realization is literally a member of the set.
 -/
-def entropyRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
+def entropyRegionN (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
   {F | ∃ (Ω : Type u) (_ : MeasurableSpace Ω) (μ : Measure Ω) (_ : IsProbabilityMeasure μ)
       (S : Fin n → Type u) (_ : ∀ i, MeasurableSpace (S i)) (_ : ∀ i, Fintype (S i))
       (_ : ∀ i, MeasurableSingletonClass (S i))
       (X : ∀ i : Fin n, Ω → S i),
-      (∀ i, Measurable (X i)) ∧ F = entropyFn_n X μ}
+      (∀ i, Measurable (X i)) ∧ F = entropyFnN X μ}
 
 /--
 The almost-entropic region `closure (Γ_n^*)`. Inherits the universe parameter from
-`entropyRegion_n`: the closure is taken in the same ambient universe `u`, so a point
+`entropyRegionN`: the closure is taken in the same ambient universe `u`, so a point
 witnessed by a
 `Type u` entropy function (or a limit of such) is literally a member of the set.
 -/
-def almostEntropicRegion_n (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
-  closure (entropyRegion_n.{u} n)
+def almostEntropicRegionN (n : ℕ) : Set (Finset (Fin n) → ℝ) :=
+  closure (entropyRegionN.{u} n)
 
 /-- Restrict a set function on `Fin n` to its first four coordinates. -/
 def restrictFirstFour {n : ℕ} (hn : 4 ≤ n) :
@@ -142,15 +142,15 @@ Restricting an `n`-variable entropy function to the first four coordinates agree
 taking the
 entropy function of the restricted family.
 -/
-theorem entropyFn_n_restrictFirstFour
+theorem entropyFnN_restrictFirstFour
     {Ω : Type*} [MeasurableSpace Ω]
     {n : ℕ} {S : Fin n → Type u}
     [∀ i, MeasurableSpace (S i)] [∀ i, Finite (S i)]
     [∀ i, MeasurableSingletonClass (S i)]
     {X : ∀ i : Fin n, Ω → S i} (hX : ∀ i, Measurable (X i))
     (μ : Measure Ω) (hn : 4 ≤ n) :
-    restrictFirstFour hn (entropyFn_n X μ) =
-      entropyFn_n (fun i : Fin 4 => X (Fin.castLE hn i)) μ := by
+    restrictFirstFour hn (entropyFnN X μ) =
+      entropyFnN (fun i : Fin 4 => X (Fin.castLE hn i)) μ := by
   letI : ∀ i, Fintype (S i) := fun i => Fintype.ofFinite (S i)
   ext α
   let e : Fin 4 ↪ Fin n := Fin.castLEEmb hn
@@ -171,13 +171,15 @@ theorem entropyFn_n_restrictFirstFour
   have h_meas : Measurable (fun ω : Ω => fun j : α.map e => X j.1 ω) :=
     measurable_pi_lambda _ (fun j => hX j.1)
   have h_ent := entropy_comp_of_injective μ h_meas π hπ
-  simpa [restrictFirstFour, entropyFn_n, π] using h_ent.symm
+  change H[(fun ω : Ω => fun j : α.map e => X j.1 ω); μ] =
+    H[(fun ω : Ω => fun i : α => X (e i.1) ω); μ]
+  simpa [π, Function.comp_def] using h_ent.symm
 
 /-- Entropic points remain entropic after restriction to the first four coordinates. -/
-theorem restrictFirstFour_mem_entropyRegion_n
+theorem restrictFirstFour_mem_entropyRegionN
     {n : ℕ} (hn : 4 ≤ n) {F : Finset (Fin n) → ℝ}
-    (hF : F ∈ entropyRegion_n.{u} n) :
-    restrictFirstFour hn F ∈ entropyRegion_n.{u} 4 := by
+    (hF : F ∈ entropyRegionN.{u} n) :
+    restrictFirstFour hn F ∈ entropyRegionN.{u} 4 := by
   rcases hF with ⟨Ω, hΩ, μ, hμ, S, hS, hFin, hMSC, X, hX, rfl⟩
   letI : MeasurableSpace Ω := hΩ
   letI : IsProbabilityMeasure μ := hμ
@@ -189,18 +191,18 @@ theorem restrictFirstFour_mem_entropyRegion_n
     inferInstance, inferInstance, (fun i : Fin 4 => X (Fin.castLE hn i)), ?_, ?_⟩
   · intro i
     exact hX (Fin.castLE hn i)
-  · simpa using entropyFn_n_restrictFirstFour hX μ hn
+  · simpa using entropyFnN_restrictFirstFour hX μ hn
 
 /--
 Almost-entropic points remain almost entropic after restriction to the first four
 coordinates.
 -/
-theorem restrictFirstFour_mem_almostEntropicRegion_n
+theorem restrictFirstFour_mem_almostEntropicRegionN
     {n : ℕ} (hn : 4 ≤ n) {F : Finset (Fin n) → ℝ}
-    (hF : F ∈ almostEntropicRegion_n.{u} n) :
-    restrictFirstFour hn F ∈ almostEntropicRegion_n.{u} 4 := by
-  have h_map : Set.MapsTo (restrictFirstFour hn) (entropyRegion_n.{u} n) (entropyRegion_n.{u} 4) :=
-    fun _ h_mem => restrictFirstFour_mem_entropyRegion_n hn h_mem
-  simpa [almostEntropicRegion_n] using h_map.closure (restrictFirstFour_continuous hn) hF
+    (hF : F ∈ almostEntropicRegionN.{u} n) :
+    restrictFirstFour hn F ∈ almostEntropicRegionN.{u} 4 := by
+  have h_map : Set.MapsTo (restrictFirstFour hn) (entropyRegionN.{u} n) (entropyRegionN.{u} 4) :=
+    fun _ h_mem => restrictFirstFour_mem_entropyRegionN hn h_mem
+  simpa [almostEntropicRegionN] using h_map.closure (restrictFirstFour_continuous hn) hF
 
 end ZhangYeung

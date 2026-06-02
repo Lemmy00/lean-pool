@@ -7,6 +7,12 @@ Authors: Anthony Vandikas, Kiarash Sotoudeh
 import LeanPool.QuasiBorelSpaces.Prod
 import LeanPool.QuasiBorelSpaces.Prop
 
+/-!
+# LeanPool.QuasiBorelSpaces.Nat
+
+Imported Lean Pool material for `LeanPool.QuasiBorelSpaces.Nat`.
+-/
+
 namespace QuasiBorelSpace.Nat
 
 example : DiscreteQuasiBorelSpace ℕ := inferInstance

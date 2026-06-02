@@ -11,6 +11,12 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Order.Basic
 import LeanPool.ErdosTuzaValtr.Lib.List.Defs
 
+/-!
+# LeanPool.ErdosTuzaValtr.Lib.List.Lemmas
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Lib.List.Lemmas`.
+-/
+
 variable {α : Type _}
 
 section ListIn

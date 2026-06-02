@@ -7,6 +7,12 @@ Authors: Jineon Baek
 import Mathlib.Order.Basic
 import Mathlib.Order.OrderDual
 
+/-!
+# LeanPool.ErdosTuzaValtr.Lib.Core.Rel3
+
+Imported Lean Pool material for `LeanPool.ErdosTuzaValtr.Lib.Core.Rel3`.
+-/
+
 universe u v
 
 open OrderDual

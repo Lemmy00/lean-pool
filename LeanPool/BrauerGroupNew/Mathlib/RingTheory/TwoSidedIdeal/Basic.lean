@@ -22,7 +22,7 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing R] {I : TwoSidedIdeal R} {x : R}
 
 lemma smul_mem (r : R) (hx : x ∈ I) : r • x ∈ I := by
-  simpa using I.ringCon.mul (I.ringCon.refl r) hx
+  exact I.mul_mem_left r x hx
 
 end NonUnitalNonAssocRing
 
@@ -30,7 +30,7 @@ section Ring
 
 variable [Ring R] {I : TwoSidedIdeal R}
 
-instance : Module Rᵐᵒᵖ I where
+instance instModuleMulOppositeSubtypeMemLeanPool : Module Rᵐᵒᵖ I where
   smul r x := ⟨x.1 * r.unop, I.mul_mem_right _ _ x.2⟩
   one_smul x := by ext; simp
   mul_smul x y z := by ext; simp [mul_assoc]

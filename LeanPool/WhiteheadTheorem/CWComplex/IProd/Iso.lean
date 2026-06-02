@@ -126,7 +126,7 @@ noncomputable def cocone : Limits.Cocone (Functor.ofSequence X.IProd.skInclSucc)
   { pt := TopCat.of (I × X.toTopCat)
     ι := NatTrans.ofSequence (incl X) <| by
       convert naturality X
-      simp only [Functor.ofSequence_obj, homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ] }
+      simp only [homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ] }
 
 /-- The cocone with `I × X.sk 0 ⟶ I × X.sk 1 ⟶ ⋯` as base and `Z.pt` as vertex -/
 noncomputable def IXZ : Limits.Cocone (Functor.ofSequence X.skInclSucc ⋙ topBinProdLeft' I) :=
@@ -134,14 +134,18 @@ noncomputable def IXZ : Limits.Cocone (Functor.ofSequence X.skInclSucc ⋙ topBi
     ι := NatTrans.ofSequence
       (fun n ↦ Limits.pushout.inr (l X n) (r X n) ≫ Z.ι.app (n + 1)) <| by
         intro n
-        simp only [Functor.comp_obj, Functor.ofSequence_obj, Functor.const_obj_obj,
-          homOfLE_leOfHom, Functor.comp_map, Functor.ofSequence_map_homOfLE_succ,
-          Functor.const_obj_map, Category.comp_id]
+        simp only [homOfLE_leOfHom, Functor.comp_map, Functor.ofSequence_map_homOfLE_succ,
+          Functor.const_obj_map]
         have := Z.ι.naturality (homOfLE (n + 1).le_succ)
-        simp only [Functor.ofSequence_obj, Functor.const_obj_obj, homOfLE_leOfHom,
-          Functor.ofSequence_map_homOfLE_succ, Functor.const_obj_map, Category.comp_id] at this
-        rw [← this, ← skInclSucc_eq_relCWComplex_skInclSucc]
-        exact (IProd.inr_skInclSucc_assoc X (Z.ι.app (n + 1 + 1))).symm }
+        simp only [homOfLE_leOfHom, Functor.ofSequence_map_homOfLE_succ,
+          Functor.const_obj_map] at this
+        rw [← Category.assoc]
+        refine (IProd.inr_skInclSucc_assoc X (Z.ι.app (n + 1 + 1))).symm.trans ?_
+        rw [skInclSucc_eq_relCWComplex_skInclSucc]
+        change Limits.pushout.inr (l X n) (r X n) ≫
+            (X.IProd.skInclSucc (n + 1) ≫ Z.ι.app (n + 1).succ) =
+          (Limits.pushout.inr (l X n) (r X n) ≫ Z.ι.app (n + 1)) ≫ 𝟙 Z.pt
+        exact congrArg (fun f => Limits.pushout.inr (l X n) (r X n) ≫ f) this }
 
 /-- Functor constructed from the sequence of morphisms `I × X.sk 0 ⟶ I × X.sk 1 ⟶ ⋯` -/
 noncomputable abbrev IF : ℕ ⥤ TopCat :=
@@ -261,7 +265,7 @@ noncomputable def iso : X.IProd.toTopCat ≅ TopCat.of (I × X.toTopCat) :=
 /-- The arrow `X.IProd.sk 0 ⟶ X.IProd.toTopCat` is isomorphic to `{0, 1} × X ⟶ I × X`. -/
 noncomputable def arrowIso : Arrow.mk (X.IProd.skIncl 0) ≅ Arrow.mk X.zeroOneProdInclIProd :=
   Arrow.isoMk (Iso.refl _) (IProd.iso X) <| by
-    simp only [Arrow.mk_left, Arrow.mk_right, Iso.refl_hom, Arrow.mk_hom]
+    simp only [Iso.refl_hom, Arrow.mk_hom]
     rw [show X.IProd.skIncl 0 = (Limits.getColimitCocone
           (Functor.ofSequence X.IProd.skInclSucc)).cocone.ι.app 0 by rfl]
     rw [IProd.iso]
@@ -274,4 +278,3 @@ noncomputable def arrowIso : Arrow.mk (X.IProd.skIncl 0) ≅ Arrow.mk X.zeroOneP
     rfl
 
 end CWComplex.IProd
-

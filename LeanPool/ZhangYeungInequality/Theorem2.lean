@@ -975,7 +975,6 @@ private lemma condIndepFun_map_triple_real_singleton
         = (μ (h ⁻¹' {c}))⁻¹ *
           (μ (h ⁻¹' {c} ∩ f ⁻¹' {a}) * μ (h ⁻¹' {c} ∩ g ⁻¹' {b})) := by
       have := congrArg (fun y => μ (h ⁻¹' {c}) * y) h_prod_cond
-      simp only at this
       rw [← mul_assoc (μ (h ⁻¹' {c})) _
           (μ (h ⁻¹' {c} ∩ (f ⁻¹' {a} ∩ g ⁻¹' {b}))),
           h_cancel, one_mul,
