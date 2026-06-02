@@ -13,6 +13,8 @@ import LeanPool.Lean4GlCoalgebras.General.Proof
 
 /-! ## Soundness of GL-proof system. -/
 
+namespace Lean4GlCoalgebras
+
 open Classical in
 /-- Helper for soundness, Given a proof of `Γ` and a countermodel of `Γ`, find a path in the proof
     and the model -/
@@ -283,3 +285,4 @@ theorem soundness (Γ : Sequent) : ⊢ Γ → ⊨ Γ := by
       intro n
       have ⟨m, m_prop⟩ := has_children_of_chain_model prop w_prop n
       use n + m) k
+end Lean4GlCoalgebras

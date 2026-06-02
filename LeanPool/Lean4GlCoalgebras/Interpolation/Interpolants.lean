@@ -13,6 +13,8 @@ import LeanPool.Lean4GlCoalgebras.Split.Completeness
 Here we show that given a finite GL-split proof, we can always find suitable interpolants.
 -/
 
+namespace Lean4GlCoalgebras
+
 open Split
 
 /-- Get the entire underlying sequent of a finite proof. -/
@@ -1180,3 +1182,4 @@ theorem interpolant_prop {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : 𝕏.X) :
     simp only [sdiff_self, Finset.bot_eq_empty, Finset.union_empty, Finset.mem_inter] at this
     convert this
     simp [encodeVar_inv]
+end Lean4GlCoalgebras

@@ -26,7 +26,7 @@ import LeanPool.Lean4GlCoalgebras.Split.Proof
 Source: doi:10.1134/S0081543811060198
 Authors: Madeleine Gignoux
 Status: verified
-Main declarations: `interpolation`
+Main declarations: `Lean4GlCoalgebras.interpolation`
 Tags: modal-logic, provability-logic, craig-interpolation, proof-theory
 MSC: 03B45, 03F45
 -/

@@ -23,6 +23,8 @@ import Mathlib.Data.Finset.Lattice.Basic
 Here we define the GL-proof system along with finitization and basic properties.
 -/
 
+namespace Lean4GlCoalgebras
+
 /-! # Basic components of the GL-proof system.-/
 
 /-- Rule applications for the GL-proof system. -/
@@ -311,3 +313,4 @@ lemma inf_path_has_inf_boxes {𝕏 : Proof} (g : ℕ → 𝕏.X) (h : ∀ n, edg
     apply (wellFounded_iff_isEmpty_descending_chain.1 (@wellFounded_lt ℕ _ _)).false
     use fun m ↦ Sequent.length (f (r 𝕏.α (g (n + m))))
     exact fun m ↦ lt_if_not_box_edge ⟨h (n + m), by simp_all⟩
+end Lean4GlCoalgebras

@@ -1835,9 +1835,9 @@ projects:
       github_repo: mgignoux/lean4-gl-coalgebras
     status: verified
     main_declarations:
-      - interpolation
+      - Lean4GlCoalgebras.interpolation
     main_results:
-      - declaration: interpolation
+      - declaration: Lean4GlCoalgebras.interpolation
         informal: Proves the Craig interpolation theorem for Gödel-Löb provability logic.
     tags:
       - modal-logic

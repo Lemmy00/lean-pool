@@ -13,6 +13,8 @@ import LeanPool.Lean4GlCoalgebras.Split.ProofTransformations
 All of the left and right partial interpolation proofs, split apart based on rule application. These
 are split apart since otherwise the file runs very slow. -/
 
+namespace Lean4GlCoalgebras
+
 open Split
 
 /-- Given a node `x`, defines what the root of the left interpolation proof should look like,
@@ -1950,3 +1952,4 @@ theorem syntactic_interpolation {𝕏 : Proof} [fin_X : Fintype 𝕏.X] (x : �
     (@interpolantProofLeft 𝕏 fin_X  ⊢ leftInterpolantSequent  x)
   ∧ (@interpolantProofRight 𝕏 fin_X ⊢ rightInterpolantSequent x) :=
   ⟨interpolantProofLeft_proves_interpolant x, interpolantProofRight_proves_interpolant x⟩
+end Lean4GlCoalgebras

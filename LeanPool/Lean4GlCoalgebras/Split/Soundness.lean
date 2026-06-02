@@ -14,6 +14,8 @@ import LeanPool.Lean4GlCoalgebras.Split.CutProof
 
 /-! ## Soundness of GL-split proof system. -/
 
+namespace Lean4GlCoalgebras
+
 namespace ExtSkip
 
 -- `chain` performs a large recursive case split over all split proof rules.
@@ -839,3 +841,4 @@ theorem soundness (Γ : SplitSequent) : SplitSequent.isTrue Γ → ⊨ Γ := by
   exact ExtSkip.soundness Γ (SplitProofIsExtSkipProof Γ mp)
 
 end Split
+end Lean4GlCoalgebras

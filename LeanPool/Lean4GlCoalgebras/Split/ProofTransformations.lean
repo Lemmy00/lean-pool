@@ -15,6 +15,8 @@ Here we define the GL-ext+pre system. This system is different from the paper, w
 how we connect non-axiomatic leaf nodes into `RuleApp` directly.
 -/
 
+namespace Lean4GlCoalgebras
+
 namespace Ext
 
 /-- Rule applications for the GL-ext+pre proof system. -/
@@ -132,13 +134,13 @@ def edge {X : Type} {𝕏 : Split.Proof} {x : 𝕏.X} {τ : 𝕏.X → SplitSequ
     (α : X → (T x τ).obj X) (x y : X) : Prop := y ∈ p α x
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-def _root_.Ext.RuleApp.isBox {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : RuleApp x τ → Prop
+def RuleApp.isBox {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : RuleApp x τ → Prop
   | RuleApp.boxₗ _ _ _ => true
   | RuleApp.boxᵣ _ _ _ => true
   | _ => false
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-def _root_.Ext.RuleApp.isNonAxLeaf {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : RuleApp x τ → Prop
+def RuleApp.isNonAxLeaf {𝕏 : Split.Proof} {x : 𝕏.X} {τ} : RuleApp x τ → Prop
   | RuleApp.pre _ _ => true
   | _ => false
 
@@ -931,3 +933,4 @@ noncomputable def proofTransformation {𝕏 : Proof} {σ}
     α := proofTransformationMap partialProof
     step := proofTransformation_step partialProof root_prop
     path := proofTransformation_path partialProof box_prop }
+end Lean4GlCoalgebras

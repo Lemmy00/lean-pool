@@ -14,6 +14,8 @@ plays an applicable sequent `Γ` in order to construct a counter-model. Prover g
 and plays rule applications `R` in order to construct a proof.
 -/
 
+namespace Lean4GlCoalgebras
+
 namespace Split
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
@@ -23,7 +25,7 @@ abbrev Prover := Player.B
 
 -- `ruleApps` performs a large exhaustive case split over split formulas.
 /-- The available rule applications for a sequent `Γ`. -/
-def _root_.Split.SplitSequent.ruleApps (Γ : SplitSequent) : Finset RuleApp :=
+def SplitSequent.ruleApps (Γ : SplitSequent) : Finset RuleApp :=
   let f : SplitFormula → Option RuleApp := fun φ ↦
     if φ_in : φ ∈ Γ then match φ with
     | Sum.inl ⊤ => RuleApp.topₗ Γ φ_in
@@ -71,7 +73,7 @@ def _root_.Split.SplitSequent.ruleApps (Γ : SplitSequent) : Finset RuleApp :=
     exact (source_eq φ_f).trans (source_eq ψ_f).symm)
 
 /-- The sequents possible after a rule application `R`. -/
-def _root_.Split.RuleApp.splitSequents (R : RuleApp) : Finset SplitSequent := match R with
+def RuleApp.splitSequents (R : RuleApp) : Finset SplitSequent := match R with
   | RuleApp.topₗ _ _ => ∅
   | RuleApp.topᵣ _ _ => ∅
   | RuleApp.axₗₗ _ _ _ => ∅
@@ -464,3 +466,4 @@ theorem move_iff_in_moves {g g' : coalgebraGame.Pos} :
 abbrev startPos (Γ : SplitSequent) : GamePos := ⟨Sum.inl Γ, [], []⟩
 
 end Split
+end Lean4GlCoalgebras

@@ -14,6 +14,8 @@ must have a winning strategy: `gamedet` at the end.
 
 -/
 
+namespace Lean4GlCoalgebras
+
 /-! ## Games -/
 
 /-- Two players, `A` and `B`. -/
@@ -358,3 +360,4 @@ lemma winning_of_in_cone_winning {g : Game} {i : Player} {p q : g.Pos} {sI : Str
     exact ih
   case oStep q q' q_in_cone o_turn in_moves ih =>
     exact @winning_of_whatever_other_move i g sI q o_turn ih ⟨q', in_moves⟩
+end Lean4GlCoalgebras

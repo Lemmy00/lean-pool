@@ -11,6 +11,8 @@ import LeanPool.Lean4GlCoalgebras.Logic.Semantics
 Here we prove the fixed-point theorem for formulas of form `□φ` and `◇φ`.
 -/
 
+namespace Lean4GlCoalgebras
+
 /-- Semantic Substitution Lemma for logics with transitive frames. -/
 lemma semantic_substitution_lemma {α : Type} (M : Model α) (u : α) (n : ℕ) (φ ψ χ : Formula) :
   evaluate ⟨M, u⟩ (⊡ (φ ⟷ ψ)) → evaluate ⟨M, u⟩ ((single n φ χ) ⟷ (single n ψ χ)) := by
@@ -251,3 +253,4 @@ theorem fixed_point_theorem_modal (φ : Formula) (n : ℕ)
   case diamond φ =>
     have FPT_diamond_prop := FPT_diamond_vocab φ n
     exact ⟨single n ⊥ (◇ φ), FPT_diamond_prop.1, FPT_diamond φ n, FPT_diamond_prop.2⟩
+end Lean4GlCoalgebras

@@ -12,6 +12,8 @@ import LeanPool.Lean4GlCoalgebras.General.Soundness
 If Prover has a winning strategy in the game starting from `Γ`, then there is a proof of `Γ`,
 proven in `prover_win_builds_proof`, all other definitions and proofs in this file are helpers. -/
 
+namespace Lean4GlCoalgebras
+
 private lemma unDi_mem_D_of_ne {Γ : Sequent} {φ χ : Formula}
     (h : ◇φ ∈ Γ) (hne : ◇φ ≠ χ) :
     φ ∈ (Γ \ {χ}).D := by
@@ -1885,3 +1887,4 @@ theorem completeness (Γ : Sequent) : ⊨ Γ → ⊢ Γ := by
     exact nΓ_sat Γ_sat
   · have ⟨strat, h⟩ := prover_wins
     exact prover_win_builds_proof strat h
+end Lean4GlCoalgebras

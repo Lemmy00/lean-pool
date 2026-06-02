@@ -24,6 +24,8 @@ Here we define the GL-ext proof system along with finitization and basic propert
 namespace ExtSkip to distinguish from our general GL-proofs.
 -/
 
+namespace Lean4GlCoalgebras
+
 namespace ExtSkip
 
 /-! # Basic components of the GL-ext+skip proof system.-/
@@ -122,7 +124,7 @@ lemma fₙ_alternate (r : RuleApp) : fₙ r = match r with
   | RuleApp.boxᵣ Δ A _ => Δ \ {Sum.inr (□ A)} := by cases r <;> simp [fₙ, f, fₚ]
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-def _root_.ExtSkip.RuleApp.isBox : RuleApp → Prop
+def RuleApp.isBox : RuleApp → Prop
   | RuleApp.boxₗ _ _ _ => true
   | RuleApp.boxᵣ _ _ _ => true
   | _ => false
@@ -182,7 +184,7 @@ structure Proof where
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 def proves (𝕏 : Proof) (Δ : SplitSequent) : Prop := ∃ x : 𝕏.X, f (r 𝕏.α x) = Δ
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-def _root_.ExtSkip.SplitSequent.isTrue (Δ : SplitSequent) : Prop := ∃ (𝕏 : Proof), proves 𝕏 Δ
+def SplitSequent.isTrue (Δ : SplitSequent) : Prop := ∃ (𝕏 : Proof), proves 𝕏 Δ
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 infixr:6 "⊢" => proves
@@ -190,3 +192,4 @@ infixr:6 "⊢" => proves
 prefix:40 "⊢" => SplitSequent.isTrue
 
 end ExtSkip
+end Lean4GlCoalgebras

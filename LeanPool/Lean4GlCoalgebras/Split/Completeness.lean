@@ -13,6 +13,8 @@ If Prover has a winning strategy in the game starting from `Γ`, then there is a
 of `Γ`, proven in `prover_win_builds_proof`; all other definitions and proofs in this
 file are helpers. -/
 
+namespace Lean4GlCoalgebras
+
 namespace Split
 
 private lemma left_diamond_mem_D_of_ne {Γ : SplitSequent} {φ : Formula} {χ : SplitFormula}
@@ -1033,14 +1035,14 @@ structure MaximalPath (Γ : SplitSequent) (strat : Strategy coalgebraGame Builde
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 @[simp]
-def _root_.Split.MaximalPath.last {Γ : SplitSequent}
+def MaximalPath.last {Γ : SplitSequent}
     {strat : Strategy coalgebraGame Builder} :
     MaximalPath Γ strat → coalgebraGame.Pos :=
   fun π => π.list.getLast π.ne
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 @[simp]
-def _root_.Split.MaximalPath.first {Γ : SplitSequent}
+def MaximalPath.first {Γ : SplitSequent}
     {strat : Strategy coalgebraGame Builder} :
     MaximalPath Γ strat → coalgebraGame.Pos :=
   fun π => π.list.head π.ne
@@ -2482,7 +2484,7 @@ decreasing_by
 end
 
 /-- If Builder wins, there exists a counter-model. -/
-theorem _root_.Split.builder_win_builds_model {Γ : SplitSequent}
+theorem builder_win_builds_model {Γ : SplitSequent}
     (strat : Strategy coalgebraGame Builder) (h : winning strat (startPos Γ)) :
     ¬ (⊨ Γ) := by
     simp only [SplitSequent.isValid, evaluateSSeq, Sum.exists, not_forall, not_or,
@@ -2520,7 +2522,7 @@ theorem _root_.Split.builder_win_builds_model {Γ : SplitSequent}
 
 /-- Completeness! Comes as a corrolary of `gamedet`, `prover_win_builds_proof`, and
     `builder_win_builds_model`. -/
-theorem _root_.Split.completeness (Γ : SplitSequent) : ⊨ Γ → SplitSequent.isTrue Γ := by
+theorem completeness (Γ : SplitSequent) : ⊨ Γ → SplitSequent.isTrue Γ := by
   intro Γ_sat
   rcases gamedet coalgebraGame (startPos Γ) with builder_wins | prover_wins
   · have ⟨strat, h⟩ := builder_wins
@@ -2531,7 +2533,7 @@ theorem _root_.Split.completeness (Γ : SplitSequent) : ⊨ Γ → SplitSequent.
     exact prover_win_builds_proof strat h
 
 /-- Corollary of `completeness`, used in Interpolants.lean. -/
-lemma _root_.Split.equiv_iff_sem_equiv {φ ψ : Formula} : semEquiv φ ψ ↔ (φ ≅ ψ) := by
+lemma equiv_iff_sem_equiv {φ ψ : Formula} : semEquiv φ ψ ↔ (φ ≅ ψ) := by
   constructor
   · intro mp
     simp [semEquiv] at mp
@@ -2550,9 +2552,10 @@ lemma _root_.Split.equiv_iff_sem_equiv {φ ψ : Formula} : semEquiv φ ψ ↔ (�
     simp_all [SplitSequent.isValid, evaluateSSeq]
     grind
 
-lemma _root_.Split.single_preserves_equiv (n : Nat) (φ ψ χ : Formula)
+lemma single_preserves_equiv (n : Nat) (φ ψ χ : Formula)
     (equiv : φ ≅ ψ) :
     single n χ φ ≅ single n χ ψ :=
   equiv_iff_sem_equiv.1 <| @single_preserves_sem_equiv n χ φ ψ (equiv_iff_sem_equiv.2 equiv)
 
 end Split
+end Lean4GlCoalgebras

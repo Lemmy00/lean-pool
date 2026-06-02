@@ -15,6 +15,8 @@ Here we define the GL-split-proof system along with finitization and basic prope
 namespace Split to distinguish from our general GL-proofs.
 -/
 
+namespace Lean4GlCoalgebras
+
 namespace Split
 
 /-! # Basic components of the GL-split proof system.-/
@@ -95,7 +97,7 @@ lemma fₙ_alternate (r : RuleApp) : fₙ r = match r with
 lemma fₙ_sub_f {r : RuleApp} : fₙ r ⊆ f r := by simp [fₙ]
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-def _root_.Split.RuleApp.isBox : RuleApp → Prop
+def RuleApp.isBox : RuleApp → Prop
   | RuleApp.boxₗ _ _ _ => true
   | RuleApp.boxᵣ _ _ _ => true
   | _ => false
@@ -142,14 +144,14 @@ structure Proof where
 /-- GL-split proofs are coalgebras. Note: we can do this the other way around, i.e. Proof extends
     CategoryTheory.Endofunctor.Coalgebra T, however I find X and α more explicative than V and str
 -/
-def _root_.Split.Proof.toCoalgebra (𝕏 : Proof) : CategoryTheory.Endofunctor.Coalgebra T where
+def Proof.toCoalgebra (𝕏 : Proof) : CategoryTheory.Endofunctor.Coalgebra T where
   V := 𝕏.X
   str := TypeCat.ofHom 𝕏.α
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 def proves (𝕏 : Proof) (Δ : SplitSequent) : Prop := ∃ x : 𝕏.X, f (r 𝕏.α x) = Δ
 /-- Auxiliary declaration used in the GL coalgebra development. -/
-def _root_.Split.SplitSequent.isTrue (Δ : SplitSequent) : Prop := ∃ (𝕏 : Proof), proves 𝕏 Δ
+def SplitSequent.isTrue (Δ : SplitSequent) : Prop := ∃ (𝕏 : Proof), proves 𝕏 Δ
 
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 infixr:6 "⊢" => proves
@@ -714,3 +716,4 @@ lemma in_vocab_of_path_right {𝕏 : Proof} {x y : 𝕏.X} (x_y : Relation.ReflT
       · exact ⟨◇φ, c2, by simp [Formula.vocab, n_in_φ]⟩
 
 end Split
+end Lean4GlCoalgebras

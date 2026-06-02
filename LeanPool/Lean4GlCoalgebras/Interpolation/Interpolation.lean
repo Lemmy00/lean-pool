@@ -11,6 +11,8 @@ import LeanPool.Lean4GlCoalgebras.Interpolation.PartialInterpolation
 We use everything we have proven so far to show that GL has interpolation!
 -/
 
+namespace Lean4GlCoalgebras
+
 /-- Definition of Craig interpolation. -/
 def isInterpolant (φ : Formula) (ψ : Formula) (χ : Formula) :=
   χ.vocab ⊆ φ.vocab ∩ ψ.vocab ∧ ⊨ (φ ↣ χ) ∧ ⊨ (χ ↣ ψ)
@@ -47,3 +49,4 @@ theorem interpolation (φ ψ : Formula) : ⊨ (φ ↣ ψ) → ∃ χ, isInterpol
       simpa [SplitSequent.isValid, evaluateSSeq, rightInterpolantSequent, y_prop] using φ_χ
     simp only [Formula.isValid, evaluate]
     grind
+end Lean4GlCoalgebras

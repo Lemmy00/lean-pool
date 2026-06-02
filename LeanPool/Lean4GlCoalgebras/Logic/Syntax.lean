@@ -24,6 +24,8 @@ import Mathlib.Tactic.Linarith
 Here we supply basic definitions, abbreviations, and lemmas about the syntax of BML.
 -/
 
+namespace Lean4GlCoalgebras
+
 /-- Type of BML Formulas. -/
 inductive Formula : Type
   | bottom : Formula
@@ -653,3 +655,4 @@ lemma Finset.sum_diff_singleton_lt {α : Type} [DecidableEq α] {A C : Finset α
             (Finset.singleton_subset_iff.2 b_in_A)
             (by simp)
       · exact C_lt_B
+end Lean4GlCoalgebras

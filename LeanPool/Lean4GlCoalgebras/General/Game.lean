@@ -14,6 +14,8 @@ plays an applicable sequent `Γ` in order to construct a counter-model. Prover g
 plays rule applications `R` in order to construct a proof.
 -/
 
+namespace Lean4GlCoalgebras
+
 /-- Auxiliary declaration used in the GL coalgebra development. -/
 abbrev Builder := Player.A
 /-- Auxiliary declaration used in the GL coalgebra development. -/
@@ -330,3 +332,4 @@ lemma move_iff_in_moves {g g' : coalgebraGame.Pos} : Move g g' ↔ g' ∈ coalge
 
 /-- We will always start the game from a sequent `Γ` and no history. -/
 abbrev startPos (Γ : Sequent) : GamePos := ⟨Sum.inl Γ, [], []⟩
+end Lean4GlCoalgebras

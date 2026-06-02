@@ -15,6 +15,8 @@ import LeanPool.Lean4GlCoalgebras.Logic.Syntax
 Here we supply the semantics of GL.
 -/
 
+namespace Lean4GlCoalgebras
+
 /-- Kripke models for GL (note: we add the transitivity and con_wf conditions directly into our
     definition of a model, i.e. this is not a general definition of a Krike model!) -/
 structure Model (α : Type) : Type where
@@ -118,3 +120,4 @@ lemma single_preserves_sem_equiv (n : Nat) (χ φ ψ : Formula)
     (φ_equiv_ψ : ⊨ φ ⟷ ψ) : ⊨ (single n χ φ) ⟷ (single n χ ψ) := by
   convert single_preserves_validity n (φ ⟷ ψ) χ φ_equiv_ψ using 1
   simp [single_iff]
+end Lean4GlCoalgebras
