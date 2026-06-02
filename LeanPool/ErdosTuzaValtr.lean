@@ -9,7 +9,7 @@ import LeanPool.ErdosTuzaValtr.All
 /-!
 # The Erdős–Tuza–Valtr conjecture
 
-Source: url:https://github.com/jcpaik/erdos-tuza-valtr
+Source: arxiv:2206.04260
 Authors: Jineon Baek
 Status: verified
 Main declarations: `ErdosTuzaValtr.main`, `Config.main_lemma`
