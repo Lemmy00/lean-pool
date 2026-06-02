@@ -801,7 +801,8 @@ def _source_is_valid(source: Any) -> bool:
     if isinstance(source, str):
         return any(source.startswith(f"{key}:") for key in SOURCE_KEYS)
     if isinstance(source, dict):
-        return len(SOURCE_KEYS & set(source)) == 1
+        # At least one recognized source key; multiple (e.g. arxiv + doi) are fine.
+        return len(SOURCE_KEYS & set(source)) >= 1
     return False
 
 
