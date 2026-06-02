@@ -2484,7 +2484,7 @@ decreasing_by
 end
 
 /-- If Builder wins, there exists a counter-model. -/
-theorem builder_win_builds_model {Γ : SplitSequent}
+theorem _root_.Lean4GlCoalgebras.Split.builder_win_builds_model {Γ : SplitSequent}
     (strat : Strategy coalgebraGame Builder) (h : winning strat (startPos Γ)) :
     ¬ (⊨ Γ) := by
     simp only [SplitSequent.isValid, evaluateSSeq, Sum.exists, not_forall, not_or,
@@ -2522,7 +2522,8 @@ theorem builder_win_builds_model {Γ : SplitSequent}
 
 /-- Completeness! Comes as a corrolary of `gamedet`, `prover_win_builds_proof`, and
     `builder_win_builds_model`. -/
-theorem completeness (Γ : SplitSequent) : ⊨ Γ → SplitSequent.isTrue Γ := by
+theorem _root_.Lean4GlCoalgebras.Split.completeness
+    (Γ : SplitSequent) : ⊨ Γ → SplitSequent.isTrue Γ := by
   intro Γ_sat
   rcases gamedet coalgebraGame (startPos Γ) with builder_wins | prover_wins
   · have ⟨strat, h⟩ := builder_wins
@@ -2533,7 +2534,8 @@ theorem completeness (Γ : SplitSequent) : ⊨ Γ → SplitSequent.isTrue Γ := 
     exact prover_win_builds_proof strat h
 
 /-- Corollary of `completeness`, used in Interpolants.lean. -/
-lemma equiv_iff_sem_equiv {φ ψ : Formula} : semEquiv φ ψ ↔ (φ ≅ ψ) := by
+lemma _root_.Lean4GlCoalgebras.Split.equiv_iff_sem_equiv
+    {φ ψ : Formula} : semEquiv φ ψ ↔ (φ ≅ ψ) := by
   constructor
   · intro mp
     simp [semEquiv] at mp
@@ -2552,7 +2554,7 @@ lemma equiv_iff_sem_equiv {φ ψ : Formula} : semEquiv φ ψ ↔ (φ ≅ ψ) := 
     simp_all [SplitSequent.isValid, evaluateSSeq]
     grind
 
-lemma single_preserves_equiv (n : Nat) (φ ψ χ : Formula)
+lemma _root_.Lean4GlCoalgebras.Split.single_preserves_equiv (n : Nat) (φ ψ χ : Formula)
     (equiv : φ ≅ ψ) :
     single n χ φ ≅ single n χ ψ :=
   equiv_iff_sem_equiv.1 <| @single_preserves_sem_equiv n χ φ ψ (equiv_iff_sem_equiv.2 equiv)
