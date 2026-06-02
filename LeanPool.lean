@@ -400,7 +400,6 @@ import LeanPool.Polytopes.MainTheorem
 import LeanPool.Polytopes.Polar
 import LeanPool.Polytopes.Polytope
 import LeanPool.Polytopes.Pre
-import LeanPool.Polytopes.SimplexAlgorithm
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
 import LeanPool.RiemannMappingTheorem
