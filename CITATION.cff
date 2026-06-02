@@ -1,0 +1,52 @@
+# This file lets GitHub render a "Cite this repository" button and lets
+# reference managers (Zotero, etc.) import a citation. Schema docs:
+# https://citation-file-format.github.io/
+cff-version: 1.2.0
+title: "Lean Pool"
+message: >-
+  If you use Lean Pool, please cite it using the metadata in this file.
+  If you build on a specific formalization in the pool, please also cite
+  that project's original authors and source, which are recorded in
+  LeanPool/projects.yml, the NOTICE file, and the per-file headers.
+type: software
+authors:
+  - given-names: Vasily
+    family-names: Ilin
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: add if available
+    # affiliation: ""                                   # TODO: add if desired
+  - given-names: Justin
+    family-names: Asher
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: add if available
+    # affiliation: ""                                   # TODO: add if desired
+abstract: >-
+  Lean Pool is a curated archive of Lean 4 formalizations that fall
+  outside Mathlib's scope. It sits between Mathlib's high-bar human
+  review and "anything that compiles": projects are admitted via
+  deterministic linters (no sorry/admit, no extra axioms, no
+  unsafe/partial) and LLM review, and are kept building against the
+  latest Mathlib. The goal is an arXiv-style index of formal-mathematics
+  developments that would otherwise bit-rot in abandoned repositories.
+keywords:
+  - Lean
+  - Lean 4
+  - Mathlib
+  - formal mathematics
+  - formal proof
+  - theorem proving
+  - interactive theorem proving
+license: Apache-2.0
+repository-code: "https://github.com/Vilin97/lean-pool"
+url: "https://vilin97.github.io/lean-pool/"
+version: 0.1.0
+date-released: "2026-06-02"   # TODO: set to the actual first-release date
+
+# ---------------------------------------------------------------------------
+# After you connect the repo to Zenodo and publish the first GitHub Release,
+# Zenodo mints a DOI. Uncomment and fill in the *concept* DOI below (the one
+# that always resolves to the latest version), then commit the update.
+# ---------------------------------------------------------------------------
+# doi: 10.5281/zenodo.XXXXXXX
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: Concept DOI resolving to the latest Lean Pool release.
