@@ -402,6 +402,12 @@ def test_write_project_card_replaces_existing_card(tmp_path: Path) -> None:
     assert "Source: arxiv:1234.5678" not in text
 
 
+def test_project_card_lists_all_source_identifiers() -> None:
+    """A project with several source keys renders them all, in arxiv/doi/url order."""
+    project = {**_PROJECT_FIXTURE, "source": {"doi": "10.0/x.y", "arxiv": "1234.5678"}}
+    assert "Source: arxiv:1234.5678, doi:10.0/x.y" in _project_card(project)
+
+
 def test_write_project_card_moves_misplaced_card(tmp_path: Path) -> None:
     """A file written by the old buggy writer (card before imports) is repaired.
 

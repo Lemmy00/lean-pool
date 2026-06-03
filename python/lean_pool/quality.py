@@ -801,7 +801,8 @@ def _source_is_valid(source: Any) -> bool:
     if isinstance(source, str):
         return any(source.startswith(f"{key}:") for key in SOURCE_KEYS)
     if isinstance(source, dict):
-        return len(SOURCE_KEYS & set(source)) == 1
+        # At least one recognized source key; multiple (e.g. arxiv + doi) are fine.
+        return len(SOURCE_KEYS & set(source)) >= 1
     return False
 
 
@@ -935,8 +936,10 @@ def _project_card(project: dict[str, Any]) -> str:
 def _format_source(source: Any) -> str:
     if isinstance(source, str):
         return source
-    key = next(key for key in SOURCE_KEY_ORDER if key in source)
-    return f"{key}:{source[key]}"
+    # List every recognized identifier, in arxiv/doi/url priority order.
+    return ", ".join(
+        f"{key}:{source[key]}" for key in SOURCE_KEY_ORDER if key in source
+    )
 
 
 def _format_msc(msc: Any) -> str:
