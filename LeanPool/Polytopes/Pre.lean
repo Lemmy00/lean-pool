@@ -9,6 +9,9 @@ import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Data.Vector.Basic
 import Mathlib.LinearAlgebra.Basis.Submodule
 
+/-!
+Preliminary lemmas and definitions used by the Polytopes formalization.
+-/
 
 open Pointwise Module
 
@@ -186,7 +189,7 @@ lemma AffineSubspace.direction_subset_subset {k : Type u_1} {V : Type u_2} {P : 
   exact AffineSubspace.vsub_mem_direction (hS b) (hT hbT)
 
 /-- The row operation that normalizes a pivot row and clears the pivot column. -/
-def Matrix.rowOp_pivot {R : Type*} [Field R] {m n : ℕ}
+def Matrix.rowOpPivot {R : Type*} [Field R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) (i : Fin m) (x : Fin n) (h : A i x ≠ 0) :
     Matrix (Fin m) (Fin n) R :=
   have _ : A i x ≠ 0 := h
@@ -194,12 +197,12 @@ def Matrix.rowOp_pivot {R : Type*} [Field R] {m n : ℕ}
   fun j => if j = i then v else (-A j x) • v + A j
 
 /-- The list of all elements of `Fin n`, in increasing order. -/
-def Nat.fin_list_range (n : ℕ) : List (Fin n) :=
+def Nat.finListRange (n : ℕ) : List (Fin n) :=
   match n with
   | 0 => []
-  | Nat.succ m => 0 :: (m.fin_list_range).map Fin.succ
+  | Nat.succ m => 0 :: (m.finListRange).map Fin.succ
 
-lemma Fin.mem_fin_list_range {n : ℕ} (i : Fin n) : i ∈ n.fin_list_range := by
+lemma Fin.mem_fin_list_range {n : ℕ} (i : Fin n) : i ∈ n.finListRange := by
   induction n with
   | zero => exact i.elim0
   | succ n ih =>
@@ -208,7 +211,7 @@ lemma Fin.mem_fin_list_range {n : ℕ} (i : Fin n) : i ∈ n.fin_list_range := b
     | mk (Nat.succ m) h =>
       have : m < n := by omega
       let m' : Fin n := ⟨m, this⟩
-      unfold Nat.fin_list_range
+      unfold Nat.finListRange
       apply List.mem_cons_of_mem
       simp only [List.mem_map]
       use m'

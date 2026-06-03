@@ -6,6 +6,10 @@ Authors: Jun Kwon
 
 import LeanPool.Polytopes.Polar
 
+/-!
+Cut spaces obtained by intersecting collections of halfspaces.
+-/
+
 open Module
 
 variable {E : Type} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
@@ -166,11 +170,11 @@ lemma orthoHyperplanes_mem (X : Set {x : E // x ≠ 0}) :
 
 
 /-- A finite set of halfspaces whose cut space is the subspace `p`, built from a basis of `pᗮ`. -/
-def Submodule_cut [FiniteDimensional ℝ E] (p : Subspace ℝ E) : Set (Halfspace E) :=
+def submoduleCut [FiniteDimensional ℝ E] (p : Subspace ℝ E) : Set (Halfspace E) :=
   ⋃₀ (orthoHyperplane '' (Subtype.val ⁻¹' (Set.range (Subtype.val ∘ Module.finBasis ℝ pᗮ))))
 
 lemma Submodule_cut_finite [FiniteDimensional ℝ E] (p : Subspace ℝ E) :
-    (Submodule_cut p).Finite := by
+    (submoduleCut p).Finite := by
   apply Set.Finite.sUnion ?_ (fun t ht => by
     rcases ht with ⟨ x, _, rfl ⟩
     exact orthoHyperplane.Finite _)
@@ -180,7 +184,7 @@ lemma Submodule_cut_finite [FiniteDimensional ℝ E] (p : Subspace ℝ E) :
 
 lemma Submodule_cutspace [FiniteDimensional ℝ E] (p : Subspace ℝ E) :
     ∃ H_ : Set (Halfspace E), H_.Finite ∧ ↑p = cutSpace H_ := by
-  use Submodule_cut p
+  use submoduleCut p
   use Submodule_cut_finite p
   ext x
   constructor
@@ -192,7 +196,7 @@ lemma Submodule_cutspace [FiniteDimensional ℝ E] (p : Subspace ℝ E) :
     exact Submodule.coe_mem ((Module.finBasis ℝ { x // x ∈ pᗮ }) i)
   · -- 2.
     rintro hHi_
-    rw [Submodule_cut, orthoHyperplanes_mem] at hHi_
+    rw [submoduleCut, orthoHyperplanes_mem] at hHi_
     rw [SetLike.mem_coe, ← Submodule.orthogonal_orthogonal p]
     intro y hy
     have : ∀ i, inner ℝ (Subtype.val (Module.finBasis ℝ { x // x ∈ pᗮ } i)) x = (0:ℝ) := by

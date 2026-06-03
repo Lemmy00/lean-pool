@@ -6,6 +6,9 @@ Authors: Jun Kwon
 
 import LeanPool.Polytopes.Cutspace
 
+/-!
+Definitions and basic properties of V-polytopes and H-polytopes.
+-/
 
 variable {E : Type} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
 open Pointwise Module
@@ -180,7 +183,7 @@ lemma Vpolytope_translation {S : Set E} (hS : S.Finite) (x : E) :
   rfl
 
 lemma Hpolytope_translation {H_ : Set (Halfspace E)} (hH_ : H_.Finite) (x : E) :
-  Hpolytope (Set.Finite.image (Halfspace_translation x) hH_) = (Hpolytope hH_) + {x}:= by
+  Hpolytope (Set.Finite.image (halfspaceTranslation x) hH_) = (Hpolytope hH_) + {x}:= by
   rw [Hpolytope, Hpolytope, Set.sInter_image, Set.sInter_image]
   ext y
   rw [Set.mem_iInter, Set.add_singleton]
@@ -188,12 +191,12 @@ lemma Hpolytope_translation {H_ : Set (Halfspace E)} (hH_ : H_.Finite) (x : E) :
   constructor
   · -- 1.
     intro h Hi_ hHi_
-    specialize h (Halfspace_translation x Hi_) (Set.mem_image_of_mem _ hHi_)
-    rw [← SetLike.mem_coe, mem_Halfspace_translation, sub_eq_add_neg] at h
+    specialize h (halfspaceTranslation x Hi_) (Set.mem_image_of_mem _ hHi_)
+    rw [← SetLike.mem_coe, mem_halfspaceTranslation, sub_eq_add_neg] at h
     exact h
   · -- 2.
     intro h Hi_ hHi_
     rw [Set.mem_image] at hHi_
     rcases hHi_ with ⟨ Hi_', hHi_', rfl ⟩
-    rw [← SetLike.mem_coe, mem_Halfspace_translation, sub_eq_add_neg]
+    rw [← SetLike.mem_coe, mem_halfspaceTranslation, sub_eq_add_neg]
     exact h Hi_' hHi_'

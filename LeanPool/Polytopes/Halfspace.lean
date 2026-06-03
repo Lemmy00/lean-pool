@@ -9,6 +9,9 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.Normed.Module.HahnBanach
 import LeanPool.Polytopes.Pre
 
+/-!
+Halfspaces in inner product spaces and their basic geometric operations.
+-/
 
 open Pointwise
 
@@ -171,28 +174,28 @@ lemma Halfspace_span (H_ : Halfspace E) : affineSpan ℝ (SetLike.coe H_) = ⊤ 
   linarith
 
 /-- The halfspace `H_` translated by the vector `x`. -/
-noncomputable def Halfspace_translation (x : E) (H_ : Halfspace E) : Halfspace E :=
+noncomputable def halfspaceTranslation (x : E) (H_ : Halfspace E) : Halfspace E :=
   Halfspace.mk H_.f (H_.α + (H_.f.1 x))
 
-lemma Halfspace_translation.S (x : E) (H_ : Halfspace E) :
-  ↑(Halfspace_translation x H_) = (· + x) '' ↑H_ := by
+lemma halfspaceTranslation.S (x : E) (H_ : Halfspace E) :
+  ↑(halfspaceTranslation x H_) = (· + x) '' ↑H_ := by
   ext y
-  rw [Halfspace_translation, Halfspace_mem, Set.image_add_right, Set.mem_preimage, ← sub_eq_add_neg,
+  rw [halfspaceTranslation, Halfspace_mem, Set.image_add_right, Set.mem_preimage, ← sub_eq_add_neg,
     Halfspace_mem, ContinuousLinearMap.map_sub, sub_le_iff_le_add]
 
-lemma mem_Halfspace_translation (x : E) (H_ : Halfspace E) :
-  ∀ y, y ∈ (SetLike.coe <| Halfspace_translation x H_) ↔ y - x ∈ SetLike.coe H_ := by
+lemma mem_halfspaceTranslation (x : E) (H_ : Halfspace E) :
+  ∀ y, y ∈ (SetLike.coe <| halfspaceTranslation x H_) ↔ y - x ∈ SetLike.coe H_ := by
   intro y
-  rw [Halfspace_translation.S, Set.image_add_right, Set.mem_preimage, sub_eq_add_neg]
+  rw [halfspaceTranslation.S, Set.image_add_right, Set.mem_preimage, sub_eq_add_neg]
 
-lemma Halfspace_translation.injective (x : E) :
-  Function.Injective (Halfspace_translation x · : Halfspace E → Halfspace E ) := by
+lemma halfspaceTranslation.injective (x : E) :
+  Function.Injective (halfspaceTranslation x · : Halfspace E → Halfspace E ) := by
   intro H1 H2 h
   rw [SetLike.ext_iff]
   intro y
   rw [SetLike.ext_iff] at h
   specialize h (y + x)
-  rw [← SetLike.mem_coe, ← SetLike.mem_coe, mem_Halfspace_translation, mem_Halfspace_translation,
+  rw [← SetLike.mem_coe, ← SetLike.mem_coe, mem_halfspaceTranslation, mem_halfspaceTranslation,
     add_sub_cancel_right] at h
   exact h
 

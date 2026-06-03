@@ -7,6 +7,9 @@ Authors: Jun Kwon
 import LeanPool.Polytopes.Halfspace
 import Mathlib.Analysis.Convex.KreinMilman
 
+/-!
+Polar duals and their compactness properties.
+-/
 
 variable {E : Type} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
 

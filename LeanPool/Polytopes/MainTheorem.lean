@@ -6,17 +6,16 @@ Authors: Jun Kwon
 
 import LeanPool.Polytopes.Polytope
 
-
-variable {E : Type} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-open Pointwise
-
-/-
+/-!
 Let 𝑋 be a closed convex subset of ℝ^𝑑. Then:
 • 𝑋 is a 𝑉-polytope if it is the convex hull of a finite point set.
 • 𝑋 is an 𝐻-polytope if it is the intersection of finitely many half spaces.
 
 Theorem : Every 𝑉-polytope is an 𝐻-polytope, and every compact 𝐻-polytope is a 𝑉-polytope.
 -/
+
+variable {E : Type} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+open Pointwise
 
 -- As a ball around x is convex, it must contain a segment with x in its interior
 omit [CompleteSpace E] in
@@ -409,7 +408,7 @@ theorem Hpolytope_of_Vpolytope_subsingleton [FiniteDimensional ℝ E] [Nontrivia
     exact empty_Hpolytope
   · rcases hSsingleton with ⟨ x, hx ⟩
     rcases @origin_Hpolytope E _ _ _ _ with ⟨ H_, hH_Fin, hH_ ⟩
-    refine ⟨ Halfspace_translation x '' H_, hH_Fin.image (Halfspace_translation x), ?_ ⟩
+    refine ⟨ halfspaceTranslation x '' H_, hH_Fin.image (halfspaceTranslation x), ?_ ⟩
     rw [Vpolytope_def, hx, convexHull_singleton, Hpolytope_translation hH_Fin, hH_,
       Set.singleton_add_singleton, zero_add]
 
@@ -453,7 +452,7 @@ lemma Hpolytope_of_Vpolytope_interior [FiniteDimensional ℝ E] {S : Set E} (hS 
     rw [← Set.add_singleton, Set.mem_translation, zero_sub,  neg_neg]
     exact hVinteriorNonempty.some_mem
   rcases Hpolytope_of_Vpolytope_0interior hS' this with ⟨ H_', hH_', hH_'eq ⟩
-  let H_ := (Halfspace_translation hVinteriorNonempty.some) '' H_'
+  let H_ := (halfspaceTranslation hVinteriorNonempty.some) '' H_'
   have hH_ : H_.Finite := hH_'.image _
   refine ⟨ H_, hH_, ?_ ⟩
   ext x
@@ -562,7 +561,7 @@ theorem MainTheoremOfPolytopes [Nontrivial E] :
       have hH_'1 : H_'1.Finite := Set.Finite.image _ hH''1
       rcases Submodule_cutspace SpanS.direction with ⟨ H_'2, hH_'2, hH_'2Span' ⟩
       have hH_'2Span: Hpolytope hH_'2 = SpanS.direction := hH_'2Span'.symm; clear hH_'2Span'
-      let H_' : Set (Halfspace E) := Halfspace_translation s '' (H_'1 ∪ H_'2)
+      let H_' : Set (Halfspace E) := halfspaceTranslation s '' (H_'1 ∪ H_'2)
       have hH_' : H_'.Finite := Set.Finite.image _ (Set.Finite.union hH_'1 hH_'2)
       have hH_'12 := inter_Hpolytope H_'1 H_'2 hH_'1 hH_'2
       have : Nontrivial SpanS.direction := by
