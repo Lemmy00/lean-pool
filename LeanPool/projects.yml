@@ -12,7 +12,7 @@ projects:
         - I. N. Bernstein
         - I. M. Gelfand
         - S. I. Gelfand
-      doi: "10.1070/RM1973v028n03ABEH001549"
+      doi: "10.1070/RM1973v028n03ABEH001557"
       github_repo: bolito2/DemazureOperatorsLean
     status: verified
     main_declarations:
@@ -158,7 +158,7 @@ projects:
       - Jujian Zhang
     source:
       arxiv: "2602.03716"
-      github_repo: axiommath/fel-polynomial
+      github_repo: AxiomMath/fel-polynomial
     status: verified
     main_declarations:
       - fels_conjecture
@@ -350,8 +350,8 @@ projects:
     authors:
       - Vincent Beffara
     source:
-      url: https://github.com/vbeffara/rMT4
-      github_repo: vbeffara/rmt4
+      url: https://github.com/vbeffara/RMT4
+      github_repo: vbeffara/RMT4
     status: verified
     main_declarations:
       - RMT
@@ -411,7 +411,7 @@ projects:
     authors:
       - Math Inc.
     source:
-      url: "https://github.com/math-inc/Erdos1196"
+      arxiv: "2605.00301"
       github_repo: math-inc/Erdos1196
     status: verified
     main_declarations:
@@ -463,6 +463,7 @@ projects:
       - Vasily Ilin
       - Brian Nugent
     source:
+      doi: "10.1007/978-1-4757-3849-0"
       url: https://github.com/Vilin97/Clawristotle/tree/grothendieck-vanishing
       github_repo: Vilin97/Clawristotle
     status: verified
@@ -487,6 +488,7 @@ projects:
       - Samuel Schlesinger
     source:
       arxiv: "1907.00847"
+      doi: "10.4007/annals.2019.190.3.6"
       github_repo: SamuelSchlesinger/sensitivity-conjecture
     status: verified
     main_declarations:
@@ -511,7 +513,7 @@ projects:
     authors:
       - Jonathan Ho
     source:
-      url: https://github.com/hojonathanho/isoperimetric
+      url: https://terrytao.wordpress.com/2011/09/16/the-brunn-minkowski-inequality-for-nilpotent-groups/
       github_repo: hojonathanho/isoperimetric
     status: verified
     main_declarations:
@@ -575,7 +577,7 @@ projects:
       title: "Realizability: An Introduction to its Categorical Side"
       authors:
         - Jaap van Oosten
-      url: https://doi.org/10.1016/S0049-237X(08)80044-6
+      url: https://doi.org/10.1016/S0049-237X(08)80003-1
       github_repo: andrejbauer/partial-combinatory-algebras
     status: verified
     main_declarations:
@@ -639,7 +641,7 @@ projects:
       - Pietro Monticone
       - Abel Donate Munoz
     source:
-      doi: "10.2307/2033731"
+      doi: "10.1090/S0002-9939-1957-0085275-8"
       github_repo: pitmonticone/SumsThreeSquares
     status: verified
     main_declarations:
@@ -647,6 +649,7 @@ projects:
     main_results:
       - declaration: LeanPool.SumsThreeSquares.blueprint_case_mod8_eq3
         informal: Proves the mod-8-equals-3 blueprint case for the three-squares theorem.
+        source_ref: "H. Davenport, The geometry of numbers, The Mathematical Gazette 31 (1947), 206-210, doi:10.2307/3608159."
     tags:
       - number-theory
       - quadratic-forms
@@ -776,7 +779,7 @@ projects:
         - Heini Halberstam
         - Hans-Egon Richert
       url: https://archive.org/details/sievemethods0000halb
-      github_repo: FLDutchmann/selberg-sieve4
+      github_repo: amellendijk/selberg-sieve4
     status: verified
     main_declarations:
       - fundamental_theorem_simple
@@ -842,6 +845,7 @@ projects:
     authors:
       - Joris Roos
     source:
+      arxiv: "2105.10386"
       doi: "10.1017/CBO9781139814782"
       github_repo: roos-j/lean-booleanfun
     status: verified
@@ -891,6 +895,7 @@ projects:
       - Aristotle
     source:
       arxiv: "1906.11174"
+      doi: "10.5802/afst.1766"
       github_repo: nasqret/fineqs
     status: verified
     main_declarations:
@@ -961,6 +966,7 @@ projects:
       authors:
         - Pavel Winternitz
         - Libor Šnobl
+      doi: "10.1090/crmm/033"
       url: https://bookstore.ams.org/crmm-33
       github_repo: LieLean/LowDimSolvClassification
     status: verified
@@ -1073,7 +1079,7 @@ projects:
     authors:
       - Samuel Schlesinger
     source:
-      url: https://github.com/SamuelSchlesinger/shannon-1948-formalization
+      doi: "10.1002/j.1538-7305.1948.tb01338.x"
       github_repo: SamuelSchlesinger/shannon-1948-formalization
     status: verified
     main_declarations:
@@ -1128,7 +1134,7 @@ projects:
     authors:
       - YnirPaz
     source:
-      url: https://github.com/YnirPaz/PCF-Theory
+      doi: "10.1007/978-1-4020-5764-9_15"
       github_repo: YnirPaz/PCF-Theory
     status: verified
     main_declarations:
@@ -1299,6 +1305,7 @@ projects:
     source:
       title: "On the Erdős–Tuza–Valtr Conjecture"
       arxiv: "2206.04260"
+      doi: "10.1016/j.ejc.2024.104085"
       github_repo: jcpaik/erdos-tuza-valtr
     status: verified
     main_declarations:
@@ -1354,6 +1361,7 @@ projects:
       authors:
         - Antoine de Saint-Germain
       arxiv: "2407.16717"
+      doi: "10.1080/00150517.2024.2430958"
       github_repo: Antoine-dSG/frieze_patterns
     status: verified
     main_declarations:
@@ -1692,8 +1700,8 @@ projects:
       authors:
         - Philippe Gille
         - Tamás Szamuely
-      url: https://doi.org/10.1017/9781107359419
-      github_repo: Whysoserioushah/BrauerGroup_new
+      url: https://doi.org/10.1017/9781316661277
+      github_repo: Whysoserioushah/BrauerGroup
     status: verified
     main_declarations:
       - BrauerGroup.BruaerGroup
@@ -1760,7 +1768,7 @@ projects:
     authors:
       - Michał Dobranowski
     source:
-      url: https://github.com/mdbrnowski/Apportionmentlib
+      url: https://archive.org/details/fairrepresentati00bali
       github_repo: mdbrnowski/apportionmentlib
     status: verified
     main_declarations:
@@ -1806,6 +1814,7 @@ projects:
       - Kiarash Sotoudeh
     source:
       arxiv: "1701.02547"
+      doi: "10.1109/LICS.2017.8005137"
       github_repo: YellPika/quasi-borel-spaces
     status: verified
     main_declarations:
