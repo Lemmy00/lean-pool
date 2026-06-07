@@ -1873,3 +1873,38 @@ projects:
     msc:
       - "11F11"
       - "30E20"
+  - slug: primecert
+    title: Formally verified primality certificates
+    summary: Implements Pocklington's primality test and the cube-root Brillhart-Lehmer-Selfridge variant in Lean 4, with custom metaprogramming to produce compact, kernel-checkable primality certificates.
+    branch: primality certificates
+    entry_module: LeanPool.PrimeCert
+    authors:
+      - Kenny Lau
+      - Bhavik Mehta
+    source:
+      url: "https://github.com/b-mehta/PrimeCert"
+      github_repo: b-mehta/PrimeCert
+    status: verified
+    main_declarations:
+      - pocklington_test
+      - pocklington_certify
+      - PrimeCert.pocklington3_test
+      - wieferich_mirimanoff
+    main_results:
+      - declaration: pocklington_test
+        informal: "The core Pocklington divisor theorem: every prime factor of N is congruent to 1 modulo a fully factored divisor F of N - 1, given pseudo-primitive roots for each prime factor of F."
+      - declaration: pocklington_certify
+        informal: Certifies that N is prime when a fully factored divisor F of N - 1 exceeds the square root of N and the Pocklington primitive-root predicate holds for a single root.
+      - declaration: PrimeCert.pocklington3_test
+        informal: The cube-root (Brillhart-Lehmer-Selfridge) variant of the Pocklington test, requiring only a divisor F of N - 1 exceeding the cube root of N together with a sieve and a non-square certificate.
+      - declaration: wieferich_mirimanoff
+        informal: No prime below 6000 is simultaneously a Wieferich prime and a Mirimanoff prime.
+    tags:
+      - number-theory
+      - primality-testing
+      - pocklington
+      - primality-certificate
+      - metaprogramming
+    msc:
+      - "11A41"
+      - "11Y11"
