@@ -881,6 +881,13 @@ import LeanPool.Polylean.UnitConjecture.MetabelianGroup
 import LeanPool.Polylean.UnitConjecture.Tactics
 import LeanPool.Polylean.UnitConjecture.Tactics.AesopRuleSets
 import LeanPool.Polylean.UnitConjecture.TorsionFree
+import LeanPool.Polytopes
+import LeanPool.Polytopes.Cutspace
+import LeanPool.Polytopes.Halfspace
+import LeanPool.Polytopes.MainTheorem
+import LeanPool.Polytopes.Polar
+import LeanPool.Polytopes.Polytope
+import LeanPool.Polytopes.Pre
 import LeanPool.QuasiBorelSpaces
 import LeanPool.QuasiBorelSpaces.Basic
 import LeanPool.QuasiBorelSpaces.Chain
