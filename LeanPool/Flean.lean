@@ -12,8 +12,9 @@ import LeanPool.Flean.Basic
 Source: url:https://github.com/josephmckinsey/flean
 Authors: Joseph McKinsey
 Status: verified
-Main declarations: `Flean.Float`, `to_float`, `to_rat`, `to_float_to_rat`, `roundf_close`
+Main declarations: `Flean.Float`, `toFloat`, `toRat`, `to_float_to_rat`, `roundf_close`
 Tags: floating-point, numerical-analysis, ieee-754, rounding
+MSC: 65G50, 65G30, 68V20
 -/
 
 /-!
@@ -24,10 +25,10 @@ by a configuration `FloatCfg` (precision and exponent range) so it can target
 different precisions such as IEEE 754 binary64.
 
 `FloatRep` and `Flean.Float` model normal and subnormal floating-point
-representations, with `coe_q` interpreting a representation as a rational number.
-`to_float` and `to_rat` convert between rationals and floats, and
+representations, with `coeQ` interpreting a representation as a rational number.
+`toFloat` and `toRat` convert between rationals and floats, and
 `to_float_to_rat` establishes the round-trip correctness on finite nonzero
-floats. The rounding development (`roundf`, `round_down`, and the `IntRounder`
+floats. The rounding development (`roundf`, `roundDown`, and the `IntRounder`
 abstraction) culminates in error bounds such as `roundf_close`, which controls
 the distance between a rational and its rounded floating-point value.
 -/

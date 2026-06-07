@@ -7,13 +7,32 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Floor
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Data.Int.Log
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.Tauto
 import LeanPool.Flean.FloatCfg
 import LeanPool.Flean.LogRules
-import Mathlib.Tactic
 
+/-!
+# Floating-Point Representations
 
+This module defines `FloatRep`, a sign/exponent/mantissa representation of
+floating-point numbers parameterized by a `FloatCfg`, together with its rational
+interpretation `coeQ`, negation, validity predicates, and an ordering
+`floatrepLe` proved equivalent to the order on the underlying rationals.
+-/
+
+/-- A sign/exponent/mantissa representation of a (normal) floating-point number
+in the format `α`. -/
 structure FloatRep (α : FloatCfg) where
-  (s : Bool) (e : ℤ) (m : ℕ)
+  /-- The sign bit (`true` for negative). -/
+  s : Bool
+  /-- The exponent. -/
+  e : ℤ
+  /-- The mantissa (an offset into `[1, 2)`). -/
+  m : ℕ
 
 variable {C : FloatCfg}
 
@@ -21,30 +40,34 @@ instance : Repr (FloatRep C) where
   reprPrec := fun ⟨s, e, m⟩ _ => "⟨" ++ repr s ++ ", " ++ repr e ++ ", " ++ repr m ++ "⟩"
 
 
+/-- Decidable equality on `FloatRep`. -/
 def FloatRep.decEq (f1 f2 : FloatRep C) : Decidable (Eq f1 f2) := by
   rw [FloatRep.mk.injEq]
   exact instDecidableAnd
 
-def FloatRep.valid_m (f : FloatRep C) : Prop := f.m < C.prec
+/-- A representation has a valid mantissa when it is below the precision. -/
+def FloatRep.validM (f : FloatRep C) : Prop := f.m < C.prec
 
-def coe_q : FloatRep C → ℚ
+/-- The rational value represented by a `FloatRep`. -/
+def coeQ : FloatRep C → ℚ
 | ⟨b, e, m⟩ =>
   let s := if b then -1 else 1
   s * (m / C.prec + 1) * 2^e
 
 --instance : Coe (FloatRep C) ℚ where
-  --coe := coe_q
+  --coe := coeQ
 
 lemma coe_q_false_pos {e : ℤ} {m : ℕ} :
-  0 < coe_q (⟨false, e, m⟩ : FloatRep C) := by
-  simp [coe_q]
+  0 < coeQ (⟨false, e, m⟩ : FloatRep C) := by
+  simp only [coeQ, Bool.false_eq_true, ↓reduceIte, one_mul]
   suffices ((m : ℚ) / C.prec + 1) > 0 by
     exact mul_pos this (zpow_pos (by norm_num) e)
   calc
     (0 : ℚ) ≤ m / C.prec := by simp [div_nonneg]
     _ < m/C.prec + 1 := lt_add_one _
 
-def FloatRep.neg {C  : FloatCfg} : FloatRep C → FloatRep C
+/-- Negate a representation by flipping its sign bit. -/
+def FloatRep.neg {C : FloatCfg} : FloatRep C → FloatRep C
 | ⟨s, e, m⟩ => ⟨!s, e, m⟩
 
 lemma Flean.neg_neg : (@FloatRep.neg C) ∘ (@FloatRep.neg C) = id := by
@@ -57,12 +80,12 @@ lemma neg_invertible : Function.Bijective (@FloatRep.neg C) := by
   <;> exact Flean.neg_neg
 
 lemma neg_valid_m {f : FloatRep C} :
-  (FloatRep.neg f).valid_m ↔ (f.valid_m) := by
-  simp [FloatRep.valid_m, FloatRep.neg]
+  (FloatRep.neg f).validM ↔ (f.validM) := by
+  simp [FloatRep.validM, FloatRep.neg]
 
 lemma coe_q_of_neg (f : FloatRep C) :
-  coe_q (FloatRep.neg f) = -coe_q f:= by
-  by_cases h : f.s <;> simp [coe_q, h, FloatRep.neg]
+  coeQ (FloatRep.neg f) = -coeQ f:= by
+  by_cases h : f.s <;> simp [coeQ, h, FloatRep.neg]
   · ring
   ring
 
@@ -71,12 +94,12 @@ lemma neg_false (e : ℤ) (m : ℕ) : ⟨true, e, m⟩ = (FloatRep.neg ⟨false,
 lemma neg_true (e : ℤ) (m : ℕ) : ⟨false, e, m⟩ = (FloatRep.neg ⟨true, e, m⟩ : FloatRep C) := rfl
 
 lemma coe_q_true_neg {e : ℤ} {m : ℕ} :
-  coe_q (⟨true, e, m⟩ : FloatRep C) < 0 := by
+  coeQ (⟨true, e, m⟩ : FloatRep C) < 0 := by
   rw [neg_false, coe_q_of_neg]
   simp only [Left.neg_neg_iff, coe_q_false_pos]
 
 lemma coe_q_nezero {f : FloatRep C} :
-  coe_q f ≠ 0 := by
+  coeQ f ≠ 0 := by
   rcases f with ⟨s, e, m⟩
   cases s
   · linarith [coe_q_false_pos (C := C) (e := e) (m := m)]
@@ -108,22 +131,23 @@ lemma floatrep_of_false₂ (P : FloatRep C → FloatRep C → Prop)
   apply h3
 
 lemma coe_q_of_Cprec (b : Bool) (e : ℤ) :
-  coe_q (⟨b, e, C.prec⟩ : FloatRep C) = (if b then -1 else 1) * 2^(e + 1) := by
+  coeQ (⟨b, e, C.prec⟩ : FloatRep C) = (if b then -1 else 1) * 2^(e + 1) := by
   wlog h : b = false
   · simp [h, neg_false, coe_q_of_neg, this]
-  simp only [h, coe_q, Bool.false_eq_true, ↓reduceIte, one_mul]
+  simp only [h, coeQ, Bool.false_eq_true, ↓reduceIte, one_mul]
   rw [div_self]
   · simp [zpow_add_one₀]
     ring
   exact Nat.cast_ne_zero.mpr (by linarith [C.prec_pos])
 
-def FloatRep.valid_e (f : FloatRep C) : Prop := C.emin ≤ f.e ∧ f.e ≤ C.emax
+/-- A representation has a valid exponent when it lies in `[emin, emax]`. -/
+def FloatRep.validE (f : FloatRep C) : Prop := C.emin ≤ f.e ∧ f.e ≤ C.emax
 
 lemma neg_valid_e {f : FloatRep C} :
-  (FloatRep.neg f).valid_e ↔ (f.valid_e) := by
-  simp [FloatRep.valid_e, FloatRep.neg]
+  (FloatRep.neg f).validE ↔ (f.validE) := by
+  simp [FloatRep.validE, FloatRep.neg]
 
-lemma floatrep_e_le_of_coe_q (f1 f2 : FloatRep C) (vm2 : f2.valid_m) (h : |coe_q f1| ≤ |coe_q f2|) :
+lemma floatrep_e_le_of_coe_q (f1 f2 : FloatRep C) (vm2 : f2.validM) (h : |coeQ f1| ≤ |coeQ f2|) :
   f1.e ≤ f2.e := by
   revert h vm2
   apply floatrep_of_false₂ (f1 := f1) (f2 := f2)
@@ -133,7 +157,7 @@ lemma floatrep_e_le_of_coe_q (f1 f2 : FloatRep C) (vm2 : f2.valid_m) (h : |coe_q
     exact h
   intro e1 e2 m1 m2 vm2 h
   rw [abs_of_pos coe_q_false_pos, abs_of_pos coe_q_false_pos] at h
-  simp only [coe_q, Bool.false_eq_true, ↓reduceIte, one_mul] at h
+  simp only [coeQ, Bool.false_eq_true, ↓reduceIte, one_mul] at h
   contrapose! h
   calc
     ((m2 : ℚ) / ↑C.prec + 1) * 2 ^ e2 < 2 * 2^e2 := by
@@ -160,13 +184,13 @@ lemma max_mantissa_q (C : FloatCfg) : (1 ≤ 2 - (1 : ℚ) / C.prec) ∧ (2 - (1
   · linarith
   linarith
 
-lemma normal_range (f : FloatRep C) (ve : f.valid_e) (vm : f.valid_m) :
-  C.emin ≤ Int.log 2 |coe_q f| ∧ Int.log 2 |coe_q f| ≤ C.emax := by
+lemma normal_range (f : FloatRep C) (ve : f.validE) (vm : f.validM) :
+  C.emin ≤ Int.log 2 |coeQ f| ∧ Int.log 2 |coeQ f| ≤ C.emax := by
   revert ve vm
   apply floatrep_of_false₁ (f := f)
   · simp [neg_valid_m, neg_valid_e, coe_q_of_neg, abs_neg]
   intro e m ve vm
-  rw [coe_q]
+  rw [coeQ]
   constructor
   <;> simp only [Bool.false_eq_true, ↓reduceIte, one_mul, q_exp_eq_exp vm]
   · exact ve.1
@@ -196,12 +220,15 @@ lemma normal_range' (m : ℕ) (e : ℤ) (vm : m < C.prec) (ve2 : e ≤ C.emax) :
   rw [zpow_le_zpow_iff_right₀ (by norm_num)]
   exact ve2
 
-def max_float_q (C : FloatCfg) : ℚ := (2 - (1 : ℚ) / C.prec) * 2^C.emax
+/-- The largest finite rational representable in the format `C`. -/
+def maxFloatQ (C : FloatCfg) : ℚ := (2 - (1 : ℚ) / C.prec) * 2^C.emax
 
-def max_float_rep (C : FloatCfg) : FloatRep C := ⟨false, C.emax, C.prec - 1⟩
+/-- The representation of the largest finite float of the format `C`. -/
+def maxFloatRep (C : FloatCfg) : FloatRep C := ⟨false, C.emax, C.prec - 1⟩
 
-lemma coe_q_max_float_rep : coe_q (max_float_rep C) = max_float_q C := by
-  simp [coe_q, max_float_rep, max_float_q]
+lemma coe_q_max_float_rep : coeQ (maxFloatRep C) = maxFloatQ C := by
+  simp only [coeQ, maxFloatRep, Bool.false_eq_true, ↓reduceIte, one_mul, maxFloatQ, one_div,
+    mul_eq_mul_right_iff]
   left
   have : ((C.prec - 1 : ℕ) : ℚ) = C.prec - 1 := by
     simp only [C.prec_pos, Nat.cast_pred]
@@ -209,15 +236,18 @@ lemma coe_q_max_float_rep : coe_q (max_float_rep C) = max_float_q C := by
   linarith
 
 
-def floatrep_le_pos (f1 f2 : FloatRep C) : Prop :=
+/-- Ordering on positive representations: larger exponent, or equal exponent
+and larger-or-equal mantissa. -/
+def floatrepLePos (f1 f2 : FloatRep C) : Prop :=
   (f1.e < f2.e) ∨ (f1.e = f2.e ∧ f1.m ≤ f2.m)
 
-def floatrep_le_pos' (f1 f2 : FloatRep C) : Prop :=
+/-- An equivalent formulation of `floatrepLePos` as a conjunction. -/
+def floatrepLePos' (f1 f2 : FloatRep C) : Prop :=
   (f1.e ≤ f2.e) ∧ (f1.e = f2.e → f1.m ≤ f2.m)
 
 lemma floatrep_pos_equiv (f1 f2 : FloatRep C) :
-  (floatrep_le_pos f1 f2) ↔ (floatrep_le_pos' f1 f2) := by
-  simp [floatrep_le_pos, floatrep_le_pos']
+  (floatrepLePos f1 f2) ↔ (floatrepLePos' f1 f2) := by
+  simp only [floatrepLePos, floatrepLePos']
   constructor
   · rintro (h | h)
     · refine ⟨le_of_lt h, ?_⟩
@@ -232,26 +262,27 @@ lemma floatrep_pos_equiv (f1 f2 : FloatRep C) :
   left; exact lt_of_le_of_ne h.1 h'
 
 lemma floatrep_le_pos_neg₁ (f1 f2 : FloatRep C) :
-  floatrep_le_pos (FloatRep.neg f1) f2 ↔ floatrep_le_pos f1 f2 := by
-  simp [FloatRep.neg, floatrep_le_pos]
+  floatrepLePos (FloatRep.neg f1) f2 ↔ floatrepLePos f1 f2 := by
+  simp [FloatRep.neg, floatrepLePos]
 
 lemma floatrep_le_pos_neg₂ (f1 f2 : FloatRep C) :
-  floatrep_le_pos f1 (FloatRep.neg f2) ↔ floatrep_le_pos f1 f2 := by
-  simp [FloatRep.neg, floatrep_le_pos]
+  floatrepLePos f1 (FloatRep.neg f2) ↔ floatrepLePos f1 f2 := by
+  simp [FloatRep.neg, floatrepLePos]
 
 lemma floatrep_le_pos_coe_q (f1 f2 : FloatRep C) (vm1 : f1.m ≤ C.prec) :
-  (floatrep_le_pos f1 f2) → |coe_q f1| ≤ |coe_q f2| := by
+  (floatrepLePos f1 f2) → |coeQ f1| ≤ |coeQ f2| := by
   revert vm1
-  have almost_valid_neg {C : FloatCfg} (f : FloatRep C) : (FloatRep.neg f).m ≤ C.prec ↔ f.m ≤ C.prec := by
+  have almost_valid_neg {C : FloatCfg} (f : FloatRep C) :
+      (FloatRep.neg f).m ≤ C.prec ↔ f.m ≤ C.prec := by
     simp [FloatRep.neg]
   apply floatrep_of_false₂ (f1 := f1) (f2 := f2)
   · simp [floatrep_le_pos_neg₁, almost_valid_neg, coe_q_of_neg]
   · simp [floatrep_le_pos_neg₂, coe_q_of_neg]
   intro e e' m m' vm1 h
   rw [abs_of_pos coe_q_false_pos, abs_of_pos coe_q_false_pos]
-  rw [coe_q, coe_q]
+  rw [coeQ, coeQ]
   simp only [Bool.false_eq_true, ↓reduceIte, one_mul]
-  simp_rw [floatrep_le_pos] at h
+  simp_rw [floatrepLePos] at h
   rcases h with h | h'
   · calc
       (↑m / ↑C.prec + 1) * (2 : ℚ) ^ e ≤ 2 * 2^e := by
@@ -262,7 +293,7 @@ lemma floatrep_le_pos_coe_q (f1 f2 : FloatRep C) (vm1 : f1.m ≤ C.prec) :
           field_simp
           linarith
         else
-          have : m < C.prec := by simp at vm1; apply lt_of_le_of_ne vm1 h
+          have : m < C.prec := by simp only at vm1; apply lt_of_le_of_ne vm1 h
           apply le_of_lt
           exact mantissa_lt_two this
       _ ≤ 2^e' := by
@@ -271,13 +302,13 @@ lemma floatrep_le_pos_coe_q (f1 f2 : FloatRep C) (vm1 : f1.m ≤ C.prec) :
       _ ≤ ((m' : ℚ) / C.prec + 1) * 2^e' := by
         rw [le_mul_iff_one_le_left (by positivity)]
         exact mantissa_ge_one
-  gcongr
-  exact h'.2
-  norm_num
   rw [h'.1]
+  apply mul_le_mul_of_nonneg_right _ (by positivity)
+  have : (m : ℚ) ≤ m' := by exact_mod_cast h'.2
+  gcongr
 
-lemma coe_q_le_floatrep_pos (f1 f2 : FloatRep C) (vm2 : f2.valid_m) :
-  |coe_q f1| ≤ |coe_q f2| → floatrep_le_pos f1 f2 := by
+lemma coe_q_le_floatrep_pos (f1 f2 : FloatRep C) (vm2 : f2.validM) :
+  |coeQ f1| ≤ |coeQ f2| → floatrepLePos f1 f2 := by
   revert vm2
   apply floatrep_of_false₂ (f1 := f1) (f2 := f2)
   · simp [floatrep_le_pos_neg₁, coe_q_of_neg]
@@ -285,7 +316,7 @@ lemma coe_q_le_floatrep_pos (f1 f2 : FloatRep C) (vm2 : f2.valid_m) :
   intro e e' m m' vm2 h
   rw [floatrep_pos_equiv]
   refine ⟨floatrep_e_le_of_coe_q _ _ vm2 h, ?_⟩
-  simp only [FloatRep.valid_m, coe_q] at *
+  simp only [FloatRep.validM, coeQ] at *
   intro e_eq
   rw [e_eq] at h
   simp only [Bool.false_eq_true, ↓reduceIte, one_mul] at h
@@ -297,20 +328,21 @@ lemma coe_q_le_floatrep_pos (f1 f2 : FloatRep C) (vm2 : f2.valid_m) :
   rw [mul_le_mul_iff_of_pos_right (by positivity)] at h
   linarith
 
-lemma floatrep_le_pos_iff_coe_q (f1 f2 : FloatRep C) (vm1 : f1.m ≤ C.prec) (vm2 : f2.valid_m) :
-  floatrep_le_pos f1 f2 ↔ |coe_q f1| ≤ |coe_q f2| := by
+lemma floatrep_le_pos_iff_coe_q (f1 f2 : FloatRep C) (vm1 : f1.m ≤ C.prec) (vm2 : f2.validM) :
+  floatrepLePos f1 f2 ↔ |coeQ f1| ≤ |coeQ f2| := by
   refine ⟨floatrep_le_pos_coe_q f1 f2 vm1, coe_q_le_floatrep_pos f1 f2 vm2⟩
 
 
-def floatrep_le (f1 f2 : FloatRep C) : Prop :=
+/-- The full ordering on representations, accounting for signs. -/
+def floatrepLe (f1 f2 : FloatRep C) : Prop :=
   match (f1.s, f2.s) with
-  | (false, false) => floatrep_le_pos f1 f2
+  | (false, false) => floatrepLePos f1 f2
   | (false, true) => False
   | (true, false) => True
-  | (true, true) => (floatrep_le_pos (FloatRep.neg f2) (FloatRep.neg f1))
+  | (true, true) => (floatrepLePos (FloatRep.neg f2) (FloatRep.neg f1))
 
-lemma floatrep_le_iff_coe_q_le (f1 f2 : FloatRep C) (vm1 : f1.valid_m) (vm2 : f2.valid_m) :
-  floatrep_le f1 f2 ↔ coe_q f1 ≤ coe_q f2 := by
+lemma floatrep_le_iff_coe_q_le (f1 f2 : FloatRep C) (vm1 : f1.validM) (vm2 : f2.validM) :
+  floatrepLe f1 f2 ↔ coeQ f1 ≤ coeQ f2 := by
   -- We could extract the logic here, but we'll only do that for q
   rcases f1 with ⟨s, e, m⟩
   rcases f2 with ⟨s', e', m'⟩
@@ -318,13 +350,13 @@ lemma floatrep_le_iff_coe_q_le (f1 f2 : FloatRep C) (vm1 : f1.valid_m) (vm2 : f2
   · rw [<-abs_of_pos (coe_q_false_pos (e := e) (m := m))]
     rw [<-abs_of_pos (coe_q_false_pos (e := e') (m := m'))]
     apply floatrep_le_pos_iff_coe_q (vm1 := le_of_lt vm1) (vm2 := vm2)
-  · simp [floatrep_le]
-    simp [coe_q]
+  · simp only [floatrepLe, false_iff, not_le]
+    simp only [coeQ, ↓reduceIte, neg_mul, one_mul, neg_add_rev, Bool.false_eq_true]
     apply lt_trans (b := 0)
     · rw [<-neg_add, neg_mul, neg_lt_zero]; positivity
     positivity
-  · simp [floatrep_le]
-    simp [coe_q]
+  · simp only [floatrepLe, true_iff]
+    simp only [coeQ, ↓reduceIte, neg_mul, one_mul, neg_add_rev, Bool.false_eq_true]
     apply le_of_lt
     apply lt_trans (b := 0)
     · rw [<-neg_add, neg_mul, neg_lt_zero]; positivity
@@ -332,7 +364,7 @@ lemma floatrep_le_iff_coe_q_le (f1 f2 : FloatRep C) (vm1 : f1.valid_m) (vm2 : f2
   rw [neg_false, neg_false]
   rw [coe_q_of_neg, coe_q_of_neg]
   rw [neg_le_neg_iff]
-  simp [floatrep_le, FloatRep.neg]
+  simp only [floatrepLe, FloatRep.neg, Bool.not_false, Bool.not_true]
   rw [<-abs_of_pos (coe_q_false_pos (e := e) (m := m))]
   rw [<-abs_of_pos (coe_q_false_pos (e := e') (m := m'))]
   exact floatrep_le_pos_iff_coe_q ⟨false, e', m'⟩ _ (le_of_lt vm2) vm1

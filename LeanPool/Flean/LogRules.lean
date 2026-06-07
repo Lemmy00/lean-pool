@@ -17,7 +17,7 @@ values like x * b^e where x is in [1, b) and e is an integer.
 
 variable {C : FloatCfg}
 
-/--For 1 ≤ x, (x * b^e) has an exponent at least e.-/
+/-- For 1 ≤ x, (x * b^e) has an exponent at least e. -/
 lemma le_log_of_ge_1 {b : ℕ} {e : ℤ} (h : 1 < b) {x : ℚ} (h' : 1 ≤ x) :
   e ≤ Int.log b (x * b ^ e) := by
   suffices b^e ≤ x * b^e by
@@ -28,7 +28,7 @@ lemma le_log_of_ge_1 {b : ℕ} {e : ℤ} (h : 1 < b) {x : ℚ} (h' : 1 ≤ x) :
   nth_rw 1 [<-one_mul ((b : ℚ)^e)]
   exact (mul_le_mul_iff_left₀ (zpow_pos (by positivity) e)).mpr h'
 
-/--When 1 ≤ x < 2, x*b^e has exponent exactly e.-/
+/-- When 1 ≤ x < 2, x*b^e has exponent exactly e. -/
 lemma log_one_to_two_eq {b : ℕ} {e : ℤ} (h : 1 < b) {x : ℚ} (h' : 1 ≤ x) (h'' : x < b) :
   Int.log b (x * b ^ e) = e := by
   have bpos : (0 : ℚ) < b := by norm_cast; linarith
@@ -46,7 +46,7 @@ lemma log_one_to_two_eq {b : ℕ} {e : ℤ} (h : 1 < b) {x : ℚ} (h' : 1 ≤ x)
     exact (mul_lt_mul_iff_right₀ (zpow_pos bpos e)).mpr h''
   exact le_log_of_ge_1 h h'
 
-/--When 0 < x < 1, then x*2^e has exponent < e.-/
+/-- When 0 < x < 1, then x*2^e has exponent < e. -/
 lemma log_zero_to_one_lt (x : ℚ) (e : ℤ) (h : 0 < x) (h' : x < 1) :
   Int.log 2 |x * 2 ^ e| < e := by
   rw [<-Int.lt_zpow_iff_log_lt (by norm_num)]
@@ -68,7 +68,7 @@ lemma mantissa_lt_two {m : ℕ} (h : m < C.prec) : ((m : ℚ) / C.prec + 1) < 2 
 --lemma mantissa_2e_pos {e : ℤ} {m : ℕ} : 0 < ((m : ℚ) / C.prec + 1) * 2^e := by
 --  positivity
 
-def q_exp_eq_exp {e : ℤ} {m : ℕ} (h : m < C.prec) :
+lemma q_exp_eq_exp {e : ℤ} {m : ℕ} (h : m < C.prec) :
   Int.log 2 |((m : ℚ) / ↑C.prec + 1) * 2 ^ e| = e := by
   have mantissa_lt : ((m : ℚ) / C.prec + 1) < 2 := by
     suffices (m : ℚ) / C.prec < 1 by linarith
@@ -81,12 +81,13 @@ def q_exp_eq_exp {e : ℤ} {m : ℕ} (h : m < C.prec) :
   exact log_one_to_two_eq (by norm_num) mantissa_ge_one (by norm_cast)
 
 lemma q_mantissa_eq_mantissa {e : ℤ} {m : ℕ} (h : m < C.prec) :
-  |(((m : ℚ)/C.prec) + 1) * 2^e| * (2^(Int.log 2 |(((m : ℚ)/C.prec) + 1) * 2^e|))⁻¹ = (m : ℚ) / C.prec + 1 := by
+    |(((m : ℚ)/C.prec) + 1) * 2^e| * (2^(Int.log 2 |(((m : ℚ)/C.prec) + 1) * 2^e|))⁻¹
+      = (m : ℚ) / C.prec + 1 := by
   rw [q_exp_eq_exp h, abs_of_pos (by positivity), mul_assoc,
     mul_inv_cancel₀, mul_one]
   positivity
 
-lemma mantissa_size_aux (q : ℚ) (h : q ≠ 0): 1 ≤ |q| * (2 ^ Int.log 2 |q|)⁻¹ ∧
+lemma mantissa_size_aux (q : ℚ) (h : q ≠ 0) : 1 ≤ |q| * (2 ^ Int.log 2 |q|)⁻¹ ∧
   |q| * (2 ^ Int.log 2 |q|)⁻¹ < 2 := by
   constructor
   · suffices (2 ^ Int.log 2 |q|) ≤ |q| by
@@ -100,7 +101,7 @@ lemma mantissa_size_aux (q : ℚ) (h : q ≠ 0): 1 ≤ |q| * (2 ^ Int.log 2 |q|)
   apply Int.lt_zpow_succ_log_self (by norm_num : 1 < 2)
 
 
-lemma small_floor_aux {q : ℚ} {n : ℕ} (h : q < 1) (h' : 0 ≤ q) (n_pos : 0 < n):
+lemma small_floor_aux {q : ℚ} {n : ℕ} (h : q < 1) (h' : 0 ≤ q) (n_pos : 0 < n) :
   ⌊q * n⌋.natAbs < n := by
   suffices ⌊q * n⌋.natAbs < (n : ℤ) by
     norm_cast at this
@@ -109,7 +110,7 @@ lemma small_floor_aux {q : ℚ} {n : ℕ} (h : q < 1) (h' : 0 ≤ q) (n_pos : 0 
     exact Int.floor_lt.mpr this
   exact (mul_lt_iff_lt_one_left (by norm_cast : 0 < (n : ℚ))).2 h
 
-lemma small_ceil {q : ℚ} {n : ℕ} (h : q ≤ 1) (h' : 0 ≤ q) (n_nonneg : 0 ≤ n):
+lemma small_ceil {q : ℚ} {n : ℕ} (h : q ≤ 1) (h' : 0 ≤ q) (n_nonneg : 0 ≤ n) :
   ⌈q * n⌉.natAbs ≤ n := by
   suffices ⌈q * n⌉.natAbs ≤ (n : ℤ) by
     norm_cast at this
@@ -124,10 +125,10 @@ lemma mantissa_nonneg (C : FloatCfg) (q : ℚ) (q_nezero : q ≠ 0) :
   exact_mod_cast le_of_lt C.prec_pos
 
 lemma casesQPlane (P : ℚ → ℚ → Prop)
-  (h1 : ∀q1 > 0, ∀q2 > 0, P q1 q2)
-  (h2 : ∀q1 < 0, ∀q2 > 0, P q1 q2)
-  (h3 : ∀q1 > 0, ∀q2 < 0, P q1 q2)
-  (h4 : ∀q1 < 0, ∀q2 < 0, P (-q1) (-q2) → P q2 q1) (q1 q2 : ℚ)
+  (h1 : ∀ q1 > 0, ∀ q2 > 0, P q1 q2)
+  (h2 : ∀ q1 < 0, ∀ q2 > 0, P q1 q2)
+  (h3 : ∀ q1 > 0, ∀ q2 < 0, P q1 q2)
+  (h4 : ∀ q1 < 0, ∀ q2 < 0, P (-q1) (-q2) → P q2 q1) (q1 q2 : ℚ)
   (q1_nezero : q1 ≠ 0) (q2_nezero : q2 ≠ 0) : P q1 q2 := by
   have h : ∀q ≠ (0 : ℚ), q > 0 ∨ q < 0 := by
     intro q qnezero

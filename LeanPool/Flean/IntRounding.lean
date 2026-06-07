@@ -8,14 +8,42 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.Qify
+import Mathlib.Algebra.Order.Interval.Set.Group
 
+/-!
+# Integer Rounding Functions
+
+This module collects the integer-valued rounding primitives (`round0`,
+`roundinf`, `roundup`, `rounddown`, `roundnearest`) used to round a rational to a
+mantissa, together with their basic correctness properties such as round-to-even
+behaviour on half-integers.
+-/
+
+/-- An integer-valued rounding rule taking a sign bit and a rational mantissa. -/
 abbrev IntRounder := Bool → ℚ → ℕ
 
-def round0 (_ : Bool) (q : ℚ) := ⌊q⌋.natAbs
-def roundinf (_ : Bool) (q : ℚ) := ⌈q⌉.natAbs
+/-- Round toward zero: the rounded mantissa is `⌊q⌋`, ignoring the sign. -/
+def round0 (s : Bool) (q : ℚ) := if s then ⌊q⌋.natAbs else ⌊q⌋.natAbs
+
+/-- `round0` ignores its sign argument. -/
+@[simp] lemma round0_apply (s : Bool) (q : ℚ) : round0 s q = ⌊q⌋.natAbs := by
+  simp only [round0, ite_self]
+
+/-- Round away from zero: the rounded mantissa is `⌈q⌉`, ignoring the sign. -/
+def roundinf (s : Bool) (q : ℚ) := if s then ⌈q⌉.natAbs else ⌈q⌉.natAbs
+
+/-- `roundinf` ignores its sign argument. -/
+@[simp] lemma roundinf_apply (s : Bool) (q : ℚ) : roundinf s q = ⌈q⌉.natAbs := by
+  simp only [roundinf, ite_self]
+
+/-- Round down (toward negative infinity), branching on the sign. -/
 def roundup := fun (s : Bool) q => if s then round0 s q else roundinf s q
+
+/-- Round up (toward positive infinity), branching on the sign. -/
 def rounddown := fun (s : Bool) (q : ℚ) => if s then roundinf s q else round0 s q
-def round_near_int (q : ℚ) :=
+
+/-- Round to the nearest integer, with ties broken to the even integer. -/
+def roundNearInt (q : ℚ) :=
   let i1 := ⌊q⌋
   let i2 := ⌈q⌉
   if Int.fract q < 1/2 then
@@ -27,13 +55,20 @@ def round_near_int (q : ℚ) :=
   else
     i2
 
-def roundnearest (_ : Bool) (q : ℚ) := (round_near_int q).natAbs
+/-- Round to nearest as an `IntRounder`: ties to even, ignoring the sign. -/
+def roundnearest (s : Bool) (q : ℚ) :=
+  if s then (roundNearInt q).natAbs else (roundNearInt q).natAbs
 
-lemma round_near_int_of_nonneg {q : ℚ} (h : 0 ≤ q) : 0 ≤ round_near_int q := by
-  rw [round_near_int]
+/-- `roundnearest` ignores its sign argument. -/
+@[simp] lemma roundnearest_apply (s : Bool) (q : ℚ) :
+    roundnearest s q = (roundNearInt q).natAbs := by
+  simp only [roundnearest, ite_self]
+
+lemma round_near_int_of_nonneg {q : ℚ} (h : 0 ≤ q) : 0 ≤ roundNearInt q := by
+  rw [roundNearInt]
   split_ifs <;> (try exact Int.floor_nonneg.mpr h) <;> (try exact Int.ceil_nonneg h)
 
-lemma round_near_int_of_pos {q : ℚ} (h : 0 < q) : 0 ≤ round_near_int q := by
+lemma round_near_int_of_pos {q : ℚ} (h : 0 < q) : 0 ≤ roundNearInt q := by
   apply round_near_int_of_nonneg
   exact le_of_lt h
 
@@ -51,8 +86,8 @@ and
 -/
 
 lemma round_near_le_round_near {q1 q2 : ℚ} (h : q1 ≤ q2) :
-  round_near_int q1 ≤ round_near_int q2 := by
-  rw [round_near_int, round_near_int]
+  roundNearInt q1 ≤ roundNearInt q2 := by
+  rw [roundNearInt, roundNearInt]
   have floor_le_ceil : ⌊q1⌋ ≤ ⌈q2⌉ := by
     qify
     calc
@@ -64,7 +99,7 @@ lemma round_near_le_round_near {q1 q2 : ℚ} (h : q1 ≤ q2) :
       (try exact Int.floor_le_floor h) <;> (try exact Int.ceil_le_ceil h) <;>
       (try exact floor_le_ceil) <;> (try exact h')
   have floorq1_le : ⌊q2⌋ ≤ ⌊q1⌋ := by
-    simp at h'
+    simp only [not_le] at h'
     apply Int.lt_add_one_iff.mp
     apply lt_of_lt_of_le h'
     exact Int.ceil_le_floor_add_one q1
@@ -85,7 +120,8 @@ lemma round_near_le_round_near {q1 q2 : ℚ} (h : q1 ≤ q2) :
     have fract_eq : Int.fract q1 = 1/2 := le_antisymm (le_of_not_gt h2) (le_of_not_gt h1)
     simp only [fract_eq]
     rcases lt_or_eq_of_le this with h' | h'
-    · simp [fract_eq] at *
+    · simp only [not_le, fract_eq, one_div, lt_self_iff_false, not_false_eq_true, ↓reduceIte,
+        ge_iff_le] at *
       simp only [h', not_lt_of_ge (le_of_lt h'), ↓reduceIte]
       split_ifs
       · exact floor_le_ceil
@@ -97,7 +133,7 @@ lemma round_near_le_round_near {q1 q2 : ℚ} (h : q1 ≤ q2) :
     exact le_antisymm (Int.floor_le_floor h) floorq1_le
 
 lemma round_near_eq_of (q : ℚ) (z : ℤ) :
-  z - 1/2 < q ∧ q < z + 1/2 → z = round_near_int q := by
+  z - 1/2 < q ∧ q < z + 1/2 → z = roundNearInt q := by
   rintro ⟨h1, h2⟩
   if h3 : z ≤ q then
     have : Int.fract q = q - z := by
@@ -106,7 +142,7 @@ lemma round_near_eq_of (q : ℚ) (z : ℤ) :
       · simp [h3]
       · linarith
       ring
-    rw [round_near_int, this]
+    rw [roundNearInt, this]
     simp_rw [sub_lt_iff_lt_add, add_comm, h2]
     simp only [↓reduceIte]
     symm
@@ -114,7 +150,7 @@ lemma round_near_eq_of (q : ℚ) (z : ℤ) :
     apply lt_trans h2
     linarith
   else
-    simp at h3
+    simp only [not_le] at h3
     have floor_eq : ⌊q⌋ = z - 1 := by
       suffices ⌊q⌋ + 1 = z by
         linarith
@@ -127,7 +163,7 @@ lemma round_near_eq_of (q : ℚ) (z : ℤ) :
       suffices (⌊q⌋ : ℚ) = z - 1 by
         linarith
       norm_cast
-    rw [round_near_int, fract_eq]
+    rw [roundNearInt, fract_eq]
     have : 1/2 < q - (z - 1) := by
       linarith
     simp_rw [if_neg (not_lt_of_gt this), if_pos this]
@@ -142,8 +178,8 @@ lemma fract_eq_ceil_of_pos {q : ℚ} (h : 0 < Int.fract q) :
   assumption
 
 lemma round_near_int_le (q : ℚ) :
-  |round_near_int q - q| ≤ 1/2 := by
-  unfold round_near_int
+  |roundNearInt q - q| ≤ 1/2 := by
+  unfold roundNearInt
   simp only [Int.cast_ite]
   split_ifs with h1 h2 h3
   · rw [abs_sub_comm, Int.self_sub_floor, abs_of_nonneg (Int.fract_nonneg q)]
@@ -163,13 +199,13 @@ lemma round_near_int_le (q : ℚ) :
   norm_num
 
 lemma round_near_int_of_int (z : ℤ) :
-  round_near_int z = z := by
-  rw [round_near_int,Int.fract_intCast]
+  roundNearInt z = z := by
+  rw [roundNearInt,Int.fract_intCast]
   simp
 
 lemma round_near_add_half (z : ℤ) (h : z % 2 = 0) :
-  round_near_int (z + 1/2) = z := by
-  rw [round_near_int]
+  roundNearInt (z + 1/2) = z := by
+  rw [roundNearInt]
   have : Int.fract (1 / 2 : ℚ) = 1/2 := by
     exact Int.fract_div_intCast_eq_div_intCast_mod
   rw [one_div] at this
@@ -180,8 +216,8 @@ lemma round_near_add_half (z : ℤ) (h : z % 2 = 0) :
   simp [h]
 
 lemma round_near_sub_half (z : ℤ) (h : z % 2 = 0) :
-  round_near_int (z - 1/2) = z := by
-  rw [round_near_int]
+  roundNearInt (z - 1/2) = z := by
+  rw [roundNearInt]
   have : Int.fract (1 / 2 : ℚ) = 1/2 := by
     exact Int.fract_div_intCast_eq_div_intCast_mod
   have : Int.fract (-(1 / 2 : ℚ)) = 1/2 := by
@@ -204,8 +240,8 @@ lemma round_near_sub_half (z : ℤ) (h : z % 2 = 0) :
   omega
 
 lemma round_of_add_half (z : ℤ) :
-  round_near_int (z + 1/2) % 2 = 0 := by
-  rw [round_near_int]
+  roundNearInt (z + 1/2) % 2 = 0 := by
+  rw [roundNearInt]
   have : Int.fract (z + 1/2 : ℚ) = 1/2 := by
     rw [Int.fract_intCast_add]
     norm_num
@@ -218,16 +254,21 @@ lemma round_of_add_half (z : ℤ) :
   rw [show ⌈(1 : ℚ) / 2⌉ = 1 by norm_num]
   omega
 
-def floor_interval (z : ℤ) : Set ℚ := Set.Ico z (z + 1)
-def ceil_interval (z : ℤ) : Set ℚ := Set.Ioc (z - 1) z
+/-- The set of rationals whose floor is `z`, namely `[z, z + 1)`. -/
+def floorInterval (z : ℤ) : Set ℚ := Set.Ico z (z + 1)
+
+/-- The set of rationals whose ceiling is `z`, namely `(z - 1, z]`. -/
+def ceilInterval (z : ℤ) : Set ℚ := Set.Ioc (z - 1) z
 
 lemma floor_eq_iff_interval (z : ℤ) (q : ℚ) :
-  ⌊q⌋ = z ↔ q ∈ floor_interval z := Int.floor_eq_iff
+  ⌊q⌋ = z ↔ q ∈ floorInterval z := Int.floor_eq_iff
 
 lemma ceil_eq_iff_interval (z : ℤ) (q : ℚ) :
-  ⌈q⌉ = z ↔ q ∈ ceil_interval z := Int.ceil_eq_iff
+  ⌈q⌉ = z ↔ q ∈ ceilInterval z := Int.ceil_eq_iff
 
-def round_near_interval (z : ℤ) : Set ℚ :=
+/-- The set of rationals that round to nearest `z`: a closed interval when `z`
+is even (ties round to it) and an open interval otherwise. -/
+def roundNearInterval (z : ℤ) : Set ℚ :=
   if z % 2 = 0 then
     Set.Icc (z - 1/2) (z + 1/2)
   else
@@ -243,13 +284,13 @@ lemma Icc_of_Ioo {α : Type} [PartialOrder α] {q x y : α} (h : q ∈ Set.Icc x
 
 
 lemma round_near_eq_iff (q : ℚ) (z : ℤ) :
-  round_near_int q = z ↔ q ∈ round_near_interval z := by
+  roundNearInt q = z ↔ q ∈ roundNearInterval z := by
   constructor
   · intro h
     rw [<-h]
-    unfold round_near_interval
-    have : q ∈ Set.Icc ((round_near_int q) - (1 : ℚ) / 2) ((round_near_int q) + 1 / 2) := by
-      suffices |round_near_int q - q| ≤ 1/2 by
+    unfold roundNearInterval
+    have : q ∈ Set.Icc ((roundNearInt q) - (1 : ℚ) / 2) ((roundNearInt q) + 1 / 2) := by
+      suffices |roundNearInt q - q| ≤ 1/2 by
         exact Set.mem_Icc_iff_abs_le.mp this
       exact round_near_int_le q
     split_ifs with h'
@@ -257,15 +298,15 @@ lemma round_near_eq_iff (q : ℚ) (z : ℤ) :
     · apply Icc_of_Ioo this
       · contrapose! h'
         rw [h']
-        convert round_of_add_half (round_near_int q - 1) using 3
+        convert round_of_add_half (roundNearInt q - 1) using 3
         push_cast
         linarith
       contrapose! h'
       rw [h']
-      exact round_of_add_half (round_near_int q)
+      exact round_of_add_half (roundNearInt q)
   intro h
   by_cases h' : z % 2 = 0
-  · rw [round_near_interval, if_pos h'] at h
+  · rw [roundNearInterval, if_pos h'] at h
     apply le_antisymm
     · rw [<-round_near_add_half z h']
       apply round_near_le_round_near
@@ -273,17 +314,18 @@ lemma round_near_eq_iff (q : ℚ) (z : ℤ) :
     rw [<-round_near_sub_half z h']
     apply round_near_le_round_near
     linarith [h.1]
-  rw [round_near_interval, if_neg h'] at h
+  rw [roundNearInterval, if_neg h'] at h
   symm
   apply round_near_eq_of
   exact h
 
 
 open Lean Meta Qq Mathlib.Meta.Positivity in
-@[positivity round_near_int _]
+/-- A `positivity` extension proving `0 ≤ roundNearInt q` from `0 ≤ q`. -/
+@[positivity roundNearInt _]
 def evalRoundNearInt : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
-  | 0, ~q(ℤ), ~q(round_near_int $a) =>
+  | 0, ~q(ℤ), ~q(roundNearInt $a) =>
     let zα : Q(Zero ℚ) := q(inferInstance)
     let pα : Q(PartialOrder ℚ) := q(inferInstance)
     assumeInstancesCommute
@@ -293,13 +335,17 @@ def evalRoundNearInt : PositivityExt where eval {u α} _ _ e := do
     | _ => pure .none
 
 
+/-- A rounding rule is *valid* if it is monotone on nonnegative inputs and is a
+left inverse of the cast `ℕ → ℚ` (so it fixes integer mantissas). -/
 class ValidRounder (f : Bool → ℚ → ℕ) where
+  /-- The rounder is monotone in the mantissa on nonnegative inputs. -/
   le_iff_le s q1 q2 : (0 ≤ q1) → (q1 ≤ q2) → f s q1 ≤ f s q2
+  /-- The rounder fixes integer mantissas: it left-inverts the cast `ℕ → ℚ`. -/
   leftInverse s : Function.LeftInverse (f s) ((↑) : ℕ → ℚ)
 
 instance : ValidRounder round0 where
   le_iff_le s q1 q2 q1h q1le := by
-    simp only [round0]
+    simp only [round0, ite_self]
     zify
     apply abs_le_abs_of_nonneg
     · positivity
@@ -310,7 +356,7 @@ instance : ValidRounder round0 where
 
 instance : ValidRounder roundinf where
   le_iff_le s q1 q2 q1h q1le := by
-    simp only [roundinf]
+    simp only [roundinf, ite_self]
     zify
     apply abs_le_abs_of_nonneg
     · positivity
@@ -321,34 +367,36 @@ instance : ValidRounder roundinf where
 
 instance : ValidRounder roundup where
   le_iff_le s := by
-    simp [roundup]
-    cases s <;> simp <;> apply ValidRounder.le_iff_le
+    simp only [roundup]
+    cases s <;> simp only [Bool.false_eq_true, ↓reduceIte] <;> apply ValidRounder.le_iff_le
   leftInverse s := by
     unfold roundup
-    cases s <;> simp <;> apply ValidRounder.leftInverse
+    cases s <;> simp only [Bool.false_eq_true, ↓reduceIte] <;> apply ValidRounder.leftInverse
 
 
 instance : ValidRounder rounddown where
   le_iff_le s := by
-    simp [rounddown]
-    cases s <;> simp <;> apply ValidRounder.le_iff_le
+    simp only [rounddown]
+    cases s <;> simp only [Bool.false_eq_true, ↓reduceIte] <;> apply ValidRounder.le_iff_le
   leftInverse s := by
     unfold rounddown
-    cases s <;> simp <;> apply ValidRounder.leftInverse
+    cases s <;> simp only [Bool.false_eq_true, ↓reduceIte] <;> apply ValidRounder.leftInverse
 
 instance : ValidRounder roundnearest where
   le_iff_le s q1 q2 q1h q1le := by
-    simp only [roundnearest]
+    simp only [roundnearest, ite_self]
     zify
     apply abs_le_abs_of_nonneg
     · positivity
     exact round_near_le_round_near q1le
   leftInverse s := by
     intro n
-    rw [roundnearest]
-    rw [show round_near_int n = n by exact_mod_cast round_near_int_of_int n]
+    simp only [roundnearest, ite_self]
+    rw [show roundNearInt n = n by exact_mod_cast round_near_int_of_int n]
     simp
 
+/-- The rounder obtained by flipping the sign bit, used to relate rounding of
+`q` and `-q`. -/
 def IntRounder.neg (r : IntRounder) : IntRounder := fun s ↦ r !s
 
 lemma neg_neg_r (r : IntRounder) :
@@ -360,7 +408,7 @@ lemma ValidRounder.neg {r : IntRounder} (rh : ValidRounder r) :
   ValidRounder r.neg := ⟨fun s ↦ ValidRounder.le_iff_le !s,
   fun s ↦ ValidRounder.leftInverse !s⟩
 
-lemma neg_valid_rounder (r : IntRounder)  :
+lemma neg_valid_rounder (r : IntRounder) :
   ValidRounder r.neg ↔ ValidRounder r := by
   constructor
   · intro h
@@ -373,7 +421,7 @@ lemma neg_valid_rounder (r : IntRounder)  :
 lemma roundnearest_neg :
   IntRounder.neg roundnearest = roundnearest := by
   funext s q
-  rw [IntRounder.neg, roundnearest, roundnearest]
+  simp only [IntRounder.neg, roundnearest, ite_self]
 
 lemma round_eq_or (r : IntRounder) [rh : ValidRounder r] (b : Bool)
   {q : ℚ} (h : 0 ≤ q) :
@@ -393,7 +441,7 @@ lemma round_eq_or (r : IntRounder) [rh : ValidRounder r] (b : Bool)
     · exact Int.le_ceil q
     exact Int.ceil_nonneg h
   rw [rh.leftInverse b] at rfloor_le le_rceil
-  rw [round0, roundinf]
+  simp only [round0, roundinf, ite_self]
   have : ⌊q⌋ = ⌈q⌉ ∨ ⌊q⌋ + 1 = ⌈q⌉ := by
     have := Int.ceil_le_floor_add_one q
     have := Int.floor_le_ceil q
@@ -403,21 +451,11 @@ lemma round_eq_or (r : IntRounder) [rh : ValidRounder r] (b : Bool)
 lemma round_eq_or' (r : IntRounder) [rh : ValidRounder r] (b : Bool)
   {q : ℚ} (h : 0 ≤ q) :
   r b q = rounddown b q ∨ r b q = roundup b q := by
-  cases b
-  · rcases round_eq_or r false h
-    · left
-      rw [rounddown, round0]
-      assumption
-    right
-    rw [roundup, roundinf]
-    assumption
-  rcases round_eq_or r true h
-  · right
-    rw [roundup, roundinf]
-    assumption
-  left
-  rw [rounddown, round0]
-  assumption
+  have key := round_eq_or r b h
+  cases b <;>
+    simp only [rounddown, roundup, round0_apply, roundinf_apply, Bool.false_eq_true,
+      ↓reduceIte] at key ⊢ <;>
+    tauto
 
 
 lemma roundr_le (r : IntRounder) [rh : ValidRounder r]
