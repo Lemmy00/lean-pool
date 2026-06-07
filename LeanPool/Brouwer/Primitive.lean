@@ -755,7 +755,8 @@ lemma slackBoundary_unique_incident_primitive (i : I) :
     cases hDoorof with
     | idoor hCellσC _ x _ hInsert hD_eq =>
         have hσ : σ = ({x} : Finset T) := by
-          simpa using hInsert.symm
+          rw [← hInsert]
+          rfl
         have hC : C = ({i} : Finset I) := hD_eq.symm
         have hx_eq : x = xMax := by
           have hAbove : ∀ y : T, (IST i).le y x := by
@@ -803,6 +804,8 @@ lemma boundary_almostPrimitive_eq_slackBoundary {Y : Finset (ExtendedGoods T I)}
   have hDcard : (fromMissing (T := T) (I := I) Y).card = 1 := by
     have hDoorCard := hDoor.2
     rw [hGoods] at hDoorCard
+    have hEmpty : (Finset.empty : Finset T).card = 0 := rfl
+    rw [hEmpty] at hDoorCard
     simpa using hDoorCard
   obtain ⟨i, hD⟩ := Finset.card_eq_one.mp hDcard
   refine ⟨i, ?_⟩

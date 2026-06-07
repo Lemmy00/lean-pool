@@ -3,7 +3,11 @@ Copyright (c) 2026 Math_XMUM. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Math_XMUM
 -/
-import Mathlib.Tactic
+import Mathlib.Analysis.Convex.StdSimplex
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Common
 
 --open Classical
 

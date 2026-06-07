@@ -4,6 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Math_XMUM
 -/
 import LeanPool.Brouwer.ScarfPath
+import Mathlib.Data.PNat.Basic
+import Mathlib.Order.PiLex
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Order.Filter.AtTopBot.Archimedean
+import Mathlib.Analysis.Convex.StdSimplex
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Sequences
+import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.Sequences
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 open Classical
 
@@ -84,8 +99,8 @@ variable {n l} in
 instance TT.ILO : IndexedLOrder (Fin n) (TT n l) where
   IST := fun i => linearOrderOfSTO (TT.Ilt i)
 
-local notation  lhs "<[" i "]" rhs => (IndexedLOrder.IST i).lt lhs rhs
-local notation  lhs "≤[" i "]" rhs => (IndexedLOrder.IST i).le lhs rhs
+local notation  lhs "<[" i "]" rhs => IndexedLOrder.ltAt i lhs rhs
+local notation  lhs "≤[" i "]" rhs => IndexedLOrder.leAt i lhs rhs
 
 lemma TT.Ilt_def (a b : TT n l) :
   (a <[i] b) ↔ TT.Ilt i a b := by
@@ -401,8 +416,8 @@ def room_seq (l' : ℕ) :=
   let l : PNat := ⟨l'+1,Nat.zero_lt_succ _⟩
   Classical.choice (TT.ILO.Scarf (@Fcolor n l f)).to_subtype
 
-def room_point_seq (l' : ℕ) := pick_colorful_point
-(Finset.mem_filter.1 (room_seq f l').2).2 |>.1
+def room_point_seq (l' : ℕ) : TT n ⟨l' + 1, Nat.zero_lt_succ _⟩ :=
+  (pick_colorful_point (Finset.mem_filter.1 (room_seq f l').2).2).1
 
 
 

@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Math_XMUM
 -/
 import LeanPool.Brouwer.Scarf
+import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 open Classical
 open Finset
@@ -281,7 +285,8 @@ theorem GiDegree_outsideDoor {c : T → I} {i : I} {τ : Finset T} {D : Finset I
             rw [Finset.mem_singleton]
             apply Prod.ext
             · have hwσ : w.1 = ({x} : Finset T) := by
-                simpa using hInsert.symm
+                rw [← hInsert]
+                rfl
               have hxMax : x = xMax := by
                 have hAbove : ∀ y : T, (IST i).le y x := by
                   intro y

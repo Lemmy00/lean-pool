@@ -3,8 +3,29 @@ Copyright (c) 2026 Math_XMUM. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Math_XMUM
 -/
-import Mathlib.Tactic
---import LLMlean
+import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Order.MinMax
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Bound
 
 section fiberlemma
 
@@ -101,9 +122,22 @@ instance : FunLike (IndexedLOrder I T) I (LinearOrder T) where
 
 variable [IST : IndexedLOrder I T]
 
+namespace IndexedLOrder
 
-local notation  lhs "<[" i "]" rhs => (IST i).lt lhs rhs
-local notation  lhs "≤[" i "]" rhs => (IST i).le lhs rhs
+/-- Strict order at index `i` for an `IndexedLOrder`: `lt a b` for the linear
+order `IST i`. -/
+abbrev ltAt [IST : IndexedLOrder I T] (i : I) (a b : T) : Prop :=
+  (IST i).lt a b
+
+/-- Non-strict order at index `i` for an `IndexedLOrder`: `le a b` for the linear
+order `IST i`. -/
+abbrev leAt [IST : IndexedLOrder I T] (i : I) (a b : T) : Prop :=
+  (IST i).le a b
+
+end IndexedLOrder
+
+local notation  lhs "<[" i "]" rhs => IndexedLOrder.ltAt i lhs rhs
+local notation  lhs "≤[" i "]" rhs => IndexedLOrder.leAt i lhs rhs
 
 namespace IndexedLOrder
 variable (σ : Finset T) (C : Finset I)
