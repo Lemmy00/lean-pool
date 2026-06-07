@@ -185,6 +185,14 @@ import LeanPool.BrauerGroupNew.ToSecond
 import LeanPool.BrauerGroupNew.TwoSidedIdeal
 import LeanPool.BrauerGroupNew.Wedderburn
 import LeanPool.BrauerGroupNew.ZeroSevenFourE
+import LeanPool.Brouwer
+import LeanPool.Brouwer.Brouwer
+import LeanPool.Brouwer.Brouwer_product
+import LeanPool.Brouwer.Nash
+import LeanPool.Brouwer.Primitive
+import LeanPool.Brouwer.Scarf
+import LeanPool.Brouwer.ScarfPath
+import LeanPool.Brouwer.Simplex
 import LeanPool.BruhatTits
 import LeanPool.BruhatTits.Cartan
 import LeanPool.BruhatTits.Cartan.Existence
