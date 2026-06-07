@@ -1090,6 +1090,10 @@ import LeanPool.Shannon1948Formalization.Entropy.Uniform
 import LeanPool.SumsThreeSquares
 import LeanPool.SumsThreeSquares.MinkowskiConvex
 import LeanPool.SumsThreeSquares.SumThreeSquares
+import LeanPool.SyntheticEuclid4
+import LeanPool.SyntheticEuclid4.SyntheticEuclid4
+import LeanPool.SyntheticEuclid4.axioms
+import LeanPool.SyntheticEuclid4.tactics
 import LeanPool.TwoColoringOneRound
 import LeanPool.TwoColoringOneRound.API
 import LeanPool.TwoColoringOneRound.Definitions
