@@ -5,6 +5,13 @@ Authors: James Huang, Samuël Borza
 -/
 import LeanPool.IsTranscendentalPi.ComplexExponential
 
+/-!
+# Calculus on polynomials
+
+The integral `∫₀¹ x · exp(-(t · x)) · T(t · x) dt` and the polynomial `∑ᵢ T⁽ⁱ⁾`,
+together with the calculus identities relating them for Niven's argument.
+-/
+
 open Polynomial
 open Complex
 
@@ -72,8 +79,8 @@ lemma aeval_sumDeriv_eq_sum_Icc
 lemma T_bounded
   (T : ℤ[X]) (a : ℂ) : ∃ M : ℝ, ∀ t ∈ Set.uIoc (0 : ℝ) 1, ‖aeval (t * a) T‖ ≤ M := by
   have hcont : Continuous (fun t : ℝ => aeval (t * a) T) := by
-    have hmul : Continuous (fun t : ℝ => (t : ℂ) * a) := by
-      simpa using (Complex.continuous_ofReal.mul continuous_const)
+    have hmul : Continuous (fun t : ℝ => (t : ℂ) * a) :=
+      Complex.continuous_ofReal.mul continuous_const
     exact T.continuous_aeval.comp hmul
   obtain ⟨M, hM⟩ := (isCompact_uIcc : IsCompact (Set.uIcc (0 : ℝ) 1)).exists_bound_of_continuousOn
       hcont.continuousOn

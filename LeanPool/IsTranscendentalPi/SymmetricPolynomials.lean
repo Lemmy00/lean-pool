@@ -8,6 +8,13 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.Polynomial.Vieta
 
+/-!
+# Symmetric polynomials
+
+Multisets `{b₀, …, bₙ₋₁}` attached to maps `b : Fin n → α` and symmetric-function
+machinery feeding the algebraic estimates of Niven's proof.
+-/
+
 open Polynomial
 open Multiset
 

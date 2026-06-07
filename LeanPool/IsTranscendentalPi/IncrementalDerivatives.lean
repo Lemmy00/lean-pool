@@ -7,6 +7,13 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Algebra.Polynomial.FieldDivision
 
+/-!
+# Incremental derivatives
+
+Differentiability and derivative formulas for the maps `t ↦ f⁽ᵏ⁾(t · x)` and their
+finite sums, used to differentiate the exponential factors in Niven's argument.
+-/
+
 open Polynomial
 open Complex
 

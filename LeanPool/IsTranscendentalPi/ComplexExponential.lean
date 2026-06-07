@@ -8,6 +8,14 @@ import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import LeanPool.IsTranscendentalPi.IncrementalDerivatives
 import LeanPool.IsTranscendentalPi.SymmetricPolynomials
 
+/-!
+# The complex exponential and subset sums
+
+Properties of `t ↦ exp(-(t · x))` and the expansion of `∏ (1 + exp x)` over a
+multiset of roots into zero- and nonzero-sum subset contributions, the analytic
+heart of Niven's proof of the transcendence of `π`.
+-/
+
 open Polynomial
 
 open Set
@@ -155,7 +163,8 @@ lemma sum_cexp_subsetSums_aroots_filter_ne_zero_eq_neg_count_zero
   have hzero := sum_cexp_zeroSumPowerset_eq_count_zero_subsetSums (B.aroots ℂ)
   rw [hzero] at hprod
   exact eq_neg_of_add_eq_zero_right <| by
-    simpa [nonzeroSubsetSums, subsetSums, filter_map, Function.comp] using hprod
+    simpa [nonzeroSubsetSums, subsetSums, nonZeroSumPowerset, cexpMultisetSum, filter_map,
+      Function.comp] using hprod
 
 /-- If `f⁽ᵏ⁾` is differentiable at `t * x` for every `k ≤ n` and every `t ∈ [0, 1]`, then
 `t ↦ exp(-t * x) *  ( f⁽ⁿ⁾(t * x) - f(t * x) )` is continuous on `[0, 1]`. -/
@@ -176,8 +185,8 @@ lemma differentiableAt_exp_neg_mul_sum_iteratedDeriv
   (f : ℂ → ℂ) (x : ℂ) (n : ℕ) (t : ℝ)
   (hderiv : ∀ k ≤ n, DifferentiableAt ℂ (iteratedDeriv k f) (t * x)) :
     DifferentiableAt ℝ (fun t : ℝ => cexp (-(t * x)) *
-          ∑ k ∈ Finset.range (n + 1), iteratedDeriv k f (t * x)) t := by
-  simpa using (differentiableAt_exp_neg_mul x t).mul
+          ∑ k ∈ Finset.range (n + 1), iteratedDeriv k f (t * x)) t :=
+  (differentiableAt_exp_neg_mul x t).fun_mul
     (differentiableAt_sum_iteratedDeriv f x n t hderiv)
 
 /-- If `f⁽ᵏ⁾` is differentiable at `t x` for every `k ≤ n`, then with hasDeriv we have
@@ -191,7 +200,7 @@ lemma deriv_exp_neg_mul_sum_iteratedDeriv
     _ = deriv (fun t : ℝ => cexp (-(t * x))) t *
           (∑ k ∈ Finset.range (n + 1), iteratedDeriv k f (t * x)) + cexp (-(t * x)) *
             deriv (fun t : ℝ => ∑ k ∈ Finset.range (n + 1), iteratedDeriv k f (t * x)) t := by
-          simpa using (deriv_mul (differentiableAt_exp_neg_mul x t)
+          simpa using (deriv_fun_mul (differentiableAt_exp_neg_mul x t)
                         (differentiableAt_sum_iteratedDeriv f x n t hderiv))
     _ = (-x * cexp (-(t * x))) * (∑ k ∈ Finset.range (n + 1), iteratedDeriv k f (t * x)) +
           cexp (-(t * x)) * (∑ k ∈ Finset.range (n + 1), x * iteratedDeriv (k + 1) f (t * x)) := by

@@ -8,6 +8,14 @@ import LeanPool.IsTranscendentalPi.AnalyticEstimates
 import LeanPool.IsTranscendentalPi.ScaledAuxiliaryPolynomial
 import LeanPool.IsTranscendentalPi.SymmetricPolynomials
 
+/-!
+# Transcendence of `π`
+
+The main theorem: the complex number `π` (and hence the real number `π`) is
+transcendental over `ℚ`, assembling the analytic and algebraic estimates of the
+preceding modules into Niven's contradiction argument.
+-/
+
 open Polynomial
 
 open Complex

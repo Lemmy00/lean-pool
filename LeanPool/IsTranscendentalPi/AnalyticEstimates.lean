@@ -6,6 +6,13 @@ Authors: James Huang, Samuël Borza
 import LeanPool.IsTranscendentalPi.NivenPolynomials
 import Mathlib.RingTheory.Int.Basic
 
+/-!
+# Analytic estimates
+
+Uniform bounds on the Niven auxiliary polynomials, controlling the size of the
+integral appearing in Niven's proof of the transcendence of `π`.
+-/
+
 open Polynomial
 open Complex
 
@@ -133,7 +140,7 @@ lemma sum_intExpNegPoly_asym_ubound
   refine lt_of_le_of_lt ?_ hfacR
   calc
     _ = ‖c‖ ^ p * ‖∑ i : Fin n, b i * cexp (a i) * intExpNegPoly (Fp T p) (a i)‖ := by simp
-    _ ≤ ‖c‖ ^ p * (A * B ^ p) := by gcongr ; exact hAB p hp
+    _ ≤ ‖c‖ ^ p * (A * B ^ p) := by gcongr; exact hAB p hp
     _ = A * (‖c‖ * B) ^ p := by ring_nf
     _ ≤ _ := by gcongr
 

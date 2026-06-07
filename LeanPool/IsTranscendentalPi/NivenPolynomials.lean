@@ -5,6 +5,13 @@ Authors: James Huang, Samuël Borza
 -/
 import LeanPool.IsTranscendentalPi.CalculusOnPoly
 
+/-!
+# Niven polynomials
+
+The auxiliary polynomials `Fₚ = Xᵖ⁻¹ Tᵖ` and basic facts about their degree, used
+to build the integer that drives the contradiction in Niven's proof.
+-/
+
 open Polynomial
 open Complex
 
@@ -135,7 +142,8 @@ lemma aeval_Fpd_at_nonzero (T : ℤ[X]) (p : ℕ) (a : ℂ) (ha : a ≠ 0)
   have hroot' : 1 ≤ rootMultiplicity a (T.map (algebraMap ℤ ℂ)) := by
     rcases Polynomial.mem_aroots'.1 hroot with ⟨hT0, hroot0⟩
     exact Nat.succ_le_of_lt <|
-      (Polynomial.rootMultiplicity_pos hT0).2 (by simpa [Polynomial.eval_map] using hroot0)
+      (Polynomial.rootMultiplicity_pos hT0).2
+        (by simpa [Polynomial.eval_map, Polynomial.aeval_def, algebraMap_int_eq] using hroot0)
   simpa [ha, sumStartpDerivFp] using
     (aeval_Fpd T p 1 a (TwithRootNotZero T a hroot) hroot')
 

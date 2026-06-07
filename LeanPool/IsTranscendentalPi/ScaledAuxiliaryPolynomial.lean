@@ -5,6 +5,13 @@ Authors: James Huang, Samuël Borza
 -/
 import LeanPool.IsTranscendentalPi.SubsetSumPolynomial
 
+/-!
+# Scaled auxiliary polynomial
+
+The symmetric polynomial `∑ᵢ T(Xᵢ)` and its evaluation, providing the algebraic
+input to the auxiliary integer in Niven's proof.
+-/
+
 open Polynomial
 open Multiset
 
@@ -30,7 +37,7 @@ lemma aeval_MvPolynomialSumX
   simpa using
     (Polynomial.map_aeval_eq_aeval_map (S := MvPolynomial (Fin n) R) (T := R) (U := S)
     (φ := RingHom.id R) (ψ := (MvPolynomial.aeval (σ := Fin n) (R := R) (S₁ := S) a).toRingHom)
-    (h := by ext r ; simp) (p := T) (a := MvPolynomial.X i))
+    (h := by ext r; simp) (p := T) (a := MvPolynomial.X i))
 
 /-- The polynomial `∑ᵢ₌₀ⁿ⁻¹ T(Xᵢ)` is symmetric in the variables `X₀, …, Xₙ₋₁`. -/
 lemma MvPolynomialSumX_isSymmetric {R : Type*} [CommSemiring R] (T : Polynomial R) (n : ℕ) :
@@ -226,7 +233,8 @@ lemma SumAevalGp_as_intSumAevalGp
   rw [RescaledOf_natDegree T T' c hc hT, hd] at hs'
   have hdeg : ((derivative^[i]) (Fp T p)).natDegree ≤ p * d - 1 := by omega
   apply Eq.trans
-  · simpa using (aeval_RpolyFp_derivative_Fp T c p (p * d - 1) i d a hpi hdeg hc).symm
+  · simpa [div_eq_mul_inv] using
+      (aeval_RpolyFp_derivative_Fp T c p (p * d - 1) i d a hpi hdeg hc).symm
   · simpa [intSumAevalGp, intAevalRpoly] using
       Classical.choose_spec (RpolyFp_at_c_mul_eq_poly_of_monicRescaleOf
                               T T' c p (p * d - 1) i d a hc hmonic hd hT hroots')

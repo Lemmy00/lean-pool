@@ -7,6 +7,14 @@ import LeanPool.IsTranscendentalPi.NivenPolynomials
 import LeanPool.IsTranscendentalPi.SymmetricPolynomials
 import Mathlib.Algebra.Polynomial.OfFn
 
+/-!
+# Subset-sum polynomial
+
+The polynomial `∏ x ∈ s, (X - C x)` attached to a multiset `s` and its factorization
+according to the vanishing subset sums, used to track integer divisibility in
+Niven's argument.
+-/
+
 open Polynomial
 open Multiset
 
@@ -65,7 +73,8 @@ lemma powerset_map_eq {α β : Type*} (f : α → β) (s : Multiset α) :
 lemma varsFin_IsSymmetric (n : ℕ) (e : Equiv.Perm (Fin n)) :
     Multiset.map (MvPolynomial.rename e) (varsFin n) = varsFin n := by
   rw [varsFin, Multiset.map_map]
-  simpa using e.ofFn_comp_perm (fun i : Fin n => (MvPolynomial.X i : MvPolynomial (Fin n) ℤ))
+  simpa [Function.comp_def] using
+    e.ofFn_comp_perm (fun i : Fin n => (MvPolynomial.X i : MvPolynomial (Fin n) ℤ))
 
 /-- The multiset of subset sums of `X₀, …, Xₙ₋₁` is invariant under permutation of the
 variables. -/
@@ -364,13 +373,16 @@ lemma aroots_of_T
     (hT' : T'.map (algebraMap ℚ ℂ) = polyOfNonzeroSubsetSums (valuesFin r))
     (ha : nonzeroSubsetSums (valuesFin r) = valuesFin a) : T.aroots ℂ = valuesFin a := by
   have hmapC : T.map (algebraMap ℤ ℂ) = (c : ℂ) • (T'.map (algebraMap ℚ ℂ)) := by
-    simpa [Polynomial.map_map, smul_eq_C_mul, map_mul] using
+    have hcomp : (algebraMap ℚ ℂ).comp (Int.castRingHom ℚ) = algebraMap ℤ ℂ :=
+      RingHom.ext_int _ _
+    simpa [Polynomial.map_map, hcomp, smul_eq_C_mul, map_mul] using
       congrArg (Polynomial.map (algebraMap ℚ ℂ)) hT
   calc
     _ = (T'.map (algebraMap ℚ ℂ)).aroots ℂ := by
-      rw [Polynomial.aroots_def, Polynomial.aroots_def, hmapC, smul_eq_C_mul]
-      simpa using Polynomial.roots_C_mul (Polynomial.map (algebraMap ℚ ℂ) T')
-        (by exact_mod_cast hc)
+      have hcC : (c : ℂ) ≠ 0 := by exact_mod_cast hc
+      rw [Polynomial.aroots_def, Polynomial.aroots_def, hmapC, Algebra.algebraMap_self,
+        Polynomial.map_id]
+      exact Polynomial.roots_smul_nonzero (Polynomial.map (algebraMap ℚ ℂ) T') hcC
     _ = T'.aroots ℂ := by simp [Polynomial.aroots_def]
     _ = _ := aroots_of_T' T' d n r a hT' ha
 
