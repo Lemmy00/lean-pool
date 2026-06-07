@@ -224,8 +224,9 @@ namespace PrimeCert.Meta
 open Lean Meta Qq
 
 /-- A prime power is represented by either `p ^ e` or `p`. -/
-syntax prime_pow := num (" ^ " num)?
+syntax primePow := num (" ^ " num)?
 
+/-- A parsed prime power: either a bare prime `p`, or `p ^ e`. -/
 inductive PrimePow : Type
   | prime (p : ℕ) | pow (p e : ℕ)
 
@@ -234,20 +235,23 @@ instance : ToMessageData PrimePow where
     | .prime p => m!"{p}"
     | .pow p e => m!"{p}^{e}"
 
-def parsePrimePow (stx : TSyntax ``prime_pow) : Q(Nat) × PrimePow :=
+/-- Parse a `primePow` syntax into its numeric value (as a `Nat` expression) and `PrimePow`. -/
+def parsePrimePow (stx : TSyntax ``primePow) : Q(Nat) × PrimePow :=
   match stx with
-  | `(prime_pow| $p:num^$e:num) =>
+  | `(primePow| $p:num^$e:num) =>
       have p := p.getNat
       have e := e.getNat
       (mkApp2 (mkConst ``Nat.pow) (mkNatLit p) (mkNatLit e), .pow p e)
-  | `(prime_pow| $p:num) =>
+  | `(primePow| $p:num) =>
       have p := p.getNat
       (mkNatLit p, .prime p)
   | _ => (mkNatLit 0, .prime 0)
 
 /-- A full factorisation of a number, written like `3 ^ 4 * 29 * 41`. -/
-syntax factored := sepBy1(prime_pow," * ")
+syntax factored := sepBy1(primePow," * ")
 
+/-- Parse a `factored` syntax into the product (as a `Nat` expression) and the array of
+prime powers occurring in it. -/
 def parseFactored (stx : TSyntax ``factored) : Q(Nat) × Array PrimePow :=
   match stx with
   | `(factored| $head * $body**) =>
@@ -255,11 +259,14 @@ def parseFactored (stx : TSyntax ``factored) : Q(Nat) × Array PrimePow :=
     have body := body.getElems.map parsePrimePow
     ((body.map (·.1)).foldl (fun ih new ↦ (mkApp2 (mkConst ``Nat.mul) ih new)) head.1,
       #[head.2] ++ body.map (·.2))
-  | `(factored| $head:prime_pow) =>
+  | `(factored| $head:primePow) =>
     have head := parsePrimePow head
     (head.1, #[head.2])
   | _ => (mkNatLit 0, #[])
 
+/-- Build a `PocklingtonPred N a F₁` proof term from the parsed prime-power factors of `F₁`,
+chaining `PocklingtonPred.base`/`base_pow`/`step`/`step_pow` and looking up each factor's
+primality proof in `dict`. -/
 def mkPockPred (N a F₁ : Q(Nat)) (steps : Array PrimePow) (dict : PrimeDict) :
     MetaM Q(PocklingtonPred $N $a $F₁) := do
   if h : steps.size = 0 then return mkConst ``PocklingtonPred.one
@@ -294,11 +301,13 @@ pock (339392917, 2, 3 ^ 4 * 29 * 41)
 pock (16290860017, 5, 339392917)
 ```
 -/
-syntax pock_spec := num <|> ("(" num ", " num ", " factored ")")
+syntax pockSpec := num <|> ("(" num ", " num ", " factored ")")
 
-def parsePockSpec : PrimeCertMethod ``pock_spec := fun stx dict ↦ do
+/-- The `pock` certification method: parse a step `(N, root, F₁)`, build the corresponding
+`PocklingtonPred`, and return a proof that `N` is prime. -/
+def parsePockSpec : PrimeCertMethod ``pockSpec := fun stx dict ↦ do
   match stx with
-  | `(pock_spec| ($N:num, $a:num, $F₁:factored)) =>
+  | `(pockSpec| ($N:num, $a:num, $F₁:factored)) =>
       have Nnat := N.getNat
       have N : Q(Nat) := mkNatLit Nnat
       have a : Q(Nat) := mkNatLit a.getNat
@@ -310,9 +319,8 @@ def parsePockSpec : PrimeCertMethod ``pock_spec := fun stx dict ↦ do
       return ⟨Nnat, N, pf⟩
   | _ => Elab.throwUnsupportedSyntax
 
-@[prime_cert pock] def PrimeCertExt.pock : PrimeCertExt where
-  syntaxName := ``pock_spec
-  methodName := ``parsePockSpec
+open Lean.Elab.Command in
+run_cmd declareStepGroupSyntax "pock" ``pockSpec
 
 end Meta
 
@@ -341,7 +349,11 @@ theorem prime_16290860017 : Nat.Prime 16290860017 :=
   pock% [3, 29, 41; (339392917, 2, 3 ^ 4 * 29 * 41), (16290860017, 5, 339392917)]
 ```
 -/
-scoped elab "pock%" "[" heads:small_spec,+ ";" steps:pock_spec,+ "]" : term => do
-  Lean.Elab.Term.elabTerm (← `(prime_cert% [small {$heads;*}, pock {$steps;*}])) none
+scoped elab "pock%" "[" heads:smallSpec,+ ";" steps:pockSpec,+ "]" : term => do
+  let (dict, _) ← Meta.runMethod Meta.mkSmallProof (heads.getElems.map (·.raw)) ∅
+  let (dict, goal) ← Meta.runMethod Meta.parsePockSpec (steps.getElems.map (·.raw)) dict
+  let .some entry := dict.get? goal
+    | throwError s!"Primality not certified for {goal}"
+  return entry
 
 end PrimeCert

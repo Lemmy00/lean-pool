@@ -25,17 +25,18 @@ prime_cert% [small {2; 3; 5; 7}, ...]
 -- Each number must have a corresponding `PrimeCert.prime_<n>` theorem.
 ```
 -/
-syntax small_spec := num
+syntax smallSpec := num
 
-def mkSmallProof : PrimeCertMethod ``small_spec := fun stx _ ↦ match stx with
-  | `(small_spec| $n:num) => do
+/-- The `small` certification method: parse a numeral `n` and return the proof term
+`PrimeCert.prime_<n>` for its primality. -/
+def mkSmallProof : PrimeCertMethod ``smallSpec := fun stx _ ↦ match stx with
+  | `(smallSpec| $n:num) => do
     have n := n.getNat
     have name : Name := (`PrimeCert).str s!"prime_{n}"
     return ⟨n, mkNatLit n, mkConst name⟩
   | _ => throwUnsupportedSyntax
 
-@[prime_cert small] def PrimeCertExt.small : PrimeCertExt where
-  syntaxName := ``small_spec
-  methodName := ``mkSmallProof
+open Lean.Elab.Command in
+run_cmd declareStepGroupSyntax "small" ``smallSpec
 
 end PrimeCert.Meta

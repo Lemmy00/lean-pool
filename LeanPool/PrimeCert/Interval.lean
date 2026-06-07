@@ -9,13 +9,15 @@ import Mathlib.Algebra.Ring.Nat
 
 /-! # Interval checking by binary search
 
-The `check_interval` tactic proves goals of the form
+The `checkInterval` tactic proves goals of the form
 `∀ n, lo ≤ n → n < hi → P n` or `∀ n, lo ≤ n → n < hi → n % b = r → P n`
 by building a balanced binary tree of `eagerReduce` proof terms, one per value in the range.
 -/
 
 section forallB
 
+/-- `forallB f start len step` is `true` iff `f` holds on every element of
+`List.range' start len step`. -/
 noncomputable def forallB (f : ℕ → Bool) (start len : ℕ) (step : ℕ := 1) : Bool :=
   (Nat.rec (motive := fun _ ↦ ℕ × Bool) (start, true)
     (fun _ ih ↦ ih.rec fun i b ↦ (i.add step, (f i).and' b)) len).2
@@ -145,23 +147,33 @@ def makeForallBisectHi (P : Expr) (hi : ℕ) (pf : ℕ → Expr) : Expr :=
   mkApp3 (mkConst ``forall_start) P (rnl% hi) <| makeForallBisectLoHi P 0 hi pf
 
 /-- An expression to prove statement of the form `∀ n, lo ≤ n → n < hi → n % b = r → P n`.
-This always assumes `lo % b = r`. -/
-partial def makeForallModBisectLoHi
-    (P : Expr) (lo hi b r : ℕ) (bE rE : Expr) (pf : ℕ → Expr) : Expr :=
-  if hi ≤ lo + b then
+This always assumes `lo % b = r`.
+
+The `fuel` argument bounds the recursion depth so the definition is structurally recursive.
+Each bisection at least halves the number of residue-class representatives in `[lo, hi)`, so the
+recursion depth is at most `hi`; the callers supply that much fuel and the `fuel = 0` branch is
+therefore never reached. -/
+def makeForallModBisectLoHi
+    (fuel : ℕ) (P : Expr) (lo hi b r : ℕ) (bE rE : Expr) (pf : ℕ → Expr) : Expr :=
+  match fuel with
+  | 0 =>
     mkApp8 (mkConst ``forall_mod_succ)
       P (rnl% lo) (rnl% hi) bE rE (pf lo) (reflNat% rE) reflBoolTrue
-  else
-    have mi := (lo / b + (hi - r) / b + 1) / 2 * b + r
-    mkApp8 (mkConst ``forall_mod_bisect) P (rnl% lo) (rnl% hi) bE rE (rnl% mi)
-      (makeForallModBisectLoHi P lo mi b r bE rE pf)
-      (makeForallModBisectLoHi P mi hi b r bE rE pf)
+  | fuel + 1 =>
+    if hi ≤ lo + b then
+      mkApp8 (mkConst ``forall_mod_succ)
+        P (rnl% lo) (rnl% hi) bE rE (pf lo) (reflNat% rE) reflBoolTrue
+    else
+      have mi := (lo / b + (hi - r) / b + 1) / 2 * b + r
+      mkApp8 (mkConst ``forall_mod_bisect) P (rnl% lo) (rnl% hi) bE rE (rnl% mi)
+        (makeForallModBisectLoHi fuel P lo mi b r bE rE pf)
+        (makeForallModBisectLoHi fuel P mi hi b r bE rE pf)
 
 /-- An expression to prove statement of the form `∀ n < hi → n % b = r → P n`. -/
 def makeForallModBisectHi
     (P : Expr) (hi b r : ℕ) (bE rE : Expr) (pf : ℕ → Expr) : Expr :=
   mkApp5 (mkConst ``forall_mod_start) P (rnl% hi) bE rE <|
-    makeForallModBisectLoHi P r hi b r bE rE pf
+    makeForallModBisectLoHi hi P r hi b r bE rE pf
 
 /-- Tactic to prove bounded universal statements by exhaustive kernel checking.
 Accepts four goal shapes:
@@ -179,10 +191,10 @@ logarithmic in the range size.
 -- Check that wieferichKR is false or mirimanoffKR is false for all n ≡ 1 (mod 6), n < 6000:
 theorem wieferich_mirimanoff₁ : ∀ n < 6000, n % 6 = 1 →
     (wieferichKR n).not'.or' (mirimanoffKR n).not' := by
-  check_interval
+  checkInterval
 ```
 -/
-elab "check_interval" : tactic => Elab.Tactic.liftMetaFinishingTactic fun mId ↦ do
+elab "checkInterval" : tactic => Elab.Tactic.liftMetaFinishingTactic fun mId ↦ do
   let goal ← inferType <| .mvar mId
   let .forallE _ _ P₀ _ := goal | throwError "goal is not ∀"
   let .forallE _ P₁ P₂ _ := P₀ | throwError "goal is not bounded (1)"
@@ -215,7 +227,7 @@ elab "check_interval" : tactic => Elab.Tactic.liftMetaFinishingTactic fun mId �
   | none, none =>
     mId.assign <| makeForallBisectHi P hi fun _ ↦ reflBoolTrue
   | some lo, some (b, r, _) =>
-    mId.assign <| makeForallModBisectLoHi P lo hi b r (rnl% b) (rnl% r) fun _ ↦ reflBoolTrue
+    mId.assign <| makeForallModBisectLoHi hi P lo hi b r (rnl% b) (rnl% r) fun _ ↦ reflBoolTrue
   | none, some (b, r, _) =>
     mId.assign <| makeForallModBisectHi P hi b r (rnl% b) (rnl% r) fun _ ↦ reflBoolTrue
 

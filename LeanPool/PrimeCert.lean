@@ -20,7 +20,7 @@ import LeanPool.PrimeCert.Wieferich
 Source: url:https://github.com/b-mehta/PrimeCert
 Authors: Kenny Lau, Bhavik Mehta
 Status: verified
-Main declarations: `pocklington_test`, `pocklington_certify`, `PrimeCert.pocklington3_test`, `wieferich_mirimanoff`
+Main declarations: `pocklington_test`, `PrimeCert.pocklington3_test`, `wieferich_mirimanoff`
 Tags: number-theory, primality-testing, pocklington, primality-certificate, metaprogramming
-MSC: 11A41
+MSC: 11A41, 11Y11
 -/

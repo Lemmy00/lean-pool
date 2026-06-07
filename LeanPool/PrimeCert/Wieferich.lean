@@ -20,15 +20,19 @@ Wieferich and Mirimanoff. This is used in `miller_rabin_squarefree` to rule out
 squarefree pseudoprimes below 36 million (to bases 2 and 3).
 -/
 
+/-- `p` is a Wieferich prime: `2 ^ (p - 1) ≡ 1 [MOD p²]`. -/
 def Wieferich (p : ℕ) : Prop :=
   2 ^ (p - 1) ≡ 1 [MOD p^2]
 
+/-- `p` is a Mirimanoff prime: `3 ^ (p - 1) ≡ 1 [MOD p²]`. -/
 def Mirimanoff (p : ℕ) : Prop :=
   3 ^ (p - 1) ≡ 1 [MOD p^2]
 
+/-- Kernel-reducible Boolean test for `p` being a Wieferich prime. -/
 noncomputable def wieferichKR (p : ℕ) : Bool :=
   powModTR 2 p.pred (p.pow 2) |>.beq 1
 
+/-- Kernel-reducible Boolean test for `p` being a Mirimanoff prime. -/
 noncomputable def mirimanoffKR (p : ℕ) : Bool :=
   powModTR 3 p.pred (p.pow 2) |>.beq 1
 
@@ -58,13 +62,13 @@ noncomputable def mirimanoffKR (p : ℕ) : Bool :=
 -- 6n+1 to 6000
 theorem wieferich_mirimanoff₁ : ∀ n < 6000, n % 6 = 1 →
     (wieferichKR n).not'.or' (mirimanoffKR n).not' := by
-  check_interval
+  checkInterval
 
 -- elab: 57 ms
 -- kernel: 561 ms
 -- 6n+5 to 6000
 theorem wieferich₅ : ∀ n < 6000, n % 6 = 5 → !wieferichKR n := by
-  check_interval
+  checkInterval
 
 theorem Nat.Prime.mod_6 {p : ℕ} (hp : p.Prime) (hp₂ : p ≠ 2) (hp₃ : p ≠ 3) :
     p % 6 = 1 ∨ p % 6 = 5 := by

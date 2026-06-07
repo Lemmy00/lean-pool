@@ -149,6 +149,8 @@ theorem pocklington3_test (N F R m r s : ℕ)
     · lia
 
 -- MOVE
+/-- `forallB f start len step` is `true` iff `f` holds on every element of
+`List.range' start len step`; the `eagerReduce` makes it kernel-reducible. -/
 def forallB (f : ℕ → Bool) (start len : ℕ) (step : ℕ := 1) : Bool :=
   (Nat.rec (motive := fun _ ↦ ℕ × Bool) (start, true)
     (fun _ ih ↦ ih.rec fun i b ↦ (eagerReduce (i.add step), f i && b)) len).2
@@ -206,6 +208,8 @@ theorem Pocklington3Cert.of_prime (r s p : Nat) (hp : Nat.Prime p) (h2p : 2 < p)
 inductive Pocklington3CertMode : Type
   | zero | prime (p : ℕ) (hp : Nat.Prime p) | lt
 
+/-- Kernel-reducible Boolean check that the chosen `Pocklington3CertMode` discharges the
+non-square obligation for the pair `(r, s)`. -/
 noncomputable def Pocklington3CertMode.calculate (m : Pocklington3CertMode) (r s : ℕ) : Bool :=
   m.rec (s.beq 0) (fun p _ ↦ (2).blt p && (powModTR (r.pow 2 |>.sub <| s.mul 8) (p.div 2) p).beq
     p.pred) (r.pow 2 |>.blt <| s.mul 8)
@@ -220,9 +224,19 @@ theorem Pocklington3CertMode.to_cert (m : Pocklington3CertMode) (r s : ℕ) (h :
     exact .of_prime _ _ p hp h.1 h.2
   | lt => exact .inr <| .inr <| Nat.blt_eq.to_iff.mp <| mul_comm 8 s ▸ h
 
+/-- A prime power `prime ^ pow` (with `pow ≥ 1`) together with proofs of primality and
+positivity of the exponent. Used to represent the factors of `F` in the `pock3` certificate. -/
 structure PrimePow : Type where
-  (prime : ℕ) (pow : ℕ) (pf : prime.Prime) (pow_ne_zero : (0).blt pow)
+  /-- The prime base. -/
+  (prime : ℕ)
+  /-- The exponent. -/
+  (pow : ℕ)
+  /-- Proof that `prime` is prime. -/
+  (pf : prime.Prime)
+  /-- Proof that the exponent is positive. -/
+  (pow_ne_zero : (0).blt pow)
 
+/-- The natural number `prime ^ pow` represented by a `PrimePow`. -/
 noncomputable def PrimePow.toNat (pp : PrimePow) : ℕ :=
   pp.rec fun p v _ _ ↦ p.pow v
 
@@ -231,7 +245,10 @@ noncomputable def PrimePow.toNat (pp : PrimePow) : ℕ :=
 theorem PrimePow.prime_dvd_toNat (pp : PrimePow) : pp.prime ∣ pp.toNat :=
   dvd_pow_self _ <| ne_of_gt <| Nat.blt_eq.to_iff.mp pp.pow_ne_zero
 
-noncomputable def pocklington3_calculate (N e root m : ℕ) (F' : List PrimePow)
+/-- Kernel-reducible Boolean check bundling all hypotheses of the cube-root Pocklington test:
+the pseudo-primitive-root conditions for each factor of `F`, the sieve condition up to `m`, the
+non-square certificate `mode`, and the size bound. -/
+noncomputable def pocklington3Calculate (N e root m : ℕ) (F' : List PrimePow)
     (mode : Pocklington3CertMode) : Bool :=
   let F := Nat.mul (F'.rec 1 fun pp _ ih ↦ pp.rec fun p vp _ _ ↦ ih.mul <| p.pow vp) <| (2).pow e
   let two_F := F.mul 2
@@ -292,9 +309,9 @@ Inputs (not all needed):
 * `s, r := divmod(R, 2*F)`, given as literals
 -/
 theorem pocklington3_certKR (N root m e : ℕ) (F' : List PrimePow) (mode : Pocklington3CertMode)
-    (cert : pocklington3_calculate N e root m F' mode) :
+    (cert : pocklington3Calculate N e root m F' mode) :
     Nat.Prime N := by
-  unfold pocklington3_calculate at cert
+  unfold pocklington3Calculate at cert
   extract_lets F two_F R r s at cert
   simp only [Nat.div_eq_div, powModTR_eq, Nat.pred_eq_sub_one, Nat.mod_eq_mod, Nat.succ_eq_add_one,
     Nat.mul_eq, Nat.pow_eq, Nat.add_eq, Bool.and_eq_true, Nat.blt_eq, Nat.beq_eq] at cert
@@ -369,17 +386,19 @@ open Lean Meta Qq
 - A numeric literal `0` means `s = 0`
 - A numeric literal `p` (prime, `p > 2`) means `r² - 8s` is a quadratic non-residue mod `p`
 - `<` means `r² < 8s` -/
-syntax pock3_mode := num <|> "<"
+syntax pock3Mode := num <|> "<"
 
-def parsePock3Mode (stx : TSyntax ``pock3_mode) (dict : PrimeDict) :
+/-- Parse a `pock3Mode` syntax into a `Pocklington3CertMode`, looking up the primality proof
+of the witness prime in `dict` when a numeric (non-zero) mode is given. -/
+def parsePock3Mode (stx : TSyntax ``pock3Mode) (dict : PrimeDict) :
     MetaM Q(Pocklington3CertMode) := match stx with
-  | `(pock3_mode| $n:num) =>
+  | `(pock3Mode| $n:num) =>
     have n := n.getNat
     if n = 0 then return q(.zero) else do
       have nE : Q(ℕ) := mkNatLit n
       let pf : Q(($nE).Prime) ← dict.getM n
       return q(.prime $nE $pf)
-  | `(pock3_mode| <) => return q(.lt)
+  | `(pock3Mode| <) => return q(.lt)
   | _ => Elab.throwUnsupportedSyntax
 
 /-- Syntax for a `pock3` certificate step: `(N, root, m, mode, F)`.
@@ -388,7 +407,7 @@ def parsePock3Mode (stx : TSyntax ``pock3_mode) (dict : PrimeDict) :
 - `root`: a pseudo-primitive root (for the factored part of `N - 1`)
 - `m`: sieve bound — all `l * F + 1` for `1 ≤ l < m` must not divide `N`
   (smaller `m` = less sieve work but requires larger `F`)
-- `mode`: how to discharge the non-square condition (see `pock3_mode`)
+- `mode`: how to discharge the non-square condition (see `pock3Mode`)
 - `F`: the even, fully-factored divisor of `N - 1`, written as `2 ^ e * p₁ ^ e₁ * p₂ * ...`
   (the power of 2 must come first)
 
@@ -400,37 +419,44 @@ pock3 (73471, 3, 1, 7, 2 * 31)
 pock3 (32560621, 2, 1, 7, 2 ^ 2 * 3 * 29)
 ```
 -/
-syntax pock3_spec := "(" num "," num "," num "," pock3_mode "," prime_pow "*" factored")"
+syntax pock3Spec := "(" num "," num "," num "," pock3Mode "," primePow "*" factored")"
 
+/-- The prime base of a parsed `PrimePow` (the `.prime`/`.pow` field). -/
 def PrimePow.base : PrimePow → ℕ
 | .prime p => p
 | .pow p _ => p
 
-def parsePrimePow' (stx : TSyntax ``prime_pow) (dict : PrimeDict) :
+/-- Parse a `primePow` syntax into a `PrimeCert.PrimePow` value, looking up the primality proof
+of the base in `dict`. -/
+def parsePrimePow' (stx : TSyntax ``primePow) (dict : PrimeDict) :
     MetaM Q(PrimeCert.PrimePow) := match stx with
-  | `(prime_pow| $p ^ $e) => do
+  | `(primePow| $p ^ $e) => do
     have p := p.getNat; have pE := mkNatLit p
     have e := e.getNat; have eE := mkNatLit e
     let pf ← dict.getM p
     return mkApp4 (mkConst ``PrimeCert.PrimePow.mk) pE eE pf eagerReflBoolTrue
-  | `(prime_pow| $p:num) => do
+  | `(primePow| $p:num) => do
     have p := p.getNat; have pE := mkNatLit p
     let pf ← dict.getM p
     return mkApp4 (mkConst ``PrimeCert.PrimePow.mk) pE (mkNatLit 1) pf eagerReflBoolTrue
   | _ => Elab.throwUnsupportedSyntax
 
+/-- Parse a `factored` syntax into a `List PrimeCert.PrimePow`, looking up each factor's
+primality proof in `dict`. -/
 def parseFactored' (stx : TSyntax ``factored) (dict : PrimeDict) :
     MetaM Q(List PrimeCert.PrimePow) := do
   match stx with
-  | `(factored| $pps:prime_pow**) =>
+  | `(factored| $pps:primePow**) =>
     pps.getElems.foldlM (fun ih pp ↦ return q($(← parsePrimePow' pp dict) :: $ih)) q([])
   | _ => Elab.throwUnsupportedSyntax
 
 -- TODO: special case for `F = 2 ^ e`
 
-def parsePock3Spec : PrimeCertMethod ``pock3_spec := fun stx dict ↦ match stx with
-  | `(pock3_spec| ($N:num, $root:num, $m:num, $mode:pock3_mode,
-      $head:prime_pow * $F:factored)) => do
+/-- The `pock3` certification method: parse a step `(N, root, m, mode, F)`, assemble the
+cube-root Pocklington certificate, and return a proof that `N` is prime. -/
+def parsePock3Spec : PrimeCertMethod ``pock3Spec := fun stx dict ↦ match stx with
+  | `(pock3Spec| ($N:num, $root:num, $m:num, $mode:pock3Mode,
+      $head:primePow * $F:factored)) => do
     have (_, headF) := parsePrimePow head
     unless headF.base == 2 do throwError "the first prime in the factorization must be 2"
     let F'E ← parseFactored' F dict
@@ -448,8 +474,59 @@ def parsePock3Spec : PrimeCertMethod ``pock3_spec := fun stx dict ↦ match stx 
     return ⟨N, NE, pf⟩
   | _ => Elab.throwUnsupportedSyntax
 
-@[prime_cert pock3] def pock3 : PrimeCertExt where
-  syntaxName := ``pock3_spec
-  methodName := ``parsePock3Spec
+open Lean.Elab.Command in
+run_cmd declareStepGroupSyntax "pock3" ``pock3Spec
+
+/-- Process one step group by dispatching on its leading keyword to the matching certification
+method, threading `dict` and returning the updated dictionary with the last prime certified. -/
+def runStepGroup (group : TSyntax `stepGroup) (dict : PrimeDict) :
+    Lean.Elab.TermElabM (PrimeDict × Nat) := do
+  let (key, steps) ← stepGroupParts group
+  match key with
+  | "small" => runMethod mkSmallProof steps dict
+  | "pock" => runMethod parsePockSpec steps dict
+  | "pock3" => runMethod parsePock3Spec steps dict
+  | _ => throwError s!"unknown prime_cert step group {key}"
 
 end PrimeCert.Meta
+
+namespace PrimeCert
+
+open Meta Lean.Elab.Term
+
+/-- The main primality certificate elaborator.
+
+Syntax: `prime_cert% [group₁, group₂, ...]`
+
+Each group is a certification method keyword followed by one or more steps:
+- `small {p₁; p₂; ...}` — look up pre-proved small primes
+- `pock (N, root, F₁)` or `pock {step₁; step₂; ...}` — Pocklington certificates
+- `pock3 (N, root, m, mode, F)` — cube-root Pocklington certificates
+
+Groups are processed left-to-right. Within each group, steps are processed in order.
+Every certified prime is added to an internal `PrimeDict` so later steps can reference it.
+The last prime certified becomes the result.
+
+```lean
+theorem prime_60digit :
+    Nat.Prime 236684654874665389773181956283167565443541280517430278333971 := prime_cert%
+  [small {2; 3; 7; 11; 29; 31},
+   pock3 (73471, 3, 1, 7, 2 * 31),
+   pock3 (32560621, 2, 1, 7, 2 ^ 2 * 3 * 29),
+   pock3 (3586530508831189, 2, 1, 11, 2 ^ 2 * 73471),
+   pock3 (236684654874665389773181956283167565443541280517430278333971,
+     2, 1, 3, 2 * 32560621 * 3586530508831189)]
+```
+-/
+scoped elab "prime_cert% " "[" grps:stepGroup,+ "]" : term => do
+  let mut dict : PrimeDict := ∅
+  let mut goal : ℕ := 0
+  for group in grps.getElems do
+    let (dict', goal') ← Meta.runStepGroup group dict
+    dict := dict'
+    goal := goal'
+  let .some entry := dict.get? goal
+    | throwError s!"Primality not certified for {goal}"
+  return entry
+
+end PrimeCert

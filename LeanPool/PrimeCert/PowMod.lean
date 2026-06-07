@@ -22,6 +22,7 @@ def powMod (a b n : ℕ) : ℕ := a ^ b % n
 /-- The pow-mod auxiliary function, named explicitly to allow more precise control of reduction. -/
 def powModAux (a b c n : ℕ) : ℕ := (a ^ b * c) % n
 
+/-- Apply `k` to `eagerReduce n`, forcing kernel reduction of `n` before the call. -/
 def Nat.eager (k : Nat → Nat) (n : Nat) : Nat := k (eagerReduce n)
 
 /-- Kernel-reducible tail-recursive modular exponentiation: computes `a ^ b % n`.
@@ -29,6 +30,7 @@ Uses `Nat.rec` with bounded fuel so the kernel can reduce it via `eagerReduce`. 
 noncomputable def powModTR (a b n : Nat) : Nat :=
   aux b.succ (a.mod n) b 1
 where
+  /-- Fuel-bounded square-and-multiply loop accumulating `a ^ b * c % n`. -/
   aux : Nat → ((a b c : Nat) → Nat) :=
     Nat.rec (fun _ _ _ => 0)
       (fun _ r a b c =>
@@ -42,7 +44,9 @@ where
 (e.g. in `mkPowModEq'`) where we need actual computation, not kernel reduction. -/
 def powModTR' (a b n : ℕ) : ℕ :=
   aux (a % n) b 1
-  where aux (a b c : ℕ) : ℕ :=
+  where
+  /-- Square-and-multiply loop accumulating `a ^ b * c % n`, via `partial_fixpoint`. -/
+  aux (a b c : ℕ) : ℕ :=
     if b = 0 then c % n
     else if b = 1 then (a * c) % n
     else if b % 2 = 0 then
@@ -132,7 +136,9 @@ def provePowModNe' (a b n m : ℕ) (aE bE nE mE : Expr) : MetaM Expr := do
   if m = m' then throwError "attempted to prove {a} ^ {b} % {n} ≠ {m} but it is {m'}"
   return mkApp5 (mkConst ``powMod_ne_of_powModTR) aE bE nE mE eagerReflBoolFalse
 
-def prove_pow_mod_tac (g : MVarId) : MetaM Unit := do
+/-- Close a goal of the form `powMod a b n = m` or `powMod a b n ≠ m`, where `a`, `b`, `n`, `m`
+are numeric literals, by computing `a ^ b % n` at elaboration time and producing a kernel proof. -/
+def provePowModTac (g : MVarId) : MetaM Unit := do
   let t : Expr ← g.getType
   match_expr t with
   | Eq ty lhsE rhsE =>
@@ -165,10 +171,10 @@ All of `a`, `b`, `n`, `m` must be numeric literals. The computation uses `powMod
 `powModTR` and `eagerReduce`.
 
 ```lean
-example : powMod 11 100002 100003 = 1 := by prove_pow_mod
-example : powMod 2 100002 100003 ≠ 1 := by prove_pow_mod
+example : powMod 11 100002 100003 = 1 := by provePowMod
+example : powMod 2 100002 100003 ≠ 1 := by provePowMod
 ```
 -/
-elab "prove_pow_mod" : tactic => liftMetaFinishingTactic prove_pow_mod_tac
+elab "provePowMod" : tactic => liftMetaFinishingTactic provePowModTac
 
 end Tactic.powMod
