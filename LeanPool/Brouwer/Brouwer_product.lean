@@ -4,13 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Math_XMUM
 -/
 import LeanPool.Brouwer.Brouwer
+
+/-!
+# Brouwer's fixed-point theorem on a product of simplices
+
+This file extends Brouwer's fixed-point theorem from a single standard simplex to
+a finite product of standard simplices. A continuous retraction collapses the big
+simplex onto the product, so a fixed point of a continuous self-map of the product
+is obtained from the single-simplex theorem.
+-/
+
 open Filter
 
 section Brouwer.ProductRetraction
 variable {I : Type*} [Fintype I] [DecidableEq I] [Inhabited I] [LinearOrder I] (card : I → ℕ+)
 
 /-- Total number of coordinates: the sum of `card i` over all `i`. -/
-noncomputable def total_card (card : I → ℕ+) : ℕ+ := ⟨(Finset.univ : Finset I).sum (fun i => (card i : ℕ)), by
+noncomputable def total_card (card : I → ℕ+)
+    : ℕ+ := ⟨(Finset.univ : Finset I).sum (fun i => (card i : ℕ)), by
   apply Finset.sum_pos
   · simp
   · exact Finset.univ_nonempty⟩
@@ -28,6 +39,7 @@ noncomputable def prefix_sum (card : I → ℕ+) (i : I) : ℕ :=
   ∑ j ∈ Finset.univ.filter (· < i), (card j : ℕ)
 
 
+omit [DecidableEq I] in
 /-- A flat index `k` belongs to a unique block `i` with an in-block index `j`. -/
 lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (card i)),
     prefix_sum card p.1 ≤ k.val ∧ k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
@@ -39,10 +51,9 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
     use i_max
     have h_sum_eq_total : prefix_sum_inclusive i_max = (total_card card : ℕ) := by
       simp only [prefix_sum_inclusive, total_card]
-      rw [Finset.filter_true_of_mem]
-      simp
-      intro j _; exact Finset.le_max' _ _ (Finset.mem_univ j)
-    show k.val < prefix_sum_inclusive i_max
+      rw [Finset.filter_true_of_mem (fun j _ => Finset.le_max' _ _ (Finset.mem_univ j))]
+      rfl
+    change k.val < prefix_sum_inclusive i_max
     rw [h_sum_eq_total]
     exact k.is_lt
   let i₀ := @WellFounded.min I (· < ·) wellFounded_lt S s_nonempty
@@ -110,6 +121,7 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
 noncomputable def index_split (k : Fin (total_card card)) : Σ i, Fin (card i) :=
   Classical.choose (index_split_existence card k)
 
+omit [DecidableEq I] in
 /-- Specification of `index_split`: bounds and value relation for `(i, j)`. -/
 lemma index_split_spec (k : Fin (total_card card)) :
   let p := index_split card k
@@ -141,13 +153,13 @@ noncomputable def index_combine (p : Σ i, Fin (card i)) : Fin (total_card card)
 
 
 /-- `index_split` is a left inverse to `index_combine`. -/
-lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (index_combine card p) = p := by
+lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (index_combine card p)
+    = p := by
   classical
   cases p with
   | mk i j =>
     let k : Fin (total_card card) := index_combine card ⟨i, j⟩
     have hspec := index_split_spec card k
-
     have prefix_sum_mono_lt : ∀ {a b : I}, a < b →
         prefix_sum card a + (card a : ℕ) ≤ prefix_sum card b := by
       intro a b hlt
@@ -170,12 +182,10 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
         Finset.sum_le_sum_of_subset_of_nonneg h_subset (by
           intro j _ _; exact Nat.zero_le _)
       simpa [prefix_sum, h_eq_a] using h_le
-
     have hk_le : prefix_sum card i ≤ k.val := by
       simp [k, index_combine]
     have hk_lt : k.val < prefix_sum card i + (card i : ℕ) := by
       simp [k, index_combine, add_lt_add_iff_left]
-
     have hnot_lt1 : ¬ (index_split card k).1 < i := by
       intro hlt
       have hmono := prefix_sum_mono_lt hlt
@@ -188,13 +198,12 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
       exact (not_lt_of_ge hspec.1) this
     have hi : (index_split card k).1 = i :=
       le_antisymm (le_of_not_gt hnot_lt2) (le_of_not_gt hnot_lt1)
-
-    have hj_spec : (index_split card k).2.val = k.val - prefix_sum card (index_split card k).1 := hspec.2.2
+    have hj_spec : (index_split card k).2.val = k.val - prefix_sum card (index_split card k).1 :=
+        hspec.2.2
     have hj_spec_i : (index_split card k).2.val = k.val - prefix_sum card i := by
       simpa [hi] using hj_spec
     have hj_val : (index_split card k).2.val = j.val := by
       simpa [k, index_combine, Nat.add_sub_cancel_left] using hj_spec_i
-
     cases hsplit : index_split card k with
     | mk i' j' =>
       have hi' : i' = i := by simpa [hsplit] using hi
@@ -206,7 +215,8 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
       simpa [hsplit] using hj'
 
 /-- `index_combine` is a left inverse to `index_split`. -/
-lemma index_combine_split_inverse (k : Fin (total_card card)) : index_combine card (index_split card k) = k := by
+lemma index_combine_split_inverse (k : Fin (total_card card))
+    : index_combine card (index_split card k) = k := by
   classical
   have hspec := index_split_spec card k
   apply Fin.ext
@@ -226,7 +236,7 @@ noncomputable def uniformProduct : ProductSimplices card :=
     (⟨fun _ => (1 : ℝ) / (card i : ℝ), by
       simp only [stdSimplex, Set.mem_setOf_eq]
       constructor
-      · intro _; apply div_nonneg; norm_num; positivity
+      · intro _; apply div_nonneg <;> positivity
       · simp [Finset.sum_const]
     ⟩ : stdSimplex ℝ (Fin (card i)))
 
@@ -235,10 +245,12 @@ noncomputable def z_uniform : BigSimplex card :=
   ⟨fun _ => (1 : ℝ) / (total_card card : ℝ), by
     simp only [stdSimplex, Set.mem_setOf_eq]
     constructor
-    · intro _; apply div_nonneg; norm_num;
-      have : 0 < (total_card card : ℝ) := by
-        norm_cast; exact PNat.pos (total_card card)
-      exact le_of_lt this
+    · intro _
+      apply div_nonneg
+      · norm_num
+      · have : 0 < (total_card card : ℝ) := by
+          norm_cast; exact PNat.pos (total_card card)
+        exact le_of_lt this
     · have hpos : 0 < (total_card card : ℝ) := by
         norm_cast; exact PNat.pos (total_card card)
       have hcard : (Fintype.card (Fin (total_card card)) : ℝ) = (total_card card : ℝ) := by
@@ -295,7 +307,8 @@ noncomputable def pushTowardsZ (x : BigSimplex card) : BigSimplex card :=
       have hz_sum : (∑ k ∈ Finset.univ, (z_uniform card).1 k) = 1 := by simpa using hz_sum_all
       calc
         (∑ k ∈ Finset.univ, ((1 - tPush card x) * x.1 k + (tPush card x) * (z_uniform card).1 k))
-            = (1 - tPush card x) * (∑ k ∈ Finset.univ, x.1 k) + (tPush card x) * (∑ k ∈ Finset.univ, (z_uniform card).1 k) := by
+            = (1 - tPush card x) * (∑ k ∈ Finset.univ, x.1 k) + (tPush card x)
+                * (∑ k ∈ Finset.univ, (z_uniform card).1 k) := by
               simp [Finset.sum_add_distrib, Finset.mul_sum]
         _ = 1 := by
               simp [hx_sum, hz_sum]
@@ -315,13 +328,11 @@ noncomputable def project_to_product (x : BigSimplex card) : ProductSimplices ca
         simp only [blockSum, y, pushTowardsZ, z_uniform, blockWeight, Finset.sum_add_distrib,
           Finset.mul_sum, Finset.sum_const, sub_eq_add_neg, Finset.card_fin]
         ring_nf
-
       have h_bw_pos : 0 < blockWeight card i := by
         unfold blockWeight
         have htc : 0 < (total_card card : ℝ) := by norm_cast; exact PNat.pos (total_card card)
         have hci : 0 < (card i : ℝ) := by norm_cast; exact PNat.pos (card i)
         exact div_pos hci htc
-
       have h_block_nonneg : 0 ≤ blockSum card i x := by
         unfold blockSum; apply Finset.sum_nonneg; intro j _; exact x.2.1 _
       have h_def_nonneg : 0 ≤ deficit card x := by
@@ -335,18 +346,20 @@ noncomputable def project_to_product (x : BigSimplex card) : ProductSimplices ca
         have hle : deficit card x ≤ 1 + deficit card x := by linarith
         have hinv_nonneg : 0 ≤ (1 + deficit card x)⁻¹ := inv_nonneg.mpr (le_of_lt hdenpos)
         have := mul_le_mul_of_nonneg_right hle hinv_nonneg
-        have h_div_le : (deficit card x) / (1 + deficit card x) ≤ (1 + deficit card x) / (1 + deficit card x) := by
+        have h_div_le : (deficit card x) / (1 + deficit card x) ≤ (1 + deficit card x)
+            / (1 + deficit card x) := by
           simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using this
         simpa [tPush, div_self (ne_of_gt hdenpos)] using h_div_le
-
       have h_one_minus_nonneg : 0 ≤ 1 - tPush card x := by linarith
       by_cases ht0 : tPush card x = 0
       · have h_def0 : deficit card x = 0 := by
-          have hden_pos : 0 < 1 + deficit card x := add_pos_of_pos_of_nonneg (by norm_num) h_def_nonneg
+          have hden_pos : 0 < 1 + deficit card x := add_pos_of_pos_of_nonneg (by norm_num)
+              h_def_nonneg
           exact (div_eq_zero_iff.mp ht0).resolve_right (ne_of_gt hden_pos)
         have h_term_le_sum : max 0 (blockWeight card i - blockSum card i x) ≤ deficit card x := by
           classical
-          have hnonneg : ∀ i' ∈ (Finset.univ : Finset I), 0 ≤ max 0 (blockWeight card i' - blockSum card i' x) :=
+          have hnonneg : ∀ i' ∈ (Finset.univ : Finset I),
+              0 ≤ max 0 (blockWeight card i' - blockSum card i' x) :=
             fun i' _ => le_max_left _ _
           simpa [deficit] using Finset.single_le_sum hnonneg (by simp)
         have h_term_zero : max 0 (blockWeight card i - blockSum card i x) = 0 := by
@@ -397,14 +410,19 @@ noncomputable def embed_from_product (y : ProductSimplices card) : BigSimplex ca
         mul_nonneg ((y p.1).2.1 p.2) (by positivity)
       exact div_nonneg h_num_nonneg (le_of_lt h_denom_pos)
     · rw [← Finset.sum_div]
-      have h_numerator : (∑ k, (y (index_split card k).1).1 (index_split card k).2 * (card (index_split card k).1 : ℝ)) = ↑(total_card card) := by
-        have : (∑ k, (y (index_split card k).1).1 (index_split card k).2 * (card (index_split card k).1 : ℝ)) =
+      have h_numerator : (∑ k,
+          (y (index_split card k).1).1 (index_split card k).2 * (card (index_split card k).1 : ℝ))
+          = ↑(total_card card) := by
+        have : (∑ k,
+            (y (index_split card k).1).1 (index_split card k).2 * (card (index_split card k).1 :
+            ℝ)) =
                (∑ i, ∑ j : Fin (card i), (y i).1 j * (card i : ℝ)) := by
           let f (p : Σ i, Fin (card i)) := (y p.1).1 p.2 * (card p.1 : ℝ)
           change
             (∑ k ∈ (Finset.univ : Finset (Fin (total_card card))), f (index_split card k)) =
             (∑ i ∈ (Finset.univ : Finset I), ∑ j ∈ (Finset.univ : Finset (Fin (card i))), f ⟨i, j⟩)
-          rw [← Finset.sum_sigma (s := (Finset.univ : Finset I)) (t := fun i => (Finset.univ : Finset (Fin (card i))))]
+          rw [← Finset.sum_sigma (s := (Finset.univ : Finset I))
+              (t := fun i => (Finset.univ : Finset (Fin (card i))))]
           apply Finset.sum_bij (fun k _ => index_split card k)
           · intro; simp
           · intro a₁ _ a₂ _ h
@@ -466,7 +484,7 @@ lemma project_embed_id (y : ProductSimplices card) :
   have h_norm_eq_div :
       ((project_to_product card (embed_from_product card y)) i).1 j =
         ((embed_from_product card y).1 (index_combine card ⟨i, j⟩)) / (blockWeight card i) := by
-    simp [project_to_product, h_push_id]
+    simp only [project_to_product, h_push_id]
     rw [h_blockSum i]
   have h_div_cancel :
       ((embed_from_product card y).1 (index_combine card ⟨i, j⟩)) / (blockWeight card i) =
@@ -528,7 +546,8 @@ lemma tPush_mem_Icc (x : BigSimplex card) : tPush card x ∈ Set.Icc (0 : ℝ) 1
     have hle : deficit card x ≤ 1 + deficit card x := by linarith
     have hinv_nonneg : 0 ≤ (1 + deficit card x)⁻¹ := inv_nonneg.mpr (le_of_lt hdenpos)
     have := mul_le_mul_of_nonneg_right hle hinv_nonneg
-    have : (deficit card x) / (1 + deficit card x) ≤ (1 + deficit card x) / (1 + deficit card x) := by
+    have : (deficit card x) / (1 + deficit card x) ≤ (1 + deficit card x) / (1 + deficit card x)
+        := by
       simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using this
     simpa [tPush, div_self (ne_of_gt hdenpos)] using this
 
@@ -665,10 +684,13 @@ lemma embed_continuous : Continuous (embed_from_product card) := by
       exact PNat.pos (card i)
     · exact Finset.univ_nonempty
 
+omit [Fintype I] [DecidableEq I] in
 /-- Brouwer fixed point theorem for a product of simplices, via a retraction. -/
-theorem Brouwer_Product
+theorem Brouwer_Product [Finite I]
   (f : ProductSimplices card → ProductSimplices card) (hf : Continuous f) :
   ∃ x : ProductSimplices card, f x = x := by
+  classical
+  have : Fintype I := Fintype.ofFinite I
   let f_lifted : BigSimplex card → BigSimplex card :=
     embed_from_product card ∘ f ∘ project_to_product card
   have hf_lifted : Continuous f_lifted := by
