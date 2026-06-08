@@ -1915,9 +1915,8 @@ projects:
       - ExistsNashEq
       - Brouwer
       - Brouwer_Product
-      - Scarf
+      - IndexedLOrder.Scarf
       - FinGame
-      - FinGame.mixedNashEquilibrium
     main_results:
       - declaration: ExistsNashEq
         informal: Every finite game has a mixed Nash equilibrium.
@@ -1925,7 +1924,7 @@ projects:
         informal: Every continuous self-map of a standard simplex has a fixed point.
       - declaration: Brouwer_Product
         informal: Every continuous self-map of a finite product of simplices has a fixed point.
-      - declaration: Scarf
+      - declaration: IndexedLOrder.Scarf
         informal: Scarf's combinatorial lemma producing a colorful simplex.
       - declaration: FinGame
         informal: The structure of a finite game with finitely many players and finite pure strategy sets.
