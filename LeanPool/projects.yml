@@ -1265,6 +1265,60 @@ projects:
     msc:
       - "68W15"
       - "05C15"
+  - slug: a-formalization-of-borel-determinacy-in-lean
+    title: A formalization of Borel determinacy in Lean
+    summary: Formalizes Martin's theorem that every Borel Gale-Stewart game is determined.
+    branch: descriptive set theory
+    entry_module: LeanPool.AFormalizationOfBorelDeterminacyInLean
+    authors:
+      - Sven Manthe
+    source:
+      arxiv: "2502.03432"
+      github_repo: sven-manthe/A-formalization-of-Borel-determinacy-in-Lean
+    status: verified
+    main_declarations:
+      - GaleStewartGame.borel_determinacy
+      - GaleStewartGame.Games.borel_determinacy
+    main_results:
+      - declaration: GaleStewartGame.borel_determinacy
+        informal: Proves that every Borel Gale-Stewart game on a nonempty discrete alphabet is determined.
+      - declaration: GaleStewartGame.Games.borel_determinacy
+        informal: Proves Borel determinacy for the bundled game representation used in the formalization.
+    tags:
+      - descriptive-set-theory
+      - game-theory
+      - determinacy
+    msc:
+      - "03E15"
+      - "54H05"
+      - "91A44"
+  - slug: main-theorem-of-polytopes
+    title: The main theorem of polytopes
+    summary: Formalizes the Minkowski–Weyl theorem — the equivalence between V-polytopes (convex hulls of finite point sets) and bounded H-polytopes (finite intersections of half-spaces) in a finite-dimensional real vector space.
+    branch: convex geometry
+    entry_module: LeanPool.Polytopes
+    authors:
+      - Jun Kwon
+    source:
+      title: "Main theorem of polytopes"
+      url: https://github.com/Jun2M/Main-theorem-of-polytopes
+      github_repo: Jun2M/Main-theorem-of-polytopes
+    status: verified
+    main_declarations:
+      - MainTheoremOfPolytopes
+    main_results:
+      - declaration: MainTheoremOfPolytopes
+        informal: The Minkowski–Weyl theorem — a set is a V-polytope iff it is a bounded H-polytope.
+        source_ref: "G. M. Ziegler, Lectures on Polytopes, GTM 152, Springer, 1995, Theorem 1.1."
+      - declaration: Vpolytope_of_Hpolytope
+        informal: Every bounded H-polytope (finite intersection of half-spaces) is the convex hull of a finite point set.
+    tags:
+      - convex-geometry
+      - discrete-geometry
+      - polytopes
+    msc:
+      - "52B11"
+      - "52A20"
   - slug: lean-poly-abc
     title: Polynomial ABC (Mason–Stothers) and its corollaries
     summary: Formalizes the Mason–Stothers theorem (the polynomial ABC theorem) and derives the polynomial Fermat's Last Theorem, the Fermat–Catalan inequality, Davenport's theorem, and a no-parametrization corollary.
@@ -1843,6 +1897,30 @@ projects:
       - "60A05"
       - "18C50"
       - "68Q55"
+  - slug: lean4-gl-coalgebras
+    title: Craig Interpolation for Gödel-Löb logic via coalgebraic proofs
+    summary: Formalizes a proof-theoretic Craig interpolation theorem for Gödel-Löb provability logic, built on a coalgebraic notion of circular proof.
+    branch: provability logic
+    entry_module: LeanPool.Lean4GlCoalgebras
+    authors:
+      - Madeleine Gignoux
+    source:
+      doi: "10.1134/S0081543811060198"
+      github_repo: mgignoux/lean4-gl-coalgebras
+    status: verified
+    main_declarations:
+      - Lean4GlCoalgebras.interpolation
+    main_results:
+      - declaration: Lean4GlCoalgebras.interpolation
+        informal: Proves the Craig interpolation theorem for Gödel-Löb provability logic.
+    tags:
+      - modal-logic
+      - provability-logic
+      - craig-interpolation
+      - proof-theory
+    msc:
+      - "03B45"
+      - "03F45"
   - slug: leanmodularforms
     title: Modular forms and the generalized residue theorem
     summary: Formalizes the Hungerbühler-Wasem generalized residue theorem for Cauchy principal value integrals through poles and applies it to the valence formula for modular forms on the modular group.
@@ -1873,6 +1951,44 @@ projects:
     msc:
       - "11F11"
       - "30E20"
+  - slug: flean
+    title: "Flean: Floating-Point Numbers in Lean"
+    summary: Formalizes a configurable model of floating-point numbers in Lean 4, including normal and subnormal representations, conversions between rationals and floats, round-trip correctness, and rounding error bounds.
+    branch: numerical analysis
+    entry_module: LeanPool.Flean
+    authors:
+      - Joseph McKinsey
+    source:
+      doi: "10.1109/IEEESTD.2019.8766229"
+      url: "https://github.com/josephmckinsey/flean"
+      github_repo: josephmckinsey/flean
+    status: verified
+    msc:
+      - "65G50"
+      - "65G30"
+      - "68V20"
+    main_declarations:
+      - Flean.Float
+      - toFloat
+      - toRat
+      - to_float_to_rat
+      - roundf_close
+    main_results:
+      - declaration: Flean.Float
+        informal: Defines the floating-point number type parameterized by a precision and exponent configuration, with normal, subnormal, infinite, and NaN cases.
+      - declaration: toFloat
+        informal: Rounds a rational number to the nearest representable floating-point value under a given rounding mode.
+      - declaration: toRat
+        informal: Interprets a floating-point value as the exact rational number it represents.
+      - declaration: to_float_to_rat
+        informal: Proves the round-trip identity that converting a finite nonzero float to a rational and back recovers the original float.
+      - declaration: roundf_close
+        informal: Bounds the distance between a rational and its rounded floating-point representation.
+    tags:
+      - floating-point
+      - numerical-analysis
+      - ieee-754
+      - rounding
   - slug: istranscendentalpi
     title: The transcendence of π
     summary: Formalizes a self-contained proof, following Niven's 1939 argument, that the real and complex number π is transcendental over the rationals.
