@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Games
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Undetermined
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 open Cardinal
 open Stream'.Discrete Descriptive Tree PreStrategy
@@ -20,7 +27,7 @@ def Player.ownTree (p : Player) (a : Stream' A) : Strategy (⊤ : tree A) p :=
   · intro n; specialize h (x.take (2 * n + p.toNat + 1)) (extend_sub _ x)
     rw [Stream'.take_succ'] at h
     have h' := congr_arg Subtype.val (subtree_compatible _ ⟨_, mem_of_append h⟩
-      (by synth_isPosition) h)
+      (by synthIsPosition) h)
     dsimp only at h'; rw [h']
     cases p <;> simp [ownTree, Player.toNat, Stream'.get]
   intro xr hx
@@ -29,10 +36,10 @@ def Player.ownTree (p : Player) (a : Stream' A) : Strategy (⊤ : tree A) p :=
   | append_singleton xr b ih =>
     specialize ih (principalOpen_sub xr [b] hx); by_cases hp : IsPosition xr p
     · apply (subtree_compatible_iff _ ⟨_, ih⟩ hp).mpr
-      simp_rw [Set.mem_singleton_iff, ownTree, subtree_incl_coe, ← h (xr.length / 2)]
+      simp_rw [Set.mem_singleton_iff, ownTree, subtreeIncl_coe, ← h (xr.length / 2)]
       suffices b = x.get xr.length by cases p <;> (simp_all [IsPosition]; congr; omega)
       obtain ⟨_, _, rfl⟩ := hx; simp
-    · rw [subtree_fair _ ⟨_, ih⟩ (by synth_isPosition)]; trivial
+    · rw [subtree_fair _ ⟨_, ih⟩ (by synthIsPosition)]; trivial
 lemma Player.ownTree.disjoint {p} {a b : Stream' A} (h : a ≠ b) :
   body (ownTree p a).pre.subtree ∩ body (ownTree p b).pre.subtree = ∅ := by
   ext x; constructor
@@ -41,7 +48,8 @@ lemma Player.ownTree.disjoint {p} {a b : Stream' A} (h : a ≠ b) :
   · simp
 lemma QuasiStrategy.subtree_top_large {p} (h : 2 ≤ #A) (S : QuasiStrategy (⊤ : tree A) p) :
   𝔠 ≤ #(body S.1.subtree) := by
-  have h' : 𝔠 ≤ #(Stream' A) := by simpa [Stream'] using power_le_power_right h
+  have h' : 𝔠 ≤ #(Stream' A) := by
+    simpa [Stream', ← Cardinal.two_power_aleph0] using power_le_power_right (c := ℵ₀) h
   apply le_trans h' <| (le_def (Stream' A) _).mpr _
   have f := fun a : Stream' A ↦
     ((S.restrict (p.swap.ownTree a).pre).subtree_isPruned (
@@ -76,9 +84,16 @@ lemma Game.exists_undetermined :
       if h : IsPosition x p then Subtype.val '' f ⟨_, CompleteSublattice.mem_top⟩ h else ∅⟩
     intro ⟨p, ⟨s, hs⟩⟩ ⟨q, ⟨t, ht⟩⟩ h; simp_rw [Prod.mk.injEq] at h; obtain ⟨rfl, h⟩ := h
     congr!; ext x hp a
-    have h : a.val ∈ Subtype.val '' s x hp ↔ a.val ∈ Subtype.val '' t x hp := by
-      simpa only [hp, ↓reduceDIte, eq_iff_iff] using congr_fun (congr_fun h x) a.val
-    simpa [Subtype.val_injective.mem_set_image] using h
+    have hsets := congr_fun h x.val
+    simp only [hp, ↓reduceDIte] at hsets
+    have hmem := congr_fun hsets a.val
+    constructor
+    · intro ha
+      exact Subtype.val_injective.mem_set_image.mp
+        (hmem.mp (Subtype.val_injective.mem_set_image.mpr ha))
+    · intro ha
+      exact Subtype.val_injective.mem_set_image.mp
+        (hmem.mpr (Subtype.val_injective.mem_set_image.mpr ha))
   obtain ⟨losing : strat → Stream' (Fin 2), losing_inj, losing_lose⟩ :=
     Cardinal.choose_injection (fun (⟨_, s, _⟩ : strat) ↦ body s.subtree)
     (fun ⟨_, s⟩ ↦ le_trans h <| s.subtree_top_large (by simp))

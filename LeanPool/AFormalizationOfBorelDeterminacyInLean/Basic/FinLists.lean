@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.General
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.FinLists
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 variable {α β γ : Type*} {a : α} {m n : ℕ}
 
 namespace List

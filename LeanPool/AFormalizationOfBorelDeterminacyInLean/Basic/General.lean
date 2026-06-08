@@ -6,7 +6,19 @@ Authors: Sven Manthe
 
 import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Order.CompleteSublattice
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Zify
+import Aesop
+import Lean.Elab.Tactic.Omega
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.Meta
+
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.General
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
 
 attribute [simp_lengths]
   List.length_append List.length_cons List.length_nil

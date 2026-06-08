@@ -7,6 +7,13 @@ Authors: Sven Manthe
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.GaleStewart
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.BuildLevelwise
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.Covering
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 open CategoryTheory
 open Descriptive Tree Stream'.Discrete
@@ -22,19 +29,19 @@ end Covering
 namespace ResStrategy
 variable {T : Covering.PTrees} (S : ResStrategy T.1 p k)
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def choose_succ : ResStrategy T.1 p m :=
+def chooseSucc : ResStrategy T.1 p m :=
   fun x hp _ ↦ if h' : x.val.length ≤ k then S x hp h' else Classical.choice (T.2.1 x)
-@[simp] lemma res_choose_succ (h : k ≤ m) : S.choose_succ.res h = S := by
-  ext _ _ hl; simp [choose_succ, res, hl]
+@[simp] lemma res_chooseSucc (h : k ≤ m) : S.chooseSucc.res h = S := by
+  ext _ _ hl; simp [chooseSucc, res, hl]
 lemma res_surjective (h : m ≤ k) : (res h (T := T.1) (p := p)).Surjective :=
-  fun S ↦ ⟨_, S.res_choose_succ h⟩
+  fun S ↦ ⟨_, S.res_chooseSucc h⟩
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-@[simps] def choose_system : StrategySystem T.1 p where
-  str k := S.choose_succ
-  con k := by ext x; simp [choose_succ, res]
-lemma choose_system_self : S.choose_system.str k = S := by ext _ _ hl; simp [choose_succ, hl]
+@[simps] def chooseSystem : StrategySystem T.1 p where
+  str k := S.chooseSucc
+  con k := by ext x; simp [chooseSucc, res]
+lemma chooseSystem_self : S.chooseSystem.str k = S := by ext _ _ hl; simp [chooseSucc, hl]
 lemma str_surjective : (fun (S : StrategySystem T.1 p) ↦ S.str k).Surjective :=
-  fun S ↦ ⟨_, S.choose_system_self⟩
+  fun S ↦ ⟨_, S.chooseSystem_self⟩
 end ResStrategy
 namespace Covering
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
@@ -212,7 +219,7 @@ lemma comp_covering_str_apply (S T U : PTrees) (f : S ⟶ T) (g : T ⟶ U) A :
 def Fixing k {T U : PTrees} (f : T ⟶ U) :=
   ∃ _ : Tree.Fixing k f.toHom, ∀ p, f.str.toFun p k = ResStrategy.fromMap f.toHom
 @[simp] lemma fixing_id k T : Fixing k (𝟙 T) := by
-  use (by synth_fixing); intros; ext; simp
+  use (by synthFixing); intros; ext; simp
 lemma fixing_comp k {T U V : PTrees} (f : T ⟶ U) (g : U ⟶ V)
   (hf : Fixing k f) (hg : Fixing k g) : Fixing k (f ≫ g) := by
   have _ := hf.1; have _ := hg.1
@@ -241,7 +248,9 @@ abbrev Games.tree (G : Games) : PTrees := ⟨⟨G.1, G.2.1.tree⟩, G.2.2⟩
   hpre : (Tree.bodyFunctor.map toHom)⁻¹' (G.2.1.payoff) = G'.2.1.payoff
 lemma covering_hpre_pl {G' G} (f : Games.Covering G' G) (p : Player) :
   (Tree.bodyFunctor.map f.toHom)⁻¹' (p.payoff G.2.1) = p.payoff G'.2.1 := by
-  cases p <;> simpa using f.hpre
+  cases p
+  · simpa using f.hpre
+  · exact congrArg (fun s => sᶜ) f.hpre
 lemma covering_winning {G' G} (f : Games.Covering G' G) {p : Player}
   {S : Strategy G'.tree.1.2 p} (h : S.pre.IsWinning) :
   (LvlStratHom.globalOfObj

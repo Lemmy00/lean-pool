@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.Covering
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.CoveringClosedGame
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame.BorelDet
 open Stream'.Discrete Descriptive Tree
 open CategoryTheory
@@ -127,7 +134,7 @@ lemma getTree_sub (x : gameTree hyp) :
   induction x using List.reverseRecOn with
   | nil =>
     intro y hy
-    simpa using hy
+    exact hy
   | append_singleton x a ih =>
     conv at h => simp
     conv => simp
@@ -179,7 +186,7 @@ def y : getTree' hyp x.val where
         exact List.map_append (f := Prod.fst) (l₁ := xs) (l₂ := [a])
       have hy : a.1 :: H.2.choose.val ∈ getTree' hyp xs := by
         simpa [h] using H.2.choose.prop
-      simpa [hmap, List.append_assoc] using getTree_sub ⟨xs, mem_of_append hx⟩ hy
+      simpa [subAt, hmap, List.append_assoc] using getTree_sub ⟨xs, mem_of_append hx⟩ hy
 lemma y_spec : getTree' hyp x.val
   = pullSub (subAt G.tree (x.val.map Prod.fst ++ H.y.val)) H.y.val := H.2.choose_spec
 end LosingCondition
@@ -212,7 +219,8 @@ variable (hyp)
 def treeHom : gameAsTrees hyp ⟶ oldAsTrees hyp where
   toFun x := ⟨x.val.map Prod.fst, by
     have h : [] ∈ subAt _ _ := getTree_sub x (getTree_ne_and_pruned x).1
-    simpa using h⟩
+    change x.val.map Prod.fst ∈ G.tree
+    simpa [subAt] using h⟩
   monotone' _ _ h := h.map Prod.fst
   h_length := fun x ↦ by
     exact List.length_map (f := Prod.fst) (as := x.val)
@@ -221,7 +229,7 @@ abbrev π {A : Type*} {G : Game A} {k : ℕ} {hyp : Hyp G k} :
     gameAsTrees hyp ⟶ oldAsTrees hyp :=
   treeHom hyp
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def pInvTreeHom_map (hyp : Hyp G k) (x : List A) : List (upA hyp) :=
+def pInvTreeHomMap (hyp : Hyp G k) (x : List A) : List (upA hyp) :=
   x.zipInitsMap (fun a y ↦ (a, (G.residual y).tree))
 variable {hyp}
 lemma treeHom_val x : (treeHom hyp x).val = x.val.map Prod.fst := by
@@ -252,54 +260,60 @@ lemma T'_snd_small {x a} (h : x ++ [a] ∈ gameTree hyp) (h' : x.length < 2 * k)
   have hmap : List.map Prod.fst (x ++ [a]) = x.map Prod.fst ++ [a.1] := by
     exact List.map_append (f := Prod.fst) (l₁ := x) (l₂ := [a])
   simpa [Game.residual_tree, hmap] using T'_snd_small' ⟨_, h⟩ (by simpa using h')
-@[simp] lemma pInvTreeHom_map_nil : pInvTreeHom_map hyp [] = [] := by simp [pInvTreeHom_map]
-@[simp] lemma pInvTreeHom_map_concat (x : List A) (a : A) :
-  pInvTreeHom_map hyp (x ++ [a])
-  = pInvTreeHom_map hyp x ++ [⟨a, (G.residual (x ++ [a])).tree⟩] := by simp [pInvTreeHom_map]
-@[simp, simp_lengths] lemma pInvTreeHom_map_len (x : List A) :
-  (pInvTreeHom_map hyp x).length = x.length := by simp [pInvTreeHom_map]
-@[simp] lemma getTree_pInvTreeHom_map (x : List A) :
-  getTree' hyp (pInvTreeHom_map hyp x) = (G.residual x).tree := by
+@[simp] lemma pInvTreeHomMap_nil : pInvTreeHomMap hyp [] = [] := by simp [pInvTreeHomMap]
+@[simp] lemma pInvTreeHomMap_concat (x : List A) (a : A) :
+  pInvTreeHomMap hyp (x ++ [a])
+  = pInvTreeHomMap hyp x ++ [⟨a, (G.residual (x ++ [a])).tree⟩] := by simp [pInvTreeHomMap]
+@[simp, simp_lengths] lemma pInvTreeHomMap_len (x : List A) :
+  (pInvTreeHomMap hyp x).length = x.length := by simp [pInvTreeHomMap]
+@[simp] lemma getTree_pInvTreeHomMap (x : List A) :
+  getTree' hyp (pInvTreeHomMap hyp x) = (G.residual x).tree := by
   rcases x.eq_nil_or_concat with rfl | ⟨_, _, rfl⟩ <;> simp
 variable (hyp)
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def pInvTreeHom : (Tree.res (2 * k)).obj ⟨_, G.tree⟩ ⟶
     (Tree.res (2 * k)).obj ⟨_, gameTree hyp⟩ where
-  toFun x := ⟨pInvTreeHom_map hyp x.val, by
+  toFun x := ⟨pInvTreeHomMap hyp x.val, by
     have ⟨x, h⟩ := x
     induction x using List.reverseRecOn with
-    | nil => simpa using ⟨gameTree_ne, by simp⟩
+    | nil =>
+      change pInvTreeHomMap hyp ([] : List A) ∈ ↑((res (2 * k)).obj ⟨upA hyp, gameTree hyp⟩).snd
+      rw [pInvTreeHomMap_nil]
+      exact ⟨gameTree_ne, by simp⟩
     | append_singleton x a ih =>
       specialize ih (mem_of_append h)
-      simp only [res_obj_fst] at ih ⊢
+      simp only at ih ⊢
       have hxlt : x.length < 2 * k := by
         have hxlen : (x ++ [a]).length = x.length + 1 := by
-          simpa using (List.length_append (as := x) (bs := [a]))
+          simp
         have hxle : x.length + 1 ≤ 2 * k := by
           rw [← hxlen]
           exact h.2
         exact Nat.lt_of_succ_le hxle
       constructor
-      · have hconcat := pInvTreeHom_map_concat (hyp := hyp) (x := x) (a := a)
-        have hvalid : ValidExt (pInvTreeHom_map hyp x) ⟨a, (G.residual (x ++ [a])).tree⟩ := by
-          have hplen : (pInvTreeHom_map hyp x).length < 2 * k := by
-            simpa [pInvTreeHom_map_len] using hxlt
+      · have hconcat := pInvTreeHomMap_concat (hyp := hyp) (x := x) (a := a)
+        have hvalid : ValidExt (pInvTreeHomMap hyp x) ⟨a, (G.residual (x ++ [a])).tree⟩ := by
+          have hplen : (pInvTreeHomMap hyp x).length < 2 * k := by
+            rw [pInvTreeHomMap_len]
+            exact hxlt
           rw [validExt_short hplen]
           constructor
-          · simpa [getTree_pInvTreeHom_map, Game.residual_tree] using h.1
-          · simp [getTree_pInvTreeHom_map, Game.residual_tree, subAt_append]
+          · rw [getTree_pInvTreeHomMap, Game.residual_tree]
+            change x ++ [a] ∈ G.tree
+            exact h.1
+          · simp [getTree_pInvTreeHomMap, Game.residual_tree, subAt_append]
             rfl
-        have hmem : pInvTreeHom_map hyp x ++ [⟨a, (G.residual (x ++ [a])).tree⟩] ∈
+        have hmem : pInvTreeHomMap hyp x ++ [⟨a, (G.residual (x ++ [a])).tree⟩] ∈
             gameTree hyp :=
-          (gameTree_concat (pInvTreeHom_map hyp x)
+          (gameTree_concat (pInvTreeHomMap hyp x)
             ⟨a, (G.residual (x ++ [a])).tree⟩).mpr ⟨ih.1, hvalid⟩
         exact hconcat.symm ▸ hmem
       · have hlen := h.2
-        simpa [pInvTreeHom_map_len] using hlen⟩
+        simpa [pInvTreeHomMap_len] using hlen⟩
   monotone' x y h := h.zipInitsMap _ _ _
-  h_length := by simp_rw [res_obj_fst, pInvTreeHom_map_len, implies_true]
+  h_length := fun x ↦ pInvTreeHomMap_len (hyp := hyp) x.val
 @[simp] lemma pInvTreeHom_val (x : (Tree.res (2 * k)).obj ⟨_, G.tree⟩) :
-  (pInvTreeHom hyp x).val = pInvTreeHom_map hyp x.val := rfl
+  (pInvTreeHom hyp x).val = pInvTreeHomMap hyp x.val := rfl
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def treeHomRes : (Tree.res (2 * k)).obj ⟨_, gameTree hyp⟩ ≅
     (Tree.res (2 * k)).obj ⟨_, G.tree⟩ where
@@ -310,7 +324,7 @@ def treeHomRes : (Tree.res (2 * k)).obj ⟨_, gameTree hyp⟩ ≅
     funext x
     apply Subtype.ext
     rcases x with ⟨x, h⟩
-    change pInvTreeHom_map hyp (List.map Prod.fst x) = x
+    change pInvTreeHomMap hyp (List.map Prod.fst x) = x
     induction x using List.reverseRecOn with
     | nil => rfl
     | append_singleton x a ih =>
@@ -318,14 +332,14 @@ def treeHomRes : (Tree.res (2 * k)).obj ⟨_, gameTree hyp⟩ ≅
       have hxprev : x ∈ gameTree hyp := mem_of_append hx
       have hsmall : x.length < 2 * k := by
         have hxlen : (x ++ [a]).length = x.length + 1 := by
-          simpa using (List.length_append (as := x) (bs := [a]))
+          simp
         have hxle : x.length + 1 ≤ 2 * k := by
           rw [← hxlen]
           exact h.2
         exact Nat.lt_of_succ_le hxle
       have hmap : List.map Prod.fst (x ++ [a]) = List.map Prod.fst x ++ [a.1] := by
         exact List.map_append (f := Prod.fst) (l₁ := x) (l₂ := [a])
-      rw [hmap, pInvTreeHom_map_concat, ih ⟨hxprev, hsmall.le⟩]
+      rw [hmap, pInvTreeHomMap_concat, ih ⟨hxprev, hsmall.le⟩]
       cases a
       congr
       exact (T'_snd_small hx hsmall).symm
@@ -334,13 +348,13 @@ def treeHomRes : (Tree.res (2 * k)).obj ⟨_, gameTree hyp⟩ ≅
     funext x
     apply Subtype.ext
     rcases x with ⟨x, h⟩
-    change List.map Prod.fst (pInvTreeHom_map hyp x) = x
+    change List.map Prod.fst (pInvTreeHomMap hyp x) = x
     change List.map Prod.fst (x.zipInitsMap fun a y ↦ (a, subAt G.tree y)) = x
     rw [← List.zipInitsMap_map]
     simp
 instance treeHom_fixing : Tree.Fixing (2 * k) (treeHom hyp) := ⟨Iso.isIso_hom (treeHomRes hyp)⟩
 @[simp] lemma pInv_treeHom_val x (h : x.val.length ≤ 2 * k) :
-  (pInv (treeHom hyp) x).val = pInvTreeHom_map hyp x.val := by
+  (pInv (treeHom hyp) x).val = pInvTreeHomMap hyp x.val := by
   change _ = (res.val' (pInvTreeHom hyp ⟨x.val, ⟨x.prop, h⟩⟩)).val
   congr 1
   have hf : Fixing (pInv (treeHom hyp) x).val.length (treeHom hyp) := by
@@ -349,8 +363,8 @@ instance treeHom_fixing : Tree.Fixing (2 * k) (treeHom hyp) := ⟨Iso.isIso_hom 
   apply Fixing.inj (treeHom hyp) _ _ hf
   rw [cancel_pInv_right]
   ext1
-  change x.val = List.map Prod.fst (pInvTreeHom_map hyp x.val)
-  rw [pInvTreeHom_map]
+  change x.val = List.map Prod.fst (pInvTreeHomMap hyp x.val)
+  rw [pInvTreeHomMap]
   have hmap : ∀ xs : List A,
       xs = List.map Prod.fst (xs.zipInitsMap fun a y => (a, (G.residual y).tree)) := by
     intro xs
@@ -511,10 +525,22 @@ lemma wins_iff_answer (x : body (game hyp).tree) :
   constructor <;> intro h
   · apply (not_losing (x := body.take (2 * k + 2) x)).mp
     intro ⟨h', _⟩; rw [← Set.subset_empty_iff] at h'
+    have hbody :
+        ((ConcreteCategory.hom (bodyFunctor.map (treeHom hyp))) x).val ∈
+          body (pullSub (getTree' hyp (Stream'.take (2 * k + 2) x.val))
+            (List.map Prod.fst (Stream'.take (2 * k + 2) x.val))) := by
+      rw [pullSub_body]
+      exact hmem
     exact h' (a := (bodyFunctor.map (treeHom hyp) x).val)
-      ⟨by simpa using hmem, by simpa⟩
+      ⟨hbody, by simpa⟩
   · change (bodyFunctor.map (treeHom hyp) x) ∈ G.payoff
-    exact Subtype.val_injective.mem_set_image.mp (h.1 (by simpa using hmem))
+    have hbody :
+        ((ConcreteCategory.hom (bodyFunctor.map (treeHom hyp))) x).val ∈
+          body (pullSub (getTree' hyp (Stream'.take (2 * k + 2) x.val))
+            (List.map Prod.fst (Stream'.take (2 * k + 2) x.val))) := by
+      rw [pullSub_body]
+      exact hmem
+    exact Subtype.val_injective.mem_set_image.mp (h.1 hbody)
 instance : TopologicalSpace (upA hyp) := ⊥
 instance : DiscreteTopology (upA hyp) where eq_bot := rfl
 lemma payoff_clopen : IsClopen (game hyp).payoff := by
@@ -522,8 +548,13 @@ lemma payoff_clopen : IsClopen (game hyp).payoff := by
   let f : (Stream' (upA hyp)) → Bool :=
     (fun x ↦ ∃ h, WinningCondition x h) ∘ Stream'.take (2 * k + 2)
   suffices Continuous f by
-    convert ((isClopen_discrete {true}).preimage this).preimage continuous_subtype_val
-    ext; simp [- game_payoff, - game_tree, wins_iff_answer, f]
+    constructor
+    · convert IsClosed.preimage continuous_subtype_val
+        (IsClosed.preimage this (isClosed_discrete ({true} : Set Bool)))
+      ext; simp [- game_payoff, - game_tree, wins_iff_answer, f]
+    · convert IsOpen.preimage continuous_subtype_val
+        (IsOpen.preimage this (isOpen_discrete ({true} : Set Bool)))
+      ext; simp [- game_payoff, - game_tree, wins_iff_answer, f]
   --TODO generalize, how to phrase?
   let _ : TopologicalSpace (List (upA hyp)) := ⊥
   have : DiscreteTopology (List (upA hyp)) := ⟨rfl⟩
@@ -549,8 +580,9 @@ lemma T'_snd_medium' (x : gameTree hyp) (h : x.val.length = 2 * k + 1) :
     omega
   · conv at h => simp
     conv at hx => simp [ValidExt, h]
-    convert hx.2.2
-    simp_rw [Game.residual_tree, getTree_concat]
+    rw [getTree_concat]
+    convert hx.2.2 using 1
+    rw [Game.residual_tree]
     have hmap : List.map Prod.fst (x ++ [a]) = x.map Prod.fst ++ [a.1] := by
       exact List.map_append (f := Prod.fst) (l₁ := x) (l₂ := [a])
     rw [hmap, ← subAt_append, ← T'_snd_small' ⟨x, hx.1⟩ (by simp [h])]
@@ -626,6 +658,9 @@ lemma getTree_lost
             Stream'.take (2 * k + 2) (Stream'.map Prod.fst a) :=
           Stream'.map_take (a := a) (n := 2 * k + 2) Prod.fst
         exact htakeMap.symm ▸ by
+          change Stream'.take (2 * k + 2) (Stream'.map Prod.fst a) ++ₛ
+              Stream'.drop (2 * k + 2) (Stream'.map Prod.fst a) =
+            (bodyFunctor.map (treeHom hyp) ⟨a, ha2⟩).val
           rw [Stream'.append_take_drop]
           exact (treeHom_body (hyp := hyp) ⟨a, ha2⟩).symm
     have hpay : (bodyFunctor.map (treeHom hyp) ⟨a, ha2⟩) ∈ G.payoff :=
@@ -650,10 +685,16 @@ lemma LosingCondition.not_lost_short {x : (game hyp).tree} (hxl : 2 * k + 2 ≤ 
   have htakeLen : (List.take (2 * k + 2) x.val).length = 2 * k + 2 := by
     simp [hxl]
   have hlong : (List.take (2 * k + 2) x.val).length + H.y.val.length ≤ x.val.length := by
-    rw [htakeLen]
-    simpa using hlen
+    omega
   have hlongMap : u.length ≤ (List.map Prod.fst x.val).length := by
-    simpa [u, List.length_map] using hlong
+    calc
+      u.length = (List.take (2 * k + 2) x.val).length + H.y.val.length := by
+        simp [u, List.length_map]
+        rfl
+      _ ≤ x.val.length := hlong
+      _ = (List.map Prod.fst x.val).length := by
+        rw [List.length_map]
+        rfl
   rw [mem_pullSub_long (T := subAt G.tree u) (x := u) (y := List.map Prod.fst x.val)
     hlongMap] at hx
   obtain ⟨z, _, hze⟩ := hx; have hW := H.1
@@ -665,11 +706,22 @@ lemma LosingCondition.not_lost_short {x : (game hyp).tree} (hxl : 2 * k + 2 ≤ 
       rw [Player.residual_swap, Player.residual_residual]
       simp
     rw [hp]
-    simpa [u, principalOpen, Set.inter_assoc, ← List.map_take] using hW
+    rw [Player.payoff_zero]
+    rw [Set.eq_empty_iff_forall_notMem]
+    intro s hs
+    rw [Set.eq_empty_iff_forall_notMem] at hW
+    apply hW s
+    constructor
+    · rcases hs.1 with ⟨t, rfl⟩
+      exact ⟨t, rfl⟩
+    · rcases hs.2 with ⟨b, hb, rfl⟩
+      exact ⟨b.prop, ⟨b, hb, rfl⟩⟩
   have hUz := Game.WonPosition.extend z (G := G) (p := Player.one.residual u) (x := u) hU
   rw [Player.residual_residual] at hUz
   rw [← hze] at hUz
-  simpa [Player.residual, List.length_map] using hUz
+  convert hUz using 1
+  simp [Player.residual, List.length_map]
+  rfl
 lemma extensionsAt_eq_of_lost
   {x : (game hyp).tree} (y : (game hyp).tree) (h : x.val <+: y.val)
   (hxl : 2 * k + 2 ≤ x.val.length)
@@ -699,8 +751,8 @@ lemma extensionsAt_eq_of_lost
       _ ≤ 2 * k + 2 + H.y.val.length := hlen
       _ = u.length := by
         symm
-        change u.length = 2 * k + 2 + H.y.val.length
-        simpa [u, List.length_map] using htakeLen
+        simp only [u, List.length_append, List.length_map]
+        exact congrArg (fun n ↦ n + H.y.val.length) htakeLen
   have hshortB :
       (List.map Prod.fst (x.val ++ [b.val])).length ≤ u.length := by
     calc
@@ -711,8 +763,8 @@ lemma extensionsAt_eq_of_lost
       _ ≤ 2 * k + 2 + H.y.val.length := hlen
       _ = u.length := by
         symm
-        change u.length = 2 * k + 2 + H.y.val.length
-        simpa [u, List.length_map] using htakeLen
+        simp only [u, List.length_append, List.length_map]
+        exact congrArg (fun n ↦ n + H.y.val.length) htakeLen
   rw [mem_pullSub_short (T := subAt G.tree u) (x := u)
     (y := List.map Prod.fst (x.val ++ [a.val])) hshortA] at ha
   rw [mem_pullSub_short (T := subAt G.tree u) (x := u)

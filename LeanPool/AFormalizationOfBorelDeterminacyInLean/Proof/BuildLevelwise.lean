@@ -8,6 +8,13 @@ import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeExtensions
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.BodyFunctor
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Strategies
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.BuildLevelwise
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 open CategoryTheory Descriptive Tree
 open Stream'.Discrete
@@ -62,7 +69,7 @@ abbrev ofObj (x : bodySystem.obj T) : BodySystemObj T :=
   (Equiv.cast (by dsimp [bodySystem] : bodySystem.obj T = BodySystemObj T)).injective h
 end BodySystemObj
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-@[simps] def bodyEquivSystem_app (T : Trees) : body T.2 ≃ BodySystemObj T where
+@[simps] def bodyEquivSystemApp (T : Trees) : body T.2 ≃ BodySystemObj T where
   toFun x := {
     res := fun k ↦ ⟨x.val.take k, by simp⟩
     con := by simp
@@ -82,7 +89,7 @@ end BodySystemObj
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 @[simps! -isSimp] def bodyEquivSystem : bodyFunctor ≅ bodySystem := NatIso.ofComponents
   (fun T ↦ eqToIso (by rfl : bodyFunctor.obj T = body T.2) ≪≫
-    (bodyEquivSystem_app T).toIso ≪≫
+    (bodyEquivSystemApp T).toIso ≪≫
     eqToIso (by dsimp [bodySystem] : BodySystemObj T = bodySystem.obj T)) (by
     intro S T f
     apply ConcreteCategory.hom_ext
@@ -91,7 +98,7 @@ end BodySystemObj
     apply BodySystemObj.ext
     funext n
     apply resEq_ext
-    simpa [bodyEquivSystem_app, bodySystem] using bodyMap_restrict f x n)
+    convert bodyMap_restrict f x n using 1)
 lemma bodyEquivSystem_hom_app_res_coe (x : bodyFunctor.obj T) :
   ((BodySystemObj.ofObj (bodyEquivSystem.hom.app T x)).res k).val = x.val.take k := by
   rfl
@@ -134,10 +141,10 @@ end BodySystemObj
 
 @[simp] lemma IsPosition.iff_lenHom
     (p : Player) {S T : Trees} (f : S ⟶ T) x :
-  IsPosition (A := no_index _) (f x).val p ↔ IsPosition x.val p := by synth_isPosition
+  IsPosition (A := no_index _) (f x).val p ↔ IsPosition x.val p := by synthIsPosition
 @[simp] lemma iff_pInv_lenHom
     (p : Player) {S T : Trees} (f : S ⟶ T) x (h : Fixing x.val.length f) :
-  IsPosition (A := no_index _) (Tree.pInv f x h).val p ↔ IsPosition x.val p := by synth_isPosition
+  IsPosition (A := no_index _) (Tree.pInv f x h).val p ↔ IsPosition x.val p := by synthIsPosition
 
 /-- a strategy defined only on positions up to length k -/
 def ResStrategy (T : Trees) (p : Player) (k : ℕ) :=
@@ -170,7 +177,7 @@ def res (h : m ≤ k) (S : ResStrategy T p k) : ResStrategy T p m :=
   (S.res nk).res mn = S.res (mn.trans nk) := rfl
 
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def fromMap (f : S ⟶ T) (h : Tree.Fixing k f := by as_aux_lemma => synth_fixing)
+def fromMap (f : S ⟶ T) (h : Tree.Fixing k f := by as_aux_lemma => synthFixing)
   (S' : ResStrategy S p k) : ResStrategy T p k := fun x hx hl ↦
     ExtensionsAt.map f (x := pInv f x) (y := x) (by simp_rw [cancel_pInv_right])
       (S' _ (by simpa only [iff_pInv_lenHom]) (by simpa only [h_length_pInv]))
@@ -181,12 +188,12 @@ lemma fromMap_congr {f g : S ⟶ T}
     ResStrategy.fromMap (p := p) (f := g) (h := by subst heq; exact hh) := by
   congr! --could be generated automatically, propositional extensionality
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def fromMapInv (f : S ⟶ T) (h : Tree.Fixing (k + 1) f := by as_aux_lemma => synth_fixing)
+def fromMapInv (f : S ⟶ T) (h : Tree.Fixing (k + 1) f := by as_aux_lemma => synthFixing)
   (S' : ResStrategy T p k) : ResStrategy S p k := fun y hy hl ↦
     (@Tree.extensionsEquiv _ _ f y (h.mon (by simpa))).symm
-    (S' _ (by synth_isPosition) (by simpa only [LenHom.h_length_simp]))
+    (S' _ (by synthIsPosition) (by simpa only [LenHom.h_length_simp]))
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def fromMapEquiv p k (f : S ⟶ T) (h : Tree.Fixing (k + 1) f := by as_aux_lemma => synth_fixing) :
+def fromMapEquiv p k (f : S ⟶ T) (h : Tree.Fixing (k + 1) f := by as_aux_lemma => synthFixing) :
   ResStrategy S p k ≃ ResStrategy T p k where
   toFun := fromMap f
   invFun := fromMapInv f
@@ -206,8 +213,8 @@ def fromMapEquiv p k (f : S ⟶ T) (h : Tree.Fixing (k + 1) f := by as_aux_lemma
   ext1; apply ExtensionsAt.ext_valT'; simp [fromMap]
 
 @[simp] lemma fromMap_comp k {S T U : Trees} (f : S ⟶ T) (g : T ⟶ U)
-  (hf : Tree.Fixing k f := by as_aux_lemma => synth_fixing)
-  (hg : Tree.Fixing k g := by as_aux_lemma => synth_fixing)
+  (hf : Tree.Fixing k f := by as_aux_lemma => synthFixing)
+  (hg : Tree.Fixing k g := by as_aux_lemma => synthFixing)
   (S' : ResStrategy S p k) :
   (fromMap (f ≫ g)) S' = (fromMap g hg) ((fromMap f hf) S') := by
   ext1 x _ hl; apply ExtensionsAt.ext_valT'

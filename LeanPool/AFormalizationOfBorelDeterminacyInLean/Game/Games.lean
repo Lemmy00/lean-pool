@@ -8,6 +8,13 @@ import Mathlib.Data.Set.Subset
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeBody
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Strategies
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Games
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 open Stream'.Discrete Descriptive Tree
 
@@ -58,11 +65,11 @@ namespace Game
           constructor
           · exact ha
           · intro ha' hpay
-            exact hnot (by simpa [body.append] using hpay)
+            exact hnot hpay
         · rintro ⟨ha, hnot⟩
           refine ⟨ha, ?_⟩
           intro hpay
-          exact hnot ha (by simpa [body.append] using hpay)
+          exact hnot ha hpay
       · have hx1 : x.length % 2 = 1 := Nat.mod_two_ne_zero.mp hx
         have hy1 : y.length % 2 = 1 := Nat.mod_two_ne_zero.mp hy
         have hxy : (x.length + y.length) % 2 = 0 := by omega
@@ -134,7 +141,20 @@ lemma PreStrategy.sub_winning {s t : PreStrategy G.tree p} (h : s ≤ t) (h' : t
   s.IsWinning := subset_trans (by gcongr) h'
 lemma PreStrategy.IsWinning.residual {s : PreStrategy G.tree p} (h : s.IsWinning)
   (x : s.subtree) : (s.residual x).IsWinning (G := G.residual x) := by
-  simpa [GaleStewartGame.PreStrategy.IsWinning] using Set.preimage_mono h
+  have hpay : (p.residual x.val).payoff (G.residual x.val) = (body.append x.val)⁻¹' p.payoff G := by
+    by_cases hx : x.val.length % 2 = 0
+    · cases p
+      · simp [Player.payoff, Player.residual, Game.residual, hx]
+      · simp [Player.payoff, Player.residual, Game.residual, hx]
+        rfl
+    · have hx1 : x.val.length % 2 = 1 := Nat.mod_two_ne_zero.mp hx
+      cases p
+      · simp only [Player.payoff_residual, Player.residual_residual, List.length_append,
+          div_add_self, Player.residual_even, Player.payoff_zero]
+      · simp [Player.payoff, Player.residual, Game.residual, hx1]
+  rw [GaleStewartGame.PreStrategy.IsWinning, hpay]
+  simpa [PreStrategy.residual, Game.residual, subAt_body, subAt_body_image] using
+    Set.preimage_mono (f := fun a ↦ x.val ++ₛ a) h
 lemma PreStrategy.IsWinning.choose (s : QuasiStrategy G.tree p) (h : s.1.IsWinning) :
   s.2.choose.pre.IsWinning :=
   GaleStewartGame.PreStrategy.sub_winning (s.1.choose_sub s.2) h
@@ -152,7 +172,7 @@ namespace ExistsWinning
 variable (hW : G.ExistsWinning p)
 include hW in lemma pruned (hW' : G.ExistsWinning p.swap) : IsPruned G.tree := by
   intro x; by_cases hp : IsPosition x.val p <;>
-    [obtain ⟨S, _⟩ := hW; obtain ⟨S, _⟩ := hW'] <;> exact ⟨S x (by synth_isPosition)⟩
+    [obtain ⟨S, _⟩ := hW; obtain ⟨S, _⟩ := hW'] <;> exact ⟨S x (by synthIsPosition)⟩
 include hW in lemma not_both_winning (hNe : [] ∈ G.tree) : ¬ G.ExistsWinning p.swap := by
   intro hW'; have hP := hW.pruned hW'; rw [existsWinning_iff_quasi] at hW hW'
   obtain ⟨S, hS⟩ := hW; obtain ⟨S', hS'⟩ := hW'
@@ -166,7 +186,42 @@ end ExistsWinning
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def AllWinning (G : Game A) (p : Player) := p.payoff G = Set.univ
 lemma AllWinning.residual (hW : G.AllWinning p) x :
-  (G.residual x).AllWinning (p.residual x) := by simp_all [AllWinning]
+  (G.residual x).AllWinning (p.residual x) := by
+  cases p
+  · simp only [AllWinning, Player.payoff_zero] at hW ⊢
+    by_cases hx : x.length % 2 = 0
+    · rw [Player.residual_even x Player.zero hx, Player.payoff_zero,
+        Game.residual_payoff_even G x hx, hW]
+      exact Set.preimage_univ
+    · have hx1 : x.length % 2 = 1 := Nat.mod_two_ne_zero.mp hx
+      rw [Player.residual_odd x Player.zero hx1, Player.swap_zero, Player.payoff_one,
+        Game.residual_payoff_odd G x hx1, hW]
+      exact compl_compl ((body.append x) ⁻¹' Set.univ)
+  · simp only [AllWinning, Player.payoff_one] at hW ⊢
+    by_cases hx : x.length % 2 = 0
+    · rw [Player.residual_even x Player.one hx, Player.payoff_one,
+        Game.residual_payoff_even G x hx]
+      ext a
+      constructor
+      · intro _
+        exact Set.mem_univ a
+      · intro _ hmem
+        have hcompl : body.append x a ∈ G.payoffᶜ := by
+          rw [hW]
+          exact Set.mem_univ _
+        exact hcompl hmem
+    · have hx1 : x.length % 2 = 1 := Nat.mod_two_ne_zero.mp hx
+      rw [Player.residual_odd x Player.one hx1, Player.swap_one, Player.payoff_zero,
+        Game.residual_payoff_odd G x hx1]
+      ext a
+      constructor
+      · intro _
+        exact Set.mem_univ a
+      · intro _ hmem
+        have hcompl : body.append x a ∈ G.payoffᶜ := by
+          rw [hW]
+          exact Set.mem_univ _
+        exact hcompl hmem
 /-- a game is determined if some player has a winning strategy -/
 def IsDetermined (G : Game A) := ∃ p, G.ExistsWinning p
 end Game

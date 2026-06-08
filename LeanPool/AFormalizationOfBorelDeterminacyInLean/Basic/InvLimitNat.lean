@@ -8,6 +8,13 @@ import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.MiscCat
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.InvLimitNat
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 open CategoryTheory
 
 universe u u1 u2
@@ -95,7 +102,7 @@ def recCompOfLE {m n} (h : m ≤ n) {F : ℕ → C} (f : ∀ n, F (n + 1) ⟶ F 
     rw [ih, ← F.map_comp]
     congr 1
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-noncomputable def nat_free_cat : (ℕᵒᵖ ⥤ C) ≃ ((O : ℕ → C) × (∀ n, O (n + 1) ⟶ O n)) where
+noncomputable def natFreeCat : (ℕᵒᵖ ⥤ C) ≃ ((O : ℕ → C) × (∀ n, O (n + 1) ⟶ O n)) where
   toFun F := ⟨F.obj ∘ Opposite.op, fun n ↦ F.map (homOfLE (Nat.le_succ n)).op⟩
   invFun := fun ⟨O, F⟩ ↦ {
     obj := O ∘ Opposite.unop
@@ -126,8 +133,8 @@ noncomputable def nat_free_cat : (ℕᵒᵖ ⥤ C) ≃ ((O : ℕ → C) × (∀ 
     · intro _
       rfl
   right_inv _ := by ext <;> simp
-@[simp] lemma nat_free_cat_apply_symm_apply (x : (O : ℕ → C) × (∀ n, O (n + 1) ⟶ O n)) :
-  (nat_free_cat (nat_free_cat.symm x)).2 = x.2 := by
+@[simp] lemma natFreeCat_apply_symm_apply (x : (O : ℕ → C) × (∀ n, O (n + 1) ⟶ O n)) :
+  (natFreeCat (natFreeCat.symm x)).2 = x.2 := by
   congr; rw [Equiv.apply_symm_apply]
 
 variable {C : Type u2} [Category.{u1, u2} C]

@@ -7,6 +7,13 @@ Authors: Sven Manthe
 import Mathlib.SetTheory.Descriptive.Tree
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.FinLists
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.Trees
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
 --TODO if continue commits, add newline between declarations before
 variable {A A' : Type*} (S T : tree A) (x y : List A)
@@ -74,7 +81,7 @@ lemma IsPruned.pullSub {T : tree A} (hP : IsPruned T) (x : List A) : IsPruned (p
   fun _ ↦ ⟨h.some, CompleteSublattice.mem_top⟩
 
 /-- Order elements of a tree by the prefix relation -/
-@[simps] instance (T : tree A) : PartialOrder T where
+@[simps] instance instPartialOrderTree (T : tree A) : PartialOrder T where
   le x y := x.val <+: y.val
   le_refl _ := List.prefix_refl _
   le_trans _ _ _ := List.IsPrefix.trans

@@ -4,7 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
 
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.Meta
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
 
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 register_simp_attr simp_lengths --seemingly not usable in file where declared

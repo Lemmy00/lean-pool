@@ -6,9 +6,17 @@ Authors: Sven Manthe
 
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Types.Coproducts
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Category.Preorder
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.General
+
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.MiscCat
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
 
 open CategoryTheory
 
@@ -100,7 +108,7 @@ lemma isCoprod_type_iff {J : Type u1} {F : Discrete J ⥤ Type (max u1 v1)} (t :
       suffices Mono (t.ι.app i ≫ h.desc s) by apply mono_of_mono (t.ι.app i) (h.desc s)
       rw [h.fac s i]
       conv => simp [s]
-      infer_instance
+      exact (mono_iff_injective _).mpr (Option.some_injective _)
     · constructor
       · apply (pairwiseDisjoint_iff _).mpr; intros i x j y he
         let s : Limits.Cocone F := {
@@ -115,7 +123,10 @@ lemma isCoprod_type_iff {J : Type u1} {F : Discrete J ⥤ Type (max u1 v1)} (t :
             else TypeCat.ofHom fun _ ↦ Option.none)
         }
         replace he : (t.ι.app i ≫ h.desc s) x = (t.ι.app j ≫ h.desc s) y := congr_arg (h.desc s) he
-        rw [h.fac, h.fac] at he; by_contra h; simp [s, h] at he
+        rw [h.fac, h.fac] at he
+        by_contra h
+        simp only [Discrete.natTrans_app, ↓reduceDIte, h, s] at he
+        exact Sum.inl_ne_inr (Option.some_injective _ he)
       exact Limits.Types.jointly_surjective F h
   · rintro ⟨h1, h2, h3⟩
     let s := coproductColimitCocone F
@@ -126,11 +137,12 @@ lemma isCoprod_type_iff {J : Type u1} {F : Discrete J ⥤ Type (max u1 v1)} (t :
       rw [isIso_iff_bijective]; constructor
       · intro ⟨i, x⟩ ⟨j, y⟩ h; have he := ((pairwiseDisjoint_iff _).mp h2) h
         subst he; suffices x = y by simp [this]
+        simp only [TypeCat.hom_ofHom, TypeCat.Fun.coe_mk, f] at h
         exact (mono_iff_injective _).mp (h1 i) h
       · intro y
         obtain ⟨i, x, h⟩ := h3 y
         use ⟨i, x⟩
-        simpa [f] using h
+        exact h
     refine Limits.Cocone.ext (asIso f) ?_
     intro j
     ext x
@@ -138,21 +150,8 @@ lemma isCoprod_type_iff {J : Type u1} {F : Discrete J ⥤ Type (max u1 v1)} (t :
 lemma colim_isIso --exists?
   {F G : C ⥤ D} {s : Limits.Cocone F} {t : Limits.Cocone G}
   (hs : Limits.IsColimit s) (ht : Limits.IsColimit t) (f : F ≅ G) : IsIso (hs.map t f.hom) := by
-  refine ⟨ht.map s f.inv, ?_, ?_⟩
-  · apply hs.hom_ext
-    intro j
-    simpa only [Category.comp_id] using (hs.ι_map_assoc t f.hom j (ht.map s f.inv)).trans (by
-      trans f.hom.app j ≫ f.inv.app j ≫ s.ι.app j
-      · simpa [Category.assoc, NatTrans.comp_app] using
-          congrArg (fun q ↦ f.hom.app j ≫ q) (ht.ι_map s f.inv j)
-      · simp)
-  · apply ht.hom_ext
-    intro j
-    simpa only [Category.comp_id] using (ht.ι_map_assoc s f.inv j (hs.map t f.hom)).trans (by
-      trans f.inv.app j ≫ f.hom.app j ≫ t.ι.app j
-      · simpa [Category.assoc, NatTrans.comp_app] using
-          congrArg (fun q ↦ f.inv.app j ≫ q) (hs.ι_map t f.hom j)
-      · simp)
+  change IsIso (Limits.IsColimit.coconePointsIsoOfNatIso hs ht f).hom
+  infer_instance
 lemma coprod_type_isIso_iff {J : Type u1} {F G : Discrete J ⥤ Type (max u1 v1)}
   {s : Limits.Cocone F} {t : Limits.Cocone G} (hs : Limits.IsColimit s) (ht : Limits.IsColimit t)
   (f : ∀ j, F.obj ⟨j⟩ ⟶ G.obj ⟨j⟩) :
@@ -174,7 +173,7 @@ lemma coprod_type_isIso_iff {J : Type u1} {F G : Discrete J ⥤ Type (max u1 v1)
       have h : Mono (s.ι.app ⟨j⟩ ≫ hs.map t df) :=
         mono_comp' (h1 ⟨j⟩) hMap
       have hEq : s.ι.app ⟨j⟩ ≫ hs.map t df = f j ≫ t.ι.app ⟨j⟩ := by
-        simpa [df] using hs.ι_map t df ⟨j⟩
+        exact hs.ι_map t df ⟨j⟩
       haveI : Mono (f j ≫ t.ι.app ⟨j⟩) := by
         rw [← hEq]
         exact h
@@ -186,7 +185,8 @@ lemma coprod_type_isIso_iff {J : Type u1} {F G : Discrete J ⥤ Type (max u1 v1)
             (inv (hs.map t df) ≫ hs.map t df) (t.ι.app ⟨j⟩ y) :=
           congr_arg (hs.map t df) h
         rw [hs.ι_map] at hmap
-        simpa [df] using hmap
+        simp only [Discrete.natTrans_app, IsIso.inv_hom_id, id_apply, df] at hmap
+        exact hmap
       have heq : i = ⟨j⟩ := (pairwiseDisjoint_iff _).mp h2 h'
       subst i
       exact ⟨x, injective_of_mono (t.ι.app ⟨j⟩) h'⟩

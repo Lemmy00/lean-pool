@@ -6,6 +6,15 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.General
 import Mathlib.Order.Heyting.Regular
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Topology.Sets.Opens
+
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.RegularOpen
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
 
 variable {X : Type*} [tX : TopologicalSpace X] {A B : Set X} {U V : tX.Opens}
 

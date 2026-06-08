@@ -7,6 +7,13 @@ Authors: Sven Manthe
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeLim
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.PointedTrees
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeExtensions
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
 open CategoryTheory Descriptive
 
@@ -15,7 +22,7 @@ variable {k m n : ℕ}
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 abbrev mkPointedMor' {S T : Trees} (f : S ⟶ T) (y : T)
   -- TODO: `as_aux_lemma` fails on zero goals.
-  (h : Fixing y.val.length f := by all_goals as_aux_lemma => synth_fixing) :
+  (h : Fixing y.val.length f := by all_goals as_aux_lemma => synthFixing) :
   mkPointed (Tree.pInv f y) ⟶ mkPointed y := ⟨f, cancel_pInv_right f y h⟩
 
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
@@ -28,7 +35,9 @@ def pointedRes (k : ℕ) : PointedTrees ⥤ PointedTrees where
   obj := pointedResObj k
   map {S T} f := ⟨(forgetPoint ⋙ res k).map f, by
     ext1; change (f.toHom (Tree.take k S.2)).val = _
-    rw [take_apply_val _ k]; simp⟩
+    change (f.toHom (Tree.take k S.2)).val = (Tree.take k T.2).val
+    rw [take_apply_val f.toHom k S.snd]
+    exact congrArg (fun x ↦ x.val.take k) f.hp⟩
   map_id _ := rfl
   map_comp _ _ := PointedLenHom.ext rfl
 lemma pointedRes_isIso_iff_fixing k {S T : PointedTrees} (f : S ⟶ T) :
@@ -49,7 +58,10 @@ def extensionsRes T :
     have hbase : ((pointedRes (T.2.val.length + 1)).obj T).2.val = T.2.val := by
       change T.2.val.take (T.2.val.length + 1) = T.2.val
       exact List.take_of_length_le (Nat.le_succ T.2.val.length)
-    simpa [hbase] using a.prop.1⟩
+    exact (by
+      dsimp only [Set.mem_setOf_eq]
+      have hlist := congrArg (fun x ↦ x ++ [a.val]) hbase
+      exact hlist ▸ a.prop.1)⟩
   left_inv _ := rfl
   right_inv _ := rfl
 @[simp] lemma extensionsRes_val' {T : Trees} {x : T} (a : ExtensionsAt x) :
@@ -65,7 +77,7 @@ def extensionsRes T :
   have hbase : ((pointedRes (x.val.length + 1)).obj (mkPointed x)).2.val = x.val := by
     change x.val.take (x.val.length + 1) = x.val
     exact List.take_of_length_le (Nat.le_succ x.val.length)
-  simpa [extensionsRes] using congrArg (fun u ↦ u ++ [a.val]) hbase.symm
+  exact congrArg (fun u ↦ u ++ [a.val]) hbase.symm
 @[simp] lemma cast_val' {S : PointedTrees} (h : k = m)
   (a : extensions.obj ((pointedRes k).obj S)) :
   extensions.val' (cast (by rw [h]) a : extensions.obj ((pointedRes m).obj S))
@@ -73,18 +85,18 @@ def extensionsRes T :
 
 variable {S T : Trees} (f : S ⟶ T) (x : S) (y : T)
 /-- if f is (|x|+1)-fixing, then it induces a bijection on extensions of x -/
-def pointedRes_iso (hx : Fixing (x.val.length + 1) f := by as_aux_lemma => synth_fixing) :
+def pointedResIso (hx : Fixing (x.val.length + 1) f := by as_aux_lemma => synthFixing) :
   (pointedRes (x.val.length + 1)).obj (mkPointed x)
   ≅ (pointedRes (x.val.length + 1)).obj (mkPointed (f x)) :=
   have _: IsIso ((pointedRes (x.val.length + 1)).map (mkPointedMor f x)) :=
     (pointedRes_isIso_iff_fixing _ _).mpr hx
   asIso ((pointedRes (x.val.length + 1)).map (mkPointedMor f x))
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def extensionsEquiv (hx : Fixing (x.val.length + 1) f := by as_aux_lemma => synth_fixing) :
+def extensionsEquiv (hx : Fixing (x.val.length + 1) f := by as_aux_lemma => synthFixing) :
   ExtensionsAt x ≃ ExtensionsAt (f x) := by
   have hlen : x.val.length + 1 = (f x).val.length + 1 := by simp
   exact (extensionsRes (mkPointed x)).trans (
-    (Iso.toEquiv (extensions.mapIso (pointedRes_iso f x))).trans (
+    (Iso.toEquiv (extensions.mapIso (pointedResIso f x))).trans (
     (Equiv.cast (by rw [hlen])).trans (
     extensionsRes (mkPointed (f x))).symm))
 @[simp] lemma extensionsEquiv_val' (a : ExtensionsAt x) hx :
@@ -93,7 +105,7 @@ def extensionsEquiv (hx : Fixing (x.val.length + 1) f := by as_aux_lemma => synt
   ext1
   change ExtensionsAt.val' ((extensionsRes (mkPointed (f x))).symm
       (cast (by rw [hlen])
-        (extensions.map (pointedRes_iso f x hx).hom (extensionsRes (mkPointed x) a)))) =
+        (extensions.map (pointedResIso f x hx).hom (extensionsRes (mkPointed x) a)))) =
     (f a.valT').val
   rw [extensionsRes_symm_val']
   rw [cast_val' hlen]
@@ -112,14 +124,14 @@ def extensionsEquiv (hx : Fixing (x.val.length + 1) f := by as_aux_lemma => synt
   cases h
   rfl
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def pointedRes_iso' (hy : Fixing (y.val.length + 1) f := by as_aux_lemma => synth_fixing) :
+def pointedResIso' (hy : Fixing (y.val.length + 1) f := by as_aux_lemma => synthFixing) :
   (pointedRes (y.val.length + 1)).obj (mkPointed y)
   ≅ (pointedRes (y.val.length + 1)).obj (mkPointed (pInv f y)) :=
   have _: IsIso ((pointedRes (y.val.length + 1)).map (mkPointedMor' f y)) :=
     (pointedRes_isIso_iff_fixing _ _).mpr hy
   (asIso ((pointedRes (y.val.length + 1)).map (mkPointedMor' f y))).symm
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def extensionsEquiv' (hy : Fixing (y.val.length + 1) f := by as_aux_lemma => synth_fixing) :
+def extensionsEquiv' (hy : Fixing (y.val.length + 1) f := by as_aux_lemma => synthFixing) :
   ExtensionsAt y ≃ ExtensionsAt (pInv f y) := by
   have hy' : Fixing ((pInv f y).val.length + 1) f := by
     simpa [h_length_pInv] using hy
@@ -146,28 +158,36 @@ def extensionsEquiv' (hy : Fixing (y.val.length + 1) f := by as_aux_lemma => syn
 lemma zero_fixing : Fixing 0 f ↔ ([] ∈ S.2 ↔ [] ∈ T.2) := by
   rw [fixing_iff_forget_isIso]; constructor
   · intro h; constructor <;> intro hn
-    · rw [← LenHom.map_nil f hn]; apply SetLike.coe_mem
-    · obtain ⟨x, _⟩ := surjective_of_epi ((res 0 ⋙ forget Trees).map f) ⟨[], hn, by simp⟩
+    · rw [← LenHom.map_nil f hn]
+      exact (SetLike.coe_mem _)
+    · obtain ⟨x, _⟩ := surjective_of_epi ((res 0 ⋙ forget Trees).map f) ⟨[], hn, by rfl⟩
       have hx : x.val = [] := val_res_zero x
-      simpa [hx] using x.prop.1
+      have hxmem := x.prop.1
+      rw [hx] at hxmem
+      exact hxmem
   intro ⟨_, h⟩; apply (isIso_iff_bijective _).mpr; constructor
   · intro x y _
     apply res_ext
     rw [val_res_zero x, val_res_zero y]
   · intro y
     have hy : [] ∈ T.2 := by
-      simpa [val_res_zero y] using y.prop.1
-    refine ⟨⟨[], h hy, by simp⟩, ?_⟩
+      have hymem := y.prop.1
+      rw [val_res_zero y] at hymem
+      exact hymem
+    refine ⟨⟨[], h hy, by rfl⟩, ?_⟩
     apply res_ext
-    simp []
+    exact (LenHom.map_nil f (h hy)).trans (val_res_zero y).symm
 
 lemma lim_isPruned (F : ℕᵒᵖ ⥤ Trees)
   (hF : ∀ n, Tree.Fixing n (F.map (homOfLE (Nat.le_succ n)).op))
   (h : ∀ n, IsPruned (F.obj (Opposite.op n)).2) :
   IsPruned (limCone F).pt.2 := by
-  intro x; have hp := proj_fixing F 0 (by simpa) (x.val.length + 1)
-  exact (extensionsEquiv ((limCone F).π.app (Opposite.op (x.val.length + 1))) x
-      (by simpa using hp)).nonempty_congr.mpr
+  intro x
+  have hp :
+      Fixing (x.val.length + 1) ((limCone F).π.app (Opposite.op (x.val.length + 1))) := by
+    simpa only [Nat.zero_add] using proj_fixing F 0 (by simpa) (x.val.length + 1)
+  exact (extensionsEquiv
+    ((limCone F).π.app (Opposite.op (x.val.length + 1))) x hp).nonempty_congr.mpr
     (h (x.val.length + 1)
       (((limCone F).π.app (Opposite.op (x.val.length + 1))) x))
 lemma lim_ne (F : ℕᵒᵖ ⥤ Trees) (hF : ∀ n, Tree.Fixing n (F.map (homOfLE (Nat.le_succ n)).op))

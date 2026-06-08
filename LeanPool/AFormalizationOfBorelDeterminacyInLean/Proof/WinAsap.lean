@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.GaleStewart
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.WinAsap
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 lemma choose_eq {α : Type*} {p q : α → Prop} (hpq : ∀ a, p a ↔ q a) (h : ∃ a, p a) :
   h.choose = (by simpa [hpq] using h : ∃ a, q a).choose := by
   have : p = q := funext fun x ↦ propext (hpq x)
@@ -36,14 +43,14 @@ lemma mem_defensiveQuasi (x : G.tree) (h : ¬ WinningPrefix G p.swap x.val) hpr 
   apply subtree_induction (S := ⊤) (by simp)
   intro n hn hx hp _
   conv => simp [defensiveQuasi, tryAndElse, defensivePre, preserveProp, ExtensionsAt.val']
-  intro _ hW; apply h; use n + 1; convert hW; synth_isPosition
+  intro _ hW; apply h; use n + 1; convert hW; synthIsPosition
 lemma winningPrefix_of_residual {x y : List A}
   (hW : WinningPrefix (G.residual x) p y) :
   WinningPrefix G (p.residual x) (x ++ y) := by
   obtain ⟨n, hW⟩ := hW; use x.length + n
   convert hW using 1
   · simp_rw [List.take_length_add_append, residual_append]
-  · synth_isPosition
+  · synthIsPosition
 section «Section2»
 variable {x : List A} (h : WinningPrefix G p x)
 
@@ -58,7 +65,7 @@ lemma num_spec : (G.residual (x.take h.num)).ExistsWinning (p.residual (x.take h
   classical
   rw [← _root_.not_imp_self (a := _ ≤ _)] --change after update
   intro hn; apply Nat.find_le
-  have h' := h.num_spec; unfold WinningPrefix at h'
+  have h' := h.num_spec
   rwa [List.take_of_length_le] at * <;> omega
 --the choices of Exists.choose here just depend on x|n, not x
 lemma take_num {y} : (x ++ y).take h.num = x.take h.num := by simp
@@ -223,7 +230,7 @@ noncomputable def winAsap : PreStrategy G.tree p := by
   classical
   exact fun x hp ↦
     if h : WinningPrefix G p x.val then
-      {ExtensionsAt.drop.symm <| h.strat (Tree.drop _ h.num x) (by synth_isPosition)}
+      {ExtensionsAt.drop.symm <| h.strat (Tree.drop _ h.num x) (by synthIsPosition)}
     else Set.univ
 lemma mem_winAsap_subtree_of_no_prefix
   {x} {a} (h : ¬ WinningPrefix G p x) (ha : x ++ [a] ∈ G.tree) :
@@ -255,38 +262,38 @@ lemma winAsap_subtree {x} (h : WinningPrefix G p x) :
   | append_singleton y a ih =>
     by_cases hp : IsPosition y (p.residual (x.take h.num)) <;>
       (constructor <;> (intro h'; conv at ih => simp [mem_of_append h', - residual_tree]))
-    · rw [subtree_compatible_iff _ ⟨y, ih⟩ (by as_aux_lemma => synth_isPosition)]
+    · rw [subtree_compatible_iff _ ⟨y, ih⟩ (by as_aux_lemma => synthIsPosition)]
       use (winAsap G p).subtree_sub h'
       conv at h' => simp [← List.append_assoc]
       rw [subtree_compatible_iff _ ⟨_, mem_of_append h'⟩
-        (by as_aux_lemma => synth_isPosition)] at h'
+        (by as_aux_lemma => synthIsPosition)] at h'
       conv at h' => simp [winAsap, h.shrink.extend y]
       conv => simp [winAsap, h.shrink.extend y]
       obtain ⟨_, h'⟩ := h'; apply_fun Subtype.val at h'
-      apply ExtensionsAt.ext (x := (PreStrategy.subtree_incl _ ⟨_, _⟩)) --why necessary?
+      apply ExtensionsAt.ext (x := (PreStrategy.subtreeIncl _ ⟨_, _⟩)) --why necessary?
       rw [h']
       conv => simp
       apply h.extend_strat_apply; apply h.hEq_drop_take
     · conv => simp [← List.append_assoc]
-      rw [subtree_compatible_iff _ ⟨_, ih⟩ (by as_aux_lemma => synth_isPosition)]
+      rw [subtree_compatible_iff _ ⟨_, ih⟩ (by as_aux_lemma => synthIsPosition)]
       simp_rw [List.append_assoc]
       use h.strat.pre.subtree_sub h'
       rw [subtree_compatible_iff _ ⟨_, mem_of_append h'⟩
-        (by as_aux_lemma => synth_isPosition)] at h'
-      obtain ⟨_, h'⟩ := h'; simp only [subtree_incl_coe] at h'
+        (by as_aux_lemma => synthIsPosition)] at h'
+      obtain ⟨_, h'⟩ := h'
       have hval := congrArg Subtype.val h'
       conv => simp [winAsap, h.shrink.extend y]
-      apply ExtensionsAt.ext (x := (PreStrategy.subtree_incl _ ⟨_, _⟩)) --why necessary?
+      apply ExtensionsAt.ext (x := (PreStrategy.subtreeIncl _ ⟨_, _⟩)) --why necessary?
       rw [hval]
-      simp only [residual_tree, subtree_incl_coe]
+      dsimp only [PreStrategy.subtreeIncl]
       symm
       apply h.extend_strat_apply
       apply h.hEq_drop_take
-    · rw [subtree_fair _ ⟨y, ih⟩ (by as_aux_lemma => synth_isPosition)]
+    · rw [subtree_fair _ ⟨y, ih⟩ (by as_aux_lemma => synthIsPosition)]
       exact (winAsap G p).subtree_sub h'
     · conv => simp [← List.append_assoc]
-      rw [subtree_fair _ ⟨_, ih⟩ (by as_aux_lemma => synth_isPosition)]
-      simpa [List.append_assoc] using h.strat.pre.subtree_sub h'
+      rw [subtree_fair _ ⟨_, ih⟩ (by as_aux_lemma => synthIsPosition)]
+      simpa [subAt, List.append_assoc] using h.strat.pre.subtree_sub h'
 lemma winAsap_body (x : body (winAsap G p).subtree)
   (h : ∃ n, WinningPrefix G p (x.val.take n)) :
   ⟨x.val, body_mono (subtree_sub _) x.prop⟩ ∈ p.payoff G := by
@@ -294,7 +301,10 @@ lemma winAsap_body (x : body (winAsap G p).subtree)
   suffices x.val.drop h.num ∈ body h.strat.pre.subtree by
     have hW := h.strat_winning this
     conv at hW => simp [hN]
-    exact hW.2
+    obtain ⟨_, hpay⟩ := hW
+    change (body.append (Stream'.take h.num x.val) ⟨Stream'.drop h.num x.val, _⟩ : body G.tree) ∈
+      p.payoff G at hpay
+    simpa [body.append, Stream'.append_take_drop] using hpay
   apply mem_body_of_take 0; intro n _
   rw [← winAsap_subtree]; simp [hN]
 lemma winAsap_body' (x : body (winAsap G p).followUntilWon.subtree)

@@ -8,11 +8,18 @@ import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.RegularOpen
 import Mathlib.Topology.Baire.BaireMeasurable
 import Mathlib.Topology.Baire.Lemmas
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.Meager
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
   (f : X → Y) {A B U V : Set X}
 open Topology
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-scoped[Topology] notation (name := Dense_of) "Dense[" t "]" => @Dense _ t
+scoped[Topology] notation (name := DenseOf) "Dense[" t "]" => @Dense _ t
 lemma dense_trans {B : Set A} (hA : Dense A) (hB : Dense B) :
   Dense (Subtype.val '' B) := (Dense.isDenseEmbedding_val hA).dense_image.mpr hB
 open Set.Notation
@@ -58,9 +65,8 @@ lemma tendsto_openDense_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f) :
     ⟨f⁻¹' U, ⟨hUo.preimage hc, hUd.preimage ho⟩, subset_rfl⟩
 lemma IsNowhereDense.preimage {A : Set Y} (h : IsNowhereDense A)
   (hc : Continuous f) (ho : IsOpenMap f) : IsNowhereDense (f⁻¹' A) := by
-  simpa [isNowhereDense_iff_compl_contains_openDense] using
-    tendsto_openDense_of_isOpenMap f hc ho (by
-    simpa [isNowhereDense_iff_compl_contains_openDense] using h)
+  rw [isNowhereDense_iff_compl_contains_openDense] at h ⊢
+  simpa [Set.preimage_compl] using tendsto_openDense_of_isOpenMap f hc ho h
 
 lemma Dense.dense_in_open (hU : IsOpen U) (hD : Dense A) : Dense (U ↓∩ A) :=
   hD.preimage hU.isOpenMap_subtype_val

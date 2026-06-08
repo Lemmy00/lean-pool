@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.Zero.PreLift
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.Zero.Lift
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame.BorelDet.Zero
 open Stream'.Discrete Descriptive Tree Game PreStrategy Covering
 open CategoryTheory
@@ -65,24 +72,39 @@ include hW in lemma liftMedium_mem : H.toWLift.liftMediumVal ∈ T' := by
   · conv => simp
     right; rw [WinningCondition.concat]; refine ⟨?_, H.liftShortWinStrat, rfl⟩
     have h := (H.game.residual [H.liftNode]).gale_stewart_precise'
-      (by simpa using H.game_closed.preimage (body.append_con _)) (H.game_pruned.sub _)
+      (by
+        exact isOpen_compl_iff.mpr (H.game_closed.preimage (body.append_con _)))
+      (H.game_pruned.sub _)
       (by
         intro hS; apply hW; use 1
         have : (H.x.val.drop (2 * k + 1)).take 1 = [H.liftNode] := by
           rw [List.take_one_drop_eq_of_lt_length (by simp)]; rfl
-        simpa only [this] using hS)
+        rw [this]
+        change (H.game.residual [H.liftNode]).ExistsWinning Player.zero
+        exact hS)
     simp_rw [pullSub_body, Set.image_subset_iff]
     apply subset_trans h
     conv => simp [PreLift.game_payoff]
     intro a ha
-    rcases ha with ⟨x, hxmem, hxpay⟩
-    rcases hxmem.2 with ⟨y, hy, hyval⟩
-    use y
+    rcases ha with ⟨haBody, haPay⟩
+    have haBody' : (body.append [H.liftNode] a).val ∈
+        body (subAt G.tree (H.x.val.take (2 * k + 1))) := by
+      simpa [subAt_body] using haBody
+    let x : body (subAt G.tree (H.x.val.take (2 * k + 1))) :=
+      ⟨(body.append [H.liftNode] a).val, haBody'⟩
+    have hxmem : x ∈ body.append (H.x.val.take (2 * k + 1)) ⁻¹' G.payoff := by
+      by_contra hxnot
+      exact haPay ⟨x, hxnot, rfl⟩
+    use body.append (H.x.val.take (2 * k + 1)) x
     constructor
-    · exact hy
-    · rw [hyval, hxpay]
-      simp [Lift.liftNode, ← Stream'.append_eq_cons, ← Stream'.append_append_stream,
-        (H.x.val.take_concat_get' (2 * k + 1) (by simp))]
+    · exact hxmem
+    · change H.x.val.take (2 * k + 1) ++ₛ x.val =
+        H.x.val.take (2 * k + 1 + 1) ++ₛ a.val
+      rw [show H.x.val.take (2 * k + 1 + 1) =
+          H.x.val.take (2 * k + 1) ++ [H.liftNode] by
+        rw [← H.x.val.take_concat_get' (2 * k + 1) (by simp)]
+        simp [Lift.liftNode]]
+      simp [x, body.append]
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 @[simps toWLLift] def toWLift' : WLLift' hyp where
   toWLLift := H.toWLift
@@ -129,7 +151,7 @@ include hW in lemma liftMedium_mem : H.toWLift.liftMediumVal ∈ T' := by
             ⟨_, by
               change [H.liftNode] ++ H.x.val.drop (2 * k + 2) ∈ H.game.tree
               rw [List.singleton_append]
-              simpa [Lift.liftNode] using hW.conLong⟩
+              simpa [PreLift.ConLong, Lift.liftNode] using hW.conLong⟩
             (by
               intro hwin
               apply hW
@@ -170,7 +192,15 @@ lemma extension_conLong hp R : (hW.toWLift'.extensionLift hp R).ConLong := by
   have hm : H.x.val[2 * k + 1] :: (((hW.toWLift'.extensionMap hp R).val').drop (2 * k + 2))
     ∈ H.game.tree := by
     have hm' := by simpa using (mem_getTree (hW.toWLift'.extension hp R).valT').2
-    rw [ExtensionsAt.val'_take_of_le _ (by simp)] at hm'; conv at hm' => simp [toWLift]
+    have htake := ExtensionsAt.valT'_take_of_le (hW.toWLift'.extension hp R)
+      (n := 2 * k + 2) (by
+        change 2 * k + 2 ≤ H.toWLift.liftVal.length
+        rw [WLLift.liftVal_length]
+        exact H.h'lvl_le)
+    erw [show List.take (2 * k + 2) (hW.toWLift'.extension hp R).val' =
+        (Tree.take (2 * k + 2) hW.toWLift'.lift).val by
+      exact congrArg Subtype.val htake] at hm'
+    conv at hm' => simp [toWLift]
     have hsub := hm'.1
     have hval' : (hW.toWLift'.extensionMap hp R).val' =
         List.map Prod.fst (hW.toWLift'.extension hp R).val' := by
@@ -186,12 +216,26 @@ lemma extension_conLong hp R : (hW.toWLift'.extensionLift hp R).ConLong := by
     exact hsub
   conv => simp [PreLift.ConLong]
   convert hm using 1
-  rw [← List.getElem_cons_drop (by simp)]; congr 1
+  rw [← List.getElem_cons_drop (by
+    have hlen := ExtensionsAt.val'_length (hW.toWLift'.extensionMap hp R)
+    change 2 * k + 1 < (hW.toWLift'.extensionMap hp R).val'.length
+    rw [hlen]
+    exact Nat.lt_of_lt_of_le H.h'lvl (Nat.le_succ _))]
+  congr 1
   have ht : (hW.toWLift'.extensionMap hp R).val'.take (2 * k + 2) =
       H.x.val.take (2 * k + 2) := by
     exact WLLift'.extensionMap_take hW.toWLift' hp R (n := 2 * k + 2) (by simp)
   have hget := congrArg (fun xs : List A => xs[2 * k + 1]?) ht
-  simpa using hget
+  change (List.take (2 * k + 2) (hW.toWLift'.extensionMap hp R).val')[2 * k + 1]? =
+      (List.take (2 * k + 2) H.x.val)[2 * k + 1]? at hget
+  rw [List.getElem?_take, if_pos (by omega)] at hget
+  rw [List.getElem?_take, if_pos (by omega)] at hget
+  have hleft : 2 * k + 1 < (hW.toWLift'.extensionMap hp R).val'.length := by
+    have hlen := ExtensionsAt.val'_length (hW.toWLift'.extensionMap hp R)
+    rw [hlen]
+    exact Nat.lt_of_lt_of_le H.h'lvl (Nat.le_succ _)
+  rw [List.getElem?_eq_getElem hleft, List.getElem?_eq_getElem H.h'lvl] at hget
+  exact Option.some.inj hget
 end Winnable
 
 variable (hyp) in
@@ -205,17 +249,23 @@ lemma losable (h : H.ConLong) : H.Losable := by
   apply AllWinning.existsWinning _ (H.game_pruned.sub _); have hL := H.lost'
   conv at hL => simp [Lost', WonPosition, AllWinning]
   conv => simp [Lost', WonPosition, AllWinning]
-  rw [Set.eq_empty_iff_forall_notMem] at *; rintro ⟨x, hx⟩ ⟨hx', hxp⟩
+  have hL' := Set.eq_univ_iff_forall.mp hL
+  apply Set.eq_univ_iff_forall.mpr
+  rintro ⟨x, hx⟩ hxp
   conv at hx => simp [Nat.add_mod]
-  conv at hx' => simp [Nat.add_mod]
-  conv at hxp => simp [Nat.add_mod]
-  apply hL ⟨x, by
+  conv at hxp => simp [Nat.add_mod, PreLift.game_payoff]
+  apply hL' ⟨x, by
     simpa [← Stream'.append_append_stream] using body_mono H.game_tree_sub hx⟩
   by_contra hnot
-  apply hxp.1
-  intro hpay
-  apply hnot
-  simpa [body.append, ← Stream'.append_append_stream, hxp.2, List.take_append_drop] using hpay
+  apply hxp.2
+  use ⟨List.drop (2 * k + 1) H.x.val ++ₛ x, by
+    simpa [← Stream'.append_append_stream, List.take_append_drop] using
+      body_mono H.game_tree_sub hx⟩
+  constructor
+  · intro hpay
+    apply hnot
+    simpa [body.append, ← Stream'.append_append_stream, List.take_append_drop] using hpay
+  · rfl
 lemma exists_prefix : ∃ n h, (H.take n h).Lost' :=
   ⟨H.x.val.length, H.h'lvl, by simpa using H.lost'⟩
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
@@ -241,7 +291,8 @@ lemma min_prefix : H.takeMin.Lost' := by
 lemma le_of_take {n : ℕ} {h : 2 * k + 2 ≤ n} (hL : (H.take n h).Lost') :
   H.minLength ≤ n := by
   classical
-  simpa using Nat.find_le ⟨h, by simpa⟩
+  change Nat.find H.exists_prefix ≤ n
+  exact Nat.find_le ⟨h, hL⟩
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 @[simps toLift] def toWLLift : WLLift hyp where
   toLift := H.toLift
@@ -257,28 +308,39 @@ variable {h} (hL : (H.take n h).Lost')
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 @[simps toLift] def extend' : LLift hyp where
   toLift := H
-  lost' := by simpa using WonPosition.extend (H.x.val.drop n) hL
-lemma extend'_le : (H.extend' hL).minLength ≤ n := (H.extend' hL).le_of_take hL
-@[simp] lemma minLength_extend' : (H.extend' hL).minLength = hL.mk.minLength := by
+  lost' := by
+    change G.WonPosition H.x.val (Player.one.residual H.x.val)
+    convert WonPosition.extend (H.x.val.drop n) hL using 1
+    · exact (List.take_append_drop n H.x.val).symm
+    · simp [Player.residual_residual, List.take_append_drop]
+lemma extend'_le : (extend' (H := H) (n := n) (h := h) hL).minLength ≤ n :=
+  (extend' (H := H) (n := n) (h := h) hL).le_of_take hL
+@[simp] lemma minLength_extend' :
+  (extend' (H := H) (n := n) (h := h) hL).minLength = hL.mk.minLength := by
   classical
   apply le_antisymm
   · exact Nat.find_mono fun m ⟨hm, hl⟩ ↦
-      ⟨hm, (extend' (by simpa [min_comm] using hl : ((H.take m hm).take n h).Lost')).lost'⟩
+      ⟨hm, (extend' (H := H.take m hm) (n := n) (h := h)
+        (by simpa [min_comm] using hl : ((H.take m hm).take n h).Lost')).lost'⟩
   · apply Nat.find_le
     simp only [Lost'.mk_toLift, take_trans, LLift.le_minLength, exists_true_left]
-    convert (H.extend' hL).min_prefix
+    convert (extend' (H := H) (n := n) (h := h) hL).min_prefix
     simp [LLift.takeMin]; congr; simpa using extend'_le hL
 lemma extend'_le' : hL.mk.minLength ≤ n := by simpa using extend'_le hL
-@[simp] lemma takeMin_extend' : (H.extend' hL).takeMin = hL.mk.takeMin := by
+@[simp] lemma takeMin_extend' :
+  (extend' (H := H) (n := n) (h := h) hL).takeMin = hL.mk.takeMin := by
   simp [LLift.takeMin]; congr; simpa using extend'_le hL
 @[simp] lemma liftTree_extend' :
-  (H.extend' hL).toWLLift.liftTree = hL.mk.toWLLift.liftTree := by
+  (extend' (H := H) (n := n) (h := h) hL).toWLLift.liftTree =
+    hL.mk.toWLLift.liftTree := by
   simp [LLift.toWLLift, List.take_take, extend'_le' hL]
 @[simp] lemma liftMediumVal_extend' :
-  (H.extend' hL).toWLLift.liftMediumVal = hL.mk.toWLLift.liftMediumVal := by
+  (extend' (H := H) (n := n) (h := h) hL).toWLLift.liftMediumVal =
+    hL.mk.toWLLift.liftMediumVal := by
   simp [WLLift.liftMediumVal]
 @[simp] lemma liftVal_extend' :
-  (H.extend' hL).toWLLift.liftVal.take n = hL.mk.toWLLift.liftVal := by
+  (extend' (H := H) (n := n) (h := h) hL).toWLLift.liftVal.take n =
+    hL.mk.toWLLift.liftVal := by
   by_cases H.x.val.length ≤ n
   · rw [List.take_of_length_le]
     · congr 2
@@ -295,7 +357,7 @@ end «extend'»
 
 lemma lost'_of_le {H H' : Lift hyp} (h : H.Lost') (h' : H ≤ H') : H'.Lost' := by
   simp_rw (config := {singlePass := true}) [← Lift.eq_take_of_le h'] at h
-  exact (H'.extend' h).lost'
+  exact (extend' (H := H') h).lost'
 lemma lLift_liftVal_mono {H H' : Lift hyp} (h : H.Lost') (h' : H ≤ H') :
   h.mk.toWLLift.liftVal <+: (lost'_of_le h h').mk.toWLLift.liftVal := by
   simp_rw (config := {singlePass := true}) [← Lift.eq_take_of_le h'] at h ⊢
@@ -306,7 +368,9 @@ namespace Lost
 variable (hL : H.Lost)
 variable {H}
 lemma extend {h} (hL : (H.take n h).Lost) : H.Lost := by
-  use (H.extend' hL.1).lost'; change (H.extend' hL.1).takeMin.ConLong; simpa using hL.2
+  use (extend' (H := H) hL.1).lost'
+  change (extend' (H := H) hL.1).takeMin.ConLong
+  simpa using hL.2
 lemma lost_of_le {H H' : Lift hyp} (h : H.Lost) (h' : H ≤ H') : H'.Lost := by
   simp_rw (config := {singlePass := true}) [← Lift.eq_take_of_le h'] at h; exact h.extend
 lemma liftMedium_mem : hL.1.mk.toWLLift.liftMediumVal ∈ T' := by
@@ -314,7 +378,8 @@ lemma liftMedium_mem : hL.1.mk.toWLLift.liftMediumVal ∈ T' := by
   simp_rw [gameTree_concat]; use SetLike.coe_mem _; constructor
   · simp_rw (config := {singlePass := true}) [← add_zero (2 * k + 1),
       List.getElem_drop', List.getElem_zero]
-    simpa using mem_of_prefix ⟨(hL.1.mk.takeMin.x.val.drop (2 * k + 1)).tail, by
+    simpa [PreLift.game_tree] using
+      mem_of_prefix ⟨(hL.1.mk.takeMin.x.val.drop (2 * k + 1)).tail, by
       simp only [LLift.takeMin_x_coe, Lost'.mk_toLift, List.tail_drop, List.cons_append,
         List.nil_append]
       rw [← List.getElem_take, List.getElem_cons_drop]
@@ -333,7 +398,7 @@ lemma liftMedium_mem : hL.1.mk.toWLLift.liftMediumVal ∈ T' := by
     · rw [LLift.takeMin_x_coe]
       simp only [Lost'.mk_toLift, mem_subAt, List.cons_append, List.nil_append]
       rw [List.getElem_take', List.getElem_cons_drop]
-      · simpa [PreLift.ConLong] using hL.2
+      · simpa [PreLift.ConLong, PreLift.game_tree] using hL.2
       · simp
     · conv => simp [LLift.toWLLift]
       rw [List.append_cons, List.take_concat_get', List.drop_take, ← List.take_add]
@@ -459,12 +524,12 @@ lemma take (hn : 1 ≤ h.2.num + n) :
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 @[simps] def x' : (H.game.residual ((H.x.val.drop (2 * k + 1)).take h.2.num)).tree where
   val := H.x.val.drop (2 * k + 1 + h.2.num)
-  property := by simpa using h.1
+  property := by simpa [PreLift.ConLong] using h.1
 attribute [simp_lengths] x'_coe
 section «Section3»
 variable (hp : IsPosition H.x.val Player.zero)
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def a : ExtensionsAt h.x' := h.2.strat h.x' (by have := H.hlvl; synth_isPosition)
+def a : ExtensionsAt h.x' := h.2.strat h.x' (by have := H.hlvl; synthIsPosition)
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def extension : ExtensionsAt H.x where
   val := (h.a hp).val

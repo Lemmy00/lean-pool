@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Games
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.BuildStrategies
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 open Stream'.Discrete Descriptive Tree Game PreStrategy
 
@@ -42,7 +49,7 @@ lemma eq_planA (hQ : ∀ (x : planA.subtree) (hp : IsPosition x.val p),
   intro x hx; apply subtree_induction hx
   intro _ _ hx _; unfold tryAndElse; split_ifs with h
   · exact id
-  · cases h (hQ ⟨_, hx⟩ (by synth_isPosition))
+  · cases h (hQ ⟨_, hx⟩ (by synthIsPosition))
 @[simp] lemma tryAndElse_residual (x : List A) :
   (tryAndElse planA planB).residual x = tryAndElse (planA.residual x) (planB.residual x) := by
   ext1 y hp; dsimp [tryAndElse, PreStrategy.residual]
@@ -85,7 +92,7 @@ lemma _root_.GaleStewartGame.Game.AllWinning.existsWinning
 abbrev extQuasi (S : PreStrategy T p) (h : IsPruned T) : QuasiStrategy T p :=
   ⟨tryAndElse S ⊤, quasi_of_planB <| top_isQuasi h⟩
 lemma eq_extQuasi (S : PreStrategy T p) (hT : IsPruned T)
-  (h : ∀ (x : S.subtree) (hp : IsPosition x.val p), ∃ a, a ∈ S (S.subtree_incl x) hp) :
+  (h : ∀ (x : S.subtree) (hp : IsPosition x.val p), ∃ a, a ∈ S (S.subtreeIncl x) hp) :
   (S.extQuasi hT).1.subtree = S.subtree := eq_planA h
 @[simp] lemma extQuasi_residual (S : PreStrategy T p) (h : IsPruned T) (x : List A) :
   (S.extQuasi h).residual x = (S.residual x).extQuasi (h.sub x) := by ext1; simp
@@ -96,21 +103,21 @@ variable (f : ∀ a, [a] ∈ T → PreStrategy (subAt T [a]) Player.zero)
 /-- sew a map from possible opponent moves to strategies in the resulting residual games to a
   strategy in the original game -/
 def sew : PreStrategy T Player.one
-  | ⟨[], _⟩, hp => by synth_isPosition
-  | ⟨a :: x, hx⟩, hp => f a (singleton_mem T hx) ⟨x, hx⟩ (by synth_isPosition)
+  | ⟨[], _⟩, hp => by synthIsPosition
+  | ⟨a :: x, hx⟩, hp => f a (singleton_mem T hx) ⟨x, hx⟩ (by synthIsPosition)
 lemma sew_isQuasi (hf : ∀ a ha, (f a ha).IsQuasi) : (sew f).IsQuasi := by
   intro ⟨x, hx⟩ hp; rcases x
-  · synth_isPosition
+  · synthIsPosition
   · apply hf
 lemma sew_subtree a x :
   a :: x ∈ (sew f).subtree ↔ ∃ h, x ∈ (f a h).subtree := ⟨
     fun ⟨ht, hs⟩ ↦ ⟨(singleton_mem T ht), ⟨ht, fun hpr hpo ↦
-    hs (y := a :: _) (List.cons_prefix_cons.mpr ⟨rfl, hpr⟩) (by synth_isPosition)⟩⟩,
+    hs (y := a :: _) (List.cons_prefix_cons.mpr ⟨rfl, hpr⟩) (by synthIsPosition)⟩⟩,
     fun ⟨_, ht, hs⟩ ↦ ⟨ht, by
       intro y b hpr hpo
-      rcases y with (_ | ⟨a', y⟩) <;> [synth_isPosition; skip]
+      rcases y with (_ | ⟨a', y⟩) <;> [synthIsPosition; skip]
       obtain ⟨rfl, hpr'⟩ := List.cons_prefix_cons.mp hpr
-      exact hs hpr' (by synth_isPosition)⟩⟩
+      exact hs hpr' (by synthIsPosition)⟩⟩
 lemma sew_body (x : Stream' A) a :
   x.cons a ∈ body (PreStrategy.sew f).subtree ↔ ∃ h, x ∈ body (f a h).subtree := by
   constructor <;> intro h
@@ -126,10 +133,12 @@ variable {G : Game A} (f : ∀ a, [a] ∈ G.tree → PreStrategy (G.residual [a]
 lemma sew_isWinning (h : ∀ a h, (f a h).IsWinning) :
   (PreStrategy.sew f).IsWinning := by
   intro a h'; rw [← Stream'.cons_head_tail a, sew_body] at h'
-  simpa using h (a.get 0) _ h'.2
+  obtain ⟨ha, htail⟩ := h'
+  have hwin := h (a.get 0) ha htail
+  simpa [Player.payoff, Game.residual, body.append, Stream'.cons_head_tail, subAt_body] using hwin
 lemma sew_residual (S : PreStrategy T Player.one) : sew (fun a _ ↦ S.residual [a]) = S := by
   ext x hp; rcases x with (_ | ⟨x, a⟩)
-  · synth_isPosition
+  · synthIsPosition
   · rfl
 end «sew»
 
@@ -143,22 +152,24 @@ noncomputable def firstMove : PreStrategy T Player.zero := by
     | ⟨b :: x, hx⟩, hp =>
       if heq : a = b then by
         subst heq
-        exact s ⟨x, hx⟩ (by synth_isPosition)
+        exact s ⟨x, hx⟩ (by synthIsPosition)
       else ∅
 @[simp] lemma firstMove_subtree a' x :
   a' :: x ∈ (s.firstMove a h).subtree ↔ a = a' ∧ x ∈ s.subtree := by
   constructor
   · intro ⟨hf, hs⟩; have heq : a = a' := by
-      specialize hs (y := []) (List.prefix_iff_eq_take.mpr rfl) (by synth_isPosition)
+      specialize hs (y := []) (List.prefix_iff_eq_take.mpr rfl) (by synthIsPosition)
       simp_rw [PreStrategy.firstMove] at hs
       exact congrArg Subtype.val hs |>.symm
     subst heq; use rfl, hf; intro y b hpr hpo
-    simpa [PreStrategy.firstMove] using hs (y := a :: y) (by simpa) (by synth_isPosition)
+    convert hs (y := a :: y) (by simpa) (by synthIsPosition) using 1
+    simp [PreStrategy.firstMove]
   · rintro ⟨rfl, hf, hs⟩; use hf; intro y b hpr hpo
     rcases y with (_ | ⟨a', y⟩)
     · simp [List.cons_prefix_cons] at hpr; simp [hpr, PreStrategy.firstMove]
     · obtain ⟨rfl, hpr2⟩ := List.cons_prefix_cons.mp hpr
-      simpa [PreStrategy.firstMove] using hs hpr2 (by synth_isPosition)
+      convert hs hpr2 (by synthIsPosition) using 1
+      simp [PreStrategy.firstMove]
 @[simp] lemma firstMove_body a' (x : Stream' A) :
   x.cons a' ∈ body (s.firstMove a h).subtree ↔ a = a' ∧ x ∈ body s.subtree := by
   constructor
@@ -175,10 +186,17 @@ noncomputable def firstMove : PreStrategy T Player.zero := by
 variable {G : Game A} (h : [a] ∈ G.tree) (s : PreStrategy (G.residual [a]).tree Player.one)
 @[simp] lemma firstMove_isWinning :
   (s.firstMove a h).IsWinning ↔ s.IsWinning := by
-  constructor <;> intro hw b hb
-  · simpa using hw ((s.firstMove_body _ _ _ _).mpr ⟨rfl, hb⟩)
-  · rw [← Stream'.cons_head_tail b, firstMove_body] at hb
-    obtain ⟨rfl, hb⟩ := hb; simpa using hw hb
+  constructor
+  · intro hw b hb
+    have hb' : Stream'.cons a b ∈ body (s.firstMove a h).subtree :=
+      (firstMove_body a h s a b).mpr ⟨rfl, hb⟩
+    have hw' := hw hb'
+    simpa [Player.payoff, Game.residual, body.append] using hw'
+  · intro hw b hb
+    rw [← Stream'.cons_head_tail b, firstMove_body] at hb
+    obtain ⟨rfl, hb⟩ := hb
+    have hw' := hw hb
+    simpa [Player.payoff, Game.residual, body.append] using hw'
 lemma firstMove_extQuasi_tree (hs : s.IsQuasi) (hT : IsPruned G.tree) :
   ((s.firstMove a h).extQuasi hT).1.subtree = (s.firstMove a h).subtree := by
   apply eq_extQuasi; intro ⟨x, hx⟩ hp
@@ -187,8 +205,11 @@ lemma firstMove_extQuasi_tree (hs : s.IsQuasi) (hT : IsPruned G.tree) :
     rfl
   · conv at hx => simp
     obtain ⟨rfl, hx'⟩ := hx
-    obtain ⟨b, hbs⟩ := hs ⟨_, hx'.1⟩ (by synth_isPosition)
-    exact ⟨b, by simpa [firstMove, subtree_incl] using hbs⟩
+    obtain ⟨b, hbs⟩ := hs ⟨_, hx'.1⟩ (by synthIsPosition)
+    exact ⟨b, by
+      convert hbs using 1
+      simp [firstMove, subtreeIncl]
+      rfl⟩
 @[simp] lemma firstMove_extQuasi_isWinning (hT : IsPruned G.tree) (hs : s.IsQuasi) :
   ((s.firstMove a h).extQuasi hT).1.IsWinning ↔ s.IsWinning := by
   unfold IsWinning; rw [firstMove_extQuasi_tree a h s hs]; apply firstMove_isWinning a h s
@@ -198,21 +219,21 @@ section «PreserveProp»
 variable {p : Player}
 variable (P : ∀ x : T, IsPosition x.val p.swap → Prop)
 /-- play such that the proposition `P x` holds in every position `x` resulting from your move -/
-def preserveProp : PreStrategy T p := fun x hp ↦ {a | P a.valT' (by synth_isPosition)}
+def preserveProp : PreStrategy T p := fun x hp ↦ {a | P a.valT' (by synthIsPosition)}
 lemma preserveProp_eq_extQuasi (h : ∀ x hp, P x hp → ∀ a : ExtensionsAt x,
-  (preserveProp P a.valT' (by as_aux_lemma => synth_isPosition)).Nonempty) (hT : IsPruned T)
-  (hst0 : (hp : p = Player.zero) → ∃ a ha, P ⟨[a], ha⟩ (by as_aux_lemma => synth_isPosition))
+  (preserveProp P a.valT' (by as_aux_lemma => synthIsPosition)).Nonempty) (hT : IsPruned T)
+  (hst0 : (hp : p = Player.zero) → ∃ a ha, P ⟨[a], ha⟩ (by as_aux_lemma => synthIsPosition))
   (hst1 : (hp : p = Player.one) → (hn : [] ∈ T) →
-    P ⟨[], hn⟩ (by as_aux_lemma => synth_isPosition)) :
+    P ⟨[], hn⟩ (by as_aux_lemma => synthIsPosition)) :
   ((preserveProp P).extQuasi hT).1.subtree = (preserveProp P).subtree := by
   apply PreStrategy.eq_extQuasi; intro ⟨x, hx⟩ hp
   rcases x.eq_nil_or_concat' with rfl | ⟨x, a, rfl⟩
-  · obtain ⟨a, aT, ha⟩ := hst0 (by synth_isPosition); exact ⟨⟨a, aT⟩, ha⟩
+  · obtain ⟨a, aT, ha⟩ := hst0 (by synthIsPosition); exact ⟨⟨a, aT⟩, ha⟩
   · rcases x.eq_nil_or_concat' with rfl | ⟨x, b, rfl⟩
-    · exact h _ _ (hst1 (by synth_isPosition) (mem_of_append hx).1) ⟨_, hx.1⟩
-    · exact h ⟨x ++ [b], mem_of_append hx.1⟩ (by synth_isPosition)
+    · exact h _ _ (hst1 (by synthIsPosition) (mem_of_append hx).1) ⟨_, hx.1⟩
+    · exact h ⟨x ++ [b], mem_of_append hx.1⟩ (by synthIsPosition)
         (((preserveProp P).subtree_compatible_iff ⟨x, mem_of_append (mem_of_append hx)⟩
-        (by synth_isPosition)).mp (mem_of_append hx)).2 ⟨a, hx.1⟩
+        (by synthIsPosition)).mp (mem_of_append hx)).2 ⟨a, hx.1⟩
 end «PreserveProp»
 end PreStrategy
 
@@ -232,13 +253,30 @@ def WonPosition (G : Game A) (x : List A) (p : Player := Player.zero) :=
   simp [WonPosition]
 lemma WonPosition.extend {x} y (hW : WonPosition G x p) :
   WonPosition G (x ++ y) (p.residual y) := by
-  conv at hW => simp [WonPosition, AllWinning, Set.eq_univ_iff_forall]
-  conv => simp [WonPosition, AllWinning, Set.eq_univ_iff_forall]
-  intro a h; convert hW (y ++ₛ a) h using 1; ext; simp
+  rw [WonPosition, ← Game.residual_append]
+  exact Game.AllWinning.residual hW y
 lemma wonPosition_iff_disjoint' {x} :
   G.WonPosition x p ↔ Set.range (body.append x) ∩ (p.swap.residual x).payoff G = ∅ := by
-  simp [WonPosition, AllWinning, ← Set.disjoint_compl_left_iff_subset,
-    Set.disjoint_iff_inter_eq_empty, Set.inter_comm]
+  rw [WonPosition, AllWinning]
+  simp only [Set.eq_univ_iff_forall, Set.eq_empty_iff_forall_notMem, Set.mem_inter_iff,
+    Set.mem_range]
+  constructor
+  · intro h z hz
+    rcases hz with ⟨⟨a, rfl⟩, hpay⟩
+    rw [Player.payoff_swap_residual] at hpay
+    have hpre := h a
+    rw [Player.payoff_residual] at hpre
+    exact hpay hpre
+  · intro h a
+    by_contra hpay
+    have hpay' : body.append x a ∉ (Player.residual x p).payoff G := by
+      intro hp
+      apply hpay
+      rw [Player.payoff_residual]
+      exact hp
+    exact h (body.append x a) ⟨⟨a, rfl⟩, by
+      rw [Player.payoff_swap_residual]
+      exact hpay'⟩
 lemma wonPosition_iff_disjoint {x} :
   G.WonPosition x p ↔ principalOpen x ∩ (p.swap.residual x).payoff G = ∅ := by
   simpa [← Set.image_val_inj, Set.inter_assoc, ← Set.inter_diff_assoc] using
@@ -252,6 +290,7 @@ def defensivePre (G : Game A) (p : Player) : PreStrategy G.tree p :=
   ext y hp a
   simp [PreStrategy.residual, defensivePre, preserveProp, ExtensionsAt.valT'_coe,
     ExtensionsAt.val', List.append_assoc, Set.mem_setOf_eq, winningPosition_residual]
+  rfl
 @[congr] lemma defensivePre_subtree {hG : G = G'} {hp : p = p'} :
   (defensivePre G p).subtree = (defensivePre G' p').subtree := by congr!
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
@@ -265,20 +304,20 @@ namespace PreStrategy
 lemma subtree_induction_body {f g : PreStrategy T p} {x} (h : x ∈ body f.subtree)
   (h' : ∀ n, x.take n ∈ g.subtree → ∀ hp,
     ⟨x.get n, by apply subtree_sub; apply h; simp⟩ ∈
-      f (f.subtree_incl (body.take n ⟨x, h⟩)) hp →
+      f (f.subtreeIncl (body.take n ⟨x, h⟩)) hp →
     ⟨x.get n, by apply subtree_sub; apply h; simp⟩ ∈
-      g (f.subtree_incl (body.take n ⟨x, h⟩)) hp) : x ∈ body g.subtree := by
+      g (f.subtreeIncl (body.take n ⟨x, h⟩)) hp) : x ∈ body g.subtree := by
   apply mem_body_of_take 0; intro n _; apply f.subtree_induction (by apply h; simp)
   intro m hm hx hp; simp at hm
-  have hnode : take m (f.subtree_incl ⟨Stream'.take n x, by apply h; simp⟩) =
-      f.subtree_incl (body.take m ⟨x, h⟩) := by
+  have hnode : take m (f.subtreeIncl ⟨Stream'.take n x, by apply h; simp⟩) =
+      f.subtreeIncl (body.take m ⟨x, h⟩) := by
     ext
     simp [hm.le]
   intro ha
-  let hp' : IsPosition (f.subtree_incl (body.take m ⟨x, h⟩)).val p := by
+  let hp' : IsPosition (f.subtreeIncl (body.take m ⟨x, h⟩)).val p := by
     simpa [← hnode] using hp
   have ha' : ⟨x.get m, by apply subtree_sub; apply h; simp⟩ ∈
-      f (f.subtree_incl (body.take m ⟨x, h⟩)) hp' :=
+      f (f.subtreeIncl (body.take m ⟨x, h⟩)) hp' :=
     (PreStrategy.eval_mem_congr f hnode hp hp' (by simp)).mp ha
   have hb' := h' m (by simpa [hm.le] using hx) hp' ha'
   exact (PreStrategy.eval_mem_congr g hnode hp hp' (by simp)).mpr hb'
@@ -297,8 +336,8 @@ lemma followUntilWon_body : body S.followUntilWon.subtree ≤ body S.subtree ∪
   · right; have hx' := body_mono S.followUntilWon.subtree_sub hx; conv => simp [hx']
     let ⟨n, h'⟩ := h'
     conv at h' => simp [WonPosition, AllWinning]
-    apply h'
-    use body.drop n ⟨x, hx'⟩; ext; simp
+    have hmem := Set.eq_univ_iff_forall.mp h' (body.drop n ⟨x, hx'⟩)
+    simpa [body.append] using hmem
   · left; apply subtree_induction_body hx
     intros _ _ _; unfold followUntilWon; split_ifs
     · tauto

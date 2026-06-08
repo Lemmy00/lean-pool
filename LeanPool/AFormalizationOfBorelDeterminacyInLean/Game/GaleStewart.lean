@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.BuildStrategies
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.GaleStewart
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 open Stream'.Discrete Descriptive Tree PreStrategy
 
@@ -61,7 +68,7 @@ lemma defensive_winning_isClosed (hC : IsClosed G.payoff) (hP : IsPruned G.tree)
   intro x h; by_contra hfa; simp_rw [not_exists, not_and'] at hfa
   specialize ha (a.take (2 * (x.length / 2)) ++ [a.get (2 * (x.length / 2))]) (by simp)
   apply (defensivePre G Player.zero).subtree_compatible ⟨_, mem_of_append ha⟩
-    (by synth_isPosition) ha
+    (by synthIsPosition) ha
   apply AllWinning.existsWinning _ (hP.sub _); apply wonPosition_iff_disjoint.mpr
   rw [← Set.subset_empty_iff]; intro a' ⟨h1, h2⟩; apply hfa a'
   · conv at h1 => simp [ExtensionsAt.val']
@@ -73,7 +80,7 @@ lemma defensive_winning_isOpen (hC : IsOpen G.payoff) (hP : IsPruned G.tree) :
   (defensivePre G Player.one).IsWinning := by
   rw [← sew_residual (defensivePre G Player.one)]; apply sew_isWinning
   simp only [defensivePre_residual]; intro a _; apply defensive_winning_isClosed
-  · simpa using hC.preimage (body.append_con [a])
+  · exact isClosed_compl_iff.mpr (hC.preimage (body.append_con [a]))
   · exact hP.sub _
 lemma gale_stewart_precise (h : IsClosed G.payoff) (hP : IsPruned G.tree)
   (h' : ¬ G.ExistsWinning Player.one) : (defensiveQuasi G Player.zero hP).1.IsWinning := by

@@ -7,8 +7,14 @@ Authors: Sven Manthe
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.InfLists
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.Trees
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeBody
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
-open CategoryTheory
 open Stream'.Discrete
 
 variable {A : Type*} (S T : tree A)
@@ -61,7 +67,7 @@ def bodyInfHom : sInfHom (tree A) (Set (Stream' A)) where
   · intro h _ _; apply h; simpa
 
 /-- Appending lists to the front of a branch lifts as an operation on bodies -/
-@[simps (config := { fullyApplied := false }) coe]
+@[simps -fullyApplied coe]
 def body.append {T : tree A} (x : List A) (y : body (subAt T x)) : body T :=
   ⟨x ++ₛ y.val, by simpa using y.prop⟩
 @[simp] lemma body_append_nil (y : body T) : body.append (T := no_index _) [] y = y := rfl
@@ -73,10 +79,11 @@ lemma body.append_con {T : tree A} (x : List A) : Continuous (@body.append A T x
 @[simp] lemma subtype_body_append x :
   Subtype.val '' Set.range (@body.append _ T x) = principalOpen x ∩ body T := by
   ext a; constructor
-  · rintro ⟨_, ⟨⟨a, rfl⟩, rfl⟩⟩; simpa using a.prop
+  · rintro ⟨_, ⟨⟨a, rfl⟩, rfl⟩⟩
+    exact ⟨by simp, by simpa [subAt_body] using a.prop⟩
   · rintro ⟨⟨b, rfl⟩, ha⟩; use ⟨x ++ₛ b, ha⟩, ⟨⟨b, by simpa⟩, rfl⟩
 /-- Dropping the first elements of a branch lifts as an operation on bodies -/
-@[simps (config := { fullyApplied := false }) coe]
+@[simps -fullyApplied coe]
 def body.drop {T : tree A} (n : ℕ) (x : body T) : body (subAt T (x.val.take n)) :=
   ⟨x.1.drop n, by simp⟩
 
@@ -108,7 +115,9 @@ lemma subAt_body_image_compl_preimage (y : List A) :
       = (fun a ↦ x ++ₛ (y ++ₛ a)) ⁻¹' body T \
         (fun a ↦ x ++ₛ (y ++ₛ a)) ⁻¹' (Subtype.val '' X) := by
   ext a
-  simp
+  simp only [Set.mem_preimage, Set.mem_image, Set.mem_compl_iff, Subtype.exists, subAt_body,
+    exists_and_right, exists_eq_right, Set.mem_diff, not_exists]
+  tauto
 lemma subAt_body_image_compl_compl_preimage (y : List A) :
     (fun a ↦ y ++ₛ a) ⁻¹' (Subtype.val '' ((body.append x)⁻¹' X)ᶜᶜ)
       = (fun a ↦ x ++ₛ (y ++ₛ a)) ⁻¹' (Subtype.val '' X) := by

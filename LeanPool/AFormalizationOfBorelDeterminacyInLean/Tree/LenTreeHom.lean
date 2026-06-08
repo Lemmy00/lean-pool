@@ -9,6 +9,13 @@ import Mathlib.Topology.Category.TopCat.Basic
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.Trees
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.MiscCat
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.LenTreeHom
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 open CategoryTheory
 
 namespace Descriptive.Tree
@@ -32,10 +39,10 @@ instance : Category Trees where
   id S := ⟨OrderHom.id, fun _ ↦ rfl⟩
   comp f g := ⟨g.toOrderHom.comp f.toOrderHom, fun h ↦ by erw [g.h_length, f.h_length]⟩
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def forget_PO : Trees ⥤ PartOrd where
+def forgetPO : Trees ⥤ PartOrd where
   obj T := { carrier := T.2 }
   map f := PartOrd.ofHom f.toOrderHom
-instance : forget_PO.Faithful where
+instance : forgetPO.Faithful where
   map_injective {_ _} _ _ h := LenHom.ext (congr_arg (OrderHom.toFun ∘ PartOrd.Hom.hom) h)
 instance : FunLike (S ⟶ T) S T where
   coe f := f.toFun
@@ -54,7 +61,7 @@ instance : ConcreteCategory Trees (fun S T ↦ S ⟶ T) (CC := fun S ↦ S.2) wh
 
 @[simp] lemma rem_lenHom : LenHom S T = (S ⟶ T) := rfl
 @[ext] lemma tree_ext {x y : S} (h : x.val = y.val) : x = y := Subtype.ext h
-instance : PartialOrder S := inferInstance
+instance instPartialOrderTreeElement : PartialOrder S := inferInstance
 @[simp] lemma le_def_trees (x y : T) : x ≤ y ↔ x.val <+: y.val := Iff.rfl
 @[simp] lemma rem_toOrderHom (f : S ⟶ T) :
   DFunLike.coe (F := S →o T) f.toOrderHom = f := rfl
@@ -73,7 +80,7 @@ lemma inv_toFun {S T : Trees} (f : S ⟶ T) [IsIso f] :
   (inv f).toFun = inv (TypeCat.ofHom f.toFun) := by
   have h := congrArg TypeCat.Fun.toFun <|
     congrArg TypeCat.Hom.hom (IsIso.Iso.inv_hom ((forget Trees).mapIso (asIso f))).symm
-  simpa [forget_map] using h
+  exact h
 
 @[simp, simp_lengths] lemma h_length_simp (f : S ⟶ T) (x : S) :
   (f x).val.length (α := no_index _) = x.val.length (α := no_index _) := f.h_length x
@@ -82,7 +89,7 @@ lemma h_length_inv (f : S ⟶ T) [IsIso (TypeCat.ofHom f.toFun)] (x : T) :
   have hlen :
       ((TypeCat.ofHom f.toFun) (inv (TypeCat.ofHom f.toFun) x)).val.length =
         (inv (TypeCat.ofHom f.toFun) x).val.length := by
-    simpa only [rem_toFun] using h_length_simp f (inv (TypeCat.ofHom f.toFun) x)
+    exact h_length_simp f (inv (TypeCat.ofHom f.toFun) x)
   have hcancel :
       ((TypeCat.ofHom f.toFun) (inv (TypeCat.ofHom f.toFun) x)).val.length = x.val.length :=
     congrArg (fun y : T ↦ y.val.length) (cancel_inv_right_types (TypeCat.ofHom f.toFun) x)

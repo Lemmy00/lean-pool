@@ -7,6 +7,13 @@ Authors: Sven Manthe
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeBody
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.LenTreeHom
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.BodyFunctor
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
 open CategoryTheory
 open Stream'.Discrete
@@ -34,26 +41,26 @@ lemma bodyMap_exists (f : OrderHom S T) (a : bodyDom f) (n : ℕ) :
   ∃ (x : S), (a : Stream' A) ∈ principalOpen x ∧ n < (f x).val.length := by
   obtain ⟨b, ⟨⟨x, hx, rfl⟩, h''⟩⟩ := a.prop.2 n; use x, hx; simpa using h''
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def bodyMap_choose_spec (f : OrderHom S T) (a : bodyDom f) (n : ℕ) : T :=
+def bodyMapChooseSpec (f : OrderHom S T) (a : bodyDom f) (n : ℕ) : T :=
   let t := bodyMap_exists f a n; f ⟨t.choose, a.prop.1 t.choose t.choose_spec.1⟩
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def bodyMap_val (f : OrderHom S T) (a : bodyDom f) : Stream' A' :=
+def bodyMapVal (f : OrderHom S T) (a : bodyDom f) : Stream' A' :=
   fun n ↦ let t := bodyMap_exists f a n; (f t.choose).val[n]
 lemma bodyMap_pspec (f : OrderHom S T) (a : bodyDom f) {x}
   (hx : (a : Stream' A) ∈ principalOpen x) (hlx : n < (f ⟨x, a.prop.1 x hx⟩).val.length) :
-  (bodyMap_val f a).get n = (f ⟨x, a.prop.1 x hx⟩).val[n] := by
-  simp_rw [Stream'.get, bodyMap_val]
+  (bodyMapVal f a).get n = (f ⟨x, a.prop.1 x hx⟩).val[n] := by
+  simp_rw [Stream'.get, bodyMapVal]
   rw [bodyMap_uniq _ _ (bodyMap_exists f a n).choose_spec.1]
   rfl
 
 /-- The induced map on branches -/
 def bodyMap (f : OrderHom S T) (a : bodyDom f) : body T :=
-  ⟨bodyMap_val f a, by
-    intro y hy; apply mem_of_prefix (y := bodyMap_choose_spec f a y.length) _ (SetLike.coe_mem _)
+  ⟨bodyMapVal f a, by
+    intro y hy; apply mem_of_prefix (y := bodyMapChooseSpec f a y.length) _ (SetLike.coe_mem _)
     rw [principalOpen_iff_restrict] at hy; nth_rw 1 [hy]; apply List.prefix_iff_eq_take.mpr
     have ⟨hx, hl⟩ := (bodyMap_exists f a y.length).choose_spec
     apply List.ext_getElem
-    · simp [bodyMap_choose_spec, hl.le]
+    · simp [bodyMapChooseSpec, hl.le]
     · intro n hn _; simp only [Stream'.take_get, Stream'.length_take, List.getElem_take]
       rw [(bodyMap_pspec f a hx (lt_trans (by simpa using hn) hl))]; rfl⟩
 lemma bodyMap_spec (f : OrderHom S T) (a : bodyDom f) {x}
@@ -92,7 +99,7 @@ variable {S T : Trees}
   obj S := body S.2
   map f := TypeCat.ofHom fun a ↦ bodyMap f.toOrderHom ⟨a, by simp⟩
 @[ext] lemma bodyPre_obj_ext {x y : bodyPre.obj S} (h : x.val = y.val) : x = y := by
-  dsimp; ext1; exact h
+  exact Subtype.ext h
 lemma LenHom.bodyMap_spec (f : S ⟶ T) (a : body S.2)
   x (hx : (a : Stream' S.1) ∈ principalOpen x) n (hlx : n < x.length) :
   (bodyPre.map f a).val.get n = (f ⟨x, a.prop x hx⟩).val[n]'(by simpa) := by
@@ -131,8 +138,8 @@ lemma LenHom.bodyPre_map_restrict (f : S ⟶ T) (a : body S.2) n :
     simp [CategoryTheory.comp_apply]
     have hval := congrArg Subtype.val htree
     simp [hval]
-instance bodySpace : TopologicalSpace (Tree.bodyFunctor.obj S) := by
-  dsimp; infer_instance
+instance bodySpace : TopologicalSpace (Tree.bodyFunctor.obj S) :=
+  inferInstanceAs (TopologicalSpace (body S.2))
 lemma bodyMap_spec' (f : S ⟶ T) (a : body S.2)
   x (hx : (a : Stream' S.1) ∈ principalOpen x) n (hlx : n < x.length) :
   (bodyFunctor.map f a).val.get n = (f ⟨x, a.prop x hx⟩).val[n]'(by simpa) :=

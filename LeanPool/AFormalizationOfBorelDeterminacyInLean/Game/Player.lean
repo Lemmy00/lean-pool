@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.General
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Game.Player
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace GaleStewartGame
 
 /-- a player in a Gale-Stewart game -/
@@ -34,7 +41,7 @@ attribute [simp_isPosition]
   --maybe reduce priority to stop (apply_ite (Eq _))
 attribute [simp_isPosition] reduceCtorEq
 /-- Tactic support used by the Borel determinacy formalization. -/
-macro "synth_isPosition" : tactic =>
+macro "synthIsPosition" : tactic =>
   `(tactic | first | done |
   (casesPlayers <;> (try apply_fun List.length at *) <;>
     simpAtStar (config := {failIfUnchanged := false}) only [simp_isPosition, simp_lengths] <;>
@@ -57,7 +64,7 @@ def toNat : Player → ℕ
   simpa using (apply_ite toNat P a b)
 @[simp, simp_isPosition] lemma zero_toNat : zero.toNat = 0 := rfl
 @[simp, simp_isPosition] lemma one_toNat : one.toNat = 1 := rfl
-@[ext] lemma ext (h : p.toNat = q.toNat) : p = q := by synth_isPosition
+@[ext] lemma ext (h : p.toNat = q.toNat) : p = q := by synthIsPosition
 
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def swap : Player → Player
@@ -81,78 +88,78 @@ end Player
 
 namespace Player
 @[simp] lemma residual_swap :
-  (p.residual x).swap = p.swap.residual x := by synth_isPosition
+  (p.residual x).swap = p.swap.residual x := by synthIsPosition
 @[simp] lemma residual_residual {x y : List A} :
-  (p.residual x).residual y = p.residual (x ++ y) := by synth_isPosition
+  (p.residual x).residual y = p.residual (x ++ y) := by synthIsPosition
 @[simp] lemma residual_even (h : x.length % 2 = 0) :
-  p.residual x = p := by synth_isPosition
+  p.residual x = p := by synthIsPosition
 @[simp] lemma residual_odd (h : x.length % 2 = 1) :
-  p.residual x = p.swap := by synth_isPosition
+  p.residual x = p.swap := by synthIsPosition
 @[simp] lemma residual_append_both {y} : (p.residual (x ++ (y ++ x))) = p.residual y := by
-  synth_isPosition
+  synthIsPosition
 @[simp] lemma residual_cons {a} : (p.residual (a :: x)) = (p.residual x).swap := by
-  synth_isPosition
+  synthIsPosition
 @[simp] lemma residual_append_cons {a} {y} :
-  (p.residual (x ++ a :: y)) = (p.residual (x ++ y)).swap := by synth_isPosition
+  (p.residual (x ++ a :: y)) = (p.residual (x ++ y)).swap := by synthIsPosition
 lemma residual_concat {a} : (p.residual (x ++ [a])) = (p.residual x).swap := by
-  synth_isPosition
+  synthIsPosition
 lemma residual_concat2 {a b} : (p.residual (x ++ [a, b])) = p.residual x := by
-  synth_isPosition
+  synthIsPosition
 end Player
 /-this should probably be removed
 namespace Player
-@[simp] lemma zero_toNat_iff : p.toNat = 0 ↔ p = zero := by synth_isPosition
-@[simp] lemma zero_toNat_iff' : 0 = p.toNat ↔ p = zero := by synth_isPosition
-@[simp] lemma one_toNat_iff : p.toNat = 1 ↔ p = one := by synth_isPosition
-@[simp] lemma one_toNat_iff' : 1 = p.toNat ↔ p = one := by synth_isPosition
+@[simp] lemma zero_toNat_iff : p.toNat = 0 ↔ p = zero := by synthIsPosition
+@[simp] lemma zero_toNat_iff' : 0 = p.toNat ↔ p = zero := by synthIsPosition
+@[simp] lemma one_toNat_iff : p.toNat = 1 ↔ p = one := by synthIsPosition
+@[simp] lemma one_toNat_iff' : 1 = p.toNat ↔ p = one := by synthIsPosition
 
 @[simp] lemma equal_swap_ne : p ≠ q ↔ p = q.swap := by
   cases p <;> cases q <;> tauto
 @[simp] lemma swap_rhs : p.swap = q ↔ p = q.swap := by
   cases p <;> cases q <;> tauto
 @[simp] lemma swap_swap : p.swap.swap = p := by cases p <;> rfl
-@[simp] lemma swap_toNat : p.swap.toNat = 1 - p.toNat := by synth_isPosition
+@[simp] lemma swap_toNat : p.swap.toNat = 1 - p.toNat := by synthIsPosition
 
 @[simp] lemma residual_even (h : x.length % 2 = 0) :
-  p.residual x = p := by synth_isPosition
+  p.residual x = p := by synthIsPosition
 @[simp] lemma residual_odd (h : x.length % 2 = 1) :
-  p.residual x = p.swap := by synth_isPosition
+  p.residual x = p.swap := by synthIsPosition
 @[simp] lemma residual_residual {x y : List A} :
-  (p.residual x).residual y = p.residual (x ++ y) := by synth_isPosition
+  (p.residual x).residual y = p.residual (x ++ y) := by synthIsPosition
 @[simp] lemma residual_toNat : (p.residual x).toNat = (p.toNat + x.length) % 2 := by
-  synth_isPosition
+  synthIsPosition
 @[simp] lemma residual_swap :
-  (p.residual x).swap = p.swap.residual x := by synth_isPosition
+  (p.residual x).swap = p.swap.residual x := by synthIsPosition
 @[simp] lemma residual_cons {a} : (p.residual (a :: x)) = (p.residual x).swap := by
-  synth_isPosition
+  synthIsPosition
 @[simp] lemma residual_concat {a} : (p.residual (x ++ [a])) = (p.residual x).swap := by
-  synth_isPosition
+  synthIsPosition
 @[simp] lemma residual_concat2 {a b} : (p.residual (x ++ [a, b])) = p.residual x := by
-  synth_isPosition
+  synthIsPosition
 @[simp] lemma residual_append_both {y} : (p.residual (x ++ (y ++ x))) = p.residual y := by
-  synth_isPosition
+  synthIsPosition
 end Player
 namespace IsPosition
 lemma append_left {x y : List A} :
-  IsPosition (x ++ y) p ↔ (x.length % 2 = 0 ↔ IsPosition y p) := by synth_isPosition
+  IsPosition (x ++ y) p ↔ (x.length % 2 = 0 ↔ IsPosition y p) := by synthIsPosition
 lemma append_right {x y : List A} :
-  IsPosition (x ++ y) p ↔ (y.length % 2 = 0 ↔ IsPosition x p) := by synth_isPosition
+  IsPosition (x ++ y) p ↔ (y.length % 2 = 0 ↔ IsPosition x p) := by synthIsPosition
 @[simp] lemma append_both {x y : List A} :
-  IsPosition (x ++ (y ++ x)) p ↔ IsPosition y p := by synth_isPosition
+  IsPosition (x ++ (y ++ x)) p ↔ IsPosition y p := by synthIsPosition
 @[simp] lemma even {p : Player} {x : List A} (h : x.length % 2 = 0) :
-  IsPosition x p ↔ p = Player.zero := by synth_isPosition
+  IsPosition x p ↔ p = Player.zero := by synthIsPosition
 @[simp] lemma odd {p : Player} {x : List A} (h : x.length % 2 = 1) :
-  IsPosition x p ↔ p = Player.one := by synth_isPosition
+  IsPosition x p ↔ p = Player.one := by synthIsPosition
 @[simp] lemma not {x : List A} {p : Player} :
-  ¬ IsPosition x p ↔ IsPosition x p.swap := by synth_isPosition
+  ¬ IsPosition x p ↔ IsPosition x p.swap := by synthIsPosition
 @[simp] lemma change {x : List A} {a : A} {p : Player} :
-  IsPosition (x ++ [a]) p ↔ IsPosition x p.swap := by synth_isPosition
+  IsPosition (x ++ [a]) p ↔ IsPosition x p.swap := by synthIsPosition
 @[simp] lemma change2 {x : List A} {a b : A} {p : Player} :
-  IsPosition (x ++ [a, b]) p ↔ IsPosition x p := by synth_isPosition
+  IsPosition (x ++ [a, b]) p ↔ IsPosition x p := by synthIsPosition
 @[simp] lemma cons {x : List A} {a : A} {p : Player} :
-  IsPosition (a :: x) p ↔ IsPosition x p.swap := by synth_isPosition
+  IsPosition (a :: x) p ↔ IsPosition x p.swap := by synthIsPosition
 @[simp] lemma residual {x y : List A}  {p : Player} :
-  IsPosition y (p.residual x) ↔ IsPosition (x ++ y) p := by synth_isPosition
+  IsPosition y (p.residual x) ↔ IsPosition (x ++ y) p := by synthIsPosition
 end IsPosition-/
 
 end GaleStewartGame

@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.LenTreeHom
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.PointedTrees
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
 open CategoryTheory Descriptive
 

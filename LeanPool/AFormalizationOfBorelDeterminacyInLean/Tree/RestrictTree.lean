@@ -6,6 +6,13 @@ Authors: Sven Manthe
 
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.LenTreeHom
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.RestrictTree
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
 open CategoryTheory
 
@@ -78,14 +85,14 @@ def resIncl {k m} (h : k ≤ m) : resEq k ⟶ res m ⋙ forget Trees where
 lemma resIncl_len (h : k ≤ m) x :
   ((resIncl h).app S x).val.length (α := S.1) = k := x.prop.2
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def res_cocone (k : ℕ) : Limits.Cocone (J := Discrete (Fin (k + 1)))
+def resCocone (k : ℕ) : Limits.Cocone (J := Discrete (Fin (k + 1)))
   (Discrete.functor (fun i ↦ resEq i)) where
   pt := res k ⋙ forget Trees
   ι := Discrete.natTrans (fun _ ↦ resIncl (by omega))
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def res_isColimit (k : ℕ) : Limits.IsColimit (res_cocone k) := by
+def resIsColimit (k : ℕ) : Limits.IsColimit (resCocone k) := by
   apply Limits.evaluationJointlyReflectsColimits; intro _
-  simp_rw [evaluation, Functor.mapCocone, Limits.Cocone.functoriality, res_cocone]
+  simp_rw [evaluation, Functor.mapCocone, Limits.Cocone.functoriality, resCocone]
   apply Classical.choice; apply (isCoprod_type_iff _).mpr; constructor
   · intros i; apply (mono_iff_injective _).mpr
     intros _ _ h; injection h with h; exact Subtype.coe_injective h
@@ -100,14 +107,14 @@ def res_isColimit (k : ℕ) : Limits.IsColimit (res_cocone k) := by
     use ⟨x.length, Nat.lt_succ_of_le h2⟩, ⟨x, ⟨h1, rfl⟩⟩
     rfl
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def ev_res_cocone (k : ℕ) (S : Trees) : Limits.Cocone
+def evResCocone (k : ℕ) (S : Trees) : Limits.Cocone
   (Discrete.functor (fun (i : Fin (k + 1)) ↦ resEq i) ⋙ (evaluation _ _).obj S) where
   pt := (res k).obj S
   ι := Discrete.natTrans (fun ⟨n, h⟩ ↦ (resIncl (by omega)).app S)
 universe u in --why necessary?
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def ev_res_isColimit (k : ℕ) (S : Trees) : Limits.IsColimit (ev_res_cocone.{u} k S) :=
-  Limits.isColimitOfPreserves ((evaluation _ _).obj S) (res_isColimit k)
+def evResIsColimit (k : ℕ) (S : Trees) : Limits.IsColimit (evResCocone.{u} k S) :=
+  Limits.isColimitOfPreserves ((evaluation _ _).obj S) (resIsColimit k)
 
 /-- A morphism is k-fixing if it is a bijection on the first k levels -/
 class Fixing (k : outParam ℕ) (f : S ⟶ T) : Prop where prop : IsIso ((res k).map f)
@@ -121,7 +128,7 @@ lemma fixing_iff_forget_isIso k (f : S ⟶ T) :
   · intro _; exact Functor.map_isIso (forget Trees) ((res k).map f)
   · intro h
     haveI : IsIso ((forget Trees).map ((res k).map f)) := by
-      simpa [Functor.comp_map] using h
+      exact h
     constructor
     exact isIso_of_reflects_iso ((res k).map f) (forget Trees)
 lemma Fixing.bijective {k} {f : S ⟶ T} (h : Fixing k f) :
@@ -130,18 +137,18 @@ lemma Fixing.bijective {k} {f : S ⟶ T} (h : Fixing k f) :
 lemma fixing_iff_fixingEq k (f : S ⟶ T) :
   Fixing k f ↔ ∀ n ≤ k, FixingEq n f := by
   rw [fixing_iff_forget_isIso]
-  let hs := ev_res_isColimit k S; let ht := ev_res_isColimit k T
+  let hs := evResIsColimit k S; let ht := evResIsColimit k T
   have hres := coprod_type_isIso_iff hs ht (fun i ↦ (resEq i).map f)
   have eq2: (∀ n ≤ k, FixingEq n f) ↔ ∀ (j : Fin (k + 1)), IsIso ((resEq j).map f) := by
     constructor
     · intro h _; refine (h _ ?_).prop; apply Fin.is_le
     · intro h n _; exact ⟨h ⟨n, by omega⟩⟩
   rw [eq2]
-  have hmap : (res k ⋙ forget Trees).map f = hs.map (ev_res_cocone k T)
+  have hmap : (res k ⋙ forget Trees).map f = hs.map (evResCocone k T)
       (Discrete.natTrans fun x ↦ match x with | { as := j } => (resEq ↑j).map f) := by
     apply hs.hom_ext
     intro j
-    simpa using (hs.ι_map (ev_res_cocone k T)
+    exact (hs.ι_map (evResCocone k T)
       (Discrete.natTrans fun x ↦ match x with | { as := j } => (resEq ↑j).map f) j).symm
   rw [hmap]
   exact hres
@@ -153,7 +160,7 @@ instance fixing_comp {f : S ⟶ T} {g : T ⟶ U} [h : Fixing k f] [h' : Fixing k
 
 attribute [simp_lengths] res.val'_coe resEq.val'_coe res_len_le resEq_len
 /-- Tactic support used by the Borel determinacy formalization. -/
-macro "synth_fixing" : tactic => `(tactic | first | done |
+macro "synthFixing" : tactic => `(tactic | first | done |
   simp (config := {failIfUnchanged := false}) only [simp_fixing, simp_lengths] at * <;>
     (try exact fixing_iso) <;>
     (apply Fixing.mon inferInstance;
@@ -162,7 +169,7 @@ instance fixingEq_of_fixing {f : S ⟶ T} [h : Fixing k f] : FixingEq k f :=
   (fixing_iff_fixingEq k f).mp h k le_rfl
 
 variable {S T U : Trees} (f : S ⟶ T) (g : T ⟶ U)
-lemma Fixing.inj (x y : S) (ht : Fixing x.val.length f := by as_aux_lemma => synth_fixing)
+lemma Fixing.inj (x y : S) (ht : Fixing x.val.length f := by as_aux_lemma => synthFixing)
   (he : f x = f y) : x = y := by
   have hl : x.val.length = y.val.length := by
     apply_fun (List.length ∘ Subtype.val) at he; simpa using he
@@ -171,7 +178,7 @@ lemma Fixing.inj (x y : S) (ht : Fixing x.val.length f := by as_aux_lemma => syn
     ext1; apply_fun Subtype.val at he; exact he
   ext1; replace he' := ht.bijective.1 he'; apply_fun Subtype.val at he'; exact he'
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def pInv (y : T) (h : Fixing y.val.length f := by as_aux_lemma => synth_fixing) : S :=
+def pInv (y : T) (h : Fixing y.val.length f := by as_aux_lemma => synthFixing) : S :=
   let x := inv ((res y.val.length).map f) ⟨y.val, ⟨y.prop, le_rfl⟩⟩; res.val' x
 @[simp, simp_lengths] lemma h_length_pInv (y : T) (h : Fixing y.val.length f) :
   (pInv f y h).val.length (α := no_index _) = y.val.length (α := no_index _) :=
@@ -191,11 +198,9 @@ def pInv (y : T) (h : Fixing y.val.length f := by as_aux_lemma => synth_fixing) 
 @[simp] lemma pInv_id (x : S) : pInv (𝟙 S) x = x := by
   ext1
   change (inv ((res x.val.length).map (𝟙 S)) ⟨x.val, ⟨x.prop, le_rfl⟩⟩).val = x.val
-  simpa using
-    congrArg Subtype.val (cancel_inv_left ((res x.val.length).map (𝟙 S))
-      ⟨x.val, ⟨x.prop, le_rfl⟩⟩)
-@[simp] lemma pInv_comp y (hg : Fixing y.val.length g := by as_aux_lemma => synth_fixing)
-  (hf : Fixing y.val.length f := by as_aux_lemma => synth_fixing) :
+  simp
+@[simp] lemma pInv_comp y (hg : Fixing y.val.length g := by as_aux_lemma => synthFixing)
+  (hf : Fixing y.val.length f := by as_aux_lemma => synthFixing) :
   pInv (f ≫ g) y = pInv f (pInv g y hg) := by
   apply Fixing.inj f _; apply Fixing.inj g _
   change (f ≫ g) _ = _; simp_rw [cancel_pInv_right]
@@ -207,24 +212,24 @@ lemma take_apply_pInv x (h : Fixing x.val.length f) :
 lemma take_apply_pInv_val x (h : Fixing x.val.length f) :
   (pInv f (take n x)).val = (pInv f x h).val.take n :=
   congr_arg Subtype.val (take_apply_pInv f x h)
-@[simp] lemma inv_val'_eq_pInv x (h : Fixing k f := by as_aux_lemma => synth_fixing) :
+@[simp] lemma inv_val'_eq_pInv x (h : Fixing k f := by as_aux_lemma => synthFixing) :
   res.val' (inv ((res k).map f) x) = pInv f (res.val' x) := by
   apply Fixing.inj f _
   rw [cancel_pInv_right]
   ext1
   change ((res k).map f (inv ((res k).map f) x)).val = x.val
   rw [cancel_inv_right]
-lemma inv_val'_eq_pInv' x (h : Fixing k f := by as_aux_lemma => synth_fixing) :
+lemma inv_val'_eq_pInv' x (h : Fixing k f := by as_aux_lemma => synthFixing) :
   resEq.val' (inv ((resEq k).map f) x) = pInv f (resEq.val' x) := by
   apply Fixing.inj f _
   rw [cancel_pInv_right]
   ext1
   change ((resEq k).map f (inv ((resEq k).map f) x)).val = x.val
   rw [cancel_inv_right]
-@[simp] lemma inv_val_eq_pInv_val x (h : Fixing k f := by as_aux_lemma => synth_fixing) :
+@[simp] lemma inv_val_eq_pInv_val x (h : Fixing k f := by as_aux_lemma => synthFixing) :
   (inv ((res k).map f) x).val = (pInv f (res.val' x)).val :=
   congr_arg Subtype.val (inv_val'_eq_pInv f x)
-lemma inv_val_eq_pInv_val' x (h : Fixing k f := by as_aux_lemma => synth_fixing) :
+lemma inv_val_eq_pInv_val' x (h : Fixing k f := by as_aux_lemma => synthFixing) :
   (inv ((resEq k).map f) x).val = (pInv f (resEq.val' x)).val :=
   congr_arg Subtype.val (inv_val'_eq_pInv' f x)
 end «Section1»

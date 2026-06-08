@@ -8,6 +8,13 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.RestrictTree
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.InvLimitNat
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Tree.TreeLim
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 namespace Descriptive.Tree
 open CategoryTheory
 
@@ -69,7 +76,7 @@ def constTree (k : ℕ) : Type* ⥤ Trees where
     ConcreteCategory.hom f (List.head x.val h)
   simp
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def resEq_unit k : 𝟭 _ ⟶ constTree k ⋙ resEq k where
+def resEqUnit k : 𝟭 _ ⟶ constTree k ⋙ resEq k where
   app _ := TypeCat.ofHom fun a ↦ ⟨List.replicate k a, by
     constructor
     · exact mem_constTree a le_rfl
@@ -79,7 +86,7 @@ def resEq_unit k : 𝟭 _ ⟶ constTree k ⋙ resEq k where
     intro x
     exact resEq_ext _ _ List.map_replicate.symm
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def resEq_counit_comp k T : (constTree k).obj ((resEq k).obj T) ⟶ T where
+def resEqCounitComp k T : (constTree k).obj ((resEq k).obj T) ⟶ T where
   toFun := fun x ↦ take x.val.length ⟨(headD x).val, by simp⟩
   monotone' := by
     intro x y h; by_cases hx : x.val = []
@@ -92,8 +99,8 @@ def resEq_counit_comp k T : (constTree k).obj ((resEq k).obj T) ⟶ T where
       exact List.take_isPrefix_take.mpr (Or.inl (List.IsPrefix.length_le h))
   h_length _ := by simp only [take_coe, List.length_take, resEq_len, constTree_length, min_eq_left]
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def resEq_counit k : resEq k ⋙ constTree k ⟶ 𝟭 _ where
-  app := resEq_counit_comp k
+def resEqCounit k : resEq k ⋙ constTree k ⟶ 𝟭 _ where
+  app := resEqCounitComp k
   naturality := by
     intro X Y f
     apply ConcreteCategory.hom_ext
@@ -112,11 +119,11 @@ def resEq_counit k : resEq k ⋙ constTree k ⟶ 𝟭 _ where
       · simp_rw [headD_nonempty _ hxl]
         rw [head_constTree_map]
         rfl
-      · simpa [List.ne_nil_iff_length_pos] using hxl
+      · exact LenHom.map_ne_nil _ hxl
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def resEqAdj (k : ℕ) : constTree k ⊣ resEq k := Adjunction.mkOfUnitCounit {
-  unit := resEq_unit k
-  counit := resEq_counit k
+  unit := resEqUnit k
+  counit := resEqCounit k
   left_triangle := by
     apply NatTrans.ext
     funext A
@@ -124,26 +131,26 @@ def resEqAdj (k : ℕ) : constTree k ⊣ resEq k := Adjunction.mkOfUnitCounit {
     intro x
     apply tree_ext
     change
-      (take (((constTree k).map ((resEq_unit k).app A)) x).val.length
-        ⟨(headD (((constTree k).map ((resEq_unit k).app A)) x)).val,
-          (headD (((constTree k).map ((resEq_unit k).app A)) x)).prop.1⟩).val =
+      (take (((constTree k).map ((resEqUnit k).app A)) x).val.length
+        ⟨(headD (((constTree k).map ((resEqUnit k).app A)) x)).val,
+          (headD (((constTree k).map ((resEqUnit k).app A)) x)).prop.1⟩).val =
       x.val
     rw [take_coe]
     by_cases hxl : x.val = []
     · rw [LenHom.h_length_simp, hxl]
       rfl
     · have hmapne :
-          (((constTree k).map ((resEq_unit k).app A)) x).val ≠ [] :=
+          (((constTree k).map ((resEqUnit k).app A)) x).val ≠ [] :=
         LenHom.map_ne_nil _ hxl
       have hhead :
-          (headD (((constTree k).map ((resEq_unit k).app A)) x)).val =
+          (headD (((constTree k).map ((resEqUnit k).app A)) x)).val =
             List.replicate k (headD x) := by
         calc
-          (headD (((constTree k).map ((resEq_unit k).app A)) x)).val =
-              (List.head (((constTree k).map ((resEq_unit k).app A)) x).val hmapne).val :=
+          (headD (((constTree k).map ((resEqUnit k).app A)) x)).val =
+              (List.head (((constTree k).map ((resEqUnit k).app A)) x).val hmapne).val :=
             congrArg Subtype.val (headD_nonempty _ hmapne)
-          _ = (ConcreteCategory.hom ((resEq_unit k).app A) (List.head x.val hxl)).val :=
-            congrArg Subtype.val (head_constTree_map k ((resEq_unit k).app A) hxl)
+          _ = (ConcreteCategory.hom ((resEqUnit k).app A) (List.head x.val hxl)).val :=
+            congrArg Subtype.val (head_constTree_map k ((resEqUnit k).app A) hxl)
           _ = List.replicate k (List.head x.val hxl) := rfl
           _ = List.replicate k (headD x) := by
             rw [← headD_nonempty x hxl]
@@ -165,18 +172,18 @@ def resEqAdj (k : ℕ) : constTree k ⊣ resEq k := Adjunction.mkOfUnitCounit {
     intro x
     apply resEq_ext
     change
-      (take (resEq.val' ((resEq_unit k).app ((resEq k).obj T) x)).val.length
-        ⟨(headD (resEq.val' ((resEq_unit k).app ((resEq k).obj T) x))).val,
-          (headD (resEq.val' ((resEq_unit k).app ((resEq k).obj T) x))).prop.1⟩).val =
+      (take (resEq.val' ((resEqUnit k).app ((resEq k).obj T) x)).val.length
+        ⟨(headD (resEq.val' ((resEqUnit k).app ((resEq k).obj T) x))).val,
+          (headD (resEq.val' ((resEqUnit k).app ((resEq k).obj T) x))).prop.1⟩).val =
       x.val
     rw [take_coe]
     have hxl : x.val.length = k := x.prop.2
     rcases k with _ | k
     · change List.take (List.replicate 0 x).length (headD (resEq.val'
-        ((resEq_unit 0).app ((resEq 0).obj T) x))).val = x.val
+        ((resEqUnit 0).app ((resEq 0).obj T) x))).val = x.val
       rw [List.replicate_zero, List.length_nil, List.take_zero]
       exact (List.eq_nil_of_length_eq_zero hxl).symm
-    · let u := resEq.val' ((resEq_unit (k + 1)).app ((resEq (k + 1)).obj T) x)
+    · let u := resEq.val' ((resEqUnit (k + 1)).app ((resEq (k + 1)).obj T) x)
       have hu : u.val ≠ [] := by
         change (List.replicate (k + 1) x) ≠ []
         exact List.replicate_succ_ne_nil
@@ -187,7 +194,7 @@ def resEqAdj (k : ℕ) : constTree k ⊣ resEq k := Adjunction.mkOfUnitCounit {
       have hlen : u.val.length = k + 1 := by
         change (List.replicate (k + 1) x).length = k + 1
         exact List.length_replicate
-      rw [show resEq.val' ((resEq_unit (k + 1)).app ((resEq (k + 1)).obj T) x) = u from rfl]
+      rw [show resEq.val' ((resEqUnit (k + 1)).app ((resEq (k + 1)).obj T) x) = u from rfl]
       rw [hlen, hhead]
       exact List.take_of_length_le (by omega)
 }
@@ -233,7 +240,7 @@ def coneZip (s : Limits.Cone F) (x : s.pt) : List (∀ j, (F.obj j).1) :=
   (coneZip F s x).length = x.val.length :=
   List.zipFun_len (fun j ↦ ((s.π.app j) x).val) (fun _ ↦ LenHom.h_length_simp _ x)
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def isLimit_lift (s : Limits.Cone F) : s.pt ⟶ (limCone F).pt where
+def isLimitLift (s : Limits.Cone F) : s.pt ⟶ (limCone F).pt where
   toFun x := ⟨coneZip F s x, by
     refine ⟨fun j ↦ ?_, ?_⟩
     · rw [coneZip_mapEval]
@@ -254,7 +261,7 @@ def isLimit_lift (s : Limits.Cone F) : s.pt ⟶ (limCone F).pt where
 
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def isLimit : Limits.IsLimit (limCone F) where
-  lift := isLimit_lift F
+  lift := isLimitLift F
   fac := by
     intro s j
     apply LenHom.ext
@@ -267,10 +274,14 @@ def isLimit : Limits.IsLimit (limCone F) where
     funext x
     apply tree_ext
     apply List.mapEval_joint_epi
-    · exact (LenHom.h_length_simp f x).trans (LenHom.h_length_simp (isLimit_lift F s) x).symm
+    · exact (LenHom.h_length_simp f x).trans (LenHom.h_length_simp (isLimitLift F s) x).symm
     · intro j
       have hπ := congrArg (fun g : s.pt ⟶ F.obj j ↦ (g x).val) (h j)
-      simpa [CategoryTheory.comp_apply, limCone, isLimit_lift, coneZip_mapEval] using hπ
+      have hright :
+          List.mapEval j ((isLimitLift F s).toFun x).val = ((s.π.app j) x).val :=
+        coneZip_mapEval F s x j
+      rw [hright]
+      convert hπ using 1
 end «TreeLimits»
 
 lemma proj_fixing (F : ℕᵒᵖ ⥤ Trees) (k : ℕ)
@@ -278,7 +289,7 @@ lemma proj_fixing (F : ℕᵒᵖ ⥤ Trees) (k : ℕ)
   Fixing (k + n) ((limCone F).π.app (Opposite.op n)) :=
   (fixing_iff_fixingEq (k + n) _).mpr (fun m hm ↦
     ⟨nat_add_initial (Limits.isLimitOfPreserves (resEq m) (isLimit F)) n (fun p hp ↦
-      ((fixing_iff_fixingEq (k + n) _).mp (by synth_fixing) m hm).prop) n le_rfl⟩)
+      ((fixing_iff_fixingEq (k + n) _).mp (by synthFixing) m hm).prop) n le_rfl⟩)
 
 end «Section1»
 end Descriptive.Tree

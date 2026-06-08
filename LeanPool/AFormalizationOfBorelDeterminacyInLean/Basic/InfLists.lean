@@ -5,8 +5,18 @@ Authors: Sven Manthe
 -/
 
 import Mathlib.Topology.Basic
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.Order
+import Mathlib.Order.Filter.Pi
 import Mathlib.Data.Stream.Init
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.FinLists
+
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Basic.InfLists
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
 
 namespace Stream'
 attribute [simp_lengths] length_take
@@ -75,7 +85,7 @@ scoped instance prodDisc A : TopologicalSpace (Stream' A) :=
 
 section «Section1»
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-local instance : TopologicalSpace A := ⊥
+local instance instTopologicalSpaceLeanPool : TopologicalSpace A := ⊥
 local instance : DiscreteTopology A := ⟨rfl⟩
 lemma continuous_pi' {X} [TopologicalSpace X] {f : X → Stream' A}
   (h : ∀ i, Continuous fun a => (f a).get i) : Continuous f :=
@@ -86,7 +96,9 @@ lemma append_con : Continuous (x ++ₛ ·) := by
   apply continuous_pi'; intro i; rcases lt_or_ge i x.length with h | h
   · simp_rw [get_append_left _ _ _ h]; exact continuous_const
   · obtain ⟨i, rfl⟩ := le_iff_exists_add.mp h
-    simpa only [get_append_right] using continuous_apply i
+    simp_rw [get_append_right]
+    change @Continuous (∀ _ : ℕ, A) A Pi.topologicalSpace ⊥ (fun a ↦ a i)
+    exact continuous_apply i
 /-- The principal opens form a neighborhood basis for the product topology. -/
 lemma hasBasis_principalOpen : (nhds a).HasBasis
   (fun x ↦ a ∈ principalOpen x) (fun x ↦ principalOpen x) := by

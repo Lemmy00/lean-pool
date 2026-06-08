@@ -7,6 +7,13 @@ Authors: Sven Manthe
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.Meager
 import LeanPool.AFormalizationOfBorelDeterminacyInLean.Proof.BorelDeterminacy
 
+/-!
+# LeanPool.AFormalizationOfBorelDeterminacyInLean.Applications.Choquet
+
+Auxiliary declarations for the Borel determinacy formalization.
+-/
+
+
 open GaleStewartGame
 open Descriptive
 
@@ -48,16 +55,19 @@ lemma extend_mem_iff (x : List W) : x.map (Set.inclusion hWV) ∈ chainTree V �
         rw [← List.map_singleton, extend_coe, ← List.map_append, extend_mem_iff]
         exact a.prop
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
-def choose_pair (A : V) : W where
+def choosePair (A : V) : W where
     val := (hW A A.coe_prop).choose
     property := (hW A A.coe_prop).choose_spec.1
-lemma choose_pair_sub A : (choose_pair hW A).val ⊆ A.val := (hW A A.coe_prop).choose_spec.2
+lemma choosePairSub A : (choosePair hW A).val ⊆ A.val := (hW A A.coe_prop).choose_spec.2
 /-- Auxiliary declaration for the Borel determinacy formalization. -/
 def shrink' {x : chainTree W} (a : Tree.ExtensionsAt (extend hWV x)) :
-    Tree.ExtensionsAt x := ⟨_, (chainTree.concat W x (choose_pair hW a.val) (by
-        intro _; apply (choose_pair_sub hW a.val).trans
+    Tree.ExtensionsAt x := ⟨_, (chainTree.concat W x (choosePair hW a.val) (by
+        intro hx; apply (choosePairSub hW a.val).trans
         have ha := a.prop; rw [concat_mem_chainTree] at ha
-        simpa using ha.2 (by simpa))).prop⟩
+        have hlast : a.val ≤ Set.inclusion hWV (x.val.getLast hx) := by
+          simpa [extend_coe, List.getLast_map] using ha.2 (by simpa [extend_coe] using hx)
+        change a.val.val ⊆ (Set.inclusion hWV (x.val.getLast hx)).val
+        exact hlast)).prop⟩
 attribute [simp_lengths] extend_coe
 
 variable (X)
