@@ -412,6 +412,14 @@ import LeanPool.FelConjecture
 import LeanPool.FelConjecture.Solution
 import LeanPool.Fineqs
 import LeanPool.Fineqs.Main
+import LeanPool.Flean
+import LeanPool.Flean.Basic
+import LeanPool.Flean.FloatCfg
+import LeanPool.Flean.FloatRep
+import LeanPool.Flean.IntRounding
+import LeanPool.Flean.LogRules
+import LeanPool.Flean.Rounding
+import LeanPool.Flean.Subnorm
 import LeanPool.FoZfc
 import LeanPool.FoZfc.Axioms
 import LeanPool.FoZfc.Basic
