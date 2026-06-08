@@ -125,7 +125,9 @@ open Finset
 variable {T : Type*} [Inhabited T]
 variable {I : Type*}
 
+/-- A family of linear orders on `T` indexed by `I`. -/
 class IndexedLOrder (I T : Type*) where
+  /-- The linear order on `T` at index `i`. -/
   IST : I → LinearOrder T
 
 instance : FunLike (IndexedLOrder I T) I (LinearOrder T) where
@@ -156,6 +158,7 @@ namespace IndexedLOrder
 variable (σ : Finset T) (C : Finset I)
 
 /- Definition of Dominant -/
+/-- `σ` is dominant for `C`: every point is dominated at some index of `C`. -/
 def isDominant :=
   ∀ y, ∃ i ∈ C, ∀ x ∈ σ,  y ≤[i] x
 
@@ -183,6 +186,7 @@ lemma Dominant_of_supset (σ : Finset T) (C D : Finset I) :
     intro x hx
     exact hj.2 x hx
 
+/-- The minimum of `σ` in the linear order at index `i`. -/
 abbrev mini {σ : Finset T} (h2 : σ.Nonempty) (i : I) : T := @Finset.min' _ (IST i) _ h2
 
 omit [Inhabited T] in
@@ -226,8 +230,10 @@ lemma empty_Dominant (h : D.Nonempty) : IST.isDominant Finset.empty D := by
   · intro x hx
     contradiction
 
+/-- A cell: `σ` is dominant for `C`. -/
 abbrev isCell := isDominant σ C
 
+/-- A room: a cell whose color and goods sets have equal size. -/
 abbrev isRoom :=  isCell σ C ∧ C.card = σ.card
 
 lemma sigma_nonempty_of_room {σ : Finset T} {C : Finset I} (h : isRoom σ C) : σ.Nonempty  := by
@@ -237,11 +243,13 @@ lemma sigma_nonempty_of_room {σ : Finset T} {C : Finset I} (h : isRoom σ C) : 
   have hpos : 0 < σ.card := by rwa [h_card]
   exact Finset.card_pos.1 hpos
 
+/-- A door: a cell whose color set is one larger than its goods set. -/
 abbrev isDoor :=  isCell σ C ∧ C.card = σ.card + 1
 
 
 variable [DecidableEq T] [DecidableEq I]
 
+/-- The relation that one cell is a door of another room. -/
 inductive isDoorof (τ : Finset T) (D : Finset I) (σ : Finset T) (C : Finset I) : Prop
   | idoor (h0 : isCell σ C) (h1 : isDoor τ D) (x :T) (h1 : x ∉ τ) (h2 : insert x τ = σ) (h3 : D = C)
   | odoor (h0 : isCell σ C) (h1 : isDoor τ D) (j :I) (h1 : j ∉ C) (h2 : τ = σ) (h3 : D = insert j C)
@@ -302,9 +310,11 @@ lemma room_is_not_door (h1 : IST.isRoom σ C) : ∀ τ D,  ¬ (isDoorof σ C τ 
     simp at cond
 
 variable (τ D) in
+/-- An outside door: a door whose goods part is empty. -/
 abbrev isOutsideDoor := IST.isDoor τ D ∧ τ = Finset.empty
 
 variable (τ D) in
+/-- An internal door: a door that is not an outside door. -/
 abbrev isInternalDoor := IST.isDoor τ D ∧ τ.Nonempty
 
 /- Lemma 2-/
@@ -339,28 +349,31 @@ lemma outsidedoor_is_singleton (h : IST.isOutsideDoor τ D) :  τ = Finset.empty
 section KeyLemma
 
 -- Definition of the sets M_i used in the proof
-def M_set (τ : Finset T) (D : Finset I) (i : I) (h_nonempty : τ.Nonempty) : Set T :=
+/-- The set of points maximizing the dominance condition at a missing index. -/
+def mSet (τ : Finset T) (D : Finset I) (i : I) (h_nonempty : τ.Nonempty) : Set T :=
   {y : T | ∀ k ∈ D, k ≠ i → mini h_nonempty k <[k] y}
 
 -- Predicate for being the maximal element of M_i with respect to <_i
-def is_maximal_in_M_set (τ : Finset T) (D : Finset I) (i : I) (h_nonempty : τ.Nonempty) (x : T)
+/-- `m` is maximal in the `mSet` of the given data. -/
+def isMaximalInMSet (τ : Finset T) (D : Finset I) (i : I) (h_nonempty : τ.Nonempty) (x : T)
     : Prop :=
-  x ∈ M_set τ D i h_nonempty ∧ ∀ y ∈ M_set τ D i h_nonempty, y ≤[i] x
+  x ∈ mSet τ D i h_nonempty ∧ ∀ y ∈ mSet τ D i h_nonempty, y ≤[i] x
 
 -- The maximal element m_i when M_i is nonempty
-noncomputable def m_element [Fintype T] (τ : Finset T) (D : Finset I) (i : I)
+/-- A chosen maximal element of the `mSet`. -/
+noncomputable def mElement [Fintype T] (τ : Finset T) (D : Finset I) (i : I)
     (h_nonempty : τ.Nonempty)
-    (h : (M_set τ D i h_nonempty).Nonempty) : T :=
-  @Finset.max' _ (IST i) (M_set τ D i h_nonempty).toFinset (Set.toFinset_nonempty.mpr h)
+    (h : (mSet τ D i h_nonempty).Nonempty) : T :=
+  @Finset.max' _ (IST i) (mSet τ D i h_nonempty).toFinset (Set.toFinset_nonempty.mpr h)
 
--- Theorem: m_element is indeed the maximal element
+-- Theorem: mElement is indeed the maximal element
 omit [Inhabited T] [DecidableEq T] [DecidableEq I] in
 theorem m_element_is_maximal [Fintype T] (τ : Finset T) (D : Finset I) (i : I)
     (h_nonempty : τ.Nonempty)
-    (h : (M_set τ D i h_nonempty).Nonempty) :
-    is_maximal_in_M_set τ D i h_nonempty (m_element τ D i h_nonempty h) := by
-  unfold is_maximal_in_M_set m_element
-  let s_finset := (M_set τ D i h_nonempty).toFinset
+    (h : (mSet τ D i h_nonempty).Nonempty) :
+    isMaximalInMSet τ D i h_nonempty (mElement τ D i h_nonempty h) := by
+  unfold isMaximalInMSet mElement
+  let s_finset := (mSet τ D i h_nonempty).toFinset
   have h_nonempty_finset: s_finset.Nonempty := Set.toFinset_nonempty.mpr h
   constructor
   · rw [←Set.mem_toFinset]
@@ -378,7 +391,7 @@ lemma sublemma_3_1 (τ : Finset T) (D : Finset I)
       (∃ a b, a ∈ D ∧ b ∈ D ∧ a ≠ b ∧
        mini h_nonempty a = mini h_nonempty b ∧
        (i = a ∨ i = b) ∧
-       M_set τ D i h_nonempty = ∅)) := by
+       mSet τ D i h_nonempty = ∅)) := by
   classical
   intro i hi
   constructor
@@ -402,7 +415,7 @@ lemma sublemma_3_1 (τ : Finset T) (D : Finset I)
     · constructor
       · exact h_case
       · ext y
-        simp only [M_set, ne_eq, gt_iff_lt, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false,
+        simp only [mSet, ne_eq, gt_iff_lt, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false,
           not_forall, not_lt, le_min'_iff]
         obtain ⟨k, hk_in_erase, hk_dom⟩ := h_dom y
         have hk_in_D : k ∈ D := (Finset.mem_erase.mp hk_in_erase).2
@@ -434,7 +447,7 @@ lemma sublemma_3_1 (τ : Finset T) (D : Finset I)
       exact not_lt.mpr (le_refl _) h_image_lt
   · rintro ⟨a, b, ha_mem, hb_mem, h_ne, h_eq_mini, h_i_case, h_Mi_empty⟩
     intro y
-    unfold M_set at h_Mi_empty
+    unfold mSet at h_Mi_empty
     simp only [Set.mem_setOf_eq, Set.eq_empty_iff_forall_notMem] at h_Mi_empty
     specialize h_Mi_empty y
     push Not at h_Mi_empty
@@ -455,8 +468,8 @@ lemma sublemma_3_2 (τ : Finset T) (D : Finset I) (x : T)
     (a b : I) (ha : a ∈ D) (hb : b ∈ D) (hab : a ≠ b)
     (h_eq : mini h_nonempty a = mini h_nonempty b) :
     IST.isDominant (insert x τ) D ↔
-    (∃ i ∈ ({a, b} : Finset I), (M_set τ D i h_nonempty).Nonempty ∧
-     is_maximal_in_M_set τ D i h_nonempty x) := by
+    (∃ i ∈ ({a, b} : Finset I), (mSet τ D i h_nonempty).Nonempty ∧
+     isMaximalInMSet τ D i h_nonempty x) := by
   constructor
   · intro h_dominant
     have h_insert_nonempty : (insert x τ).Nonempty := Finset.insert_nonempty x τ
@@ -573,22 +586,22 @@ lemma sublemma_3_2 (τ : Finset T) (D : Finset I) (x : T)
         exact (hab (h_inj_insert ha hb h_contr)).elim
     use i, h_i_in_ab
     constructor
-    · have h_nonempty_M : (M_set τ D i h_nonempty).Nonempty := by
+    · have h_nonempty_M : (mSet τ D i h_nonempty).Nonempty := by
         use x
-        unfold M_set
+        unfold mSet
         apply Set.mem_setOf.mpr
         intro k hk_mem hk_ne_i
         exact h_mini_lt_x k hk_mem hk_ne_i
       exact h_nonempty_M
-    · unfold is_maximal_in_M_set
+    · unfold isMaximalInMSet
       constructor
-      · unfold M_set
+      · unfold mSet
         apply Set.mem_setOf.mpr
         intro k hk_mem hk_ne_i
         exact h_mini_lt_x k hk_mem hk_ne_i
       · intros y hy
         letI := IST i
-        unfold M_set at hy
+        unfold mSet at hy
         simp only [ne_eq, gt_iff_lt, Set.mem_setOf_eq] at hy
         obtain ⟨k, hk_in_D, h_y_le_all⟩ := h_dominant y
         by_cases hik : k = i
@@ -604,7 +617,7 @@ lemma sublemma_3_2 (τ : Finset T) (D : Finset I) (x : T)
           letI := IST k
           exact absurd (lt_of_lt_of_le h_lt_y h_le_m) (lt_irrefl _)
   · rintro ⟨i, hi_mem_ab, h_M_nonempty, h_x_is_max⟩
-    have h_x_in_M : x ∈ M_set τ D i h_nonempty := h_x_is_max.1
+    have h_x_in_M : x ∈ mSet τ D i h_nonempty := h_x_is_max.1
     unfold isDominant
     intro y
     have h_dom_tau := h_door.1
@@ -623,11 +636,11 @@ lemma sublemma_3_2 (τ : Finset T) (D : Finset I) (x : T)
         | inl h_z_eq_x => rw [h_z_eq_x]; exact h_y_le_x
         | inr h_z_in_tau => exact hk_dom z h_z_in_tau
       · have h_x_lt_y : x <[k] y := lt_of_not_ge h_y_le_x
-        have h_y_not_in_M : y ∉ M_set τ D k h_nonempty := by
+        have h_y_not_in_M : y ∉ mSet τ D k h_nonempty := by
           intro h_y_in_M
           have h_y_le_x : y ≤[k] x := h_x_is_max.2 y h_y_in_M
           exact not_le.mpr h_x_lt_y h_y_le_x
-        simp only [M_set, ne_eq, gt_iff_lt, Set.mem_setOf_eq, not_forall] at h_y_not_in_M
+        simp only [mSet, ne_eq, gt_iff_lt, Set.mem_setOf_eq, not_forall] at h_y_not_in_M
         obtain ⟨j, hj_in_D, hj_ne_k, hj_not_lt⟩ := h_y_not_in_M
         use j, hj_in_D
         intro z hz
@@ -663,12 +676,12 @@ lemma M_sets_disjoint (τ : Finset T) (D : Finset I) (a b : I)
     (h_nonempty : τ.Nonempty) (h_door : IST.isDoor τ D)
     (ha : a ∈ D) (hb : b ∈ D) (hab : a ≠ b)
     (h_eq : mini h_nonempty a = mini h_nonempty b) :
-    M_set τ D a h_nonempty ∩ M_set τ D b h_nonempty = ∅ := by
+    mSet τ D a h_nonempty ∩ mSet τ D b h_nonempty = ∅ := by
   ext y
   simp only [Set.mem_inter_iff, Set.mem_empty_iff_false]
   constructor
   · intro ⟨h_in_a, h_in_b⟩
-    unfold M_set at h_in_a h_in_b
+    unfold mSet at h_in_a h_in_b
     have h_b_ne_a : b ≠ a := hab.symm
     have h_mini_b_lt_y : mini h_nonempty b <[b] y := h_in_a b hb h_b_ne_a
     have h_mini_a_lt_y : mini h_nonempty a <[a] y := h_in_b a ha hab
@@ -701,11 +714,11 @@ lemma m_element_not_in_tau [Fintype T] (τ : Finset T) (D : Finset I) (i a b : I
     (h_door : IST.isDoor τ D) (h_nonempty : τ.Nonempty)
     (ha_mem : a ∈ D) (hb_mem : b ∈ D) (hab : a ≠ b)
     (h_eq_mini : mini h_nonempty a = mini h_nonempty b)
-    (h_M_nonempty : (M_set τ D i h_nonempty).Nonempty)
+    (h_M_nonempty : (mSet τ D i h_nonempty).Nonempty)
     (h_i_is : i = a ∨ i = b) :
-    m_element τ D i h_nonempty h_M_nonempty ∉ τ := by
-  let m_i := m_element τ D i h_nonempty h_M_nonempty
-  have h_max : is_maximal_in_M_set τ D i h_nonempty m_i :=
+    mElement τ D i h_nonempty h_M_nonempty ∉ τ := by
+  let m_i := mElement τ D i h_nonempty h_M_nonempty
+  have h_max : isMaximalInMSet τ D i h_nonempty m_i :=
     m_element_is_maximal τ D i h_nonempty h_M_nonempty
   intro h_m_in_tau
   obtain ⟨k, hk_mem, hk_dom⟩ := h_door.1 m_i
@@ -718,8 +731,8 @@ lemma m_element_not_in_tau [Fintype T] (τ : Finset T) (D : Finset I) (i a b : I
       letI := IST k
       have h_mini_le_m : mini h_nonempty k ≤[k] m_i := Finset.min'_le τ m_i h_m_in_tau
       exact le_antisymm h_m_le_mini h_mini_le_m
-    have h_m_in_M : m_i ∈ M_set τ D k h_nonempty := h_max.1
-    unfold M_set at h_m_in_M
+    have h_m_in_M : m_i ∈ mSet τ D k h_nonempty := h_max.1
+    unfold mSet at h_m_in_M
     cases h_i_is with
     | inl hi_eq_a =>
       subst hi_eq_a
@@ -733,8 +746,8 @@ lemma m_element_not_in_tau [Fintype T] (τ : Finset T) (D : Finset I) (i a b : I
       rw [h_m_eq_mini, ← h_eq_mini] at h_mini_a_lt_m
       letI := IST a
       exact lt_irrefl (mini h_nonempty a) h_mini_a_lt_m
-  · have h_m_in_M : m_i ∈ M_set τ D i h_nonempty := h_max.1
-    unfold M_set at h_m_in_M
+  · have h_m_in_M : m_i ∈ mSet τ D i h_nonempty := h_max.1
+    unfold mSet at h_m_in_M
     have h_mini_k_lt_m : mini h_nonempty k <[k] m_i := h_m_in_M k hk_mem hk_eq_i
     have h_m_le_mini_k : m_i ≤[k] mini h_nonempty k := hk_dom (mini h_nonempty k) (by
       unfold mini
@@ -776,15 +789,15 @@ lemma odoor_index_in_pair (τ : Finset T) (D : Finset I) (C : Finset I)
 
 omit [Inhabited T] [DecidableEq T] [DecidableEq I] in
 lemma maximal_element_unique [Fintype T] (τ : Finset T) (D : Finset I) (i : I)
-    (h_nonempty : τ.Nonempty) (h_M_nonempty : (M_set τ D i h_nonempty).Nonempty)
-    (x : T) (h_x_max : is_maximal_in_M_set τ D i h_nonempty x) :
-    x = m_element τ D i h_nonempty h_M_nonempty := by
-  let m_i := m_element τ D i h_nonempty h_M_nonempty
-  have h_mi_max : is_maximal_in_M_set τ D i h_nonempty m_i :=
+    (h_nonempty : τ.Nonempty) (h_M_nonempty : (mSet τ D i h_nonempty).Nonempty)
+    (x : T) (h_x_max : isMaximalInMSet τ D i h_nonempty x) :
+    x = mElement τ D i h_nonempty h_M_nonempty := by
+  let m_i := mElement τ D i h_nonempty h_M_nonempty
+  have h_mi_max : isMaximalInMSet τ D i h_nonempty m_i :=
     m_element_is_maximal τ D i h_nonempty h_M_nonempty
   letI := IST i
-  have h_x_in_M : x ∈ M_set τ D i h_nonempty := h_x_max.1
-  have h_mi_in_M : m_i ∈ M_set τ D i h_nonempty := h_mi_max.1
+  have h_x_in_M : x ∈ mSet τ D i h_nonempty := h_x_max.1
+  have h_mi_in_M : m_i ∈ mSet τ D i h_nonempty := h_mi_max.1
   have h_x_le_mi : x ≤[i] m_i := h_mi_max.2 x h_x_in_M
   have h_mi_le_x : m_i ≤[i] x := h_x_max.2 m_i h_mi_in_M
   exact le_antisymm h_x_le_mi h_mi_le_x
@@ -794,19 +807,19 @@ lemma idoor_determines_element [Fintype T] (τ : Finset T) (D : Finset I)
     (a b : I) (h_door : IST.isDoor τ D) (h_nonempty : τ.Nonempty)
     (ha_mem : a ∈ D) (hb_mem : b ∈ D) (hab : a ≠ b)
     (h_eq_mini : mini h_nonempty a = mini h_nonempty b)
-    (h_Ma_nonempty : (M_set τ D a h_nonempty).Nonempty)
-    (h_Mb_nonempty : (M_set τ D b h_nonempty).Nonempty)
+    (h_Ma_nonempty : (mSet τ D a h_nonempty).Nonempty)
+    (h_Mb_nonempty : (mSet τ D b h_nonempty).Nonempty)
     (x : T) (h_room : IST.isRoom (insert x τ) D)
     (hx_not_mem : x ∉ τ) :
-    x = m_element τ D a h_nonempty h_Ma_nonempty ∨
-    x = m_element τ D b h_nonempty h_Mb_nonempty := by
+    x = mElement τ D a h_nonempty h_Ma_nonempty ∨
+    x = mElement τ D b h_nonempty h_Mb_nonempty := by
   have h_dom : IST.isDominant (insert x τ) D := h_room.1
-  have h_exists_max : ∃ i ∈ ({a, b} : Finset I), (M_set τ D i h_nonempty).Nonempty ∧
-      is_maximal_in_M_set τ D i h_nonempty x := by
+  have h_exists_max : ∃ i ∈ ({a, b} : Finset I), (mSet τ D i h_nonempty).Nonempty ∧
+      isMaximalInMSet τ D i h_nonempty x := by
     apply (sublemma_3_2 τ D x h_door h_nonempty hx_not_mem a b ha_mem hb_mem hab h_eq_mini).mp
     exact h_dom
   obtain ⟨i, hi_mem, hi_nonempty, hi_max⟩ := h_exists_max
-  have h_x_eq_mi : x = m_element τ D i h_nonempty hi_nonempty :=
+  have h_x_eq_mi : x = mElement τ D i h_nonempty hi_nonempty :=
     maximal_element_unique τ D i h_nonempty hi_nonempty x hi_max
   cases Finset.mem_insert.mp hi_mem with
   | inl hi_eq_a =>
@@ -840,22 +853,22 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
       convert (keylemma_of_dominant h_dominant h_nonempty).symm
     rw [h_card, h_image_eq]
   obtain ⟨a, b, ha_mem, hb_mem, h_eq_mini, hab, _⟩ := injOn_sdiff D (mini h_nonempty) h_image_card
-  have h_disjoint : M_set τ D a h_nonempty ∩ M_set τ D b h_nonempty = ∅ :=
+  have h_disjoint : mSet τ D a h_nonempty ∩ mSet τ D b h_nonempty = ∅ :=
     M_sets_disjoint τ D a b h_nonempty h_door ha_mem hb_mem hab h_eq_mini
-  by_cases h_Ma_nonempty : (M_set τ D a h_nonempty).Nonempty
-  · by_cases h_Mb_nonempty : (M_set τ D b h_nonempty).Nonempty
-    · let m_a := m_element τ D a h_nonempty h_Ma_nonempty
-      let m_b := m_element τ D b h_nonempty h_Mb_nonempty
-      have h_ma_max : is_maximal_in_M_set τ D a h_nonempty m_a :=
+  by_cases h_Ma_nonempty : (mSet τ D a h_nonempty).Nonempty
+  · by_cases h_Mb_nonempty : (mSet τ D b h_nonempty).Nonempty
+    · let m_a := mElement τ D a h_nonempty h_Ma_nonempty
+      let m_b := mElement τ D b h_nonempty h_Mb_nonempty
+      have h_ma_max : isMaximalInMSet τ D a h_nonempty m_a :=
         m_element_is_maximal τ D a h_nonempty h_Ma_nonempty
-      have h_mb_max : is_maximal_in_M_set τ D b h_nonempty m_b :=
+      have h_mb_max : isMaximalInMSet τ D b h_nonempty m_b :=
         m_element_is_maximal τ D b h_nonempty h_Mb_nonempty
       have h_ma_ne_mb : m_a ≠ m_b := by
         intro h_eq
-        have h_ma_in_Ma : m_a ∈ M_set τ D a h_nonempty := h_ma_max.1
-        have h_mb_in_Mb : m_b ∈ M_set τ D b h_nonempty := h_mb_max.1
+        have h_ma_in_Ma : m_a ∈ mSet τ D a h_nonempty := h_ma_max.1
+        have h_mb_in_Mb : m_b ∈ mSet τ D b h_nonempty := h_mb_max.1
         rw [h_eq] at h_ma_in_Ma
-        have h_in_inter : m_b ∈ M_set τ D a h_nonempty ∩ M_set τ D b h_nonempty :=
+        have h_in_inter : m_b ∈ mSet τ D a h_nonempty ∩ mSet τ D b h_nonempty :=
           ⟨h_ma_in_Ma, h_mb_in_Mb⟩
         rw [h_disjoint] at h_in_inter
         exact Set.notMem_empty m_b h_in_inter
@@ -961,7 +974,7 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
             have h_contra := (sublemma_3_1 τ D h_door h_nonempty j hj_eq_a_mem).mp h_dom_C
             obtain ⟨a', b', ha'_mem, hb'_mem, ha'b'_ne, h_eq_mini', h_j_in_pair,
                 h_M_empty⟩ := h_contra
-            have h_Mj_nonempty : (M_set τ D j h_nonempty).Nonempty := by
+            have h_Mj_nonempty : (mSet τ D j h_nonempty).Nonempty := by
               rw [hj_eq_a]; exact h_Ma_nonempty
             rw [h_M_empty] at h_Mj_nonempty
             exact False.elim (Set.not_nonempty_empty h_Mj_nonempty)
@@ -973,17 +986,17 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
             have h_contra := (sublemma_3_1 τ D h_door h_nonempty j hj_eq_b_mem).mp h_dom_C
             obtain ⟨a', b', ha'_mem, hb'_mem, ha'b'_ne, h_eq_mini', h_j_in_pair,
                 h_M_empty⟩ := h_contra
-            have h_Mj_nonempty : (M_set τ D j h_nonempty).Nonempty := by
+            have h_Mj_nonempty : (mSet τ D j h_nonempty).Nonempty := by
               rw [hj_eq_b]; exact h_Mb_nonempty
             rw [h_M_empty] at h_Mj_nonempty
             exact False.elim (Set.not_nonempty_empty h_Mj_nonempty)
-    · let m_a := m_element τ D a h_nonempty h_Ma_nonempty
-      have h_ma_max : is_maximal_in_M_set τ D a h_nonempty m_a :=
+    · let m_a := mElement τ D a h_nonempty h_Ma_nonempty
+      have h_ma_max : isMaximalInMSet τ D a h_nonempty m_a :=
         m_element_is_maximal τ D a h_nonempty h_Ma_nonempty
       have h_ma_not_mem : m_a ∉ τ :=
         m_element_not_in_tau τ D a a b h_door h_nonempty ha_mem hb_mem hab h_eq_mini h_Ma_nonempty
             (Or.inl rfl)
-      have h_Mb_empty : M_set τ D b h_nonempty = ∅ := Set.not_nonempty_iff_eq_empty.mp h_Mb_nonempty
+      have h_Mb_empty : mSet τ D b h_nonempty = ∅ := Set.not_nonempty_iff_eq_empty.mp h_Mb_nonempty
       use insert m_a τ, τ, D, D.erase b
       constructor
       · intro h_pair_eq
@@ -1026,7 +1039,7 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
           subst hx_eq hc_eq
           have h_dom : IST.isDominant (insert x τ) D := h0
           have h_exists_max : ∃ i ∈ ({a, b} : Finset I),
-              (M_set τ D i h_nonempty).Nonempty ∧ is_maximal_in_M_set τ D i h_nonempty x := by
+              (mSet τ D i h_nonempty).Nonempty ∧ isMaximalInMSet τ D i h_nonempty x := by
             apply (sublemma_3_2 τ D x h_door h_nonempty hx_not_mem a b ha_mem hb_mem hab
                 h_eq_mini).mp h_dom
           obtain ⟨i, hi_mem, hi_nonempty, hi_max⟩ := h_exists_max
@@ -1064,10 +1077,10 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
              subst hj_eq_b
              right
              exact ⟨rfl, (hc_eq ▸ (Finset.erase_insert hj_not_mem).symm)⟩
-  · have h_Ma_empty : M_set τ D a h_nonempty = ∅ := Set.not_nonempty_iff_eq_empty.mp h_Ma_nonempty
-    by_cases h_Mb_nonempty : (M_set τ D b h_nonempty).Nonempty
-    · let m_b := m_element τ D b h_nonempty h_Mb_nonempty
-      have h_mb_max : is_maximal_in_M_set τ D b h_nonempty m_b :=
+  · have h_Ma_empty : mSet τ D a h_nonempty = ∅ := Set.not_nonempty_iff_eq_empty.mp h_Ma_nonempty
+    by_cases h_Mb_nonempty : (mSet τ D b h_nonempty).Nonempty
+    · let m_b := mElement τ D b h_nonempty h_Mb_nonempty
+      have h_mb_max : isMaximalInMSet τ D b h_nonempty m_b :=
         m_element_is_maximal τ D b h_nonempty h_Mb_nonempty
       have h_mb_not_mem : m_b ∉ τ :=
         m_element_not_in_tau τ D b a b h_door h_nonempty ha_mem hb_mem hab h_eq_mini h_Mb_nonempty
@@ -1114,7 +1127,7 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
           subst hx_eq hc_eq
           have h_dom : IST.isDominant (insert x τ) D := h0
           have h_exists_max : ∃ i ∈ ({a, b} : Finset I),
-              (M_set τ D i h_nonempty).Nonempty ∧ is_maximal_in_M_set τ D i h_nonempty x := by
+              (mSet τ D i h_nonempty).Nonempty ∧ isMaximalInMSet τ D i h_nonempty x := by
             apply (sublemma_3_2 τ D x h_door h_nonempty hx_not_mem a b ha_mem hb_mem hab
                 h_eq_mini).mp h_dom
           obtain ⟨i, hi_mem, hi_nonempty, hi_max⟩ := h_exists_max
@@ -1155,7 +1168,7 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
              have h_contra := (sublemma_3_1 τ D h_door h_nonempty j hb_mem).mp h_dom_C
              obtain ⟨_, _, _, _, _, _, _, h_M_empty⟩ := h_contra
              exact (Set.not_nonempty_iff_eq_empty.mpr h_M_empty) h_Mb_nonempty
-    · have h_Mb_empty : M_set τ D b h_nonempty = ∅ := Set.not_nonempty_iff_eq_empty.mp h_Mb_nonempty
+    · have h_Mb_empty : mSet τ D b h_nonempty = ∅ := Set.not_nonempty_iff_eq_empty.mp h_Mb_nonempty
       use τ, τ, D.erase b, D.erase a
       constructor
       · intro h_pair_eq
@@ -1197,7 +1210,7 @@ theorem internal_door_two_rooms [Finite T] (τ : Finset T) (D : Finset I)
           subst hx_eq hc_eq
           have h_dom : IST.isDominant (insert x τ) D := h0
           have h_exists_max : ∃ i ∈ ({a, b} : Finset I),
-              (M_set τ D i h_nonempty).Nonempty ∧ is_maximal_in_M_set τ D i h_nonempty x := by
+              (mSet τ D i h_nonempty).Nonempty ∧ isMaximalInMSet τ D i h_nonempty x := by
             apply (sublemma_3_2 τ D x h_door h_nonempty hx_not_mem a b ha_mem hb_mem hab
                 h_eq_mini).mp h_dom
           obtain ⟨i, hi_mem, hi_nonempty, _⟩ := h_exists_max
@@ -1252,10 +1265,13 @@ attribute [local instance] Classical.propDecidable
 
 variable (c : T → I) (σ : Finset T) (C : Finset I)
 
+/-- A colorful cell: the image of the coloring on `σ` equals `C`. -/
 def isColorful : Prop := IST.isCell σ C ∧ σ.image c   = C
 
+/-- A nearly colorful cell: exactly one color of `C` is missing. -/
 def isNearlyColorful : Prop := IST.isCell σ C ∧ (C \ σ.image c).card = 1
 
+/-- A nearly colorful cell whose missing color is exactly `i`. -/
 def isTypedNC (i : I) (σ : Finset T) (C : Finset I) : Prop := IST.isCell σ C ∧ (C \ (σ.image c))
     = {i}
 
@@ -1331,7 +1347,8 @@ lemma room_of_colorful (h : IST.isColorful c σ C) : IST.isRoom σ C := by
 
 
 
-def pick_colorful_point (h : IST.isColorful c σ C)
+/-- A chosen point of the goods set of a colorful room. -/
+def pickColorfulPoint (h : IST.isColorful c σ C)
     : σ := Classical.choice (sigma_nonempty_of_room (room_of_colorful h)).to_subtype
 
 
@@ -1542,6 +1559,7 @@ lemma image_erase_eq_erase_image_of_unique
 
 end ImageErase
 variable (c σ C) in
+/-- The set of nearly colorful doors of a given room. -/
 abbrev NCdoors := {(τ,D) | isNearlyColorful c τ D ∧ isDoorof τ D σ C }
 
 
@@ -2257,9 +2275,11 @@ lemma doors_of_NCroom [DecidableEq T] (h_room : isRoom σ C) (h_nc : isNearlyCol
 variable [Fintype T] [Fintype I]
 
 variable (c) in
+/-- The finset of colorful rooms of a coloring. -/
 abbrev colorful := Finset.filter (fun (x : Finset T× Finset I) =>  IST.isColorful c x.1 x.2) univ
 
 variable (c) in
+/-- The set used for the double-counting parity argument of typed doors. -/
 abbrev dbcountingset (i : I) := Finset.filter (fun x : (Finset T× Finset I) × (Finset T× Finset I)
     => isTypedNC c i x.1.1 x.1.2 ∧ isDoorof x.1.1 x.1.2 x.2.1 x.2.2) univ
 

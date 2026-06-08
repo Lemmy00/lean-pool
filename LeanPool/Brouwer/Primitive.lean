@@ -1325,7 +1325,7 @@ lemma scarfSplitReplacementStep_GiEdges
 The graph-walk segment represented by one split Scarf replacement step:
 `X → Y → X'`.
 -/
-def scarfSplitReplacementStep_walk
+def scarfSplitReplacementStepWalk
     {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
     (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
     (GiGraph (IST := IST) c i).Walk
@@ -1380,8 +1380,10 @@ primitive set.  The local lemmas above build such walks from initial and split
 replacement segments.
 -/
 structure ScarfAlgorithmTrace (c : T → I) (i : I) where
+  /-- The terminal room of a Scarf-algorithm trace. -/
   terminal : Finset (ExtendedGoods T I)
   terminal_fullyColored : isFullyColoredPrimitive (IST := IST) c terminal
+  /-- The graph walk recorded by a Scarf-algorithm trace. -/
   walk : (GiGraph (IST := IST) c i).Walk
     (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
     (associatedCell (T := T) (I := I) terminal)
@@ -1476,6 +1478,7 @@ lemma giVertex_of_GiDegree_eq_one {c : T → I} {i : I} {v : GiCell T I}
   exact GiEdge.left_vertex ((mem_GiNeighbors (IST := IST)).1 hw)
 
 omit [Inhabited T] in
+/-- The induced subgraph on the vertices reachable from a fixed base vertex. -/
 def reachableComponentGraph {α : Type*} (G : SimpleGraph α) (v₀ : α) :
     SimpleGraph {v : α // G.Reachable v₀ v} where
   Adj a b := G.Adj a.1 b.1
@@ -1764,7 +1767,7 @@ def extendedCoordinatePoint (u : I → T → ℝ) (M : I → ℝ) :
 
 /-- A uniform choice of slack heights for a finite utility realization. -/
 def uniformSlackHeight : I → ℝ :=
-  fun _ => (Fintype.card T : ℝ) + 2
+  Function.const I ((Fintype.card T : ℝ) + 2)
 
 omit [Fintype I] in
 @[simp] lemma slackVector_self (M : I → ℝ) (i : I) :
@@ -1930,6 +1933,7 @@ omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma orderUtility_lt_uniformSlackHeight (i : I) (x : T) :
     orderUtility (IST := IST) i x < uniformSlackHeight (T := T) (I := I) i := by
   unfold orderUtility uniformSlackHeight orderLowerSet
+  simp only [Function.const_apply]
   have hCard : (Finset.univ.filter (fun y : T => (IST i).le y x)).card ≤ Fintype.card T := by
     rw [← Finset.card_univ]
     exact Finset.card_le_card (Finset.filter_subset _ _)

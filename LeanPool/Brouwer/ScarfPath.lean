@@ -487,19 +487,19 @@ def simpleGraphDegreeAtMostTwo {α : Type*} [Fintype α] (G : SimpleGraph α) : 
   ∀ v, G.degree v ≤ 2
 
 /-- A connected component is represented by a Mathlib graph path. -/
-def simpleGraphPathComponent {α : Type*} [Fintype α]
+def simpleGraphPathComponent {α : Type*}
     (G : SimpleGraph α) (component : G.ConnectedComponent) : Prop :=
   ∃ (u v : α) (p : G.Walk u v),
     p.IsPath ∧ {x : α | x ∈ p.support} = component.supp
 
 /-- A connected component is represented by a Mathlib graph cycle. -/
-def simpleGraphCycleComponent {α : Type*} [Fintype α]
+def simpleGraphCycleComponent {α : Type*}
     (G : SimpleGraph α) (component : G.ConnectedComponent) : Prop :=
   ∃ (u : α) (p : G.Walk u u),
     p.IsCycle ∧ {x : α | x ∈ p.support} = component.supp
 
 /-- The literal "disjoint paths and cycles" component statement for a finite `SimpleGraph`. -/
-def simpleGraphComponentsArePathsOrCycles {α : Type*} [Fintype α]
+def simpleGraphComponentsArePathsOrCycles {α : Type*}
     (G : SimpleGraph α) : Prop :=
   ∀ component : G.ConnectedComponent,
     simpleGraphPathComponent G component ∨ simpleGraphCycleComponent G component
@@ -783,7 +783,7 @@ theorem component_path_support_eq_component_of_no_escape
 two graph has a closing edge not already used by the path, then the component
 is a cycle.  The extra edge condition excludes the two-vertex path case. -/
 theorem component_cycle_of_maximal_path_closes
-    {α : Type*} [Fintype α] (G : SimpleGraph α)
+    {α : Type*} (G : SimpleGraph α)
     {component : G.ConnectedComponent} {u v : α} {p : G.Walk u v}
     (hp : p.IsPath)
     (hsupp : {x : α | x ∈ p.support} = component.supp)
@@ -806,7 +806,7 @@ theorem component_cycle_of_maximal_path_closes
 
 /-- A path whose support is exactly a component represents that component as a path. -/
 theorem component_path_of_support_eq_component
-    {α : Type*} [Fintype α] (G : SimpleGraph α)
+    {α : Type*} (G : SimpleGraph α)
     {component : G.ConnectedComponent} {u v : α} {p : G.Walk u v}
     (hp : p.IsPath)
     (hsupp : {x : α | x ∈ p.support} = component.supp) :

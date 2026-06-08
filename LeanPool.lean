@@ -187,7 +187,7 @@ import LeanPool.BrauerGroupNew.Wedderburn
 import LeanPool.BrauerGroupNew.ZeroSevenFourE
 import LeanPool.Brouwer
 import LeanPool.Brouwer.Brouwer
-import LeanPool.Brouwer.Brouwer_product
+import LeanPool.Brouwer.BrouwerProduct
 import LeanPool.Brouwer.Nash
 import LeanPool.Brouwer.Primitive
 import LeanPool.Brouwer.Scarf

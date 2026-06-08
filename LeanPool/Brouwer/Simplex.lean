@@ -27,7 +27,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 namespace stdSimplex
 variable (k : Type*) [CommRing k] [LinearOrder k] [IsStrictOrderedRing k] (α : Type*) [Fintype α]
 
-instance funlike [DecidableEq α] : FunLike (stdSimplex k α) α k where
+instance funlike : FunLike (stdSimplex k α) α k where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
@@ -35,9 +35,10 @@ omit [IsStrictOrderedRing k] in
 lemma funlike_eval1 (f : stdSimplex k α) : f = f.val := rfl
 
 omit [IsStrictOrderedRing k] in
-lemma funlike_eval2 [DecidableEq α] (f : stdSimplex k α) (x : α) : f.val x = f x := rfl
+lemma funlike_eval2 (f : stdSimplex k α) (x : α) : f.val x = f x := rfl
 
 variable {k α} in
+/-- The pure strategy concentrated at `i`, as a point of the standard simplex. -/
 abbrev pure [DecidableEq α] (i : α) : stdSimplex k α := ⟨fun j => if i = j then 1 else 0,
  by
   constructor
@@ -60,7 +61,7 @@ lemma pure_eval_neq [DecidableEq α] {i j : α} (h : ¬ i = j) : pure i j = (0 :
   simp [h]
 
 
-noncomputable instance SInhabited_of_Inhabited [DecidableEq α] [Inhabited α] :
+noncomputable instance SInhabitedOfInhabited [DecidableEq α] [Inhabited α] :
     Inhabited (stdSimplex k α) where
   default := pure (default : α)
 
@@ -70,7 +71,7 @@ noncomputable instance SNonempty_of_Inhabited {α : Type*} [Fintype α]
   Nonempty.intro (default : stdSimplex k α)
 
 variable {k α} in
-lemma wsum_magic_ineq [DecidableEq α] [PosMulMono k]
+lemma wsum_magic_ineq [PosMulMono k]
     {σ : stdSimplex k α} {f : α → k} {c : k} :
   ∑ i : α, (σ i) *  f i = c → ∃ i, 0 < σ i ∧ f i ≤ c := by
     intro H1
@@ -108,6 +109,7 @@ lemma wsum_magic_ineq [DecidableEq α] [PosMulMono k]
 end stdSimplex
 
 
+/-- The standard simplex over `α` with real coefficients. -/
 abbrev S:= stdSimplex ℝ α
 
 namespace S
