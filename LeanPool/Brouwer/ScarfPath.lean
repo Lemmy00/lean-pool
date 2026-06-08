@@ -9,7 +9,16 @@ import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
-open Classical
+/-!
+# The Scarf path graph
+
+This file builds the graph `G_i` whose vertices are the colorful and typed
+nearly-colorful rooms and doors of a fixed type `i`, and whose edges are
+room-door incidences. Following a path in this graph between odd-degree vertices
+is the combinatorial heart of the path-following proof of Scarf's lemma.
+-/
+
+attribute [local instance] Classical.propDecidable
 open Finset
 
 noncomputable section
@@ -532,7 +541,8 @@ theorem GiDegreeCharacterization_holds (c : T → I) (i : I) :
           rw [hDegreeOne] at hDegreeTwo
           norm_num at hDegreeTwo
       · by_cases hNonempty : v.1.Nonempty
-        · have hDegreeTwo := GiDegree_internalDoor (IST := IST) ⟨hDoorVertex.1, hNonempty⟩ hDoorVertex.2
+        · have hDegreeTwo := GiDegree_internalDoor (IST := IST) ⟨hDoorVertex.1,
+          hNonempty⟩ hDoorVertex.2
           exfalso
           rw [hDegreeOne] at hDegreeTwo
           norm_num at hDegreeTwo
@@ -623,7 +633,8 @@ theorem exists_maximal_component_path_of_degree_le_two
   have hnonempty : (0 : ℕ) ∈ lengths := by
     refine ⟨x, x, SimpleGraph.Walk.nil, SimpleGraph.Walk.IsPath.nil, ?_, rfl⟩
     intro y hy
-    simp at hy
+    simp only [SimpleGraph.Walk.support_nil, List.mem_cons, List.not_mem_nil, or_false,
+      Set.setOf_eq_eq_singleton, Set.mem_singleton_iff] at hy
     rw [hy]
     exact hxcomp
   obtain ⟨n, ⟨hn_mem, hn_max⟩⟩ := hfinite.exists_maximal ⟨0, hnonempty⟩
@@ -665,7 +676,7 @@ theorem maximal_component_path_no_escape_of_degree_le_two
       exact (SimpleGraph.Walk.cons_isPath_iff hxy.symm p).2 ⟨hp, hyNot⟩
     have hp'_sub : {z : α | z ∈ p'.support} ⊆ component.supp := by
       intro z hz
-      simp [p', SimpleGraph.Walk.support_cons] at hz
+      simp only [SimpleGraph.Walk.support_cons, List.mem_cons, Set.mem_setOf_eq, p'] at hz
       rcases hz with rfl | hz
       · exact hycomp
       · exact hp_sub hz
@@ -679,13 +690,15 @@ theorem maximal_component_path_no_escape_of_degree_le_two
       exact (SimpleGraph.Walk.concat_isPath_iff hxy).2 ⟨hp, hyNot⟩
     have hp'_sub : {z : α | z ∈ p'.support} ⊆ component.supp := by
       intro z hz
-      simp [p'] at hz
+      simp only [SimpleGraph.Walk.support_concat, List.mem_append, List.mem_cons,
+        List.not_mem_nil, or_false, Set.mem_setOf_eq, p'] at hz
       rcases hz with hz | rfl
       · exact hp_sub hz
       · exact hycomp
     have hle := hmax u y p' hp' hp'_sub
     simp [p'] at hle
-  obtain ⟨q, r, hqPath, hrPath, hqr⟩ := (SimpleGraph.Walk.IsPath.mem_support_iff_exists_append hp).1 hx
+  obtain ⟨q, r, hqPath, hrPath,
+    hqr⟩ := (SimpleGraph.Walk.IsPath.mem_support_iff_exists_append hp).1 hx
   have hqNonNil : ¬ q.Nil := by
     apply SimpleGraph.Walk.not_nil_of_ne
     exact fun hux => hxu hux.symm
@@ -735,7 +748,7 @@ Generic graph-theoretic step 2b: if a component path has no edge escaping its
 support inside the component, then its support is the whole component.
 -/
 theorem component_path_support_eq_component_of_no_escape
-    {α : Type*} [Fintype α] (G : SimpleGraph α)
+    {α : Type*} (G : SimpleGraph α)
     {component : G.ConnectedComponent} {u v : α} {p : G.Walk u v}
     (hp_sub : {x : α | x ∈ p.support} ⊆ component.supp)
     (hend :
@@ -783,12 +796,12 @@ theorem component_cycle_of_maximal_path_closes
     ext x
     constructor
     · intro hx
-      simp [SimpleGraph.Walk.support_cons] at hx
+      simp only [SimpleGraph.Walk.support_cons, List.mem_cons, Set.mem_setOf_eq] at hx
       rcases hx with rfl | hx
       · exact p.end_mem_support
       · exact hx
     · intro hx
-      simp [SimpleGraph.Walk.support_cons]
+      simp only [SimpleGraph.Walk.support_cons, List.mem_cons, Set.mem_setOf_eq]
       exact Or.inr hx
 
 /-- A path whose support is exactly a component represents that component as a path. -/
