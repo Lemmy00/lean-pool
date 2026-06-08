@@ -9,7 +9,7 @@ import LeanPool.Flean.Basic
 /-!
 # Flean: Floating-Point Numbers in Lean
 
-Source: url:https://github.com/josephmckinsey/flean
+Source: doi:10.1109/IEEESTD.2019.8766229, url:https://github.com/josephmckinsey/flean
 Authors: Joseph McKinsey
 Status: verified
 Main declarations: `Flean.Float`, `toFloat`, `toRat`, `to_float_to_rat`, `roundf_close`
