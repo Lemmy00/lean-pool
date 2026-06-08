@@ -1091,9 +1091,10 @@ import LeanPool.SumsThreeSquares
 import LeanPool.SumsThreeSquares.MinkowskiConvex
 import LeanPool.SumsThreeSquares.SumThreeSquares
 import LeanPool.SyntheticEuclid4
+import LeanPool.SyntheticEuclid4.Axioms
+import LeanPool.SyntheticEuclid4.PermTactics
 import LeanPool.SyntheticEuclid4.SyntheticEuclid4
-import LeanPool.SyntheticEuclid4.axioms
-import LeanPool.SyntheticEuclid4.tactics
+import LeanPool.SyntheticEuclid4.Tactics
 import LeanPool.TwoColoringOneRound
 import LeanPool.TwoColoringOneRound.API
 import LeanPool.TwoColoringOneRound.Definitions
