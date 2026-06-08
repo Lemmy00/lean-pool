@@ -5,7 +5,16 @@ Authors: Math_XMUM
 -/
 import LeanPool.Brouwer.Brouwer
 
-open Classical
+/-!
+# Primitive sets and the slack-vector form of Scarf's lemma
+
+This file reformulates rooms and doors of an `IndexedLOrder` in terms of primitive
+sets over the enlarged good set `T ⊕ I`, the "slack-vector" language of Scarf's
+algorithm. It relates the room/door combinatorics developed in `Scarf` to this
+primitive-set picture used by the path-following termination argument.
+-/
+
+attribute [local instance] Classical.propDecidable
 open Finset
 
 
@@ -199,7 +208,8 @@ def isAlmostPrimitive (Y : Finset (ExtendedGoods T I)) : Prop :=
     IST.isDoorof τ D σ C ∧
       Y = toAlmostPrimitive (I := I) τ D
 
-/-- Almost primitive sets in the paper's native form: an `(n-1)`-face contained in a primitive set. -/
+/-- Almost primitive sets in the paper's native form: an `(n-1)`-face contained in a
+primitive set. -/
 def isAlmostPrimitiveNative (Y : Finset (ExtendedGoods T I)) : Prop :=
   Y.card + 1 = Fintype.card I ∧ ∃ X, isPrimitiveNative (IST := IST) X ∧ Y ⊆ X
 
@@ -699,9 +709,11 @@ omit IST in
       ((Finset.empty : Finset T), ({i} : Finset I)) := by
   ext <;> simp
 
+omit [Fintype T] in
 /-- Each slack boundary is an almost primitive set. -/
-lemma slackBoundary_isAlmostPrimitive (i : I) :
+lemma slackBoundary_isAlmostPrimitive [Finite T] (i : I) :
     isAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) := by
+  have : Fintype T := Fintype.ofFinite T
   have hOutside : IST.isOutsideDoor (Finset.empty : Finset T) ({i} : Finset I) :=
     IST.outsidedoor_singleton i
   let xMax : T := @Finset.max' T (IST i) Finset.univ
@@ -1472,7 +1484,7 @@ def reachableComponentGraph {α : Type*} (G : SimpleGraph α) (v₀ : α) :
 
 omit [Inhabited T] in
 lemma reachableComponentGraph_degree_eq
-    {α : Type*} [Fintype α] [DecidableEq α] (G : SimpleGraph α) (v₀ : α)
+    {α : Type*} [Fintype α] (G : SimpleGraph α) (v₀ : α)
     (x : {v : α // G.Reachable v₀ v}) :
     (reachableComponentGraph G v₀).degree x = G.degree x.1 := by
   classical
@@ -1513,7 +1525,7 @@ theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
     reachableComponentGraph G outside
   let outsideSub : {v : GiCell T I // G.Reachable outside v} := ⟨outside, ⟨SimpleGraph.Walk.nil⟩⟩
   have hOutsideDoor : IST.isOutsideDoor outside.1 outside.2 := by
-    simp [outside]
+    simp only [associatedCell_slackBoundary, outside]
     exact IST.outsidedoor_singleton i
   have hOutsideTyped : IST.isTypedNC c i outside.1 outside.2 := by
     have hDoorVertex := slackBoundary_GiDoorVertex (IST := IST) c i
@@ -1522,7 +1534,6 @@ theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
     change GiDegree (IST := IST) c i outside = 1
     exact GiDegree_outsideDoor (IST := IST) hOutsideDoor hOutsideTyped
   have hOutsideSubDegree : H.degree outsideSub = 1 := by
-    change H.degree outsideSub = 1
     rw [reachableComponentGraph_degree_eq G outside outsideSub, hOutsideDegree]
   have hOddOutside : Odd (H.degree outsideSub) := by rw [hOutsideSubDegree]; exact odd_one
   obtain ⟨w, hwNe, hwOdd⟩ :=
@@ -2067,7 +2078,8 @@ lemma extendedCoordinatePoint_coordinate_injective
           by_cases hki : k = i
           · have hpos : 0 < u i y := hu.positive i y
             exact (ne_of_gt hpos)
-              (by simpa [extendedCoordinatePoint, utilityVector, slackVector, hki.symm] using hEq.symm)
+              (by simpa [extendedCoordinatePoint, utilityVector, slackVector, hki.symm]
+                  using hEq.symm)
           · have hik : i ≠ k := fun hik => hki hik.symm
             have hlt : u i y < slackVector (I := I) M k i := by
               simpa [slackVector, hik] using hM k i y hik
@@ -2128,19 +2140,21 @@ theorem coordinateValuesDefineLinearOrders_of_realization
         intro a b c hab hbc
         exact lt_trans hab hbc }
 
-omit [DecidableEq T] in
+omit [DecidableEq T] [Fintype T] [Fintype I] in
 /--
 The fully formalized perturbation step from §3: for every positive utility
 realization on a finite, nonempty index set, there are slack heights that
 dominate all goods coordinates, are pairwise distinct, and therefore make
 coordinate comparison into linear orders on `T ∪ I`.
 -/
-theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
+theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I] [Finite T] [Finite I]
     {u : I → T → ℝ} (hu : PositiveUtilityRealization (IST := IST) u) :
     ∃ M : I → ℝ,
       SlackBounds (T := T) (I := I) u M ∧
       SlackHeightsPairwiseDistinct (I := I) M ∧
       CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+  have : Fintype T := Fintype.ofFinite T
+  have : Fintype I := Fintype.ofFinite I
   let M := perturbedSlackHeight (T := T) (I := I) u
   have hBounds : SlackBounds (T := T) (I := I) u M :=
     perturbedSlackHeight_slackBounds (T := T) (I := I) u
@@ -2149,19 +2163,21 @@ theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
   exact ⟨M, hBounds, hDistinct,
     coordinateValuesDefineLinearOrders_of_realization (IST := IST) hu hBounds hDistinct⟩
 
-omit [DecidableEq T] in
+omit [DecidableEq T] [Fintype T] [Fintype I] in
 /--
 The §3 utility-and-perturbation passage as a single existence statement:
 starting only from the abstract indexed linear orders, choose positive utility
 functions realizing the orders and pairwise distinct slack heights large enough
 to make coordinate comparison linear on the enlarged set.
 -/
-theorem exists_coordinateUtilityModel [Inhabited I] :
+theorem exists_coordinateUtilityModel [Inhabited I] [Finite T] [Finite I] :
     ∃ (u : I → T → ℝ) (M : I → ℝ),
       PositiveUtilityRealization (IST := IST) u ∧
       SlackBounds (T := T) (I := I) u M ∧
       SlackHeightsPairwiseDistinct (I := I) M ∧
       CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+  have : Fintype T := Fintype.ofFinite T
+  have : Fintype I := Fintype.ofFinite I
   let u : I → T → ℝ := fun i x => orderUtility (IST := IST) i x
   have hu : PositiveUtilityRealization (IST := IST) u :=
     positiveOrderUtility_realization (IST := IST)
@@ -2210,7 +2226,7 @@ lemma extendedCoordinateLt_goods_iff {u : I → T → ℝ} {M : I → ℝ}
       (IST i).lt x y :=
   ⟨original_lt_of_extendedCoordinateLt_goods hu, extendedCoordinateLt_goods_of_original_lt hu⟩
 
-omit [Inhabited T] [Fintype T] [Fintype I] in
+omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma coordinateGoods_le_of_original_le {u : I → T → ℝ} {M : I → ℝ}
     (hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M)
     (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
@@ -2297,7 +2313,8 @@ theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → 
             have hik : i ≠ k := by
               intro hEq
               exact hkNotC (hEq ▸ hiC)
-            letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+            letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I)
+                u M hCoord) i
             exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
               (Sum.inl t) (Sum.inr k) from coordinateGood_lt_slack_of_ne hM hik t)
     | inr j =>
@@ -2305,15 +2322,18 @@ theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → 
         intro z hz
         cases z with
         | inl x =>
-            letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
+            letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I)
+                u M hCoord) j
             exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j).lt
               (Sum.inr j) (Sum.inl x) from coordinateSlack_lt_good (M := M) hu j x)
         | inr k =>
             by_cases hkj : k = j
             · subst hkj
-              letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) k
+              letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I)
+                  u M hCoord) k
               exact le_rfl
-            · letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
+            · letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I)
+                u M hCoord) j
               exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j).lt
                 (Sum.inr j) (Sum.inr k) from coordinateSlack_lt_slack_of_ne hu hM (Ne.symm hkj))
 
@@ -2333,8 +2353,10 @@ theorem coordinatePrimitive_to_nativePrimitive {u : I → T → ℝ} {M : I → 
       intro hiSlack
       have hleSlack := hleX (Sum.inr i) hiSlack
       have hSlackLtGood := coordinateSlack_lt_good (M := M) hu i y
-      letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
-      exact not_lt_of_ge hleSlack (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
+      letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I)
+          u M hCoord) i
+      exact not_lt_of_ge hleSlack (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord)
+          i).lt
         (Sum.inr i) (Sum.inl y) from hSlackLtGood)
     refine ⟨i, hiMissing, ?_⟩
     intro x hx
