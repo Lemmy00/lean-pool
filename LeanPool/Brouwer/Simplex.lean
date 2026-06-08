@@ -9,7 +9,14 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Tactic.Push
 import Mathlib.Tactic.Common
 
---open Classical
+/-!
+# Mixed strategies on the standard simplex
+
+This file equips `stdSimplex` over a finite type with a `FunLike` coercion and
+records the basic arithmetic facts about pure strategies and weighted sums used
+when reasoning about mixed strategies, including the key inequality
+`wsum_magic_ineq` relating a weighted sum to a uniform bound.
+-/
 
 /-
 We use S to denote a mixed stratage
@@ -25,45 +32,46 @@ instance funlike [DecidableEq α] : FunLike (stdSimplex k α) α k where
   coe_injective' := Subtype.val_injective
 
 omit [IsStrictOrderedRing k] in
-lemma funlike_eval1 (f : stdSimplex k α)  : f = f.val := rfl
+lemma funlike_eval1 (f : stdSimplex k α) : f = f.val := rfl
 
 omit [IsStrictOrderedRing k] in
 lemma funlike_eval2 [DecidableEq α] (f : stdSimplex k α) (x : α) : f.val x = f x := rfl
 
 variable {k α} in
-abbrev pure [DecidableEq α] (i : α) : stdSimplex k α  := ⟨fun j => if i=j then 1 else 0,
- by {
+abbrev pure [DecidableEq α] (i : α) : stdSimplex k α := ⟨fun j => if i = j then 1 else 0,
+ by
   constructor
-  . {
-    intro j
-    by_cases H: i=j
+  · intro j
+    by_cases H : i = j
     repeat simp [H]
-  }
-  . simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-  }⟩
+  · simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]⟩
 
 variable {k α} in
-lemma pure_eval_eq [DecidableEq α] {i j: α} (h : i=j):  pure i j = (1:k) := by
-  unfold pure;
-  rw [<-funlike_eval2]
+lemma pure_eval_eq [DecidableEq α] {i j : α} (h : i = j) : pure i j = (1 : k) := by
+  unfold pure
+  rw [← funlike_eval2]
   simp [h]
 
 
 variable {k α} in
-lemma pure_eval_neq [DecidableEq α] {i j: α} (h : ¬ i=j):  pure i j = (0:k) := by
-  unfold pure;
-  rw [<-funlike_eval2]
+lemma pure_eval_neq [DecidableEq α] {i j : α} (h : ¬ i = j) : pure i j = (0 : k) := by
+  unfold pure
+  rw [← funlike_eval2]
   simp [h]
 
 
-noncomputable instance SInhabited_of_Inhabited [DecidableEq α] [Inhabited α]: Inhabited (stdSimplex k α) where
+noncomputable instance SInhabited_of_Inhabited [DecidableEq α] [Inhabited α] :
+    Inhabited (stdSimplex k α) where
   default := pure (default : α)
 
-
-noncomputable instance SNonempty_of_Inhabited {α : Type*} [DecidableEq α] [Fintype α] [Inhabited α]: Nonempty (stdSimplex k α) := Nonempty.intro (default : stdSimplex k α)
+open scoped Classical in
+noncomputable instance SNonempty_of_Inhabited {α : Type*} [Fintype α]
+    [Inhabited α] : Nonempty (stdSimplex k α) :=
+  Nonempty.intro (default : stdSimplex k α)
 
 variable {k α} in
-lemma wsum_magic_ineq [DecidableEq α] [LinearOrder k] [IsOrderedCancelAddMonoid k] [PosMulMono k] [PosMulStrictMono k] {σ : stdSimplex k α} {f : α → k} {c : k} :
+lemma wsum_magic_ineq [DecidableEq α] [PosMulMono k]
+    {σ : stdSimplex k α} {f : α → k} {c : k} :
   ∑ i : α, (σ i) *  f i = c → ∃ i, 0 < σ i ∧ f i ≤ c := by
     intro H1
     by_contra H2
@@ -104,25 +112,4 @@ abbrev S:= stdSimplex ℝ α
 
 namespace S
 
-variable {α : Type*} [Fintype α] [DecidableEq α]
-
-/-
-@[simp]
-noncomputable def pure (i : α) : S α  := ⟨fun j => if i=j then 1 else 0,
- by {
-  constructor
-  . {
-    intro j
-    by_cases H: i=j
-    repeat simp [H]
-  }
-  . simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-  }⟩
-
-noncomputable instance SInhabited_of_Inhabited {α : Type*} [Fintype α] [Inhabited α]: Inhabited (S α) where
-  default := pure (default : α)
-
-
-noncomputable instance SNonempty_of_Inhabited {α : Type*} [Fintype α] [Inhabited α]: Nonempty (S α) := Nonempty.intro (default : S α)
-
--/
+end S
