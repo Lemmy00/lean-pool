@@ -17,7 +17,7 @@ import LeanPool.PrimeCert.Wieferich
 /-!
 # Formally verified primality certificates
 
-Source: url:https://github.com/b-mehta/PrimeCert
+Source: doi:10.1090/S0025-5718-1975-0384673-1, url:https://github.com/b-mehta/PrimeCert
 Authors: Kenny Lau, Bhavik Mehta
 Status: verified
 Main declarations: `pocklington_test`, `PrimeCert.pocklington3_test`, `wieferich_mirimanoff`
