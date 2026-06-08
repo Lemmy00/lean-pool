@@ -23,11 +23,13 @@ open Function
 noncomputable section
 
 /-
-A game is a set of maps g^i : Πᵢ S i → ℝ
+A game is a set of maps from strategy profiles to real payoffs.
 -/
+universe u
+
 /-- A game: a finite-or-infinite set of players, each with a set of pure
 strategies and a real-valued payoff function on the profiles of all players. -/
-structure Game.{u} where
+structure Game where
     /-- The set of players. -/
     I : Type u
     --deEqI : DecidableEq I := inferInstance -- Decidable Eq
@@ -61,7 +63,7 @@ end Game
 open Game
 
 /-- A finite game: a game with finitely many players and finite strategy sets. -/
-structure FinGame.{u} extends Game.{u} where
+structure FinGame extends Game.{u} where
   FinI : Fintype I
   FinSS : ∀ i : I , Fintype (SS i)
 
@@ -73,15 +75,16 @@ variable {G : FinGame}
 
 instance {G : FinGame} : Fintype G.I := G.FinI
 instance {G : FinGame} {i : G.I} : Fintype (G.SS i) := G.FinSS i
---instance mixed_SS_i_Inhabited {G: FinGame} {i : G.I}: Inhabited (S (G.SS i)) := inferInstance
+-- instance mixed_SS_i_Inhabited {G : FinGame} {i : G.I} :
+--     Inhabited (MixedStrategy (G.SS i)) := inferInstance
 
 variable (G) in
 /-- A mixed strategy profile of a finite game: a simplex point per player. -/
 abbrev mixedS := (i : G.I) → stdSimplex ℝ (G.SS i)
 
 /-- The expected payoff of player `i` under a mixed strategy profile. -/
-def mixedG (i : G.I) (m : Π i, S (G.SS i)) : ℝ := ∑ s : (Π j, G.SS j) , (∏ j,  m j (s j))
-    * (G.g i s)
+def mixedG (i : G.I) (m : Π i, MixedStrategy (G.SS i)) : ℝ :=
+  ∑ s : (Π j, G.SS j) , (∏ j, m j (s j)) * (G.g i s)
 
 lemma mixed_g_linear : G.mixedG i (update  x i y) = ∑ s : G.SS i,
     y s * G.mixedG i (update x i (stdSimplex.pure s)) := by
@@ -153,7 +156,7 @@ lemma mixed_g_linear : G.mixedG i (update  x i y) = ∑ s : G.SS i,
 def FinGame2MixedGame (G : FinGame) : Game := {
   I := G.I
   HI := G.HI
-  SS := fun i => S (G.SS i)
+  SS := fun i => MixedStrategy (G.SS i)
   HSS := inferInstance
   /-
   Let m be the mixed strategy, then m j (s j) is the probabilty
@@ -172,21 +175,24 @@ variable (G : FinGame)
 --theorem ExistsNashEq : ∃ m :  (i:(μ G).I )→ (μ G).SS i, (μ G).NashEquilibrium m := by sorry
 /-
 @[simp]
-noncomputable def with_hole {G: FinGame} (s : G.mixedS) (i : G.I) (x : S (G.SS i))
-    := Function.update G.I (fun i =>S (G.SS i)) s i x
+noncomputable def with_hole {G: FinGame} (s : G.mixedS) (i : G.I)
+    (x : MixedStrategy (G.SS i))
+    := Function.update G.I (fun i => MixedStrategy (G.SS i)) s i x
 
 -- comma_notation for mixed game
 noncomputable instance comma.mixed {G : FinGame} {i : G.I}
-    : CoeOut  ((S (G.SS i))×(@IFun' G.I (fun i => S (G.SS i )) i)) (IFun (fun i => S (G.SS i)))
+    : CoeOut
+        ((MixedStrategy (G.SS i)) × (@IFun' G.I (fun i => MixedStrategy (G.SS i)) i))
+        (IFun (fun i => MixedStrategy (G.SS i)))
     where
-  coe := @combinePair G.I (fun i=> S (G.SS i)) i
+  coe := @combinePair G.I (fun i=> MixedStrategy (G.SS i)) i
 -/
 
 
 
 /-- A mixed strategy profile is a Nash equilibrium of the mixed game. -/
 def mixedNashEquilibrium {G : FinGame} (x : G.mixedS) :=
-  ∀ (i:G.I), ∀ (y : S (G.SS  i)),
+  ∀ (i:G.I), ∀ (y : MixedStrategy (G.SS  i)),
      G.mixedG i x ≥ G.mixedG i (update  x i y)
 
 
@@ -418,7 +424,7 @@ noncomputable abbrev nashMapAux (σ : G.mixedS) (i : G.I) (a : G.SS i) : ℝ :=
   gFunction i σ a / ∑ b : G.SS i, gFunction i σ b
 
 lemma nash_map_cert (σ : G.mixedS) (i : G.I) :
-  (nashMapAux σ i) ∈ S (G.SS i) := by
+  (nashMapAux σ i) ∈ MixedStrategy (G.SS i) := by
   unfold nashMapAux
   constructor
   · intro x;

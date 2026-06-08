@@ -18,9 +18,7 @@ when reasoning about mixed strategies, including the key inequality
 `wsum_magic_ineq` relating a weighted sum to a uniform bound.
 -/
 
-/-
-We use S to denote a mixed stratage
--/
+/- We use `MixedStrategy` to denote a mixed strategy over a finite type. -/
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
@@ -109,9 +107,5 @@ lemma wsum_magic_ineq [PosMulMono k]
 end stdSimplex
 
 
-/-- The standard simplex over `α` with real coefficients. -/
-abbrev S:= stdSimplex ℝ α
-
-namespace S
-
-end S
+/-- The standard simplex over `α` with real coefficients, used as mixed strategies. -/
+abbrev MixedStrategy := stdSimplex ℝ α
