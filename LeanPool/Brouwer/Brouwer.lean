@@ -20,11 +20,21 @@ import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
-open Classical
+/-!
+# Brouwer's fixed-point theorem on a simplex
+
+This file derives Brouwer's fixed-point theorem for a continuous self-map of the
+standard simplex from Scarf's lemma. The combinatorial type `TT n l` of integer
+points of the scaled simplex carries an `IndexedLOrder`; applying Scarf's lemma to
+finer and finer subdivisions and passing to a convergent subsequence of the
+resulting colorful points produces a fixed point.
+-/
+
+attribute [local instance] Classical.propDecidable
 
 section
 /-- A dependent product of finite, indexed by finite, is a finite. -/
-instance Pi.Lex.finite {α : Type*} {β : α → Type*} [DecidableEq α] [Finite α]
+instance Pi.Lex.finite {α : Type*} {β : α → Type*} [Finite α]
     [∀ a, Finite (β a)] : Finite (Πₗ a, β a) :=
         (Equiv.finite_iff toLex).1 Pi.finite
 
@@ -71,7 +81,7 @@ instance TT.CoestdSimplex : CoeOut (TT n l) (stdSimplex ℝ (Fin n)) where
 
 
 variable {n l} in
-abbrev TT.Ilt ( x y : TT n l) :=
+abbrev TT.Ilt (x y : TT n l) :=
   toLex (x i, x)  < toLex (y i, y)
 
 instance TT.IST : IsStrictTotalOrder (TT n l) (TT.Ilt i) where
@@ -114,7 +124,7 @@ lemma TT.Ilt_keyprop (a b : TT n l) :
   exact Prod.Lex.left a b h
 
 lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C)
-(h2 : σ.Nonempty):
+(h2 : σ.Nonempty) :
   l < ∑ k ∈ C, (σ.image (fun x => (x k : ℕ))).min' (h2.image _) + C.card := by
   by_contra h_not
   push Not at h_not
@@ -132,36 +142,41 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
     let M_coords : Fin n → ℕ := fun k => if k = (0 : Fin n) then M' 0 + R else M' k
     have h_M_coords_sum : ∑ k, M_coords k = l := by
       have h1 : S = M' 0 + ∑ k ∈ (Finset.univ : Finset (Fin n)).erase 0, M' k := by
-        simp [S]
+        simp only [S]
         rw [← Finset.sum_insert (Finset.notMem_erase 0 Finset.univ)]
         rw [Finset.insert_erase (Finset.mem_univ 0)]
-      have : ∑ k, M_coords k = M_coords 0 + ∑ k ∈ (Finset.univ : Finset (Fin n)).erase 0, M_coords k := by
+      have : ∑ k, M_coords k = M_coords 0 + ∑ k ∈ (Finset.univ : Finset (Fin n)).erase 0,
+          M_coords k := by
         rw [← Finset.sum_insert (Finset.notMem_erase 0 Finset.univ)]
         rw [Finset.insert_erase (Finset.mem_univ 0)]
       rw [this]
       simp only [M_coords, if_true]
-      have sum_eq : ∑ x ∈ Finset.univ.erase 0, (if x = 0 then M' 0 + R else M' x) = ∑ x ∈ Finset.univ.erase 0, M' x := by
+      have sum_eq : ∑ x ∈ Finset.univ.erase 0, (if x = 0 then M' 0 + R else M' x)
+          = ∑ x ∈ Finset.univ.erase 0, M' x := by
         apply Finset.sum_congr rfl
         intro k hk
         simp only [if_neg (Finset.ne_of_mem_erase hk)]
       rw [sum_eq, add_comm (M' 0) R, add_assoc, ← h1]
       simp only [R]
       have hM'0_le_S : M' 0 ≤ S := by
-        have : M' 0 ≤ ∑ k, M' k := Finset.single_le_sum (fun _ _ => Nat.zero_le _) (Finset.mem_univ 0)
+        have : M' 0 ≤ ∑ k, M' k := Finset.single_le_sum (fun _ _ => Nat.zero_le _)
+            (Finset.mem_univ 0)
         exact this
       omega
-
     have h_M_coords_bound : ∀ k, M_coords k ≤ l := by
       intro k
       by_cases h_is_zero : k = 0
       · simp [h_is_zero, M_coords, R]
         have hM'0_le_S : M' 0 ≤ S := by
-          have : M' 0 ≤ ∑ k, M' k := Finset.single_le_sum (fun _ _ => Nat.zero_le _) (Finset.mem_univ 0)
+          have : M' 0 ≤ ∑ k, M' k := Finset.single_le_sum (fun _ _ => Nat.zero_le _)
+              (Finset.mem_univ 0)
           exact this
         omega
-      · simp [h_is_zero, M_coords]
+      · simp only [h_is_zero, ↓reduceIte, M_coords]
         by_cases hk_in_C : k ∈ C
-        · simp [M', hk_in_C]; exact Nat.le_trans (Finset.single_le_sum (fun k _ => Nat.zero_le (m k + 1)) hk_in_C) h_sum_plus_one
+        · simp only [hk_in_C, ↓reduceIte, Order.add_one_le_iff, M'];
+            exact Nat.le_trans (Finset.single_le_sum (fun k _ => Nat.zero_le (m k + 1)) hk_in_C)
+            h_sum_plus_one
         · simp [M', hk_in_C]
     let M_val : Fin n → Fin (l + 1) := fun k => ⟨M_coords k, Nat.lt_succ_of_le (h_M_coords_bound k)⟩
     use ⟨M_val, by simp [M_val, h_M_coords_sum]⟩
@@ -221,7 +236,7 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
 
 
 
-theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C):
+theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C) :
     ∀ x ∈ σ, ∀ y ∈ σ, ∀ i : Fin n, abs ((x i : ℤ) - (y i : ℤ)) < 2 * (n + 1)
     := by
   by_cases hσ : σ.Nonempty
@@ -233,17 +248,19 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
       have h_sum_le_l : ∑ k ∈ C, m k ≤ l := by
         rcases hσ with ⟨x, hx⟩
         have h_m_le : ∀ k ∈ C, m k ≤ (x k : ℕ) := fun k _ =>
-          Finset.min'_le (σ.image (fun z => (z k : ℕ))) (x k : ℕ) (Finset.mem_image_of_mem (fun z => (z k : ℕ)) hx)
+          Finset.min'_le (σ.image (fun z => (z k : ℕ))) (x k : ℕ)
+              (Finset.mem_image_of_mem (fun z => (z k : ℕ)) hx)
         calc
           ∑ k ∈ C, m k ≤ ∑ k ∈ C, (x k : ℕ) := Finset.sum_le_sum h_m_le
-          _ ≤ ∑ k, (x k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C) (by simp)
+          _ ≤ ∑ k, (x k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C)
+              (by simp)
           _ = l := x.2
       rw [Nat.sub_lt_iff_lt_add h_sum_le_l, add_comm]
       exact h_key
     have h_bound : ∀ z ∈ σ, (z i : ℕ) - m' i < C.card := by
       intro z hz
       by_cases hi_in_C : i ∈ C
-      · simp [m', hi_in_C]
+      · simp only [Set.coe_setOf, dite_eq_ite, hi_in_C, ↓reduceIte, m']
         have h_mi_le_zi : m i ≤ (z i : ℕ) := by
           apply Finset.min'_le
           apply Finset.mem_image_of_mem
@@ -267,16 +284,17 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
           _ ≤ l - ∑ k ∈ C, m k := by
             apply Nat.sub_le_sub_right
             calc
-              ∑ k ∈ C, (z k : ℕ) ≤ ∑ k, (z k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C) (by simp)
+              ∑ k ∈ C, (z k : ℕ) ≤ ∑ k, (z k : ℕ)
+                  := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C) (by simp)
               _ = l := z.2
         exact lt_of_le_of_lt h_diff_bound h_le_l_sub_sum
-
-      · simp [m', hi_in_C]
+      · simp only [Set.coe_setOf, dite_eq_ite, hi_in_C, ↓reduceIte, tsub_zero, m']
         have h_sum_le : (z i : ℕ) + ∑ k ∈ C, (z k : ℕ) ≤ l := by
           calc
             (z i : ℕ) + ∑ k ∈ C, (z k : ℕ) = ∑ k ∈ insert i C, (z k : ℕ) := by
               rw [Finset.sum_insert hi_in_C]
-            _ ≤ ∑ k, (z k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _) (by simp)
+            _ ≤ ∑ k, (z k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _)
+                (by simp)
             _ = l := z.2
         have h_le_sub : (z i : ℕ) ≤ l - ∑ k ∈ C, (z k : ℕ) := Nat.le_sub_of_add_le h_sum_le
         have h_m_le_z : ∑ k ∈ C, m k ≤ ∑ k ∈ C, (z k : ℕ) := by
@@ -291,14 +309,13 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
     have h_nonneg : ∀ z ∈ σ, 0 ≤ (z i : ℤ) - (m' i : ℤ) := by
       intro z hz
       by_cases hi_in_C : i ∈ C
-      · simp [m', hi_in_C]
+      · simp only [Set.coe_setOf, dite_eq_ite, hi_in_C, ↓reduceIte, Int.sub_nonneg, Nat.cast_le, m']
         have h_min_le : m i ≤ ↑(z i) := by
           apply Finset.min'_le
           apply Finset.mem_image_of_mem
           exact hz
         exact_mod_cast h_min_le
       · simp [m', hi_in_C]
-
     have h_abs_lt_2_card : abs ((x i : ℤ) - (y i : ℤ)) < 2 * (C.card : ℤ) := by
       have h_bound_int : ∀ z ∈ σ, (z i : ℤ) - (m' i : ℤ) < C.card := by
         intro z hz
@@ -315,7 +332,8 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
         · simp only [Int.ofNat_zero, sub_zero]
           exact Int.ofNat_lt.mpr this
       calc
-        abs ((x i : ℤ) - (y i : ℤ)) = abs (((x i : ℤ) - (m' i : ℤ)) - ((y i : ℤ) - (m' i : ℤ))) := by rw [sub_sub_sub_cancel_right]
+        abs ((x i : ℤ) - (y i : ℤ)) = abs (((x i : ℤ) - (m' i : ℤ)) - ((y i : ℤ) - (m' i : ℤ)))
+            := by rw [sub_sub_sub_cancel_right]
         _ ≤ abs ((x i : ℤ) - (m' i : ℤ)) + abs ((y i : ℤ) - (m' i : ℤ)) := abs_sub _ _
         _ = ((x i : ℤ) - (m' i : ℤ)) + ((y i : ℤ) - (m' i : ℤ)) := by
           rw [abs_of_nonneg (h_nonneg x hx), abs_of_nonneg (h_nonneg y hy)]
@@ -334,7 +352,7 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
     exfalso
     exact hσ ⟨x, hx⟩
 
-theorem size_bound_out (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C):
+theorem size_bound_out (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C) :
     ∀ x ∈ σ, ∀ i ∉ C, (x i : ℤ) < n + 1
     := by
   by_cases hσ : σ.Nonempty
@@ -344,10 +362,12 @@ theorem size_bound_out (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.i
       have h_sum_le_l : ∑ k ∈ C, m k ≤ l := by
         rcases hσ with ⟨x, hx⟩
         have h_m_le : ∀ k ∈ C, m k ≤ (x k : ℕ) := fun k _ =>
-          Finset.min'_le (σ.image (fun z => (z k : ℕ))) (x k : ℕ) (Finset.mem_image_of_mem (fun z => (z k : ℕ)) hx)
+          Finset.min'_le (σ.image (fun z => (z k : ℕ))) (x k : ℕ)
+              (Finset.mem_image_of_mem (fun z => (z k : ℕ)) hx)
         calc
           ∑ k ∈ C, m k ≤ ∑ k ∈ C, (x k : ℕ) := Finset.sum_le_sum h_m_le
-          _ ≤ ∑ k, (x k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C) (by simp)
+          _ ≤ ∑ k, (x k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C)
+              (by simp)
           _ = l := x.2
       rw [Nat.sub_lt_iff_lt_add h_sum_le_l, add_comm]
       exact size_bound_key n l σ C h hσ
@@ -356,7 +376,8 @@ theorem size_bound_out (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.i
         calc
           (x i : ℕ) + ∑ k ∈ C, (x k : ℕ) = ∑ k ∈ insert i C, (x k : ℕ) := by
             rw [Finset.sum_insert hi_not_C]
-          _ ≤ ∑ k, (x k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _) (by simp)
+          _ ≤ ∑ k, (x k : ℕ) := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _)
+              (by simp)
           _ = l := x.2
       have h_le_sub : (x i : ℕ) ≤ l - ∑ k ∈ C, (x k : ℕ) := Nat.le_sub_of_add_le h_sum_le
       have h_m_le_x : ∑ k ∈ C, m k ≤ ∑ k ∈ C, (x k : ℕ) := by
@@ -396,8 +417,8 @@ instance stdSimplex.upidx (x y : stdSimplex ℝ (Fin n)) : Nonempty { i | x.1 i 
   have sum_y_eq_1 := y.2.2
   have sum_lt : Finset.sum Finset.univ y.1 < Finset.sum Finset.univ x.1 := by
     apply Finset.sum_lt_sum_of_nonempty
-    . exact Finset.univ_nonempty
-    . intro i _
+    · exact Finset.univ_nonempty
+    · intro i _
       have : ¬ (x.1 i ≤ y.1 i) := by
         intro hle
         exact @IsEmpty.false _ h ⟨i, hle⟩
@@ -406,7 +427,8 @@ instance stdSimplex.upidx (x y : stdSimplex ℝ (Fin n)) : Nonempty { i | x.1 i 
   exact (lt_irrefl 1 sum_lt).elim
 
 
-noncomputable def stdSimplex.pick (x  y : stdSimplex ℝ (Fin n)) := Classical.choice $ stdSimplex.upidx x y
+noncomputable def stdSimplex.pick (x y : stdSimplex ℝ (Fin n))
+    := Classical.choice <| stdSimplex.upidx x y
 
 
 
@@ -428,9 +450,8 @@ def mk_subseq (f : ℕ → ℕ) (h : ∀ n, n < f n) : ℕ → ℕ
   | 0 => f 0
   | n+1 => f (mk_subseq f h n)
 
-theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) (he : ∀ n, e n ∈ s ) :
+theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) (he : ∀ n, e n ∈ s) :
   ∃ a ∈ s, ∃ g : ℕ ↪o ℕ,  (∀ n, e (g n) = a) := by
-
   have range_subset : Set.range e ⊆ (s : Set α) := Set.range_subset_iff.mpr he
   have range_finite : (Set.range e).Finite := (Finset.finite_toSet s).subset range_subset
   let imgs : Finset α := Finset.filter (fun a => ¬(Set.Finite (e ⁻¹' {a}))) s
@@ -441,7 +462,7 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
       intro a ha
       by_contra hnf
       have a_in_imgs : a ∈ imgs := by
-        simp [imgs, ha]
+        simp only [Set.not_finite, Finset.mem_filter, ha, true_and, imgs]
         exact hnf
       have : imgs ≠ ∅ := Finset.ne_empty_of_mem a_in_imgs
       contradiction
@@ -453,15 +474,12 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
       rw [this]
       exact Set.Finite.biUnion s.finite_toSet preimages_all_finite
     exact Set.infinite_univ nat_finite
-
   obtain ⟨a, a_in_imgs⟩ := imgs_nonempty
   have a_in_s : a ∈ s := (Finset.mem_filter.1 a_in_imgs).1
   have a_infinite_preimage : ¬Set.Finite (e ⁻¹' {a}) := (Finset.mem_filter.1 a_in_imgs).2
-
   use a, a_in_s
   let preimage := e ⁻¹' {a}
   have preimage_infinite : Set.Infinite preimage := a_infinite_preimage
-
   have h_nonempty : preimage.Nonempty := by
     by_contra h_empty
     rw [Set.not_nonempty_iff_eq_empty] at h_empty
@@ -481,15 +499,18 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
   let g := mk_subseq f f_lt
   have hg_in : ∀ n, g n ∈ preimage := by
     intro n
-    induction' n with n ih
-    · simp [g, mk_subseq]; exact f_in 0
-    · simp [g, mk_subseq]; exact f_in (g n)
+    induction n with
+    | zero => simpa only [g, mk_subseq] using f_in 0
+    | succ n ih => simpa only [g, mk_subseq] using f_in (g n)
   have hg_strict : StrictMono g := by
     intro m n hmn
-    induction' hmn with n hmn ih
-    · simp [g, mk_subseq]
+    induction hmn with
+    | refl =>
+      simp only [g, mk_subseq]
       exact f_lt (g m)
-    · simp [g, mk_subseq]
+    | step hmn ih =>
+      rename_i n
+      simp only [g, mk_subseq]
       exact lt_trans ih (f_lt (g n))
   use OrderEmbedding.ofStrictMono g hg_strict
   intro n
@@ -497,14 +518,15 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
 
 end finiteness
 
-lemma constant_index_set_nonempty : Nonempty {(a, g) :(Finset (Fin n)) × (ℕ ↪o ℕ) | ∀ l', (room_seq f (g l')).1.2 = a } := by
+lemma constant_index_set_nonempty : Nonempty {(a, g) :(Finset (Fin n)) × (ℕ ↪o ℕ) | ∀ l',
+    (room_seq f (g l')).1.2 = a } := by
   obtain ⟨a, ha,g,hg⟩ := exists_subseq_constant_of_finite_image (s := Finset.univ)
     (fun x => (room_seq f x).1.2) (by simp)
   use ⟨a,g⟩; simp [hg]
 
 
 /- room_seq ∘ gpkg.1.2 has constant value equal to gpkg.1.1-/
-def gpkg :=  Classical.choice $ constant_index_set_nonempty f
+def gpkg :=  Classical.choice <| constant_index_set_nonempty f
 
 abbrev g1 := gpkg f |>.1.2
 
@@ -514,10 +536,13 @@ open Filter
 
 /- room_seq ∘ g1 ∘ hpkg.1.2 converge to a point in stdSimplex-/
 
-lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin n)) (C : Finset (Fin n)) (g : ℕ ↪o ℕ) (h_const : ∀ l', (room_seq f (g l')).1.2 = C) :
-  ∀ i ∉ C, Filter.Tendsto (fun l' => ((room_point_seq f (g l')) : stdSimplex ℝ (Fin n)).1 i) Filter.atTop (𝓝 0) := by
+lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin n))
+    (C : Finset (Fin n)) (g : ℕ ↪o ℕ) (h_const : ∀ l', (room_seq f (g l')).1.2 = C) :
+  ∀ i ∉ C, Filter.Tendsto (fun l' => ((room_point_seq f (g l')) : stdSimplex ℝ (Fin n)).1 i)
+      Filter.atTop (𝓝 0) := by
   intro i hiC
-  have h_tendsto_bound : Filter.Tendsto (fun l' => ((n : ℝ) + 1) / ((g l' : ℝ) + 1)) Filter.atTop (𝓝 0) := by
+  have h_tendsto_bound : Filter.Tendsto (fun l' => ((n : ℝ) + 1) / ((g l' : ℝ) + 1))
+      Filter.atTop (𝓝 0) := by
     have h_denom_tendsto : Filter.Tendsto (fun l' => (g l' : ℝ) + 1) Filter.atTop Filter.atTop := by
       have g_tendsto : Filter.Tendsto (fun l' => g l') Filter.atTop Filter.atTop := by
         apply Filter.tendsto_atTop_atTop.mpr
@@ -527,11 +552,13 @@ lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex �
         exact le_trans hl' (StrictMono.id_le g.strictMono l')
       have cast_tendsto : Filter.Tendsto (fun l' => (g l' : ℝ)) Filter.atTop Filter.atTop :=
         Filter.Tendsto.comp tendsto_natCast_atTop_atTop g_tendsto
-      exact Tendsto.atTop_add cast_tendsto (tendsto_const_nhds : Tendsto (fun _ : ℕ => (1 : ℝ)) atTop (𝓝 1))
+      exact Tendsto.atTop_add cast_tendsto (tendsto_const_nhds : Tendsto (fun _ : ℕ => (1 : ℝ))
+          atTop (𝓝 1))
     have : Tendsto (fun l' => ((n : ℝ) + 1) / ((g l' : ℝ) + 1)) atTop (𝓝 0) :=
       Tendsto.div_atTop tendsto_const_nhds h_denom_tendsto
     exact this
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds : Tendsto (fun _ : ℕ => (0 : ℝ)) atTop (𝓝 0)) h_tendsto_bound
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds : Tendsto (fun _ : ℕ => (0 :
+      ℝ)) atTop (𝓝 0)) h_tendsto_bound
   · intro l'
     exact ((room_point_seq f (g l')) : stdSimplex ℝ (Fin n)).2.1 i
   · intro l'
@@ -555,7 +582,7 @@ lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex �
     exact le_of_lt h_bound_real
 
 @[reducible]
-def hpkg_aux:
+def hpkg_aux :
   Nonempty {(z , h) : (stdSimplex ℝ  (Fin n)) × (ℕ → ℕ) | StrictMono h ∧ Filter.Tendsto
     ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ (Fin n))) ∘ h)
     Filter.atTop (𝓝 z) } := by
@@ -584,7 +611,8 @@ theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
   let l k := g1 f ((hpkg f).1.2 k)
   let σ k := (room_seq f (l k)).1.1
   let projected_σ k := (σ k).image (fun x => TTtostdSimplex x)
-  have h_diam_bounded : ∃ (C : ℝ), ∀ k, Metric.diam ((projected_σ k : Set (stdSimplex ℝ (Fin n)))) ≤ C / (l k + 1) := by
+  have h_diam_bounded : ∃ (C : ℝ), ∀ k, Metric.diam ((projected_σ k : Set (stdSimplex ℝ (Fin n))))
+      ≤ C / (l k + 1) := by
     use 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1)
     intro k
     let l_pnat : PNat := ⟨l k + 1, Nat.succ_pos _⟩
@@ -592,7 +620,8 @@ theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
     let C_k := rs.1.2
     have h_dom : TT.ILO.isDominant (σ k) C_k := (Finset.mem_filter.mp rs.2).2.1
     have h_coord_bound : ∀ x ∈ (σ k), ∀ y ∈ (σ k), ∀ i : Fin n,
-        abs (((TTtostdSimplex x).1 i : ℝ) - ((TTtostdSimplex y).1 i : ℝ)) < 2 * ((n : ℝ) + 1) / (l k + 1) := by
+        abs (((TTtostdSimplex x).1 i : ℝ) - ((TTtostdSimplex y).1 i : ℝ)) < 2 * ((n : ℝ) + 1)
+            / (l k + 1) := by
       intro x hx y hy i
       have h_bound_int := size_bound_in n l_pnat (σ k) C_k h_dom x hx y hy i
       simp only [TTtostdSimplex]
@@ -605,9 +634,11 @@ theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
       rw [div_lt_div_iff_of_pos_right (by positivity : (0 : ℝ) < l k + 1)]
       exact_mod_cast h_bound_int
     have h_dist_bound : ∀ x ∈ (σ k), ∀ y ∈ (σ k),
-        dist (TTtostdSimplex x) (TTtostdSimplex y) ≤ 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1) / (l k + 1) := by
+        dist (TTtostdSimplex x) (TTtostdSimplex y) ≤ 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1)
+            / (l k + 1) := by
       intro x hx y hy
-      have h_coord_diff_le : ∀ i, |(TTtostdSimplex x).1 i - (TTtostdSimplex y).1 i| ≤ 2 * (↑n + 1) / (↑(l k) + 1) :=
+      have h_coord_diff_le : ∀ i, |(TTtostdSimplex x).1 i - (TTtostdSimplex y).1 i| ≤ 2 * (↑n + 1)
+          / (↑(l k) + 1) :=
         fun i => le_of_lt (h_coord_bound x hx y hy i)
       calc dist (TTtostdSimplex x) (TTtostdSimplex y)
         = ‖(TTtostdSimplex x).1 - (TTtostdSimplex y).1‖ := rfl
@@ -639,14 +670,16 @@ theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
     exact Tendsto.atTop_add h_l_tends_real tendsto_const_nhds
   have h_C_div_l_tends_to_zero : Tendsto (fun k => C / (l k + 1)) atTop (𝓝 0) := by
     exact tendsto_const_nhds.div_atTop h_l_tends_to_inf
-  exact tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds : Tendsto (fun _ => (0:ℝ)) atTop (𝓝 0)) h_C_div_l_tends_to_zero (fun _ => Metric.diam_nonneg) hC_bound
+  exact tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds : Tendsto (fun _ => (0:ℝ))
+      atTop (𝓝 0)) h_C_div_l_tends_to_zero (fun _ => Metric.diam_nonneg) hC_bound
 
 theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin n)) (hf : Continuous f) :
   ∀ i ∈ (gpkg f).1.1, (f (hpkg f).1.1).1 i ≥ ((hpkg f).1.1).1 i := by
       let z := (hpkg f).1.1
       let C := (gpkg f).1.1
       let φ := (hpkg f).1.2
-      have convergence_to_z : Filter.Tendsto ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ (Fin n))) ∘ φ) Filter.atTop (𝓝 z) := by
+      have convergence_to_z : Filter.Tendsto ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ
+          (Fin n))) ∘ φ) Filter.atTop (𝓝 z) := by
         exact (hpkg f).2.2
       have constant_color_set : ∀ l', (room_seq f (g1 f l')).1.2 = C := by
         exact (gpkg f).2
@@ -668,45 +701,53 @@ theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
         rw [Finset.mem_image] at h_idx_in_image
         obtain ⟨y, hy_in_σ, hy_color⟩ := h_idx_in_image
         use y
-
       let y_seq := fun l' => TTtostdSimplex (h_exists_point l').choose
       have y_seq_spec : ∀ l',
         (h_exists_point l').choose ∈ (room_seq f (g1 f l')).1.1 ∧
-        (let l_pnat : PNat := ⟨(g1 f) l' + 1, by simp⟩; @Fcolor n l_pnat f (h_exists_point l').choose) = idx := by
+        (let l_pnat : PNat := ⟨(g1 f) l' + 1, by simp⟩;
+            @Fcolor n l_pnat f (h_exists_point l').choose) = idx := by
         intro l'
         exact (h_exists_point l').choose_spec
-
       have h_ineq : ∀ l', (f (y_seq l')).1 idx ≥ (y_seq l').1 idx := by
         intro l'
         have h_spec := y_seq_spec l'
-        simp [y_seq] at h_spec ⊢
+        simp only [PNat.mk_coe, ge_iff_le, y_seq] at h_spec ⊢
         let chosen_point := (h_exists_point l').choose
-        have h_color : (let l_pnat : PNat := ⟨(g1 f) l' + 1, by simp⟩; @Fcolor n l_pnat f chosen_point) = idx := h_spec.2
+        have h_color : (let l_pnat : PNat := ⟨(g1 f) l' + 1, by simp⟩;
+            @Fcolor n l_pnat f chosen_point) = idx := h_spec.2
         let l_pnat : PNat := ⟨(g1 f) l' + 1, by simp⟩
         unfold Fcolor at h_color
-        have h_pick_property : ∃ h : Nonempty {i | (chosen_point : stdSimplex ℝ (Fin n)).1 i ≤ (f (chosen_point : stdSimplex ℝ (Fin n))).1 i},
+        have h_pick_property : ∃ h : Nonempty {i | (chosen_point : stdSimplex ℝ (Fin n)).1 i ≤ (f
+            (chosen_point : stdSimplex ℝ (Fin n))).1 i},
           @Classical.choice _ h = idx := by
           rw [← h_color]
-          use stdSimplex.upidx (chosen_point : stdSimplex ℝ (Fin n)) (f (chosen_point : stdSimplex ℝ (Fin n)))
+          use stdSimplex.upidx (chosen_point : stdSimplex ℝ (Fin n))
+              (f (chosen_point : stdSimplex ℝ (Fin n)))
           rfl
         obtain ⟨h_nonempty, h_choice_eq⟩ := h_pick_property
-        have h_mem : idx ∈ {i | (chosen_point : stdSimplex ℝ (Fin n)).1 i ≤ (f (chosen_point : stdSimplex ℝ (Fin n))).1 i} := by
+        have h_mem : idx ∈ {i | (chosen_point : stdSimplex ℝ (Fin n)).1 i ≤ (f (chosen_point :
+            stdSimplex ℝ (Fin n))).1 i} := by
           let choice_prop := Classical.choice h_nonempty
           have : idx = choice_prop.val := h_choice_eq.symm
           rw [this]
           exact choice_prop.property
         exact h_mem
-
       have y_seq_φ_converges_to_z : Filter.Tendsto (y_seq ∘ φ) Filter.atTop (𝓝 z) := by
-        have h_dist_tends_to_zero : Filter.Tendsto (fun k => dist (y_seq (φ k)) ((fun l' => (room_point_seq f (g1 f l') : stdSimplex ℝ (Fin n))) (φ k))) Filter.atTop (𝓝 0) := by
-          have h_bound : ∀ k, dist (y_seq (φ k)) ((room_point_seq f (g1 f (φ k)) : stdSimplex ℝ (Fin n))) ≤
-                Metric.diam ((((room_seq f (g1 f (φ k))).1.1.image (fun x => TTtostdSimplex x)) : Set (stdSimplex ℝ (Fin n)))) := by
+        have h_dist_tends_to_zero : Filter.Tendsto (fun k => dist (y_seq (φ k))
+            ((fun l' => (room_point_seq f (g1 f l') : stdSimplex ℝ (Fin n))) (φ k)))
+            Filter.atTop (𝓝 0) := by
+          have h_bound : ∀ k, dist (y_seq (φ k)) ((room_point_seq f (g1 f (φ k))
+              : stdSimplex ℝ (Fin n))) ≤
+                Metric.diam ((((room_seq f (g1 f (φ k))).1.1.image (fun x => TTtostdSimplex x))
+                    : Set (stdSimplex ℝ (Fin n)))) := by
             intro k
             apply Metric.dist_le_diam_of_mem
             · exact Set.Finite.isBounded (Finset.finite_toSet _)
             · exact Finset.mem_image_of_mem TTtostdSimplex (y_seq_spec (φ k)).1
-            · exact Finset.mem_image_of_mem TTtostdSimplex (pick_colorful_point ((Finset.mem_filter.1 (room_seq f (g1 f (φ k))).2).2)).2
-          have h_diam_tendsto : Tendsto (fun k => Metric.diam ((((room_seq f (g1 f (φ k))).1.1.image TTtostdSimplex) : Set (stdSimplex ℝ (Fin n))))) atTop (𝓝 0) := by
+            · exact Finset.mem_image_of_mem TTtostdSimplex (pick_colorful_point
+                ((Finset.mem_filter.1 (room_seq f (g1 f (φ k))).2).2)).2
+          have h_diam_tendsto : Tendsto (fun k => Metric.diam ((((room_seq f (g1 f (φ
+              k))).1.1.image TTtostdSimplex) : Set (stdSimplex ℝ (Fin n))))) atTop (𝓝 0) := by
             exact tendsto_diam_to_zero f
           exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h_diam_tendsto
             (Eventually.of_forall (fun _ => dist_nonneg)) (Eventually.of_forall h_bound)
@@ -719,49 +760,51 @@ theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
         calc dist (y_seq (φ k)) z
           ≤ dist (y_seq (φ k)) ((room_point_seq f (g1 f (φ k)) : stdSimplex ℝ (Fin n)))
             + dist ((room_point_seq f (g1 f (φ k)) : stdSimplex ℝ (Fin n))) z := dist_triangle _ _ _
-        _ < ε / 2 + ε / 2 := add_lt_add (by simp at hk2; exact hk2) hk1
+        _ < ε / 2 + ε / 2 :=
+          add_lt_add
+            (by simp only [dist_zero_right, Real.norm_eq_abs, abs_dist] at hk2; exact hk2) hk1
         _ = ε := add_halves ε
-
       have f_y_seq_φ_converges_to_f_z : Filter.Tendsto (f ∘ y_seq ∘ φ) Filter.atTop (𝓝 (f z)) := by
         exact hf.continuousAt.tendsto.comp y_seq_φ_converges_to_z
-      have f_y_seq_φ_coord_converges : Filter.Tendsto (fun l' => (f (y_seq (φ l'))).1 idx) Filter.atTop (𝓝 ((f z).1 idx)) := by
+      have f_y_seq_φ_coord_converges : Filter.Tendsto (fun l' => (f (y_seq (φ l'))).1 idx)
+          Filter.atTop (𝓝 ((f z).1 idx)) := by
         have h_continuous : Continuous (fun x : stdSimplex ℝ (Fin n) => x.1 idx) :=
           Continuous.comp (continuous_apply idx) continuous_subtype_val
         exact h_continuous.continuousAt.tendsto.comp f_y_seq_φ_converges_to_f_z
-      have y_seq_φ_coord_converges : Filter.Tendsto (fun l' => (y_seq (φ l')).1 idx) Filter.atTop (𝓝 (z.1 idx)) := by
+      have y_seq_φ_coord_converges : Filter.Tendsto (fun l' => (y_seq (φ l')).1 idx)
+          Filter.atTop (𝓝 (z.1 idx)) := by
         have h_continuous : Continuous (fun x : stdSimplex ℝ (Fin n) => x.1 idx) :=
           Continuous.comp (continuous_apply idx) continuous_subtype_val
         exact h_continuous.continuousAt.tendsto.comp y_seq_φ_converges_to_z
+      exact le_of_tendsto_of_tendsto y_seq_φ_coord_converges f_y_seq_φ_coord_converges
+          (Eventually.of_forall (fun l' => h_ineq (φ l')))
 
-      exact le_of_tendsto_of_tendsto y_seq_φ_coord_converges f_y_seq_φ_coord_converges (Eventually.of_forall (fun l' => h_ineq (φ l')))
-
-theorem Brouwer (hf : Continuous f): ∃ x , f x = x := by
+theorem Brouwer (hf : Continuous f) : ∃ x , f x = x := by
   let z := (hpkg f).1.1
   let C := (gpkg f).1.1
   let φ := (hpkg f).1.2
-
   use z
-
   have tendsto_diam_to_zero := tendsto_diam_to_zero f
-
-  have convergence_to_z : Filter.Tendsto ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ (Fin n))) ∘ φ) Filter.atTop (𝓝 z) :=
+  have convergence_to_z : Filter.Tendsto ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ (Fin
+      n))) ∘ φ) Filter.atTop (𝓝 z) :=
     (hpkg f).2.2
-
   have constant_color_set : ∀ l', (room_seq f (g1 f l')).1.2 = C :=
     (gpkg f).2
-
   have coords_outside_C_zero : ∀ i_1 ∉ C, z.1 i_1 = 0 := by
     intro i_1 hi_not_C
-    have tendsto_zero : Filter.Tendsto (fun l' => ((room_point_seq f (g1 f l')) : stdSimplex ℝ (Fin n)).1 i_1) Filter.atTop (𝓝 0) :=
+    have tendsto_zero : Filter.Tendsto (fun l' => ((room_point_seq f (g1 f l'))
+        : stdSimplex ℝ (Fin n)).1 i_1) Filter.atTop (𝓝 0) :=
       dominant_coords_tend_to_zero f C (g1 f) constant_color_set i_1 hi_not_C
-    have h_tendsto_coord_z : Tendsto (fun k => ((room_point_seq f (g1 f (φ k))) : stdSimplex ℝ (Fin n)).1 i_1) atTop (𝓝 (z.1 i_1)) := by
+    have h_tendsto_coord_z : Tendsto (fun k => ((room_point_seq f (g1 f (φ k)))
+        : stdSimplex ℝ (Fin n)).1 i_1) atTop (𝓝 (z.1 i_1)) := by
       have h_continuous : Continuous (fun x : stdSimplex ℝ (Fin n) => x.1 i_1) :=
         Continuous.comp (continuous_apply i_1) continuous_subtype_val
       exact h_continuous.continuousAt.tendsto.comp convergence_to_z
-    have tendsto_zero_subseq : Tendsto (fun k => ((room_point_seq f (g1 f (φ k))) : stdSimplex ℝ (Fin n)).1 i_1) atTop (𝓝 0) :=
-      (dominant_coords_tend_to_zero f C (g1 f) constant_color_set i_1 hi_not_C).comp (hpkg f).2.1.tendsto_atTop
+    have tendsto_zero_subseq : Tendsto (fun k => ((room_point_seq f (g1 f (φ k)))
+        : stdSimplex ℝ (Fin n)).1 i_1) atTop (𝓝 0) :=
+      (dominant_coords_tend_to_zero f C (g1 f)
+          constant_color_set i_1 hi_not_C).comp (hpkg f).2.1.tendsto_atTop
     exact tendsto_nhds_unique h_tendsto_coord_z tendsto_zero_subseq
-
   have sum_coords_in_C_eq_one : ∑ i_1 ∈ C, z.1 i_1 = 1 := by
     have total_sum_eq_one : ∑ i, z.1 i = 1 := z.2.2
     have split_sum : ∑ i, z.1 i = ∑ i ∈ C, z.1 i + ∑ i ∈ Cᶜ, z.1 i :=
@@ -772,21 +815,19 @@ theorem Brouwer (hf : Continuous f): ∃ x , f x = x := by
       exact coords_outside_C_zero i_1 (Finset.mem_compl.mp hi)
     rw [split_sum, compl_sum_zero, add_zero] at total_sum_eq_one
     exact total_sum_eq_one
-
   have f_coords_ge_z_coords := f_coords_ge_z_coords f hf
-
   have sum_f_coords_ge_one : ∑ i_1 ∈ C, (f z).1 i_1 ≥ 1 := by
     calc ∑ i_1 ∈ C, (f z).1 i_1
         ≥ ∑ i_1 ∈ C, z.1 i_1 := Finset.sum_le_sum fun i_1 hi => f_coords_ge_z_coords i_1 hi
       _ = 1 := sum_coords_in_C_eq_one
-
   have f_coords_outside_C_zero : ∀ i_1 ∉ C, (f z).1 i_1 = 0 := by
     intro i_1 hi_not_C
     have total_sum_f : ∑ i, (f z).1 i = 1 := (f z).2.2
     have sum_f_C_eq_one : ∑ i_2 ∈ C, (f z).1 i_2 = 1 := by
       have : ∑ i_2 ∈ C, (f z).1 i_2 ≤ 1 := by
         calc ∑ i_2 ∈ C, (f z).1 i_2
-          ≤ ∑ i, (f z).1 i := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C) (fun i_2 _ _ => (f z).2.1 i_2)
+          ≤ ∑ i, (f z).1 i := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C)
+              (fun i_2 _ _ => (f z).2.1 i_2)
           _ = 1 := total_sum_f
       exact le_antisymm this sum_f_coords_ge_one
     have compl_sum_zero : ∑ i_2 ∈ Cᶜ, (f z).1 i_2 = 0 := by
@@ -796,23 +837,25 @@ theorem Brouwer (hf : Continuous f): ∃ x , f x = x := by
       linarith
     have hi_in_compl : i_1 ∈ Cᶜ := Finset.mem_compl.mpr hi_not_C
     have h_nonneg : (f z).1 i_1 ≥ 0 := (f z).2.1 i_1
-    have h_le_sum : (f z).1 i_1 ≤ ∑ j ∈ Cᶜ, (f z).1 j := Finset.single_le_sum (fun j _ => (f z).2.1 j) hi_in_compl
+    have h_le_sum : (f z).1 i_1 ≤ ∑ j ∈ Cᶜ,
+        (f z).1 j := Finset.single_le_sum (fun j _ => (f z).2.1 j) hi_in_compl
     rw [compl_sum_zero] at h_le_sum
     exact le_antisymm h_le_sum h_nonneg
-
   have f_coords_eq_z_coords : ∀ i_1 ∈ C, (f z).1 i_1 = z.1 i_1 := by
     intro i_1 hi_C
     have h_sum_f_C_eq_one : ∑ i_2 ∈ C, (f z).1 i_2 = 1 := by
       have total_sum_f : ∑ i, (f z).1 i = 1 := (f z).2.2
       have : ∑ i_2 ∈ C, (f z).1 i_2 ≤ 1 := by
         calc
-          ∑ i_2 ∈ C, (f z).1 i_2 ≤ ∑ i, (f z).1 i := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C) (fun i_2 _ _ => (f z).2.1 i_2)
+          ∑ i_2 ∈ C, (f z).1 i_2 ≤ ∑ i,
+              (f z).1 i := Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ C)
+              (fun i_2 _ _ => (f z).2.1 i_2)
           _ = 1 := total_sum_f
       exact le_antisymm this (sum_f_coords_ge_one)
     have h_sum_eq : ∑ i_2 ∈ C, (f z).1 i_2 = ∑ i_2 ∈ C, z.1 i_2 := by
       rw [h_sum_f_C_eq_one, sum_coords_in_C_eq_one]
-    exact (((Finset.sum_eq_sum_iff_of_le fun i_2 hi => f_coords_ge_z_coords i_2 hi).mp h_sum_eq.symm) i_1 hi_C).symm
-
+    exact (((Finset.sum_eq_sum_iff_of_le fun i_2 hi => f_coords_ge_z_coords i_2 hi).mp
+        h_sum_eq.symm) i_1 hi_C).symm
   ext i_1
   by_cases hi : i_1 ∈ C
   · exact f_coords_eq_z_coords i_1 hi
