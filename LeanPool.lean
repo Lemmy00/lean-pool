@@ -1433,6 +1433,9 @@ import LeanPool.QuasiBorelSpaces.Subtype
 import LeanPool.QuasiBorelSpaces.Sum
 import LeanPool.QuasiBorelSpaces.UnitInterval
 import LeanPool.QuasiBorelSpaces.UnitInterval.AssocProd
+import LeanPool.RamanujanNagell
+import LeanPool.RamanujanNagell.Basic
+import LeanPool.RamanujanNagell.Helpers
 import LeanPool.RamanujanTauMissesPrimes
 import LeanPool.RamanujanTauMissesPrimes.Solution
 import LeanPool.Redhill
