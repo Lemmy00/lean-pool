@@ -2770,3 +2770,47 @@ projects:
       - formal-methods
     msc:
       - 68Q60
+  - slug: special-numbers
+    title: Special Numbers
+    summary: Formalizes the Eulerian numbers, Euclid numbers, and Sylvester's sequence from Chapter 6 of Concrete Mathematics, proving Worpitzky's identity for the first and coprimality, monotonicity, and explicit doubly-exponential closed forms for the latter two.
+    branch: integer sequences
+    entry_module: LeanPool.SpecialNumbers
+    authors:
+      - Walter Moreira
+      - Joe Stubbs
+    source:
+      title: "Concrete Mathematics: A Foundation for Computer Science"
+      authors:
+        - Ronald L. Graham
+        - Donald E. Knuth
+        - Oren Patashnik
+      url: "https://github.com/provables/special-numbers"
+      github_repo: provables/special-numbers
+    status: verified
+    main_declarations:
+      - SpecialNumbers.sylvester
+      - SpecialNumbers.eulerian
+      - SpecialNumbers.worpitzky
+    main_results:
+      - declaration: SpecialNumbers.sylvester
+        informal: Defines Sylvester's sequence by the recurrence e(n+1) = e(n) * (e(n) - 1) + 1.
+      - declaration: SpecialNumbers.sylvester_coprime
+        informal: Shows distinct terms of Sylvester's sequence are coprime.
+      - declaration: SpecialNumbers.sylvester_eq_floor_constant_pow
+        informal: Gives the explicit closed form for Sylvester's sequence as a floor of a doubly-exponential power of a constant.
+      - declaration: SpecialNumbers.Euclid.euclid_coprime
+        informal: Shows distinct Euclid numbers are coprime.
+      - declaration: SpecialNumbers.Euclid.euclid_eq_floor_constant_pow
+        informal: Gives the explicit closed form for the Euclid numbers as a floor of a doubly-exponential power of a constant.
+      - declaration: SpecialNumbers.eulerian
+        informal: Defines the Eulerian numbers via their standard triangular recurrence and boundary values.
+      - declaration: SpecialNumbers.worpitzky
+        informal: Proves Worpitzky's identity, expanding the power x^n in the binomial-coefficient basis with Eulerian-number coefficients.
+        source_ref: "R. L. Graham, D. E. Knuth, O. Patashnik, Concrete Mathematics, 2nd ed., Addison-Wesley, 1994, identity (6.37)."
+    tags:
+      - number-theory
+      - combinatorics
+      - integer-sequences
+    msc:
+      - "11B73"
+      - "11B83"
