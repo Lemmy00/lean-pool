@@ -317,6 +317,17 @@ import LeanPool.CircuitComplexity.Schnorr
 import LeanPool.CircuitComplexity.Shannon
 import LeanPool.CircuitComplexity.Valiant
 import LeanPool.CircuitComplexity.XOR
+import LeanPool.Circuitlib
+import LeanPool.Circuitlib.Circuit.Basic
+import LeanPool.Circuitlib.Circuit.Belnap.Basic
+import LeanPool.Circuitlib.Circuit.Belnap.Gate
+import LeanPool.Circuitlib.Circuit.Belnap.Level
+import LeanPool.Circuitlib.Circuit.Category.Basic
+import LeanPool.Circuitlib.Circuit.Category.Combinational
+import LeanPool.Circuitlib.Circuit.Category.Sequential
+import LeanPool.Circuitlib.Circuit.Combinational
+import LeanPool.Circuitlib.Circuit.Gate
+import LeanPool.Circuitlib.Circuit.Wires
 import LeanPool.Clawristotle
 import LeanPool.Clawristotle.CoulombConcreteTheorem42
 import LeanPool.Clawristotle.CoulombFlux
