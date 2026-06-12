@@ -805,6 +805,16 @@ import LeanPool.Lean4GlCoalgebras.Split.Game
 import LeanPool.Lean4GlCoalgebras.Split.Proof
 import LeanPool.Lean4GlCoalgebras.Split.ProofTransformations
 import LeanPool.Lean4GlCoalgebras.Split.Soundness
+import LeanPool.Lean4Itree
+import LeanPool.Lean4Itree.ITree
+import LeanPool.Lean4Itree.ITree.Basic
+import LeanPool.Lean4Itree.ITree.EffectAlgebra
+import LeanPool.Lean4Itree.ITree.Monad
+import LeanPool.Lean4Itree.ITree.Utils
+import LeanPool.Lean4Itree.Paco
+import LeanPool.Lean4Itree.Paco.Paco
+import LeanPool.Lean4Itree.Paco.PacoDefs
+import LeanPool.Lean4Itree.Paco.PacoTactics
 import LeanPool.LeanBooleanfun
 import LeanPool.LeanBooleanfun.Arrow
 import LeanPool.LeanBooleanfun.AuxLemmas
