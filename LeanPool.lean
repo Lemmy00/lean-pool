@@ -359,6 +359,17 @@ import LeanPool.Computability.Encoding
 import LeanPool.Computability.Jump
 import LeanPool.Computability.Oracle
 import LeanPool.Computability.TuringDegree
+import LeanPool.ComputableReal
+import LeanPool.ComputableReal.AuxLemmas
+import LeanPool.ComputableReal.ComputableRSeq
+import LeanPool.ComputableReal.ComputableReal
+import LeanPool.ComputableReal.IsComputable
+import LeanPool.ComputableReal.IsComputableC
+import LeanPool.ComputableReal.SpecialFunctions
+import LeanPool.ComputableReal.SpecialFunctions.Basic
+import LeanPool.ComputableReal.SpecialFunctions.Exp
+import LeanPool.ComputableReal.SpecialFunctions.Pi
+import LeanPool.ComputableReal.SpecialFunctions.Sqrt
 import LeanPool.DeadEnds
 import LeanPool.DeadEnds.Basic
 import LeanPool.DeadEnds.CRT
