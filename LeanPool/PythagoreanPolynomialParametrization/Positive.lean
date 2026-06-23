@@ -44,10 +44,7 @@ In the paper: ((x+(1-w)²x)((y+(1+w)z)²+y²))/2 -/
 noncomputable def hPosParam : RatPoly 4 :=
   C (1 / 2 : ℚ) * cPosParam * (aPosParam ^ 2 + bPosParam ^ 2)
 
-/-- fPosParam is integer-valued.
-
-**Prover notes:** Similar to f_param_intValued. For any integer tuple (x,y,z,w),
-fPosParam evaluates to ((x+(1-w)²x)((y+(1+w)z)²-y²))/2. Show this is always an integer. -/
+/-- The first coordinate polynomial in the positive parametrization is integer-valued. -/
 theorem f_pos_param_intValued : IsIntValued fPosParam := by
   intro v
   let x : ℤ := v (0 : Fin 4)
@@ -80,10 +77,7 @@ theorem f_pos_param_intValued : IsIntValued fPosParam := by
     A, B, Cc]
   ring
 
-/-- gPosParam is integer-valued.
-
-**Prover notes:** For any integer tuple (x,y,z,w), gPosParam evaluates to
-(x+(1-w)²x)(y+(1+w)z)y, which is clearly an integer product of integers. -/
+/-- The second coordinate polynomial in the positive parametrization is integer-valued. -/
 theorem g_pos_param_intValued : IsIntValued gPosParam := by
   intro v
   let x : ℤ := v (0 : Fin 4)
@@ -98,10 +92,7 @@ theorem g_pos_param_intValued : IsIntValued gPosParam := by
     A, B, Cc]
   ring
 
-/-- hPosParam is integer-valued.
-
-**Prover notes:** Similar to h_param_intValued. For any integer tuple (x,y,z,w),
-hPosParam evaluates to ((x+(1-w)²x)((y+(1+w)z)²+y²))/2. Show this is always an integer. -/
+/-- The third coordinate polynomial in the positive parametrization is integer-valued. -/
 theorem h_pos_param_intValued : IsIntValued hPosParam := by
   intro v
   let x : ℤ := v (0 : Fin 4)
@@ -138,18 +129,8 @@ theorem h_pos_param_intValued : IsIntValued hPosParam := by
 def mkRatPolyInput4 (x' y' z' w' : ℤ) : Fin 4 → ℤ := fun i =>
   if i = 0 then x' else if i = 1 then y' else if i = 2 then z' else w'
 
-/-- Parametrization of positive Pythagorean triples.
-
-**Source statement:** The set of positive PTs is parametrized by
-((x+(1-w)²x)((y+(1+w)z)²-y²)/2, (x+(1-w)²x)(y+(1+w)z)y, (x+(1-w)²x)((y+(1+w)z)²+y²)/2)
-where x,y,z range through the positive integers and w through the non-negative integers.
-
-**Source proof sketch:** As in the main theorem, positive PTs are precisely the triples
-with positive integer coordinates in the range of T. Now T(a,b,c) is a positive triple
-iff a,b,c are positive integers with a > b and either c ≡ 0 (mod 2) or a ≡ b (mod 2).
-Such triples are parametrized by (y+(1+w)z, y, x+(1-w)²x) with x,y,z > 0 and w ≥ 0.
-Substituting gives the parametrization. The 4-square theorem allows converting this to
-a parametrization with 16 integer parameters. -/
+/-- Frisch--Vaserstein's positive Pythagorean-triple parametrization, with positive
+parameters `x`, `y`, `z` and nonnegative parameter `w`. -/
 theorem positive_triples_parametrization :
     IsIntValued fPosParam ∧ IsIntValued gPosParam ∧ IsIntValued hPosParam ∧
     positivePythagoreanTriples =
