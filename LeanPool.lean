@@ -1534,6 +1534,14 @@ import LeanPool.PumpingCfg.ParseTree
 import LeanPool.PumpingCfg.Pumping
 import LeanPool.PumpingCfg.ToMathlib
 import LeanPool.PumpingCfg.Utils
+import LeanPool.PythagoreanPolynomialParametrization
+import LeanPool.PythagoreanPolynomialParametrization.Basic
+import LeanPool.PythagoreanPolynomialParametrization.Explanatory
+import LeanPool.PythagoreanPolynomialParametrization.IntegerValued
+import LeanPool.PythagoreanPolynomialParametrization.Main
+import LeanPool.PythagoreanPolynomialParametrization.Obstructions
+import LeanPool.PythagoreanPolynomialParametrization.Positive
+import LeanPool.PythagoreanPolynomialParametrization.SourceLemmas
 import LeanPool.QuasiBorelSpaces
 import LeanPool.QuasiBorelSpaces.Basic
 import LeanPool.QuasiBorelSpaces.Chain
