@@ -644,10 +644,10 @@ theorem spectral_gap {Ω : Type*} [MeasureSpace Ω] [(ae (volume : Measure Ω)).
       -- p > 0 means |g(x)| + g(x) > 0, i.e., g(x) > -|g(x)|, always true unless g(x) ≤ 0
       -- But |g(x)| + g(x) > 0 implies g(x) > -|g(x)|:
       --   if g(x) ≥ 0: |g| + g = 2g > 0, so g > 0. ✓
-      --   if g(x) < 0: |g| + g = -g + g = 0, not > 0. ✗
+      --   if g(x) < 0: |g| + g = -g + g = 0, not > 0. (no)
       -- So p > 0 a.e. means g > 0 a.e.
       -- And q > 0 means |g| - g > 0:
-      --   if g(x) ≥ 0: |g| - g = 0, not > 0. ✗
+      --   if g(x) ≥ 0: |g| - g = 0, not > 0. (no)
       -- Contradiction: can't have both g > 0 a.e. and |g(x)| - g(x) > 0 a.e.
       rcases h_not_both_zero with hp_ne | hq_ne
       · -- p ≠ 0, p ≥ 0: Tp > 0 a.e.
