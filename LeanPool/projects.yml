@@ -2972,3 +2972,38 @@ projects:
     msc:
       - "11A63"
       - "11B65"
+  - slug: pl-accelerated-nesterov-lean
+    title: Accelerated Nesterov convergence under local Polyak-Lojasiewicz conditions
+    summary: Formalizes accelerated Nesterov convergence near a smooth minimizer manifold under a local Polyak-Lojasiewicz condition, including embedded-manifold and C3 public theorem statements with explicit exponential rate and prefactor.
+    branch: optimization
+    entry_module: LeanPool.PLAcceleratedNesterovLean
+    authors:
+      - Max Obreiter
+      - Tobias Steinbrecher
+      - Robert Foerster
+    source:
+      title: PL-Accelerated-Nesterov-Lean
+      authors:
+        - M1ngXU
+      url: https://github.com/M1ngXU/PL-Accelerated-Nesterov-Lean
+      github_repo: M1ngXU/PL-Accelerated-Nesterov-Lean
+    status: verified
+    main_declarations:
+      - PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate
+    main_results:
+      - declaration: PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate
+        informal: Proves an accelerated Nesterov convergence rate for state positions near a C2 embedded minimizer manifold, with an existential momentum parameter, explicit exponential decay, and prefactor 2.
+      - declaration: PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate_c3
+        informal: Proves the corresponding C3 public theorem, deriving the minimizer geometry internally from smoothness and the Polyak-Lojasiewicz condition.
+      - declaration: PLAcceleratedNesterovLean.nesterov_convergence_at_base_point_position_theta
+        informal: Provides the reusable local theta-retuned convergence theorem used by the public accelerated-rate statements.
+    tags:
+      - optimization
+      - numerical-analysis
+      - gradient-methods
+      - polyak-lojasiewicz
+      - differential-geometry
+    msc:
+      - "49M37"
+      - "65K05"
+      - "58C15"
