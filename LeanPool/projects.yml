@@ -3001,3 +3001,44 @@ projects:
       - commuting-probability
     msc:
       - "20P05"
+  - slug: unconditional-schauder-basis
+    title: Unconditional Schauder Bases
+    summary: >-
+      Develops an API for Schauder bases and unconditional Schauder bases of
+      complete normed spaces, including ordered partial-sum convergence,
+      rearrangement criteria for unconditionality, and an arbitrary-index
+      variant built on unconditional summability, then proves a finite sign
+      criterion: a family with dense closed span, nonzero vectors, and a uniform
+      finite sign bound is the basis of an unconditional Schauder basis.
+    branch: functional analysis
+    entry_module: LeanPool.UnconditionalSchauderBasis
+    authors:
+      - Daniel Smania
+    source:
+      title: "Unconditional Schauder bases and a finite sign criterion"
+      authors:
+        - Daniel Smania
+      url: "https://github.com/SmaniaD/UnconditionalSchauderBasis"
+      github_repo: SmaniaD/UnconditionalSchauderBasis
+    status: verified
+    main_declarations:
+      - UnconditionalCriterion.exists_unconditionalSchauderBasis_of_finiteSignBound
+    main_results:
+      - declaration: UnconditionalCriterion.exists_unconditionalSchauderBasis_of_finiteSignBound
+        informal: >-
+          Finite sign criterion for sequences: if `x : ℕ → E` has dense closed
+          linear span, every `x n` is nonzero, and finite sign changes are
+          uniformly bounded by `C`, then `x` is the basis sequence of an
+          unconditional Schauder basis.
+      - declaration: UnconditionalCriterion.exists_unconditionalSchauderBasisAbstractIndex_of_finiteSignBound
+        informal: >-
+          Abstract-index form of the finite sign criterion: under the same dense
+          span, nonzero, and uniform finite sign bound hypotheses for an
+          arbitrarily indexed family, there is an abstractly indexed
+          unconditional Schauder basis whose basis family is exactly `x`.
+    tags:
+      - functional-analysis
+      - banach-spaces
+      - schauder-bases
+    msc:
+      - "46B15"
