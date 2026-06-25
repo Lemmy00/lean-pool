@@ -38,14 +38,12 @@ def sub (a b : V) : V := Classical.choose! (sub_existsUnique a b)
 
 instance instSubV : Sub V := ⟨sub⟩
 
-lemma sub_spec_of_ge (h : a ≥ b) :
-    a = b + (a - b) :=
+lemma sub_spec_of_ge (h : a ≥ b) : a = b + (a - b) :=
   (Classical.choose!_spec (sub_existsUnique a b)).1 h
 
 lemma sub_spec_of_lt (h : a < b) : a - b = 0 := (Classical.choose!_spec (sub_existsUnique a b)).2 h
 
-lemma sub_eq_iff :
-    c = a - b ↔ ((a ≥ b → a = b + c) ∧ (a < b → c = 0)) :=
+lemma sub_eq_iff : c = a - b ↔ ((a ≥ b → a = b + c) ∧ (a < b → c = 0)) :=
   Classical.choose!_eq_iff (sub_existsUnique a b)
 
 @[simp 1100] lemma sub_le_self (a b : V) : a - b ≤ a := by
@@ -81,8 +79,7 @@ lemma sub_spec_of_le (h : a ≤ b) : a - b = 0 := by
   rcases lt_or_eq_of_le h with (lt | rfl) <;> simp [sub_spec_of_lt, *]
 
 lemma sub_add_self_of_le (h : b ≤ a) :
-    a - b + b = a := by
-  symm; rw [add_comm]; exact sub_spec_of_ge h
+    a - b + b = a := by symm; rw [add_comm]; exact sub_spec_of_ge h
 
 lemma add_tsub_self_of_le (h : b ≤ a) : b + (a - b) = a := by symm; exact sub_spec_of_ge h
 
@@ -120,8 +117,7 @@ lemma sub_sub : a - b - c = a - (b + c) := by
       have : a = b := by simpa [hs] using sub_spec_of_ge (show b ≤ a from LT.lt.le h)
       simp [this] at h⟩
 
-@[simp] lemma sub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b :=
-  not_iff_not.mp (by simp [←pos_iff_ne_zero])
+@[simp] lemma sub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := not_iff_not.mp (by simp [←pos_iff_ne_zero])
 
 instance : OrderedSub V where
   tsub_le_iff_right := by
@@ -143,8 +139,7 @@ lemma pred_lt_self_of_pos (h : 0 < a) : a - 1 < a := by
   · simp_all
   · simp
 
-lemma tsub_lt_iff_left (h : b ≤ a) :
-    a - b < c ↔ a < c + b :=
+lemma tsub_lt_iff_left (h : b ≤ a) : a - b < c ↔ a < c + b :=
   AddLECancellable.tsub_lt_iff_right (add_le_cancel b) h
 
 lemma sub_mul (h : b ≤ a) : (a - b) * c = a * c - b * c := by
@@ -193,8 +188,7 @@ def _root_.LO.FirstOrder.Arith.dvd : Sg0.Semisentence 2 :=
   .mkSigma “x y. ∃ z <⁺ y, y = x * z” (by simp)
 
 lemma dvd_defined : Sg0-Relation (fun a b : V ↦ a ∣ b) via dvd :=
-  fun v ↦ by
-    simp [dvd_iff_bounded, dvd]
+  fun v ↦ by simp [dvd_iff_bounded, dvd]
 
 @[simp] lemma dvd_defined_iff (v) :
     Semiformula.Evalbm V v dvd.val ↔ v 0 ∣ v 1 := dvd_defined.df.iff v
@@ -232,12 +226,10 @@ lemma dvd_antisymm : a ∣ b → b ∣ a → a = b := by
     · simp [show a = 0 from by simpa using hy]
     · exact le_antisymm (le_of_dvd lty hx) (le_of_dvd ltx hy)
 
-lemma dvd_one_iff :
-    a ∣ 1 ↔ a = 1 :=
+lemma dvd_one_iff : a ∣ 1 ↔ a = 1 :=
   ⟨by { intro hx; exact dvd_antisymm hx (by simp) }, by rintro rfl; simp⟩
 
-theorem units_eq_one (u : Vˣ) : u = 1 :=
-  Units.ext <| dvd_one_iff.mp ⟨u.inv, u.val_inv.symm⟩
+theorem units_eq_one (u : Vˣ) : u = 1 := Units.ext <| dvd_one_iff.mp ⟨u.inv, u.val_inv.symm⟩
 
 @[simp] lemma unit_iff_eq_one {a : V} : IsUnit a ↔ a = 1 :=
   ⟨by rintro ⟨u, rfl⟩; simp [units_eq_one u], by rintro rfl; simp⟩

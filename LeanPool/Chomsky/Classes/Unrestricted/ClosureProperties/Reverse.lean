@@ -60,13 +60,9 @@ by
     rcases rin with ⟨r₀, rin₀, r_from_r₀⟩
     subst r_from_r₀
     use r₀, rin₀, y.reverse, x.reverse
-    refine ⟨?_, ?_⟩
-    · rw [bef]
-      simp only [reversalGrule]
-      simp [List.reverse_append, List.reverse_reverse, List.append_assoc]
-    · rw [aft]
-      simp only [reversalGrule]
-      simp [List.reverse_append, List.reverse_reverse, List.append_assoc]
+    refine ⟨?_, ?_⟩ <;>
+      · simp only [reversalGrule, *]
+        simp [List.reverse_append, List.reverse_reverse, List.append_assoc]
 
 private lemma reversed_word_in_original_language {g : Grammar T} {w : List T}
     (hwg : w ∈ (reversalGrammar g).language) :
@@ -75,8 +71,7 @@ by
   unfold Grammar.language at *
   have almost_done := derives_reversed hwg
   change g.Derives [Symbol.nonterminal g.initial] (w.reverse.map Symbol.terminal)
-  rw [List.map_reverse]
-  exact almost_done
+  rwa [List.map_reverse]
 
 
 /-- The class of grammar-generated languages is closed under reversal. -/

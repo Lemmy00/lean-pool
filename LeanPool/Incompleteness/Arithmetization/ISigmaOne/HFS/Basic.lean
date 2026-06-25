@@ -64,8 +64,7 @@ def sUnion (s : V) : V := Classical.choose! (sUnion_exists_unique s)
 /-- Imported declaration from the Incompleteness formalization. -/
 prefix:80 "⋃ʰᶠ " => sUnion
 
-@[simp] lemma mem_sUnion_iff {a b : V} :
-    a ∈ ⋃ʰᶠ b ↔ ∃ c ∈ b, a ∈ c :=
+@[simp] lemma mem_sUnion_iff {a b : V} : a ∈ ⋃ʰᶠ b ↔ ∃ c ∈ b, a ∈ c :=
   Classical.choose!_spec (sUnion_exists_unique b) a
 
 @[simp] lemma sUnion_empty : (⋃ʰᶠ ∅ : V) = ∅ := mem_ext (by simp)
@@ -197,8 +196,7 @@ def sInter (s : V) : V := Classical.choose! (sInter_exists_unique s)
 /-- Imported declaration from the Incompleteness formalization. -/
 prefix:80 "⋂ʰᶠ " => sInter
 
-lemma mem_sInter_iff {x s : V} :
-    x ∈ ⋂ʰᶠ s ↔ s ≠ ∅ ∧ ∀ t ∈ s, x ∈ t :=
+lemma mem_sInter_iff {x s : V} : x ∈ ⋂ʰᶠ s ↔ s ≠ ∅ ∧ ∀ t ∈ s, x ∈ t :=
   Classical.choose!_spec (sInter_exists_unique s) x
 
 @[simp] lemma mem_sInter_iff_empty : ⋂ʰᶠ (∅ : V) = ∅ := mem_ext (by simp [mem_sInter_iff])
@@ -246,8 +244,7 @@ def product (a b : V) : V := Classical.choose! (product_exists_unique a b)
 /-- Imported declaration from the Incompleteness formalization. -/
 infixl:60 " ×ʰᶠ " => product
 
-lemma mem_product_iff {x a b : V} :
-    x ∈ a ×ʰᶠ b ↔ ∃ y ∈ a, ∃ z ∈ b, x = ⟪y, z⟫ :=
+lemma mem_product_iff {x a b : V} : x ∈ a ×ʰᶠ b ↔ ∃ y ∈ a, ∃ z ∈ b, x = ⟪y, z⟫ :=
   Classical.choose!_spec (product_exists_unique a b) x
 
 lemma mem_product_iff' {x a b : V} : x ∈ a ×ʰᶠ b ↔ π₁ x ∈ a ∧ π₂ x ∈ b := by
@@ -261,8 +258,7 @@ lemma mem_product_iff' {x a b : V} : x ∈ a ×ʰᶠ b ↔ π₁ x ∈ a ∧ π�
   simp [mem_product_iff']
 
 lemma pair_mem_product {x y a b : V} (hx : x ∈ a) (hy : y ∈ b) : ⟪x, y⟫ ∈ a ×ʰᶠ b := by
-  simp only [pair_mem_product_iff]
-  exact ⟨hx, hy⟩
+  simpa only [pair_mem_product_iff] using ⟨hx, hy⟩
 
 private lemma product_graph {u a b : V} :
     u = a ×ʰᶠ b ↔ ∀ x < u + (a + b + 1) ^ 2, (x ∈ u ↔ ∃ y ∈ a, ∃ z ∈ b, x = ⟪y, z⟫) :=
@@ -309,8 +305,7 @@ lemma domain_exists_unique (s : V) :
 /-- Imported declaration from the Incompleteness formalization. -/
 def domain (s : V) : V := Classical.choose! (domain_exists_unique s)
 
-lemma mem_domain_iff {x s : V} :
-    x ∈ domain s ↔ ∃ y, ⟪x, y⟫ ∈ s :=
+lemma mem_domain_iff {x s : V} : x ∈ domain s ↔ ∃ y, ⟪x, y⟫ ∈ s :=
   Classical.choose!_spec (domain_exists_unique s) x
 
 private lemma domain_graph {u s : V} :
@@ -377,8 +372,7 @@ instance domain_definable' (ℌ : HierarchySymbol) : ℌ-Function₁ (domain :
 
 instance : Bounded₁ (domain : V → V) := ⟨‘x. 2 * x’, fun _ ↦ by simp⟩
 
-lemma mem_domain_of_pair_mem {x y s : V} (h : ⟪x, y⟫ ∈ s) :
-    x ∈ domain s :=
+lemma mem_domain_of_pair_mem {x y s : V} (h : ⟪x, y⟫ ∈ s) : x ∈ domain s :=
   mem_domain_iff.mpr ⟨y, h⟩
 
 lemma domain_subset_domain_of_subset {s t : V} (h : s ⊆ t) : domain s ⊆ domain t := by
@@ -391,12 +385,6 @@ lemma domain_subset_domain_of_subset {s t : V} (h : s ⊆ t) : domain s ⊆ doma
       intro h x hx
       exact h (π₁ x) ⟨π₂ x, by simpa using hx⟩, by rintro rfl; simp⟩
 
-/-
-@[simp] lemma domain_le_self {P : V → Prop}
-    (hempty : P ∅) (hinsert : ∀ s x, x ∉ s → P s → P (insert x s)) : ∀ x, P x := by {  }
-
-@[simp] lemma domain_le_self (P : V → Prop) (s : V) : domain s ≤ s := le_iff_lt_succ.mpr
--/
 
 end «lp_section_7»
 
@@ -419,8 +407,7 @@ lemma range_exists_unique (s : V) :
 /-- Imported declaration from the Incompleteness formalization. -/
 def range (s : V) : V := Classical.choose! (range_exists_unique s)
 
-lemma mem_range_iff {y s : V} :
-    y ∈ range s ↔ ∃ x, ⟪x, y⟫ ∈ s :=
+lemma mem_range_iff {y s : V} : y ∈ range s ↔ ∃ x, ⟪x, y⟫ ∈ s :=
   Classical.choose!_spec (range_exists_unique s) y
 
 private lemma range_graph {s' s : V} :
@@ -476,8 +463,7 @@ lemma _root_.LO.Arith.Disjoint.iff {s t : V} :
 
 lemma _root_.LO.Arith.Disjoint.not_of_mem {s t x : V} (hs : x ∈ s) (ht : x ∈ t) :
     ¬Disjoint s t := by
-  simp only [Disjoint.iff, not_forall, not_or, not_not]
-  exact ⟨x, hs, ht⟩
+  simpa only [Disjoint.iff, not_forall, not_or, not_not] using ⟨x, hs, ht⟩
 
 lemma _root_.LO.Arith.Disjoint.symm {s t : V} (h : Disjoint s t) :
     Disjoint t s := by
@@ -498,8 +484,7 @@ def IsMapping (m : V) : Prop := ∀ x ∈ domain m, ∃! y, ⟪x, y⟫ ∈ m
 
 section «lp_section_11»
 
-private lemma isMapping_iff {m : V} :
-    IsMapping m ↔ ∃ d ≤ 2 * m, d =
+private lemma isMapping_iff {m : V} : IsMapping m ↔ ∃ d ≤ 2 * m, d =
       domain m ∧ ∀ x ∈ d, ∃ y < m, ⟪x, y⟫ ∈ m ∧ ∀ y' < m, ⟪x, y'⟫ ∈ m → y' = y :=
   ⟨by intro hm
       exact ⟨domain m, by simp, rfl, fun x hx ↦ by
@@ -536,8 +521,7 @@ lemma _root_.LO.Arith.IsMapping.get_exists_uniq {m : V} (h : IsMapping m) {x : V
   h x hx
 
 /-- Imported declaration from the Incompleteness formalization. -/
-def _root_.LO.Arith.IsMapping.get {m : V} (h : IsMapping m) {x : V} (hx : x ∈ domain m) :
-    V :=
+def _root_.LO.Arith.IsMapping.get {m : V} (h : IsMapping m) {x : V} (hx : x ∈ domain m) : V :=
   Classical.choose! (IsMapping.get_exists_uniq h hx)
 
 @[simp] lemma _root_.LO.Arith.IsMapping.get_mem {m : V} (h : IsMapping m) {x : V} (hx :
@@ -609,8 +593,7 @@ def restr (f s : V) : V := Classical.choose! (restr_exists_unique f s)
 /-- Imported declaration from the Incompleteness formalization. -/
 scoped infix:80 " ↾ " => restr
 
-lemma mem_restr_iff {x f s : V} :
-    x ∈ f ↾ s ↔ x ∈ f ∧ π₁ x ∈ s :=
+lemma mem_restr_iff {x f s : V} : x ∈ f ↾ s ↔ x ∈ f ∧ π₁ x ∈ s :=
   Classical.choose!_spec (restr_exists_unique f s) x
 
 @[simp] lemma pair_mem_restr_iff {x y f s : V} :
@@ -623,8 +606,7 @@ lemma mem_restr_iff {x f s : V} :
 
 @[simp] lemma restr_le_self (f s : V) : f ↾ s ≤ f := le_of_subset (by simp)
 
-lemma _root_.LO.Arith.IsMapping.restr {m : V} (h : IsMapping m) (s : V) :
-    IsMapping (m ↾ s) :=
+lemma _root_.LO.Arith.IsMapping.restr {m : V} (h : IsMapping m) (s : V) : IsMapping (m ↾ s) :=
   h.of_subset (by simp)
 
 lemma domain_restr (f s : V) : domain (f ↾ s) = domain f ∩ s :=
@@ -720,8 +702,7 @@ section «lp_section_13»
 /-- Imported declaration from the Incompleteness formalization. -/
 def fstIdx (p : V) : V := π₁ (p - 1)
 
-@[simp] lemma fstIdx_le_self (p : V) :
-    fstIdx p ≤ p :=
+@[simp] lemma fstIdx_le_self (p : V) : fstIdx p ≤ p :=
   le_trans (by simp [fstIdx]) (show p - 1 ≤ p by simp)
 
 /-- Imported declaration from the Incompleteness formalization. -/
@@ -745,8 +726,7 @@ section «lp_section_14»
 /-- Imported declaration from the Incompleteness formalization. -/
 def sndIdx (p : V) : V := π₂ (p - 1)
 
-@[simp] lemma sndIdx_le_self (p : V) :
-    sndIdx p ≤ p :=
+@[simp] lemma sndIdx_le_self (p : V) : sndIdx p ≤ p :=
   le_trans (by simp [sndIdx]) (show p - 1 ≤ p by simp)
 
 /-- Imported declaration from the Incompleteness formalization. -/

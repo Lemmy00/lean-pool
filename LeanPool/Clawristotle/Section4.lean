@@ -52,8 +52,8 @@ theorem steady_state_is_local_maxwellian
 
 private lemma hasFDerivAt_proj_mul_const (j : Fin 3) (c : ℝ) (v : Fin 3 → ℝ) :
     HasFDerivAt (fun w : Fin 3 → ℝ => w j * c)
-      (c • (ContinuousLinearMap.proj j : (Fin 3 → ℝ) →L[ℝ] ℝ)) v := by
-  exact (ContinuousLinearMap.proj (ι := Fin 3) (φ := fun _ => ℝ) j :
+      (c • (ContinuousLinearMap.proj j : (Fin 3 → ℝ) →L[ℝ] ℝ)) v :=
+  (ContinuousLinearMap.proj (ι := Fin 3) (φ := fun _ => ℝ) j :
     (Fin 3 → ℝ) →L[ℝ] ℝ).hasFDerivAt.mul_const c
 
 /-- HasFDerivAt for each component of the Lorentz force E + v×B.
@@ -327,33 +327,11 @@ lemma transport_entropy_from_vlasov
   have hC : MeasureTheory.Integrable (fun x => v 2 *
       (FlatTorus3.gradX (fun y => f y v) x 2 * Real.log (f x v))) :=
     (hSpatTransComp v 2).const_mul _
-  erw [hrw]
-  have h0 := spatial_transport_log_zero f hf_pos v (hDiff_fv v) (hDiff_logfv v) (0 : Fin 3)
-  have h1 := spatial_transport_log_zero f hf_pos v (hDiff_fv v) (hDiff_logfv v) (1 : Fin 3)
-  have h2 := spatial_transport_log_zero f hf_pos v (hDiff_fv v) (hDiff_logfv v) (2 : Fin 3)
-  have hm0 : (∫ x : X, v 0 * (FlatTorus3.gradX (fun y => f y v) x 0 * Real.log (f x v))) =
-      v 0 * ∫ x, FlatTorus3.gradX (fun y => f y v) x 0 * Real.log (f x v) :=
-    integral_const_mul _ _
-  have hm1 : (∫ x : X, v 1 * (FlatTorus3.gradX (fun y => f y v) x 1 * Real.log (f x v))) =
-      v 1 * ∫ x, FlatTorus3.gradX (fun y => f y v) x 1 * Real.log (f x v) :=
-    integral_const_mul _ _
-  have hm2 : (∫ x : X, v 2 * (FlatTorus3.gradX (fun y => f y v) x 2 * Real.log (f x v))) =
-      v 2 * ∫ x, FlatTorus3.gradX (fun y => f y v) x 2 * Real.log (f x v) :=
-    integral_const_mul _ _
-  have hA0 : ∫ x : X, v 0 * (FlatTorus3.gradX (fun y => f y v) x 0 * Real.log (f x v)) = 0 := by
-    rw [hm0, h0, mul_zero]
-  have hB0 : ∫ x : X, v 1 * (FlatTorus3.gradX (fun y => f y v) x 1 * Real.log (f x v)) = 0 := by
-    rw [hm1, h1, mul_zero]
-  have hC0 : ∫ x : X, v 2 * (FlatTorus3.gradX (fun y => f y v) x 2 * Real.log (f x v)) = 0 := by
-    rw [hm2, h2, mul_zero]
-  have hBC : (∫ x : X, v 1 * (FlatTorus3.gradX (fun y => f y v) x 1 * Real.log (f x v)) +
-      v 2 * (FlatTorus3.gradX (fun y => f y v) x 2 * Real.log (f x v))) = 0 := by
-    rw [MeasureTheory.integral_add hB hC, hB0, hC0, add_zero]
-  have hABC : ∫ x : X, v 0 * (FlatTorus3.gradX (fun y => f y v) x 0 * Real.log (f x v)) +
-      (v 1 * (FlatTorus3.gradX (fun y => f y v) x 1 * Real.log (f x v)) +
-       v 2 * (FlatTorus3.gradX (fun y => f y v) x 2 * Real.log (f x v))) = 0 := by
-    have h := MeasureTheory.integral_add hA (hB.add hC)
-    simp only [Pi.add_apply] at h; linarith [hBC]
-  linarith
+  have h_comp : ∀ i : Fin 3, ∫ x : X, v i *
+      (FlatTorus3.gradX (fun y => f y v) x i * Real.log (f x v)) = 0 := fun i => by
+    rw [integral_const_mul,
+        spatial_transport_log_zero f hf_pos v (hDiff_fv v) (hDiff_logfv v) i, mul_zero]
+  erw [hrw, MeasureTheory.integral_add hA (hB.add hC), MeasureTheory.integral_add hB hC,
+       h_comp 0, h_comp 1, h_comp 2, add_zero, add_zero]
 
 end VML

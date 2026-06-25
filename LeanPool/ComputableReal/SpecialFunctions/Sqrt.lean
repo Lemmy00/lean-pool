@@ -28,6 +28,11 @@ private theorem mul_le_of_le_one_of_le' {a b c : ℝ} (ha : a ≤ 1) (hbc : b �
     (hb : 0 ≤ b) (_hc : 0 ≤ c) : a * b ≤ c :=
   (mul_le_of_le_one_left hb ha).trans hbc
 
+private theorem int_sqrt_mul_eq_zero {a p : ℤ} (ha : a ≤ 0) (hp : 0 ≤ p) :
+    Int.sqrt (a * p) = 0 := by
+  rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
+  exact Int.mul_nonpos_of_nonpos_of_nonneg ha hp
+
 theorem boundedSqrt_le_rsqrt (y : ℚ) (n : ℕ) (b : ℕ) (hb : 0 < b) :
     mkRat (Int.sqrt (y.num * b^n)) ((y.den * b^n).sqrt + 1) ≤ Real.sqrt y := by
   simp only [Rat.mkRat_eq_div, Nat.cast_add, Nat.cast_one]
@@ -36,9 +41,8 @@ theorem boundedSqrt_le_rsqrt (y : ℚ) (n : ℕ) (b : ℕ) (hb : 0 < b) :
   · have h₁ : √↑y = 0 := by
       rw [Real.sqrt_eq_zero']
       exact Rat.cast_nonpos.mpr hy
-    have h₂ : Int.sqrt (y.num * b ^ n) = 0 := by
-      rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-      exact Int.mul_nonpos_of_nonpos_of_nonneg (Rat.num_nonpos.mpr hy) (by positivity)
+    have h₂ : Int.sqrt (y.num * b ^ n) = 0 :=
+      int_sqrt_mul_eq_zero (Rat.num_nonpos.mpr hy) (by positivity)
     simp [h₁, h₂]
   push Not at hy
   rw [Rat.cast_def, Real.sqrt_div' _ (Nat.cast_nonneg' y.den)]
@@ -71,9 +75,8 @@ theorem rsqrt_le_boundedSqrt (y : ℚ) (n : ℕ) (b : ℕ) (hb : 0 < b) :
   · have h₁ : √↑y = 0 := by
       rw [Real.sqrt_eq_zero']
       exact Rat.cast_nonpos.mpr hy
-    have h₂ : Int.sqrt (y.num * b ^ n) = 0 := by
-      rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-      exact Int.mul_nonpos_of_nonpos_of_nonneg (Rat.num_nonpos.mpr hy) (by positivity)
+    have h₂ : Int.sqrt (y.num * b ^ n) = 0 :=
+      int_sqrt_mul_eq_zero (Rat.num_nonpos.mpr hy) (by positivity)
     simp [h₁, h₂]
   push Not at hy
   rw [Rat.cast_def, Real.sqrt_div' _ (Nat.cast_nonneg' y.den)]
@@ -187,9 +190,7 @@ theorem sqrt_le_mkRat_add (q : ℚ) (n : ℕ) :
   · have h₁ : √↑x = 0 := by
       rw [Real.sqrt_eq_zero']
       exact Int.cast_nonpos.mpr h
-    have h₂ : Int.sqrt (x * 4 ^ n) = 0 := by
-      rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-      exact Int.mul_nonpos_of_nonpos_of_nonneg h (by positivity)
+    have h₂ : Int.sqrt (x * 4 ^ n) = 0 := int_sqrt_mul_eq_zero h (by positivity)
     simp [h₁, h₂]
   · obtain ⟨z,hz⟩ := Int.eq_ofNat_of_zero_le h.le
     subst x
@@ -391,8 +392,7 @@ theorem sqrt_le_sqrtq_add (r : ℝ) (x : ℚInterval) (n : ℕ) (hq : x.fst ≤ 
   have h₄ : (0 : ℝ) ≤ 1 - 2 / 2 ^ n := by
     have h2n : 2 ≤ 2^n := hn.trans Nat.lt_two_pow_self.le
     rify at h2n
-    rw [sub_nonneg, div_le_one (by positivity)]
-    exact h2n
+    rwa [sub_nonneg, div_le_one (by positivity)]
   trans (x.snd - x.fst) / (2 * √x.fst) * (1 - 2 / 2^n)
   · rw [h₃]
     refine mul_le_mul_of_nonneg_right ?_ h₄
@@ -441,8 +441,7 @@ theorem sqrt_le_sqrtq_add' (r : ℝ) (x : ℚInterval) (n : ℕ) (hq : x.fst ≤
   have h₄ : (0 : ℝ) ≤ 1 - 2 / 2 ^ n := by
     have h2n : 2 ≤ 2^n := hn.trans Nat.lt_two_pow_self.le
     rify at h2n
-    rw [sub_nonneg, div_le_one (by positivity)]
-    exact h2n
+    rwa [sub_nonneg, div_le_one (by positivity)]
   trans (x.snd - x.fst) / (√r) * (1 - 2 / 2^n)
   · refine mul_le_mul_of_nonneg_right ?_ h₄
     apply h₃.trans
@@ -547,10 +546,8 @@ theorem TLUW_lower : TendstoLocallyUniformlyWithout
   · use Set.Iic 0, Iic_mem_nhds h, 0
     intro b _ y hy
     change y ≤ (0:ℝ) at hy
-    have h₂ : Int.sqrt (y.num * 4 ^ b) = 0 := by
-      rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-      exact Int.mul_nonpos_of_nonpos_of_nonneg (Rat.num_nonpos.mpr <| Rat.cast_nonpos.mp hy) (by
-        positivity)
+    have h₂ : Int.sqrt (y.num * 4 ^ b) = 0 :=
+      int_sqrt_mul_eq_zero (Rat.num_nonpos.mpr <| Rat.cast_nonpos.mp hy) (by positivity)
     simp [Real.sqrt_eq_zero'.mpr hy, h₂, hε]
   · set tm := max (2 * x) 1
     have htm₀ : 0 < tm := by positivity
@@ -564,9 +561,8 @@ theorem TLUW_lower : TendstoLocallyUniformlyWithout
     use a.toNat
     rintro b hb q ⟨hq₁, hq₂⟩
     by_cases hq₃ : q ≤ 0
-    · have h₂ : Int.sqrt (q.num * 4 ^ b) = 0 := by
-        rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-        exact Int.mul_nonpos_of_nonpos_of_nonneg (Rat.num_nonpos.mpr hq₃) (by positivity)
+    · have h₂ : Int.sqrt (q.num * 4 ^ b) = 0 :=
+        int_sqrt_mul_eq_zero (Rat.num_nonpos.mpr hq₃) (by positivity)
       simp [Real.sqrt_eq_zero'.mpr (Rat.cast_nonpos.mpr hq₃), h₂, hε]
     push Not at hq₃
     suffices 2 * √↑q / 2 ^ b < ε by
@@ -599,9 +595,8 @@ theorem TLUW_upper : TendstoLocallyUniformlyWithout
     intro b _ y hy
     change y ≤ (0:ℝ) at hy
     have hy' := Rat.cast_nonpos.mp hy
-    have h₂ : Int.sqrt (y.num * 4 ^ b) = 0 := by
-      rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-      exact Int.mul_nonpos_of_nonpos_of_nonneg (Rat.num_nonpos.mpr <| hy') (by positivity)
+    have h₂ : Int.sqrt (y.num * 4 ^ b) = 0 :=
+      int_sqrt_mul_eq_zero (Rat.num_nonpos.mpr <| hy') (by positivity)
     simp [Real.sqrt_eq_zero'.mpr hy, hε, hy']
   · set tm := max (2 * x) 1
     have htm₀ : 0 < tm := by positivity
@@ -615,9 +610,8 @@ theorem TLUW_upper : TendstoLocallyUniformlyWithout
     use a.toNat
     rintro b hb q ⟨hq₁, hq₂⟩
     by_cases hq₃ : q ≤ 0
-    · have h₂ : Int.sqrt (q.num * 4 ^ b) = 0 := by
-        rw [Int.sqrt.eq_1, Int.ofNat_eq_zero, Nat.sqrt_eq_zero, Int.toNat_eq_zero]
-        exact Int.mul_nonpos_of_nonpos_of_nonneg (Rat.num_nonpos.mpr hq₃) (by positivity)
+    · have h₂ : Int.sqrt (q.num * 4 ^ b) = 0 :=
+        int_sqrt_mul_eq_zero (Rat.num_nonpos.mpr hq₃) (by positivity)
       simp [Real.sqrt_eq_zero'.mpr (Rat.cast_nonpos.mpr hq₃), hε, hq₃]
     have hb₂ := mkRat_sub_le_sqrt q b
     rw [if_neg hq₃] at hb₂ ⊢

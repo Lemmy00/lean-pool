@@ -210,11 +210,8 @@ private theorem cauchySeq_seminorm_bound
     apply Filter.mem_comap.mpr
     refine ⟨{x | rapidDecaySeminorm k x < ε}, ?_, ?_⟩
     · -- {x | seminorm k x < ε} ∈ nhds 0
-      have h0 : rapidDecaySeminorm k 0 = 0 := map_zero _
-      have : {x | rapidDecaySeminorm k x < ε} ∈ nhds (0 : RapidDecaySeq) :=
-        (rapidDecay_withSeminorms.continuous_seminorm k).continuousAt.preimage_mem_nhds
-          (by rw [h0]; exact Iio_mem_nhds hε)
-      exact this
+      exact (rapidDecay_withSeminorms.continuous_seminorm k).continuousAt.preimage_mem_nhds
+        (by rw [show rapidDecaySeminorm k 0 = 0 from map_zero _]; exact Iio_mem_nhds hε)
     · intro ⟨a, b⟩ (hx : rapidDecaySeminorm k (b - a) < ε)
       change rapidDecaySeminorm k (a - b) < ε
       rwa [show a - b = -(b - a) from (neg_sub b a).symm, map_neg_eq_map]
@@ -782,8 +779,7 @@ private theorem one_add_pair_le_sq (i j : ℕ) :
   calc (1 : ℝ) + Nat.pair i j
       ≤ 1 + (i + j + 1) ^ 2 := by linarith
     _ ≤ (i + j + 2) ^ 2 := by nlinarith
-    _ ≤ (2 * (1 + i) * (1 + j)) ^ 2 := by
-        exact pow_le_pow_left₀ (by positivity) (by nlinarith) _
+    _ ≤ (2 * (1 + i) * (1 + j)) ^ 2 := pow_le_pow_left₀ (by positivity) (by nlinarith) _
 
 /-- The pure tensor map: given `e₁ : E₁` and `e₂ : E₂` with DM structure,
 produces the sequence `m ↦ coeff(unpair(m).1, e₁) * coeff(unpair(m).2, e₂)`.
@@ -1346,12 +1342,11 @@ theorem lift_pure
   have h_inner : ∀ n, HasSum (fun k => c₂ k e₂ • B (ψ₁ n) (ψ₂ k))
       (B (ψ₁ n) e₂) := by
     intro n
-    have h := (DyninMityaginSpace.hasSum_basis e₂).map (B (ψ₁ n)) (hBn_cont n)
-    exact h.congr_fun (fun k => (map_smul (B (ψ₁ n)) (c₂ k e₂) (ψ₂ k)).symm)
+    exact ((DyninMityaginSpace.hasSum_basis e₂).map (B (ψ₁ n)) (hBn_cont n)).congr_fun
+      (fun k => (map_smul (B (ψ₁ n)) (c₂ k e₂) (ψ₂ k)).symm)
   -- Step 4: Outer HasSum: ∑ₙ c₁(n)(e₁) • B(ψ₁(n))(e₂) → B(e₁)(e₂)
   have h_outer : HasSum (fun n => c₁ n e₁ • B (ψ₁ n) e₂) (B e₁ e₂) := by
-    have h := (DyninMityaginSpace.hasSum_basis e₁).map (B.flip e₂) hBflip_cont
-    exact h.congr_fun (fun n => by
+    exact ((DyninMityaginSpace.hasSum_basis e₁).map (B.flip e₂) hBflip_cont).congr_fun (fun n => by
       simp only [Function.comp, LinearMap.flip_apply]
       exact (map_smul (B.flip e₂) (c₁ n e₁) (ψ₁ n)).symm)
   -- Step 5: Summability of the ℕ-indexed sum (from lift_summable via pure_val)
