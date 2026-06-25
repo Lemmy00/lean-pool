@@ -381,6 +381,10 @@ import LeanPool.ComputableReal.SpecialFunctions.Basic
 import LeanPool.ComputableReal.SpecialFunctions.Exp
 import LeanPool.ComputableReal.SpecialFunctions.Pi
 import LeanPool.ComputableReal.SpecialFunctions.Sqrt
+import LeanPool.ConnesKreimer
+import LeanPool.ConnesKreimer.Coassoc
+import LeanPool.ConnesKreimer.Core
+import LeanPool.ConnesKreimer.PowerSeriesLogMul
 import LeanPool.DeadEnds
 import LeanPool.DeadEnds.Basic
 import LeanPool.DeadEnds.CRT
