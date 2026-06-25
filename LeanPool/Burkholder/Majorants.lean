@@ -17,9 +17,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import LeanPool.Burkholder.Majorants.Definitions
-import LeanPool.Burkholder.Majorants.Majorant_p_l_2
-import LeanPool.Burkholder.Majorants.Majorant_p_g_2
-import LeanPool.Burkholder.Majorants.Majorant_p_eq_2
+import LeanPool.Burkholder.Majorants.MajorantPL2
+import LeanPool.Burkholder.Majorants.MajorantPG2
+import LeanPool.Burkholder.Majorants.MajorantPEq2
 
 /-!
 # Burkholder majorants: existence of the special function

@@ -29,7 +29,7 @@ noncomputable section
 
 namespace Majorants
 
-namespace  Majorant_p_l_2
+namespace  MajorantPL2
 
 /-!
 # Burkholder majorant candidate
@@ -9937,7 +9937,7 @@ private lemma continuousDyuCandidate_leTwo (p : ℝ) (hp1 : 1 < p) (hp2 : p < 2)
   exact DyuCandidate_eq_DxuCandidate_swap_leTwo p hp1 hp2 z.1 z.2
 
 
-end Majorant_p_l_2
+end MajorantPL2
 
 
 
@@ -9968,28 +9968,28 @@ theorem exists_majorant_leTwo (p : ℝ) (hp : 1 < p ∧ p < 2) :
       (∀ x y, x * y ≤ 0 → u x y ≤ 0) ∧
       (∀ x y, x*y = 0 ∧ (x,y) ≠ (0,0) → u x y < 0)  := by
   obtain ⟨Cu, hCu_nonneg, hu_abs_growth⟩ :=
-    Majorant_p_l_2.uCandidate_growth_bound p hp.1 hp.2
+    MajorantPL2.uCandidate_growth_bound p hp.1 hp.2
   obtain ⟨Cdu, hCdu_nonneg, hDxu_growth, hDyu_growth⟩ :=
-    Majorant_p_l_2.uCandidate_derivative_growth_bound p hp.1 hp.2
+    MajorantPL2.uCandidate_derivative_growth_bound p hp.1 hp.2
   let C : ℝ := max Cu Cdu
   have hC_nonneg : 0 ≤ C := by
     exact le_trans hCu_nonneg (le_max_left _ _)
   have hCu_le : Cu ≤ C := le_max_left _ _
   have hCdu_le : Cdu ≤ C := le_max_right _ _
-  use Majorant_p_l_2.uCandidate p
-  use Majorant_p_l_2.DxuCandidate p
-  use Majorant_p_l_2.DyuCandidate p
+  use MajorantPL2.uCandidate p
+  use MajorantPL2.DxuCandidate p
+  use MajorantPL2.DyuCandidate p
   use C
   refine ⟨hC_nonneg, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · exact Majorant_p_l_2.continuousuCandidate_leTwo p hp.1 hp.2
-  · exact Majorant_p_l_2.continuousDxuCandidate_leTwo p hp.1 hp.2
-  · exact Majorant_p_l_2.continuousDyuCandidate_leTwo p hp.1 hp.2
+  · exact MajorantPL2.continuousuCandidate_leTwo p hp.1 hp.2
+  · exact MajorantPL2.continuousDxuCandidate_leTwo p hp.1 hp.2
+  · exact MajorantPL2.continuousDyuCandidate_leTwo p hp.1 hp.2
   · intro x y
     have hsum_nonneg : 0 ≤ Real.rpow |x| p + Real.rpow |y| p :=
       add_nonneg (Real.rpow_nonneg (abs_nonneg x) _)
         (Real.rpow_nonneg (abs_nonneg y) _)
     calc
-      |Majorant_p_l_2.uCandidate p x y|
+      |MajorantPL2.uCandidate p x y|
           ≤ Cu * (Real.rpow |x| p + Real.rpow |y| p) := hu_abs_growth x y
       _ ≤ C * (Real.rpow |x| p + Real.rpow |y| p) :=
         mul_le_mul_of_nonneg_right hCu_le hsum_nonneg
@@ -10006,14 +10006,14 @@ theorem exists_majorant_leTwo (p : ℝ) (hp : 1 < p ∧ p < 2) :
     exact (hDyu_growth x y).trans
       (mul_le_mul_of_nonneg_right hCdu_le hsum_nonneg)
   · intro x y h k hk
-    exact Majorant_p_l_2.uCandidate_hk_negative_leTwo p hp.1 hp.2 hk
+    exact MajorantPL2.uCandidate_hk_negative_leTwo p hp.1 hp.2 hk
   · intro x y
-    rw [Majorant_p_l_2.v_eq_vLeTwo_of_one_lt_of_lt_two p x y hp.1 hp.2]
-    exact Majorant_p_l_2.vLeTwo_le_uCandidate_leTwo p hp.1 hp.2 x y
+    rw [MajorantPL2.v_eq_vLeTwo_of_one_lt_of_lt_two p x y hp.1 hp.2]
+    exact MajorantPL2.vLeTwo_le_uCandidate_leTwo p hp.1 hp.2 x y
   · intro x y hxy
-    exact Majorant_p_l_2.uCandidate_le_zero_of_mul_nonpos_leTwo p x y hp.1 hp.2 hxy
+    exact MajorantPL2.uCandidate_le_zero_of_mul_nonpos_leTwo p x y hp.1 hp.2 hxy
   · intro x y hxy
     rcases hxy with ⟨hxy0, hne⟩
-    exact Majorant_p_l_2.uCandidate_le_zero_of_mul_neg_LeTwo p x y hp hxy0 hne
+    exact MajorantPL2.uCandidate_le_zero_of_mul_neg_LeTwo p x y hp hxy0 hne
 
 end Majorants

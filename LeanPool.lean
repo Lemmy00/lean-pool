@@ -275,9 +275,9 @@ import LeanPool.Burkholder
 import LeanPool.Burkholder.Basic
 import LeanPool.Burkholder.Majorants
 import LeanPool.Burkholder.Majorants.Definitions
-import LeanPool.Burkholder.Majorants.Majorant_p_eq_2
-import LeanPool.Burkholder.Majorants.Majorant_p_g_2
-import LeanPool.Burkholder.Majorants.Majorant_p_l_2
+import LeanPool.Burkholder.Majorants.MajorantPEq2
+import LeanPool.Burkholder.Majorants.MajorantPG2
+import LeanPool.Burkholder.Majorants.MajorantPL2
 import LeanPool.Burkholder.MartingaleTransforms
 import LeanPool.Chomsky
 import LeanPool.Chomsky.Basic
