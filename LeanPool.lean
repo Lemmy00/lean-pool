@@ -843,6 +843,15 @@ import LeanPool.Isoperimetric.Basic
 import LeanPool.Isoperimetric.BrunnMinkowski
 import LeanPool.Isoperimetric.Isoperimetric
 import LeanPool.Isoperimetric.PrekopaLeindler
+import LeanPool.Kuramoto
+import LeanPool.Kuramoto.Connections
+import LeanPool.Kuramoto.Contraction
+import LeanPool.Kuramoto.Frontier
+import LeanPool.Kuramoto.GradientFlow
+import LeanPool.Kuramoto.Hebbian
+import LeanPool.Kuramoto.OrderParameter
+import LeanPool.Kuramoto.Weighted
+import LeanPool.Kuramoto.WitnessGeometry
 import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
 import LeanPool.Lean4GlCoalgebras
