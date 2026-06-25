@@ -645,6 +645,12 @@ import LeanPool.GrothendieckVanishing.PresheafFilteredColimitCore
 import LeanPool.GrothendieckVanishing.PresheafFilteredColimitGeneral
 import LeanPool.GrothendieckVanishing.TopologicalKrullDim
 import LeanPool.GrothendieckVanishing.ZeroOutside
+import LeanPool.HSDInteriorPointLP
+import LeanPool.HSDInteriorPointLP.FixedYTMTheory
+import LeanPool.HSDInteriorPointLP.GeneratedConvergence
+import LeanPool.HSDInteriorPointLP.LocalNeighborhoodEstimates
+import LeanPool.HSDInteriorPointLP.NewtonSystem
+import LeanPool.HSDInteriorPointLP.PrimalDualData
 import LeanPool.Incompleteness
 import LeanPool.Incompleteness.Arith.D1
 import LeanPool.Incompleteness.Arith.D3
