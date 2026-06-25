@@ -10,8 +10,7 @@ public import LeanPool.LeanQuantumAlg.Init
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Tactic
-
+public import Mathlib.Tactic.Common
 /-!
 # Embedding quantum kernels: density-matrix realization (expressivity)
 

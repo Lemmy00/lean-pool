@@ -12,8 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
-public import Mathlib.Tactic
-
+public import Mathlib.Tactic.Common
 /-!
 # Trigonometric polynomials
 

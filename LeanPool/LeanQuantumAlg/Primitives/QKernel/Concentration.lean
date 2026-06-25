@@ -11,8 +11,7 @@ public import LeanPool.LeanQuantumAlg.Util.Concentration
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Constructions.Pi
-public import Mathlib.Tactic
-
+public import Mathlib.Tactic.Common
 /-!
 # Exponential concentration of the tensor-product RY quantum kernel
 

@@ -9,8 +9,7 @@ module
 public import LeanPool.LeanQuantumAlg.Init
 public import LeanPool.LeanQuantumAlg.Util.TrigPolynomial
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Tactic
-
+public import Mathlib.Tactic.Common
 /-!
 # Fourier representation of the quantum kernel
 
