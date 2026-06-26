@@ -491,6 +491,13 @@ import LeanPool.Erdos1196.Preliminaries
 import LeanPool.Erdos1196.PreliminariesMertens
 import LeanPool.Erdos1196.PreliminariesTailAux
 import LeanPool.Erdos1196.PrimitiveWeight
+import LeanPool.Erdos367
+import LeanPool.Erdos367.Core139
+import LeanPool.Erdos367.Core4027
+import LeanPool.Erdos367.GeneralKUpperBound
+import LeanPool.Erdos367.K3AbcUpperBound
+import LeanPool.Erdos367.PellLimsup
+import LeanPool.Erdos367.RFullLowerBound
 import LeanPool.ErdosTuzaValtr
 import LeanPool.ErdosTuzaValtr.All
 import LeanPool.ErdosTuzaValtr.Config.Default
