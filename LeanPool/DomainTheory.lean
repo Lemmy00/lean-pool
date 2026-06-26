@@ -156,7 +156,7 @@ import LeanPool.DomainTheory.Neighborhood.Proposition77
 /-!
 # DomainTheory
 
-Source: url:https://github.com/catskillsresearch/domain_theory
+Source: doi:10.1007/BFb0012801, url:https://doi.org/10.1007/BFb0012801
 Authors: Catskills Research Company
 Status: verified
 Main declarations: `InfoSys`, `Domain.Neighborhood.NeighborhoodSystem`
