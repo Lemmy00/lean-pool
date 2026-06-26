@@ -322,6 +322,13 @@ def update_pr_advisory(
     rows = advisory_rows_for_pr(
         repo_full_name, pr_number, metadata_cache=metadata_cache
     )
+    if not rows:
+        if dry_run:
+            print(
+                "[dry-run] Would skip advisory comment on "
+                f"PR #{pr_number}: no project metadata changes"
+            )
+        return "skipped"
     return post_sticky_comment(
         repo_full_name,
         pr_number,
