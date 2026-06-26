@@ -24,8 +24,11 @@ So far, projects have been added by hand: each is a suitable, permissively licen
 Requires Lean (via [`elan`](https://leanprover-community.github.io/install/), with the toolchain pinned in [`lean-toolchain`](lean-toolchain)) and Python 3.13+ with [`uv`](https://docs.astral.sh/uv/).
 
 ```bash
-make setup    # pull Mathlib oleans, build LeanPool, install Python tooling
+make setup    # pull Mathlib oleans, build the whole pool (~1.5h), install Python tooling
 ```
+
+To work on a single project you don't need the whole pool built — see the
+[fast per-project build](CONTRIBUTING.md#dev-setup) in `CONTRIBUTING.md`.
 
 ### Contributing
 
