@@ -25,7 +25,9 @@ import Aesop
 We prove that `limsup_{n→∞} B₂(n)·B₂(n+1)·B₂(n+2) / (n²·log n) = ∞`,
 where `B₂(m) = ∏_{p^e ∥ m, e≥2} p^e` is the powerful (2-full) part of `m`.
 
-Equivalently: `∀ M : ℝ, ∃ n : ℕ, B₂(n) * B₂(n+1) * B₂(n+2) > M * n² * log n`.
+Equivalently (the cofinal form, which is what makes it a `limsup` rather than a
+mere `sup`): `∀ M : ℝ, ∀ N : ℕ, ∃ n ≥ N, B₂(n) * B₂(n+1) * B₂(n+2) > M * n² * log n`,
+i.e. the ratio exceeds every `M` for arbitrarily large `n`.
 
 ## Strategy
 
@@ -36,8 +38,8 @@ has a large powerful part thanks to the algebraic structure of `ℤ[√2]`.
 ## What is proved
 
 All lemmas and theorems are fully proved with no `sorry` statements.
-The final `#print axioms erdos367` shows only the standard axioms:
-`propext`, `Classical.choice`, `Lean.ofReduceBool`, `Lean.trustCompiler`, `Quot.sound`.
+`#print axioms erdos367` shows only the three standard axioms:
+`propext`, `Classical.choice`, `Quot.sound`.
 -/
 
 noncomputable section
@@ -185,6 +187,15 @@ theorem pellY_le_pellX (j : ℕ) : pellY j ≤ pellX j := by
     simp only [pellX_succ, pellY_succ]
     linarith [pellY_nonneg n, pellX_pos n]
 
+/-- Lower bound: `j ≤ Y_j`. The Pell `Y`-sequence grows at least linearly, so the
+witness index `j` can be pushed arbitrarily large. -/
+theorem pellY_ge_self (j : ℕ) : (j : ℤ) ≤ pellY j := by
+  induction j with
+  | zero => simp
+  | succ n ih =>
+    simp only [pellY_succ, Nat.cast_succ]
+    linarith [pellX_pos n]
+
 /-- Upper bound: `pellX j ≤ 11 ^ j`. -/
 theorem pellX_le_pow (j : ℕ) : pellX j ≤ 11 ^ j := by
   induction j with
@@ -210,6 +221,15 @@ lemma pellN_eq (j : ℕ) : (pellN j : ℤ) = 8 * pellY j ^ 2 := by
 lemma pellN_pos {j : ℕ} (hj : 0 < j) : 0 < pellN j := by
   have h : (0 : ℤ) < 8 * pellY j ^ 2 := by positivity [pellY_pos hj]
   have := pellN_eq j; omega
+
+/-- Lower bound: `j ≤ n_j`. Since `n_j = 8·Y_j²` and `j ≤ Y_j`, the witness `n_j`
+grows at least linearly, so it exceeds any prescribed threshold. -/
+theorem pellN_ge_self (j : ℕ) : j ≤ pellN j := by
+  have hY : (j : ℤ) ≤ pellY j := pellY_ge_self j
+  have hYnn : (0 : ℤ) ≤ pellY j := pellY_nonneg j
+  have heq := pellN_eq j
+  have : (j : ℤ) ≤ pellN j := by nlinarith [sq_nonneg ((pellY j) - j)]
+  exact_mod_cast this
 
 /-- **L0.** `n_j + 1 = X_j²` (as natural numbers). -/
 theorem L0 (j : ℕ) : pellN j + 1 = (pellX j).toNat ^ 2 := by
@@ -729,17 +749,22 @@ lemma prod_ratio_bound_nat (S : Finset ℕ) (hS : ∀ p ∈ S, 5 ≤ p ∧ p % 2
         (ih (fun q hq => hS q (Finset.mem_insert_of_mem hq))) using 1 <;> ring
 
 /-
-**Key lemma.** For every `N`, there exists `j ≥ 1` such that
-`powerfulPart(n_j + 2) > N · log(n_j)`.
+**Key lemma.** For every threshold `j₀` and every `N`, there exists `j ≥ j₀` (with
+`j ≥ 1`) such that `powerfulPart(n_j + 2) > N · log(n_j)`. The lower bound `j₀`
+lets the caller push the witness index — and hence `n_j` — arbitrarily large,
+which is what turns the bound into a genuine `limsup = ∞` statement.
 -/
-lemma erdos367_key :
-    ∀ N : ℝ, ∃ j : ℕ, 0 < j ∧
+lemma erdos367_key (j₀ : ℕ) :
+    ∀ N : ℝ, ∃ j : ℕ, j₀ ≤ j ∧ 0 < j ∧
       (powerfulPart (pellN j + 2) : ℝ) > N * Real.log (pellN j : ℝ) := by
   intro N
   by_cases hN : N ≤ 0;
-  · use 1
-    refine ⟨by norm_num, lt_of_le_of_lt
-      (mul_nonpos_of_nonpos_of_nonneg hN (by positivity)) ?_⟩
+  · refine ⟨max 1 j₀, le_max_right _ _, lt_of_lt_of_le one_pos (le_max_left _ _), ?_⟩
+    have hjpos : 0 < max 1 j₀ := lt_of_lt_of_le one_pos (le_max_left _ _)
+    have hlog : 0 ≤ Real.log (pellN (max 1 j₀) : ℝ) :=
+      Real.log_nonneg (by exact_mod_cast pellN_pos hjpos)
+    refine lt_of_le_of_lt
+      (mul_nonpos_of_nonpos_of_nonneg hN hlog) ?_
     exact_mod_cast (by
       unfold powerfulPart
       apply Finset.prod_pos
@@ -749,18 +774,40 @@ lemma erdos367_key :
       split_ifs with h
       · exact pow_pos hp.1.pos _
       · exact Nat.one_pos :
-        0 < powerfulPart (pellN 1 + 2))
+        0 < powerfulPart (pellN (max 1 j₀) + 2))
   · -- Choose s with (5/3:ℝ)^s > max 1 (2 * N * Real.log 11) using pow_unbounded_of_one_lt.
     obtain ⟨s, hs⟩ : ∃ s : ℕ, (5 / 3 : ℝ) ^ s > max 1 (2 * N * Real.log 11) := by
       exact pow_unbounded_of_one_lt _ <| by norm_num;
-    -- Extract a finite set of primes `p ≡ 5 mod 8`.
-    obtain ⟨S, hS_card, hS⟩ :
-        ∃ S : Finset ℕ, s ≤ S.card ∧ ∀ p ∈ S, p.Prime ∧ p % 8 = 5 := by
-      exact Exists.elim (exists_finset_of_infinite infinite_primes_5_mod_8 s) fun S hS =>
-        ⟨S, hS.1, fun p hp => hS.2 p hp⟩
+    -- Extract a finite set of primes `p ≡ 5 mod 8`, large enough to also force
+    -- the witness index `j ≥ j₀` (we request `max s (2 * j₀)` of them).
+    obtain ⟨S, hS_card_max, hS⟩ :
+        ∃ S : Finset ℕ, max s (2 * j₀) ≤ S.card ∧ ∀ p ∈ S, p.Prime ∧ p % 8 = 5 := by
+      exact Exists.elim (exists_finset_of_infinite infinite_primes_5_mod_8 (max s (2 * j₀)))
+        fun S hS => ⟨S, hS.1, fun p hp => hS.2 p hp⟩
+    have hS_card : s ≤ S.card := le_trans (le_max_left _ _) hS_card_max
+    have hS_card_j : 2 * j₀ ≤ S.card := le_trans (le_max_right _ _) hS_card_max
     -- Set L := S.prod (fun p => (p + 1) / 2 * p) and j := (L + 1) / 2.
-    set L := S.prod (fun p => (p + 1) / 2 * p)
-    set j := (L + 1) / 2;
+    set L := S.prod (fun p => (p + 1) / 2 * p) with hL_def
+    set j := (L + 1) / 2 with hj_def
+    -- Each prime factor contributes a factor ≥ 2, so `L ≥ 2 ^ |S| ≥ |S| ≥ 2·j₀`,
+    -- hence `j = (L + 1) / 2 ≥ j₀`.
+    have hj0_le : j₀ ≤ j := by
+      have hfac : ∀ p ∈ S, 2 ≤ (p + 1) / 2 * p := by
+        intro p hp
+        have hp5 := (hS p hp).2
+        have hp5le : 5 ≤ p := by
+          rcases Nat.lt_or_ge p 5 with h | h
+          · interval_cases p <;> omega
+          · exact h
+        have h1 : 3 ≤ (p + 1) / 2 := by omega
+        calc 2 ≤ 3 * 5 := by norm_num
+          _ ≤ (p + 1) / 2 * p := Nat.mul_le_mul h1 hp5le
+      have h2card : 2 ^ S.card ≤ L := by
+        calc 2 ^ S.card = ∏ _p ∈ S, 2 := by rw [Finset.prod_const]
+          _ ≤ L := Finset.prod_le_prod' hfac
+      have hcard_le : S.card ≤ 2 ^ S.card := Nat.lt_two_pow_self.le
+      have hj0_le_L : 2 * j₀ ≤ L := le_trans hS_card_j (le_trans hcard_le h2card)
+      omega
     -- Show L is odd and L > 0.
     have hL_odd : L % 2 = 1 := by
       exact prod_Mp_odd S fun p hp => hS p hp |>.2
@@ -851,19 +898,21 @@ lemma erdos367_key :
           mul_le_mul_of_nonneg_left
             (show (L : ℝ) ≥ 1 by exact_mod_cast hL_pos)
             (show (0 : ℝ) ≤ N by exact_mod_cast le_of_not_ge hN)]
-    use j, hj_pos, h_final_ineq
+    use j, hj0_le, hj_pos, h_final_ineq
 
-/-- **Main theorem (Erdős #367).** For every `M : ℝ`, there exists `n : ℕ` such that
-`B₂(n) · B₂(n+1) · B₂(n+2) > M · n² · log(n)`.
+/-- **Main theorem (Erdős #367).** For every `M : ℝ` and every threshold `N : ℕ`,
+there exists `n ≥ N` such that `B₂(n) · B₂(n+1) · B₂(n+2) > M · n² · log(n)`.
 
-This captures `limsup_{n→∞} B₂(n)·B₂(n+1)·B₂(n+2) / (n²·log n) = ∞`. -/
+Because the bound holds for arbitrarily large `n`, this is the genuine
+`limsup_{n→∞} B₂(n)·B₂(n+1)·B₂(n+2) / (n²·log n) = ∞`, not merely a supremum:
+the ratio exceeds every `M` cofinally often. -/
 theorem erdos367 :
-    ∀ M : ℝ, ∃ n : ℕ,
+    ∀ M : ℝ, ∀ N : ℕ, ∃ n : ℕ, N ≤ n ∧
       (powerfulPart n * powerfulPart (n + 1) * powerfulPart (n + 2) : ℝ) >
         M * (n : ℝ) ^ 2 * Real.log (n : ℝ) := by
-  intro M
-  obtain ⟨j, hj, hbig⟩ := erdos367_key M
-  refine ⟨pellN j, ?_⟩
+  intro M N
+  obtain ⟨j, hj0, hj, hbig⟩ := erdos367_key N M
+  refine ⟨pellN j, le_trans hj0 (pellN_ge_self j), ?_⟩
   rw [show pellN j + 1 + 1 = pellN j + 2 from by ring, L1 hj, L2]
   have hnj_pos : (0 : ℝ) < pellN j := Nat.cast_pos.mpr (pellN_pos hj)
   have hcast : (↑(pellN j + 1) : ℝ) = ↑(pellN j) + 1 := by push_cast; ring
