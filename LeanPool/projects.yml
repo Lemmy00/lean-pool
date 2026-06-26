@@ -3029,7 +3029,11 @@ projects:
       - declaration: QuantumAlg.QuantumKernelAdvantage.separation
         informal: States the conditional quantum-kernel learning separation from discrete-log hardness.
       - declaration: QuantumAlg.fullControllability_hasBarrenPlateau
-        informal: Exhibits an exponentially vanishing loss-variance family for a fully controllable dynamical Lie algebra.
+        informal: >-
+          Exhibits an exponentially vanishing loss-variance family for a fully controllable
+          dynamical Lie algebra, conditional on the assumed Ragone second-moment variance law
+          (the Haar/Weingarten averaging identity Var = P_g(rho)*P_g(O)/dim, taken as a
+          hypothesis rather than derived from a circuit twirl).
       - declaration: QuantumAlg.GroverSearch.main_success_probability
         informal: Derives Grover search success probability from the amplitude-amplification closed form.
     tags:
