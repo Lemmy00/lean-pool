@@ -811,6 +811,7 @@ import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameDefs
 import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameExact
 import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameResidues
 import LeanPool.FrontierMathOpenHypergraphs.Uniform.Frames
+import LeanPool.FundamentalInequality
 import LeanPool.GrothendieckVanishing
 import LeanPool.GrothendieckVanishing.ClosedImmersion
 import LeanPool.GrothendieckVanishing.ClosedImmersionCohomology
