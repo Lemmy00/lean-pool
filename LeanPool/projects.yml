@@ -14,6 +14,7 @@ projects:
       arxiv: "0706.0290"
       doi: "10.1016/j.jpaa.2007.05.019"
       github_repo: epfl-lara/AutoformalizedProjects
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.PythagoreanPolynomialParametrization.exists_int_valued_parametrization
@@ -53,6 +54,7 @@ projects:
         - S. I. Gelfand
       doi: "10.1070/RM1973v028n03ABEH001557"
       github_repo: bolito2/DemazureOperatorsLean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Demazure.Dem
@@ -98,6 +100,7 @@ projects:
       doi: "10.1112/blms/11.3.268"
       arxiv: "2503.07625"
       github_repo: ahhwuhu/zeta_3_irrational
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.Zeta3Irrational.zeta3_irrational
@@ -133,6 +136,7 @@ projects:
         - Jean-Pierre Serre
       url: https://doi.org/10.1007/978-3-642-61856-7
       github_repo: chrisflav/bruhat-tits
+    license: Apache-2.0
     status: verified
     main_declarations:
       - BruhatTits.BTtree
@@ -165,6 +169,7 @@ projects:
     source:
       arxiv: "2603.29970"
       github_repo: AxiomMath/ramanujan-tau-misses-primes
+    license: Apache-2.0
     status: verified
     main_declarations:
       - main_theorem
@@ -199,6 +204,7 @@ projects:
     source:
       arxiv: "2602.03716"
       github_repo: AxiomMath/fel-polynomial
+    license: Apache-2.0
     status: verified
     main_declarations:
       - fels_conjecture
@@ -226,6 +232,7 @@ projects:
     source:
       arxiv: "2602.05095"
       github_repo: AxiomMath/dead-ends
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.DeadEnds.baseBDeadEnd_density_formula
@@ -247,6 +254,7 @@ projects:
     source:
       url: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel
       github_repo: Zetetic-Dhruv/formal-learning-theory-kernel
+    license: Apache-2.0
     status: verified
     main_declarations:
       - fundamental_theorem
@@ -287,6 +295,7 @@ projects:
     source:
       arxiv: "2511.03618"
       github_repo: ShangtongZhang/rl-theory-in-lean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - StochasticMatrix.stationary_distribution_exists
@@ -311,6 +320,7 @@ projects:
     source:
       url: https://github.com/Vilin97/forward_euler
       github_repo: Vilin97/forward_euler
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ODE.EulerMethod.dist_path_le
@@ -339,6 +349,7 @@ projects:
     source:
       arxiv: "2603.15929"
       github_repo: Vilin97/Clawristotle
+    license: Apache-2.0
     status: verified
     main_declarations:
       - VML.Theorem42
@@ -370,6 +381,7 @@ projects:
     source:
       arxiv: "2602.05090"
       github_repo: AxiomMath/partial-regularity
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.PartialRegularity.Extension.irregularPrimes_isBigO
@@ -392,6 +404,7 @@ projects:
     source:
       url: https://github.com/vbeffara/RMT4
       github_repo: vbeffara/RMT4
+    license: Apache-2.0
     status: verified
     main_declarations:
       - RMT
@@ -424,6 +437,7 @@ projects:
     source:
       arxiv: "2602.05192"
       github_repo: frenzymath/Archon-FirstProof-Results
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Problem4.harmonic_mean_inequality_full
@@ -453,6 +467,7 @@ projects:
     source:
       arxiv: "2605.00301"
       github_repo: math-inc/Erdos1196
+    license: Apache-2.0
     status: verified
     main_declarations:
       - PrimitiveSetsAboveX.mainTheorem
@@ -488,6 +503,7 @@ projects:
         - Scott D. Hughes
       url: "https://www.erdosproblems.com/137"
       github_repo: scottdhughes/erdos137
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Erdos137.erdos137_finite
@@ -527,6 +543,7 @@ projects:
     source:
       arxiv: "2603.23928"
       github_repo: AxiomMath/lattice-triangle
+    license: Apache-2.0
     status: verified
     main_declarations:
       - analyticEngine_lower_bound
@@ -551,6 +568,7 @@ projects:
       doi: "10.1007/978-1-4757-3849-0"
       url: https://github.com/Vilin97/Clawristotle/tree/grothendieck-vanishing
       github_repo: Vilin97/Clawristotle
+    license: Apache-2.0
     status: verified
     main_declarations:
       - GrothendieckVanishing
@@ -575,6 +593,7 @@ projects:
       arxiv: "1907.00847"
       doi: "10.4007/annals.2019.190.3.6"
       github_repo: SamuelSchlesinger/sensitivity-conjecture
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPoolSensitivity.sensitivity_ge_sqrt_degree
@@ -600,6 +619,7 @@ projects:
     source:
       url: https://terrytao.wordpress.com/2011/09/16/the-brunn-minkowski-inequality-for-nilpotent-groups/
       github_repo: hojonathanho/isoperimetric
+    license: Apache-2.0
     status: verified
     main_declarations:
       - prekopa_leindler
@@ -630,6 +650,7 @@ projects:
     source:
       url: https://github.com/seb488/LeanComplexAnalysis
       github_repo: seb488/LeanComplexAnalysis
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.LeanComplexAnalysis.harnack_ineq
@@ -664,6 +685,7 @@ projects:
         - Jaap van Oosten
       url: https://doi.org/10.1016/S0049-237X(08)80003-1
       github_repo: andrejbauer/partial-combinatory-algebras
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.PartialCombinatoryAlgebras.PCA
@@ -694,6 +716,7 @@ projects:
       arxiv: "2409.08119"
       doi: "10.46298/afm.14253"
       github_repo: madvorak/duality
+    license: Apache-2.0
     status: verified
     main_declarations:
       - extendedFarkas
@@ -728,6 +751,7 @@ projects:
     source:
       doi: "10.1090/S0002-9939-1957-0085275-8"
       github_repo: pitmonticone/SumsThreeSquares
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.SumsThreeSquares.blueprint_case_mod8_eq3
@@ -756,6 +780,7 @@ projects:
         - Phuong Nguyen
       doi: "10.1017/CBO9780511676277"
       github_repo: ruplet/formalization-of-bounded-arithmetic
+    license: Apache-2.0
     status: verified
     main_declarations:
       - V0Model.ind_strengthened_v0
@@ -799,6 +824,7 @@ projects:
       arxiv: "2102.11818"
       doi: "10.4007/annals.2021.194.3.9"
       github_repo: siddhartha-gadgil/Polylean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.Polylean.P.torsionFree
@@ -829,6 +855,7 @@ projects:
       arxiv: "2312.06506"
       doi: "10.4230/LIPIcs.ITP.2024.8"
       github_repo: Dominique-Lawson/Directed-Topology-Lean-4
+    license: Apache-2.0
     status: verified
     main_declarations:
       - DirectedSpace
@@ -865,6 +892,7 @@ projects:
         - Hans-Egon Richert
       url: https://archive.org/details/sievemethods0000halb
       github_repo: amellendijk/selberg-sieve4
+    license: Apache-2.0
     status: verified
     main_declarations:
       - fundamental_theorem_simple
@@ -904,6 +932,7 @@ projects:
         - Joni Teräväinen
       arxiv: "2410.12234"
       github_repo: b-mehta/ABC-Exceptions
+    license: Apache-2.0
     status: verified
     main_declarations:
       - abcConjecture_iff_countTriples
@@ -933,6 +962,7 @@ projects:
       arxiv: "2105.10386"
       doi: "10.1017/CBO9781139814782"
       github_repo: roos-j/lean-booleanfun
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.LeanBooleanfun.BooleanFun.BV.dictator_of_condorcet_and_unanimous
@@ -957,6 +987,7 @@ projects:
     source:
       url: "https://github.com/Luka-O/polya-enumeration-theorem"
       github_repo: Luka-O/polya-enumeration-theorem
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.PolyaEnumerationTheorem.polya_theorem
@@ -982,6 +1013,7 @@ projects:
       arxiv: "1906.11174"
       doi: "10.5802/afst.1766"
       github_repo: nasqret/fineqs
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.Fineqs.theorem_1
@@ -1017,6 +1049,7 @@ projects:
         - Victor Kac
       url: https://doi.org/10.1017/CBO9780511626234
       github_repo: kkytola/VirasoroProject
+    license: Apache-2.0
     status: verified
     main_declarations:
       - VirasoroProject.VirasoroAlgebra
@@ -1054,6 +1087,7 @@ projects:
       doi: "10.1090/crmm/033"
       url: https://bookstore.ams.org/crmm-33
       github_repo: LieLean/LowDimSolvClassification
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LieAlgebra.Dim3.classification
@@ -1082,6 +1116,7 @@ projects:
       arxiv: "2405.04588"
       doi: "10.1007/978-1-4419-8616-0"
       github_repo: JobPetrovcic/ArtinWedderburn
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.ArtinWedderburn.ArtinWedderburnForPrime
@@ -1106,6 +1141,7 @@ projects:
     source:
       arxiv: "2501.09769"
       github_repo: wupr/order-p-q
+    license: Apache-2.0
     status: verified
     main_declarations:
       - OrderPQ.exists_card_eq_prime_mul_prime_and_not_isCyclic_iff
@@ -1137,6 +1173,7 @@ projects:
         - Emily Riehl
       url: https://emilyriehl.github.io/files/context.pdf
       github_repo: ivankobe/FactorizationSystems
+    license: Apache-2.0
     status: verified
     main_declarations:
       - CategoryTheory.FactorizationSystemCharacterization
@@ -1166,6 +1203,7 @@ projects:
     source:
       doi: "10.1002/j.1538-7305.1948.tb01338.x"
       github_repo: SamuelSchlesinger/shannon-1948-formalization
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.Shannon1948Formalization.entropyNat_unique
@@ -1198,6 +1236,7 @@ projects:
       arxiv: "2411.16844"
       doi: "10.1007/BF00383948"
       github_repo: b-mehta/AharoniKorman
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.AharoniKorman.aharoni_korman_false
@@ -1221,6 +1260,7 @@ projects:
     source:
       doi: "10.1007/978-1-4020-5764-9_15"
       github_repo: YnirPaz/PCF-Theory
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Ordinal.exists_isClubGuessing_of_cof_uncountable
@@ -1250,6 +1290,7 @@ projects:
         - Karl Petersen
       url: https://doi.org/10.1017/CBO9780511608728
       github_repo: lua-vr/pointwise-birkhoff
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.PointwiseBirkhoff.birkhoffErgodicTheorem'
@@ -1278,6 +1319,7 @@ projects:
         - Thomas Jech
       url: https://doi.org/10.1007/3-540-44761-X
       github_repo: ishiut/fo_zfc
+    license: Apache-2.0
     status: verified
     main_declarations:
       - FirstOrder.ZFC.ModelZF
@@ -1305,6 +1347,7 @@ projects:
       doi: "10.5565/PUBLMAT_45101_06"
       github_repo: urkud/SardMoreira
       paper: http://dmle.icmat.es/pdf/PUBLICACIONSMATEMATIQUES_2001_45_01_06.pdf
+    license: Apache-2.0
     status: verified
     main_declarations:
       - dimH_image_le_sardMoreiraBound_of_finrank_le
@@ -1333,6 +1376,7 @@ projects:
     source:
       arxiv: "2603.04235"
       github_repo: suomela/2-coloring-1-round
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Distributed2Coloring.pStar_ge_23879
@@ -1361,6 +1405,7 @@ projects:
     source:
       arxiv: "2604.09808"
       github_repo: BarinderBanwait/ramanujan_nagell
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ramanujanNagellExact
@@ -1386,6 +1431,7 @@ projects:
     source:
       arxiv: "2502.03432"
       github_repo: sven-manthe/A-formalization-of-Borel-determinacy-in-Lean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - GaleStewartGame.borel_determinacy
@@ -1414,6 +1460,7 @@ projects:
       title: "Main theorem of polytopes"
       url: https://github.com/Jun2M/Main-theorem-of-polytopes
       github_repo: Jun2M/Main-theorem-of-polytopes
+    license: Apache-2.0
     status: verified
     main_declarations:
       - MainTheoremOfPolytopes
@@ -1441,6 +1488,7 @@ projects:
       title: "Formalization of Polynomial ABC and FLT"
       arxiv: "2408.15180"
       github_repo: seewoo5/lean-poly-abc
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPolyABC.Polynomial.abc
@@ -1472,6 +1520,7 @@ projects:
       arxiv: "2206.04260"
       doi: "10.1016/j.ejc.2024.104085"
       github_repo: jcpaik/erdos-tuza-valtr
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ErdosTuzaValtr.main
@@ -1499,6 +1548,7 @@ projects:
     source:
       url: https://github.com/jzxia/WhiteheadTheorem
       github_repo: jzxia/WhiteheadTheorem
+    license: Apache-2.0
     status: verified
     main_declarations:
       - WhiteheadTheorem
@@ -1532,6 +1582,7 @@ projects:
       arxiv: "2407.16717"
       doi: "10.1080/00150517.2024.2430958"
       github_repo: Antoine-dSG/frieze_patterns
+    license: Apache-2.0
     status: verified
     main_declarations:
       - main3
@@ -1567,6 +1618,7 @@ projects:
     source:
       url: https://en.wikipedia.org/wiki/Pentagonal_number_theorem
       github_repo: wwylele/PentagonalNumberTheorem
+    license: Apache-2.0
     status: verified
     main_declarations:
       - pentagonalNumberTheorem_powerSeries
@@ -1597,6 +1649,7 @@ projects:
     source:
       doi: "10.1007/978-3-662-03983-0"
       github_repo: jjdishere/neukirch
+    license: Apache-2.0
     status: verified
     main_declarations:
       - NumberField.ramificationIdx_mul_inertiaDegOfIsGalois
@@ -1642,6 +1695,7 @@ projects:
         - Ian Connell
       url: "https://www.math.rug.nl/~top/ian.pdf"
       github_repo: KisaraBlue/ec-tate-lean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Model
@@ -1686,6 +1740,7 @@ projects:
         - Paul Monsky
       doi: "10.2307/2317329"
       github_repo: dhyan-aranha/Monsky
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.Monsky.monsky_theorem
@@ -1709,6 +1764,7 @@ projects:
     source:
       url: https://github.com/dwrensha/Rupert.lean
       github_repo: dwrensha/Rupert.lean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Cube.rupert
@@ -1741,6 +1797,7 @@ projects:
         - Thomas Jech
       url: https://doi.org/10.1007/3-540-44761-X
       github_repo: VTrelat/ZFLean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ZFSet.isIso_of_biembedding
@@ -1770,6 +1827,7 @@ projects:
     source:
       url: https://www.math.ucsd.edu/~tkemp/247A.Notes.pdf
       github_repo: FredRaj3/SemicircleLaw
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.SemicircleLaw.integral_semicirclePDFReal_eq_one
@@ -1806,6 +1864,7 @@ projects:
       doi: 10.4169/amer.math.monthly.124.10.966
       arxiv: "1810.08368"
       github_repo: themathqueen/monlib4
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Matrix.aut_mat_inner
@@ -1871,6 +1930,7 @@ projects:
         - Tamás Szamuely
       url: https://doi.org/10.1017/9781316661277
       github_repo: Whysoserioushah/BrauerGroup
+    license: Apache-2.0
     status: verified
     main_declarations:
       - BrauerGroup.BruaerGroup
@@ -1912,6 +1972,7 @@ projects:
     source:
       doi: "10.1109/18.681320"
       github_repo: cboone/zhang-yeung-inequality
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ZhangYeung.zhangYeung
@@ -1939,6 +2000,7 @@ projects:
     source:
       url: https://archive.org/details/fairrepresentati00bali
       github_repo: mdbrnowski/apportionmentlib
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Apportionment.balinski_young
@@ -1961,6 +2023,7 @@ projects:
     source:
       doi: "10.1007/978-1-4939-0925-4_2"
       github_repo: frenzymath/Anderson-Conjecture
+    license: Apache-2.0
     status: verified
     main_declarations:
       - anderson_main_theorem
@@ -1985,6 +2048,7 @@ projects:
       arxiv: "1701.02547"
       doi: "10.1109/LICS.2017.8005137"
       github_repo: YellPika/quasi-borel-spaces
+    license: Apache-2.0
     status: verified
     main_declarations:
       - QuasiBorelSpace
@@ -2018,6 +2082,7 @@ projects:
     source:
       doi: "10.1134/S0081543811060198"
       github_repo: mgignoux/lean4-gl-coalgebras
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Lean4GlCoalgebras.interpolation
@@ -2043,6 +2108,7 @@ projects:
       arxiv: "1808.00997"
       doi: "10.1155/2019/6130464"
       github_repo: CBirkbeck/LeanModularForms
+    license: Apache-2.0
     status: verified
     main_declarations:
       - generalizedResidueTheorem
@@ -2077,6 +2143,7 @@ projects:
         - Frank Stephan
       doi: "10.1017/S1446788725000084"
       github_repo: Parcly-Taxel/Redhill
+    license: Apache-2.0
     status: verified
     main_declarations:
       - not_ramaekersConjecture_ge_six
@@ -2117,6 +2184,7 @@ projects:
       doi: "10.1017/S1755020309990098"
       url: "https://github.com/ah1112/synthetic_euclid_4"
       github_repo: ah1112/synthetic_euclid_4
+    license: Apache-2.0
     status: verified
     main_declarations:
       - SyntheticEuclid4.pythagoras
@@ -2149,6 +2217,7 @@ projects:
       doi: "10.1109/IEEESTD.2019.8766229"
       url: "https://github.com/josephmckinsey/flean"
       github_repo: josephmckinsey/flean
+    license: Apache-2.0
     status: verified
     msc:
       - "65G50"
@@ -2187,6 +2256,7 @@ projects:
     source:
       url: "https://github.com/samuelborza/IsTranscendentalPi"
       github_repo: samuelborza/IsTranscendentalPi
+    license: Apache-2.0
     status: verified
     main_declarations:
       - IsTranscendentalPi
@@ -2218,6 +2288,7 @@ projects:
       doi: "10.1073/pnas.36.1.48"
       url: "https://github.com/math-xmum/Brouwer"
       github_repo: math-xmum/Brouwer
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ExistsNashEq
@@ -2266,6 +2337,7 @@ projects:
       doi: "10.1090/S0025-5718-1975-0384673-1"
       url: "https://github.com/b-mehta/PrimeCert"
       github_repo: b-mehta/PrimeCert
+    license: Apache-2.0
     status: verified
     main_declarations:
       - pocklington_test
@@ -2303,6 +2375,7 @@ projects:
     source:
       url: "https://github.com/SamuelSchlesinger/circuit-complexity"
       github_repo: SamuelSchlesinger/circuit-complexity
+    license: Apache-2.0
     status: verified
     main_declarations:
       - CircuitComplexity.shannon_lower_bound_circuit
@@ -2339,6 +2412,7 @@ projects:
     source:
       url: "https://github.com/tannerduve/computability"
       github_repo: tannerduve/computability
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Computability.RecursiveIn
@@ -2376,6 +2450,7 @@ projects:
     source:
       url: "https://github.com/AlexLoitzl/pumping_cfg"
       github_repo: AlexLoitzl/pumping_cfg
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Language.IsContextFree.pumping
@@ -2403,6 +2478,7 @@ projects:
       url: "https://github.com/madvorak/chomsky"
       arxiv: "2302.06420"
       github_repo: madvorak/chomsky
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Chomsky.CF_subclass_GG
@@ -2438,6 +2514,7 @@ projects:
     source:
       url: "https://github.com/verse-lab/Lentil"
       github_repo: verse-lab/Lentil
+    license: Apache-2.0
     status: verified
     msc:
       - "03B44"
@@ -2475,6 +2552,7 @@ projects:
     source:
       doi: "10.1007/BF01700692"
       github_repo: FormalizedFormalLogic/Incompleteness
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanPool.Incompleteness.goedelFirst
@@ -2507,6 +2585,7 @@ projects:
         - Jaume de Dios Pont
       url: https://github.com/susannabertolini/PhaseRetrieval
       github_repo: susannabertolini/PhaseRetrieval
+    license: Apache-2.0
     status: verified
     main_declarations:
       - DimdPolyShowcaseChallenge.stable_phase_retrieval
@@ -2544,6 +2623,7 @@ projects:
     source:
       url: "https://github.com/ro-gut/turan3"
       github_repo: ro-gut/turan3
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Turan3.turans
@@ -2579,6 +2659,7 @@ projects:
       doi: "10.2307/2269948"
       url: "https://github.com/znssong/SetTheory"
       github_repo: znssong/SetTheory
+    license: Apache-2.0
     status: verified
     main_declarations:
       - SetTheory.kunen_inconsistency_V
@@ -2613,6 +2694,7 @@ projects:
       arxiv: "1906.00046"
       doi: "10.1145/3371119"
       github_repo: mit-plv/lean4-itree
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Lean4Itree.ITree
@@ -2658,6 +2740,7 @@ projects:
       doi: "10.1007/3-540-60915-6_6"
       url: "https://github.com/kuruczgy/lean-model-checking"
       github_repo: kuruczgy/lean-model-checking
+    license: Apache-2.0
     status: verified
     main_declarations:
       - LeanModelChecking.for_any_LTL_formula_exists_an_equivalent_NBW
@@ -2696,6 +2779,7 @@ projects:
       arxiv: "0805.2438"
       doi: "10.1007/978-3-540-71067-7_21"
       github_repo: Timeroot/computableReal
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ComputableℝSeq
@@ -2731,6 +2815,7 @@ projects:
       arxiv: "2201.10456"
       url: "https://github.com/matthunz/circuitlib"
       github_repo: matthunz/circuitlib
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Circuit.SequentialCircuitCategory.instSymmetricCategory
@@ -2768,6 +2853,7 @@ projects:
     source:
       url: https://github.com/mrdouglasny/OSforGFF
       github_repo: mrdouglasny/OSforGFF
+    license: Apache-2.0
     status: verified
     main_declarations:
       - OSforGFF.gaussianFreeField_satisfies_all_OS_axioms
@@ -2797,6 +2883,7 @@ projects:
         - Alfred Frölicher
       doi: "10.1007/978-94-015-9590-2"
       github_repo: oneofvalts/desargues
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Basic.ProjectiveGeometry
@@ -2827,6 +2914,7 @@ projects:
       doi: "10.1007/978-3-030-58768-0_11"
       url: "https://github.com/JulsDE/MRiscX"
       github_repo: JulsDE/MRiscX
+    license: Apache-2.0
     status: verified
     main_declarations:
       - hoareTripleUp
@@ -2871,6 +2959,7 @@ projects:
         - Oren Patashnik
       url: "https://github.com/provables/special-numbers"
       github_repo: provables/special-numbers
+    license: Apache-2.0
     status: verified
     main_declarations:
       - SpecialNumbers.sylvester
@@ -2914,6 +3003,7 @@ projects:
       doi: "10.1007/978-1-4612-6398-2"
       url: https://antoine-dsg.github.io/root_system/
       github_repo: Antoine-dSG/root_system
+    license: Apache-2.0
     status: verified
     main_declarations:
       - An.rootPairing
@@ -2948,6 +3038,7 @@ projects:
       doi: "10.1007/3-540-17906-2_31"
       url: "https://github.com/vikraman/event-structures"
       github_repo: vikraman/event-structures
+    license: Apache-2.0
     status: verified
     main_declarations:
       - EventStructures.EventStructure
@@ -2988,6 +3079,7 @@ projects:
     source:
       url: https://github.com/NickAdfor/The-polynomial-method-and-restricted-sums-of-congruence-classes
       github_repo: NickAdfor/The-polynomial-method-and-restricted-sums-of-congruence-classes
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ANR_polynomial_method
@@ -3035,6 +3127,7 @@ projects:
         - Ernst G. Straus
       doi: "10.1090/S0025-5718-1975-0369288-3"
       github_repo: lyfar/egrs75-lean
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Egrs75.MuFinish.egrs_two_prime_mu
@@ -3069,6 +3162,7 @@ projects:
         - W. H. Gustafson
       doi: "10.2307/2317564"
       github_repo: ldct/lean-monorepo
+    license: Apache-2.0
     status: verified
     main_declarations:
       - FiveEighths.commProb_le_five_eighths
@@ -3105,6 +3199,7 @@ projects:
         - Donald L. Burkholder
       doi: "10.1214/aop/1176993220"
       github_repo: SmaniaD/Burkholder
+    license: Apache-2.0
     status: verified
     main_declarations:
       - MeasureTheory.Lp_Burkholder_inequality_martingaleTransform
@@ -3192,6 +3287,7 @@ projects:
         - Keston Aquino-Michaels
       doi: "10.5281/zenodo.20737896"
       github_repo: no-way-labs/lean-critical-portraits
+    license: Apache-2.0
     status: verified
     main_declarations:
       - CriticalPortraits.card_portraits
@@ -3233,6 +3329,7 @@ projects:
       doi: "10.1007/BFb0012801"
       url: "https://doi.org/10.1007/BFb0012801"
       github_repo: catskillsresearch/domain_theory
+    license: Apache-2.0
     status: verified
     main_declarations:
       - InfoSys
@@ -3269,6 +3366,7 @@ projects:
         - QudeLeap Team
       url: https://github.com/QudeLeap/Lean-QuantumAlg
       github_repo: QudeLeap/Lean-QuantumAlg
+    license: Apache-2.0
     status: verified
     main_declarations:
       - QuantumAlg.GroverSearch.main_success_probability
@@ -3321,6 +3419,7 @@ projects:
         - Ana Cristina Moreira Ramirez
       arxiv: "2010.08842"
       github_repo: ElVec1o/five-distance-sharp
+    license: Apache-2.0
     status: verified
     main_declarations:
       - ThreeGap.LinftyRecords3.nine_attained
@@ -3364,6 +3463,7 @@ projects:
         - Yuyang Zhao
       url: https://github.com/t4ccer/misere-games
       github_repo: t4ccer/misere-games
+    license: Apache-2.0
     status: verified
     main_declarations:
       - MisereGames.Form.Promain.of_universe
@@ -3396,6 +3496,7 @@ projects:
       doi: "10.1016/j.ejc.2021.103349"
       arxiv: "1908.10914"
       github_repo: math-inc/FrontierMathOpen-Hypergraphs
+    license: Apache-2.0
     status: verified
     main_declarations:
       - HypergraphLowerBound.thm_main_H_lower_bound
@@ -3438,6 +3539,7 @@ projects:
         - Franz-Viktor Kuhlmann
       url: "https://github.com/linzialessandro/FundamentalInequality"
       github_repo: linzialessandro/FundamentalInequality
+    license: Apache-2.0
     status: verified
     main_declarations:
       - Valuation.fundamentalInequality
@@ -3475,6 +3577,7 @@ projects:
         - Lior Pachter
       url: "https://github.com/pachterlab/P_2026_2"
       github_repo: pachterlab/P_2026_2
+    license: Apache-2.0
     status: verified
     main_declarations:
       - PebblingLean.Hypercube.Paper.optimalPebblingNumber_theta
