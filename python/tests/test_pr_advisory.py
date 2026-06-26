@@ -19,6 +19,7 @@ from lean_pool.pr_advisory import (
     post_sticky_comment,
     project_changes,
     render_comment,
+    update_pr_advisory,
 )
 
 
@@ -193,3 +194,33 @@ def test_post_sticky_comment_updates_existing_comment(
     assert action == "updated"
     assert calls[1][0][:3] == ("api", "-X", "PATCH")
     assert json.loads(calls[1][1] or "{}")["body"].endswith("new")
+
+
+def test_update_pr_advisory_skips_pr_without_project_changes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """PRs without project metadata changes do not need a sticky comment."""
+    posted = False
+
+    def fake_rows(
+        repo_full_name: str,
+        pr_number: int,
+        *,
+        metadata_cache: dict[str, UpstreamMetadata] | None = None,
+    ) -> list[AdvisoryRow]:
+        assert repo_full_name == "acme/pool"
+        assert pr_number == 7
+        return []
+
+    def fake_post(*args: object, **kwargs: object) -> str:
+        nonlocal posted
+        posted = True
+        return "created"
+
+    monkeypatch.setattr(pr_advisory, "advisory_rows_for_pr", fake_rows)
+    monkeypatch.setattr(pr_advisory, "post_sticky_comment", fake_post)
+
+    action = update_pr_advisory("acme/pool", 7)
+
+    assert action == "skipped"
+    assert not posted
