@@ -388,6 +388,15 @@ import LeanPool.ComputableReal.SpecialFunctions.Basic
 import LeanPool.ComputableReal.SpecialFunctions.Exp
 import LeanPool.ComputableReal.SpecialFunctions.Pi
 import LeanPool.ComputableReal.SpecialFunctions.Sqrt
+import LeanPool.CriticalPortraits
+import LeanPool.CriticalPortraits.Census
+import LeanPool.CriticalPortraits.Core
+import LeanPool.CriticalPortraits.CycleLemma
+import LeanPool.CriticalPortraits.Denominator
+import LeanPool.CriticalPortraits.Forward
+import LeanPool.CriticalPortraits.Injectivity
+import LeanPool.CriticalPortraits.Portraits
+import LeanPool.CriticalPortraits.Surjectivity
 import LeanPool.DeadEnds
 import LeanPool.DeadEnds.Basic
 import LeanPool.DeadEnds.CRT
