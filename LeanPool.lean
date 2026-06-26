@@ -801,6 +801,16 @@ import LeanPool.FriezePatterns
 import LeanPool.FriezePatterns.Chapter1
 import LeanPool.FriezePatterns.Chapter2
 import LeanPool.FriezePatterns.Chapter3
+import LeanPool.FrontierMathOpenHypergraphs
+import LeanPool.FrontierMathOpenHypergraphs.Basic
+import LeanPool.FrontierMathOpenHypergraphs.Lubell
+import LeanPool.FrontierMathOpenHypergraphs.Substitution
+import LeanPool.FrontierMathOpenHypergraphs.Uniform
+import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameBoosters
+import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameDefs
+import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameExact
+import LeanPool.FrontierMathOpenHypergraphs.Uniform.FrameResidues
+import LeanPool.FrontierMathOpenHypergraphs.Uniform.Frames
 import LeanPool.GrothendieckVanishing
 import LeanPool.GrothendieckVanishing.ClosedImmersion
 import LeanPool.GrothendieckVanishing.ClosedImmersionCohomology
