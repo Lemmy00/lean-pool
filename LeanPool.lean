@@ -272,7 +272,6 @@ import LeanPool.BruhatTits.Utils.RingHom
 import LeanPool.BruhatTits.Utils.Subring
 import LeanPool.BruhatTits.Utils.ValuationRings
 import LeanPool.Burkholder
-import LeanPool.Burkholder.Basic
 import LeanPool.Burkholder.Majorants
 import LeanPool.Burkholder.Majorants.Definitions
 import LeanPool.Burkholder.Majorants.MajorantPEq2

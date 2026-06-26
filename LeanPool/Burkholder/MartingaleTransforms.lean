@@ -8,7 +8,6 @@ import Mathlib.Probability.Martingale.Basic
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import LeanPool.Burkholder.Basic
 import LeanPool.Burkholder.Majorants
 
 /-!
