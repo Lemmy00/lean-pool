@@ -369,6 +369,7 @@ import LeanPool.ComputableReal.SpecialFunctions.Basic
 import LeanPool.ComputableReal.SpecialFunctions.Exp
 import LeanPool.ComputableReal.SpecialFunctions.Pi
 import LeanPool.ComputableReal.SpecialFunctions.Sqrt
+import LeanPool.CramerWold
 import LeanPool.CriticalPortraits
 import LeanPool.CriticalPortraits.Census
 import LeanPool.CriticalPortraits.Core
