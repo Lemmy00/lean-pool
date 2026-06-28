@@ -41,7 +41,7 @@ projects:
       - "13F20"
   - slug: cramer-wold
     title: The Cramer-Wold theorem
-    summary: Formalizes Cramer-Wold extensionality for finite measures on real Banach spaces using continuous-linear one-dimensional projections, with Hilbert-space inner-product versions and random-variable law corollaries for identical distributions and `HasLaw`.
+    summary: Formalizes the finite-dimensional Cramer-Wold theorem for measures on Euclidean spaces, with Banach-space continuous-dual generalizations, Hilbert-space inner-product versions, and random-variable law corollaries for identical distributions and `HasLaw`.
     branch: probability theory
     entry_module: LeanPool.CramerWold
     authors:
@@ -56,10 +56,12 @@ projects:
     license: Apache-2.0
     status: verified
     main_declarations:
-      - LeanPool.CramerWold.measure_eq_of_forall_dual_map_eq
+      - LeanPool.CramerWold.euclideanSpace_measure_eq_of_forall_inner_map_eq
     main_results:
+      - declaration: LeanPool.CramerWold.euclideanSpace_measure_eq_of_forall_inner_map_eq
+        informal: Proves the classical finite-dimensional Cramer-Wold theorem for finite Borel measures on `EuclideanSpace ℝ (Fin n)`, showing equality when all scalar projections have equal pushforward measures.
       - declaration: LeanPool.CramerWold.measure_eq_of_forall_dual_map_eq
-        informal: Proves that finite Borel measures on a complete second-countable real normed space are equal when all continuous-linear real projections have equal pushforward measures.
+        informal: Generalizes the extensionality criterion to finite Borel measures on complete second-countable real normed spaces, using all continuous-linear real projections.
       - declaration: LeanPool.CramerWold.measure_eq_of_forall_inner_map_eq
         informal: Specializes Cramer-Wold extensionality to real Hilbert spaces, using scalar projections of the form `x ↦ ⟪t, x⟫_ℝ`.
       - declaration: LeanPool.CramerWold.identDistrib_of_forall_dual_comp_identDistrib

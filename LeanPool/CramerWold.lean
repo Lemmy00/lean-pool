@@ -14,7 +14,7 @@ import Mathlib.Probability.IdentDistrib
 Source: doi:10.1112/jlms/s1-11.4.290
 Authors: Lazar Milikic
 Status: verified
-Main declarations: `LeanPool.CramerWold.measure_eq_of_forall_dual_map_eq`
+Main declarations: `LeanPool.CramerWold.euclideanSpace_measure_eq_of_forall_inner_map_eq`
 Tags: probability, measure-theory, characteristic-functions, cramer-wold
 MSC: 60B11, 60E10, 28A33
 -/
@@ -23,8 +23,9 @@ MSC: 60B11, 60E10, 28A33
 ## Mathematical overview
 
 This file packages the Cramer-Wold theorem as a reusable family of measure and probability-law
-extensionality lemmas. The Banach-space statements use all continuous linear maps to `ℝ`; the
-Hilbert-space statements rewrite those projections as scalar products `x ↦ ⟪t, x⟫_ℝ`.
+extensionality lemmas. The Euclidean-space statements give the classical finite-dimensional
+theorem. The Banach-space statements use all continuous linear maps to `ℝ`; the Hilbert-space
+statements rewrite those projections as scalar products `x ↦ ⟪t, x⟫_ℝ`.
 
 The proof is a direct characteristic-function argument: equality of all one-dimensional projected
 laws gives equality of `charFunDual`, and Mathlib's `Measure.ext_of_charFunDual` recovers the
@@ -143,6 +144,58 @@ theorem probabilityMeasure_eq_iff_forall_inner_map_eq (μ ν : ProbabilityMeasur
   · exact probabilityMeasure_eq_of_forall_inner_map_eq μ ν
 
 end InnerProductMeasures
+
+section EuclideanMeasures
+
+variable {n : ℕ}
+
+/-- The classical finite-dimensional Cramer-Wold theorem for finite measures on `ℝ^n`,
+represented by `EuclideanSpace ℝ (Fin n)`. -/
+theorem euclideanSpace_measure_eq_of_forall_inner_map_eq
+    {μ ν : Measure (EuclideanSpace ℝ (Fin n))} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h :
+      ∀ t : EuclideanSpace ℝ (Fin n),
+        μ.map (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ) =
+          ν.map (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ)) :
+    μ = ν :=
+  measure_eq_of_forall_inner_map_eq h
+
+/-- Cramer-Wold as an extensionality criterion for finite measures on `ℝ^n`, represented by
+`EuclideanSpace ℝ (Fin n)`. -/
+theorem euclideanSpace_measure_eq_iff_forall_inner_map_eq
+    {μ ν : Measure (EuclideanSpace ℝ (Fin n))} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    μ = ν ↔
+      ∀ t : EuclideanSpace ℝ (Fin n),
+        μ.map (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ) =
+          ν.map (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ) :=
+  measure_eq_iff_forall_inner_map_eq
+
+/-- Probability measures on `ℝ^n`, represented by `EuclideanSpace ℝ (Fin n)`, are determined by
+all scalar projections. -/
+theorem euclideanSpace_probabilityMeasure_eq_of_forall_inner_map_eq
+    (μ ν : ProbabilityMeasure (EuclideanSpace ℝ (Fin n)))
+    (h :
+      ∀ t : EuclideanSpace ℝ (Fin n),
+        (μ : Measure (EuclideanSpace ℝ (Fin n))).map
+            (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ) =
+          (ν : Measure (EuclideanSpace ℝ (Fin n))).map
+            (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ)) :
+    μ = ν :=
+  probabilityMeasure_eq_of_forall_inner_map_eq μ ν h
+
+/-- Cramer-Wold as an extensionality criterion for probability measures on `ℝ^n`, represented by
+`EuclideanSpace ℝ (Fin n)`. -/
+theorem euclideanSpace_probabilityMeasure_eq_iff_forall_inner_map_eq
+    (μ ν : ProbabilityMeasure (EuclideanSpace ℝ (Fin n))) :
+    μ = ν ↔
+      ∀ t : EuclideanSpace ℝ (Fin n),
+        (μ : Measure (EuclideanSpace ℝ (Fin n))).map
+            (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ) =
+          (ν : Measure (EuclideanSpace ℝ (Fin n))).map
+            (fun x : EuclideanSpace ℝ (Fin n) => ⟪t, x⟫_ℝ) :=
+  probabilityMeasure_eq_iff_forall_inner_map_eq μ ν
+
+end EuclideanMeasures
 
 section DualRandomVariables
 
