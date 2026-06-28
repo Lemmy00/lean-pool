@@ -238,6 +238,14 @@ appears.
 
 Dropped before opening an import PR:
 
+- `sven-manthe/A-formalization-of-Borel-determinacy-in-Lean` — Apache-2.0
+  and a strong fit mathematically, but the 2026-06-28 port attempt to the
+  current Lean Pool toolchain is not gate-compliant: the source uses forbidden
+  `set_option` waivers/heartbeat/hygiene settings, and after mechanical
+  import rewrites the build fails in the regular-open/topology stream
+  interface and in the custom category-theory helper layer (`HasForget`/colimit
+  API drift). Revisit if upstream rebases to current Mathlib or a focused port
+  removes those gates.
 - `mckoen/quasicategory` — upstream remains on topic and Apache-2.0, but as of
   2026-06-28 its advertised internal-hom/quasi-category theorem still depends
   on unresolved `sorry`s in `Quasicategory/Main.lean`,
