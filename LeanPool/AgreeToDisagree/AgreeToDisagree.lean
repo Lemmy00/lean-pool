@@ -116,6 +116,19 @@ lemma Partition.class_eq_biUnion_of_le {P Q : Partition α} (h : P ≤ Q) (a : �
   · obtain ⟨s, hs, hs'⟩ := mem_iUnion₂.mp hb
     exact hs.2 hs'
 
+lemma Partition.class_subset_of_le {P Q : Partition α} (hle : P ≤ Q) (ω : α) :
+    P.class ω ⊆ Q.class ω :=
+  P.class_mono hle ω
+
+lemma Partition.class_eq_of_mem_part {P : Partition α} {s : Set α} {ω : α}
+    (hs : s ∈ P) (hω : ω ∈ s) : P.class ω = s :=
+  P.class_eq_of_mem hs hω
+
+lemma Partition.pairwise_disjoint_subtype_val (P : Partition α) :
+    Pairwise (Function.onFun Disjoint (fun i : ↑(P.val) => (i : Set α))) :=
+  fun ⟨_, hs⟩ ⟨_, ht⟩ hne => Set.disjoint_left.mpr fun _ has hat =>
+    hne <| Subtype.ext ((class_eq_of_mem_part hs has).symm.trans (class_eq_of_mem_part ht hat))
+
 end Prerequisites
 
 open MeasureTheory
@@ -137,6 +150,48 @@ lemma Partition.countable_of_measure_pos {μ : Measure Ω} [IsProbabilityMeasure
   · ext ⟨s, hs⟩; simp [hP' s hs]
   · intro s t hst
     exact P.2.pairwiseDisjoint s.2 t.2 (fun h ↦ hst (Subtype.ext h))
+
+lemma Partition.countable_of_pos_measure {μ : Measure Ω} [IsProbabilityMeasure μ]
+    (P : Partition Ω) (hP : P.Measurable) (hP' : ∀ s ∈ P, μ s > 0) :
+    P.val.Countable :=
+  P.countable_of_measure_pos hP hP'
+
+lemma measure_inter_eq_mul_of_probabilityAt_eq
+    (P : Partition Ω) (hP' : ∀ s ∈ P, μ s > 0)
+    {E : Set Ω} {s S : Set Ω} {p : ENNReal}
+    (hs : s ∈ P) (hsS : s ⊆ S)
+    (hconst : ∀ ω' ∈ S, P.probabilityAt μ E ω' = p) :
+    μ (E ∩ s) = p * μ s := by
+  obtain ⟨ω, hω⟩ := Setoid.nonempty_of_mem_partition P.2 hs
+  have hprob : μ (E ∩ s) / μ s = p := by
+    simpa only [Partition.probabilityAt, Partition.class_eq_of_mem_part hs hω]
+      using hconst ω (hsS hω)
+  rw [← hprob, ENNReal.div_mul_cancel (ne_of_gt (hP' s hs)) (measure_ne_top μ s)]
+
+lemma measure_inter_sup_class_eq_mul
+    (P : Partition Ω) (hPm : P.Measurable) (hP' : ∀ s ∈ P, μ s > 0)
+    {E S : Set Ω} {p : ENNReal}
+    (hE : MeasurableSet E)
+    (hS : S = ⋃ s ∈ {s ∈ P | s ⊆ S}, s)
+    (hctbl : P.val.Countable)
+    (hconst : ∀ ω' ∈ S, P.probabilityAt μ E ω' = p) :
+    μ (E ∩ S) = p * μ S := by
+  set T := {s ∈ P | s ⊆ S}
+  have hT_ctbl : T.Countable := hctbl.mono fun _ hs => hs.1
+  have hT_disj : T.PairwiseDisjoint id := fun s hs t ht hne =>
+    P.2.pairwiseDisjoint hs.1 ht.1 (fun heq => hne (heq ▸ rfl))
+  have hT_meas : ∀ s ∈ T, MeasurableSet s := fun s hs => hPm s hs.1
+  rw [show μ (E ∩ S) = ∑' (t : T), μ (E ∩ ↑t) by
+      conv_lhs => rw [hS, inter_iUnion₂]
+      exact measure_biUnion hT_ctbl
+        (fun s hs t ht hne => (hT_disj hs ht hne).mono inf_le_right inf_le_right)
+        (fun s hs => hE.inter (hT_meas s hs)),
+    show μ S = ∑' (t : T), μ (t : Set Ω) by
+      conv_lhs => rw [hS]
+      exact measure_biUnion hT_ctbl hT_disj hT_meas]
+  simp_rw [show ∀ t : T, μ (E ∩ (t : Set Ω)) = p * μ (t : Set Ω) from
+    fun t => measure_inter_eq_mul_of_probabilityAt_eq P hP' t.2.1 t.2.2 hconst]
+  exact ENNReal.tsum_mul_left
 
 /-- Let `P` be a partition of `Ω` into measurable non-null sets, `Q` a coarser partition and
 `E` a set such that `P.probabilityAt E ω' = p` for all `ω' ∈ Q.class ω`.
