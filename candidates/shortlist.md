@@ -238,20 +238,20 @@ appears.
 
 Dropped before opening an import PR:
 
-- `sven-manthe/A-formalization-of-Borel-determinacy-in-Lean` — Apache-2.0
-  and a strong fit mathematically, but the 2026-06-28 port attempt to the
-  current Lean Pool toolchain is not gate-compliant: the source uses forbidden
-  `set_option` waivers/heartbeat/hygiene settings, and after mechanical
-  import rewrites the build fails in the regular-open/topology stream
-  interface and in the custom category-theory helper layer (`HasForget`/colimit
-  API drift). Revisit if upstream rebases to current Mathlib or a focused port
-  removes those gates.
 - `mckoen/quasicategory` — upstream remains on topic and Apache-2.0, but as of
   2026-06-28 its advertised internal-hom/quasi-category theorem still depends
   on unresolved `sorry`s in `Quasicategory/Main.lean`,
   `Quasicategory/MorphismProperty.lean`, `Quasicategory/PushoutProduct/Basic.lean`,
   and `Quasicategory/_007F/Nondegenerate.lean`; not a complete project under
   Lean Pool's `sorry`-free gate.
+- `Whysoserioushah/BrauerGroup_new` — now redirects to
+  `Whysoserioushah/BrauerGroup`; the 2026-06-28 triage found the current
+  default branch actively pushed that day and still not gate-compliant:
+  active files contain unresolved `sorry`s (for example
+  `BrauerGroup/CSA/ReducedCharPoly.lean` and
+  `BrauerGroup/Azumaya/Group.lean`), and the project relies on repeated
+  forbidden `set_option` waivers for heartbeats, synthesis depth, and linter
+  settings. Revisit only after upstream is `sorry`-free and waiver-free.
 
 Closed import PRs superseded by later accepted imports:
 
