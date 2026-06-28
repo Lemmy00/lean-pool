@@ -479,6 +479,11 @@ Substantive and on-topic, but ship no explicit permissive license — not import
 | [arhaan2/formalizing-online-prediction-from-halving-to-hedge-in-lean](https://github.com/Arhaan2/Formalizing-Online-Prediction-From-Halving-to-Hedge-in-Lean) | Online learning: Halving mistake bound, Hoeffding log-MGF, Weighted Majority & Hedge regret | *none* | v4.28.0 | 721 | 2026-05-08 |
 | [nyxfoundation/goldfish-fv](https://github.com/NyxFoundation/goldfish-fv) | Safety/liveness of the Goldfish Ethereum consensus protocol (synchronous sleepy model) | *none* | v4.29.0 | 713 | 2026-05-27 |
 
+### Dropped during import triage
+
+- [phylliida/lean-quadratic-extension](https://github.com/Phylliida/lean-quadratic-extension) — MIT, proof-complete one-level positive-cone closure for a quadratic extension, but only 264 Lean lines and the README explicitly leaves the dynamic tower / ring-structure endpoint unfinished.
+- [mrdouglasny/gibbs-variational](https://github.com/mrdouglasny/gibbs-variational) — Apache-2.0 and on-topic, but current `GibbsVariational/Variational.lean` still contains a `sorry`; the README also flags the stated Donsker-Varadhan equality as false as written.
+
 ### Near-misses — active mathlib-bound work
 
 On-topic and often permissively licensed, but being pushed toward mathlib upstream (or by a mathlib maintainer), so importing into lean-pool would duplicate or conflict with that pipeline.
