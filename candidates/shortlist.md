@@ -244,6 +244,12 @@ Dropped before opening an import PR:
   `Quasicategory/MorphismProperty.lean`, `Quasicategory/PushoutProduct/Basic.lean`,
   and `Quasicategory/_007F/Nondegenerate.lean`; not a complete project under
   Lean Pool's `sorry`-free gate.
+- `singerng/steinberg-formalization` — Apache-2.0 and `sorry`-free, with a
+  substantive O'Donnell-Singer Steinberg-relations endpoint, but the current
+  v4.15 source is not gate-compliant: it relies on forbidden `set_option`
+  waivers for `quotPrecheck`, `hygiene`, and unbounded `maxHeartbeats`, has a
+  `partial def` in macro support, and includes diagnostic `#check` commands.
+  Revisit after the project builds without these waivers and diagnostics.
 - `Whysoserioushah/BrauerGroup_new` — now redirects to
   `Whysoserioushah/BrauerGroup`; the 2026-06-28 triage found the current
   default branch actively pushed that day and still not gate-compliant:
