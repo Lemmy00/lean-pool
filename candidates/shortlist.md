@@ -225,6 +225,25 @@ appears.
   survived, not the lower-bound formalization.
 - `misaka10987/archimedes` — PR #51; elementary coordinate-geometry API, no
   graduate/research headline result.
+- `alainchmt/RingOfIntegersProject` — PR #124; the full DedekindProject4 port
+  was green, but at ~98k lines / 639 files it exceeded the LLM-review context
+  window and the proof-profile/comment budget; closed for now as too large for
+  the current Lean Pool import gates.
+- `kckennylau/EllipticCurve` — PR #66; only a small lemmas/equalizer slice
+  ported, while the Grassmannian/Proj algebraic-geometry stack carrying the
+  elliptic-curve content was omitted and needs a substantial Mathlib-bump port.
+- `dagurtomas/LeanCondensed` — PR #71; the imported fragment was coherent
+  condensed-mathematics infrastructure, but lacked a substantive named theorem
+  from the upstream project.
+
+Dropped before opening an import PR:
+
+- `mckoen/quasicategory` — upstream remains on topic and Apache-2.0, but as of
+  2026-06-28 its advertised internal-hom/quasi-category theorem still depends
+  on unresolved `sorry`s in `Quasicategory/Main.lean`,
+  `Quasicategory/MorphismProperty.lean`, `Quasicategory/PushoutProduct/Basic.lean`,
+  and `Quasicategory/_007F/Nondegenerate.lean`; not a complete project under
+  Lean Pool's `sorry`-free gate.
 
 Closed import PRs superseded by later accepted imports:
 
