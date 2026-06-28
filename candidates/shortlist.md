@@ -259,6 +259,19 @@ Dropped before opening an import PR:
   false` while the README describes it as ongoing work. Revisit after upstream
   is `sorry`-free and waiver-free, or after the K/S5 subset is split as a
   complete standalone project.
+- `Arij-Aziz/Selberg_improvement_general` — Apache-2.0 and mathematically
+  interesting, but the current upstream still documents a deferred
+  `optimalWeight_quadForm_eq` proof in
+  `RequestProject/Core/MultiPrime/OptimalWeights.lean`; `Challenge.lean` is a
+  statement-only mirror with many intentional `sorry`s, and `Future/` is
+  scaffolding outside the proof chain. Revisit when the general optimal-weight
+  theorem is sorry-free or the Möbius-weight subchain is released as a complete
+  standalone project.
+- `Phylliida/lean-quadratic-extension` — MIT and the one-level positive-cone
+  closure theorem is real, but the hard proof currently uses forbidden
+  `set_option maxHeartbeats` overrides, and the README says the dynamic tower
+  / ring-structure part is not complete. Revisit after the proof is
+  waiver-free and the tower target is finished.
 
 Closed import PRs superseded by later accepted imports:
 
