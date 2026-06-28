@@ -278,6 +278,18 @@ Dropped before opening an import PR:
   `set_option maxHeartbeats` overrides, and the README says the dynamic tower
   / ring-structure part is not complete. Revisit after the proof is
   waiver-free and the tower target is finished.
+- `SamuelSchlesinger/complexitylib` — substantive computational-complexity
+  theory, but a 2026-06-28 GitHub metadata check still reports no license.
+  Lean Pool cannot redistribute it under Apache-2.0 without an explicit
+  permissive grant.
+- `LarsenClose/fixed-point-formalization` — substantive fixed-point work in
+  monoidal closed categories, but a 2026-06-28 GitHub metadata check still
+  reports no license. Revisit if upstream adds Apache-2.0, MIT, BSD, ISC,
+  0BSD, or Zlib licensing.
+- `duckki/GraphCoQL.lean` — substantial GraphQL semantics/conformance
+  formalization, but a 2026-06-28 GitHub metadata check still reports no
+  license. It is not importable into Lean Pool without an explicit permissive
+  grant.
 
 Closed import PRs superseded by later accepted imports:
 
