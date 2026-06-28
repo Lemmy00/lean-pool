@@ -252,6 +252,13 @@ Dropped before opening an import PR:
   `BrauerGroup/Azumaya/Group.lean`), and the project relies on repeated
   forbidden `set_option` waivers for heartbeats, synthesis depth, and linter
   settings. Revisit only after upstream is `sorry`-free and waiver-free.
+- `jamesj64/lean-modal-logic` — MIT and the propositional K/S5 files are
+  close enough to build as a partial extraction, but the current upstream root
+  imports `Modal/Boxdot.lean`, where `BoxdotConjecture` is still `sorry`, and
+  the quantified modal-logic branch uses forbidden `set_option quotPrecheck
+  false` while the README describes it as ongoing work. Revisit after upstream
+  is `sorry`-free and waiver-free, or after the K/S5 subset is split as a
+  complete standalone project.
 
 Closed import PRs superseded by later accepted imports:
 
