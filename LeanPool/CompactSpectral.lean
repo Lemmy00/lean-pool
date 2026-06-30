@@ -17,7 +17,7 @@ import LeanPool.CompactSpectral.Topology.WeakHilbertCompact
 /-!
 # Spectral theorem for compact self-adjoint operators
 
-Source: url:https://github.com/abenenson/compact-spectral
+Source: doi:10.3792/euclid/9781429799911-2
 Authors: Adam Benenson
 Status: verified
 Main declarations: `CompactSelfAdjoint.exists_hasEigenvector_iSup_or_iInf_of_isCompactOperator`
