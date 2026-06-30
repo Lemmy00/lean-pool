@@ -411,8 +411,7 @@ def endSimpleModOfWedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [DivisionRing
   letI _ : IsScalarTower k A (Fin n → D) :=
   { smul_assoc a b x := by
       change wdb (a • b) • x = _
-      rw [map_smul, Algebra.smul_def, mul_smul]
-      rw [algebraMap_smul]
+      rw [map_smul, Algebra.smul_def, mul_smul, algebraMap_smul]
       rfl }
   letI _ : SMulCommClass A k (Fin n → D) :=
     { smul_comm a b x := by
@@ -439,8 +438,7 @@ lemma endSimpleModOfWedderburn' (n : ℕ) (hn : n ≠ 0) (D : Type v) [DivisionR
   letI _ : IsScalarTower k A (Fin n → D) :=
   { smul_assoc a b x := by
       change wdb (a • b) • x = _
-      rw [map_smul, Algebra.smul_def, mul_smul]
-      rw [algebraMap_smul]
+      rw [map_smul, Algebra.smul_def, mul_smul, algebraMap_smul]
       rfl }
   letI _ : SMulCommClass A k (Fin n → D) :=
     { smul_comm a b x := by
@@ -470,13 +468,6 @@ instance end_simple_mod_finite
       simpa only [ne_eq, mul_eq_zero, Nat.cast_eq_zero, or_self] using NeZero.ne n)) inst1
   have : FiniteDimensional k Dᵐᵒᵖ := E.symm.finiteDimensional
   refine iso.symm.toLinearEquiv.finiteDimensional
-
--- instance (D : Type v) [DivisionRing D] : Module.Finite Dᵐᵒᵖ D := by
---   rw [Module.finite_def]
---   refine ⟨{1}, eq_top_iff.2 fun x _ => ?_⟩
---   simp only [Finset.coe_singleton]
---   rw [show x = (MulOpposite.op x : Dᵐᵒᵖ) • 1 by simp]
---   exact Submodule.smul_mem _ _ <| Submodule.subset_span rfl
 
 instance instAlgebraEndOfIsScalarTowerLeanPool (M : Type v) [AddCommGroup M] [Module A M]
     [Module k M] [IsScalarTower k A M] :
@@ -743,8 +734,7 @@ lemma WedderburnArtin_uniqueness₀
   letI _ : IsScalarTower k A (Fin n → D) :=
   { smul_assoc a b x := by
       change wdb (a • b) • x = _
-      rw [map_smul, Algebra.smul_def, mul_smul]
-      rw [algebraMap_smul]
+      rw [map_smul, Algebra.smul_def, mul_smul, algebraMap_smul]
       rfl }
   letI _ : SMulCommClass A k (Fin n → D) :=
     { smul_comm a b x := by

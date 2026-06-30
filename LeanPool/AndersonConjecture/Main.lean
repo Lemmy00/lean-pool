@@ -169,6 +169,29 @@ lemma ufd_height_one_principal
   exact absurd (le_trans (add_le_add_right h4 1 |>.trans_eq (add_comm _ _)) h1)
     (by norm_num : ¬((2 : ℕ∞) ≤ 1))
 
+/-- `algebraMap A Â` is a local ring hom: if `r ∈ M_A` then `evalOneₐ` sends its
+image to `0`, so it cannot be a unit. -/
+lemma isLocalHom_algebraMap_adicCompletion
+    {A : Type*} [CommRing A] [IsLocalRing A] [IsNoetherianRing A]
+    [IsLocalRing (AdicCompletion (IsLocalRing.maximalIdeal A) A)] :
+    IsLocalHom (algebraMap A (AdicCompletion (IsLocalRing.maximalIdeal A) A)) := by
+  set M := IsLocalRing.maximalIdeal A
+  set Ahat := AdicCompletion M A
+  constructor
+  intro r hr
+  by_contra h_not_unit
+  have hr_mem : r ∈ M := (IsLocalRing.mem_maximalIdeal r).mpr h_not_unit
+  have h_mk_zero : (Ideal.Quotient.mk M) r = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr hr_mem
+  have h_eval_zero : (AdicCompletion.evalOneₐ M) (algebraMap A Ahat r) = 0 := by
+    rw [show algebraMap A Ahat r = AdicCompletion.of M A r from by
+      rw [AdicCompletion.algebraMap_apply]
+      rfl]
+    rw [AdicCompletion.evalOneₐ_of, h_mk_zero]
+  have h_unit := hr.map (AdicCompletion.evalOneₐ M).toRingHom
+  rw [AlgHom.toRingHom_eq_coe, show (AdicCompletion.evalOneₐ M : Ahat →+* _)
+    (algebraMap A Ahat r) = (0 : A ⧸ M) from h_eval_zero] at h_unit
+  exact not_isUnit_zero h_unit
+
 /-- dim(A) ≤ dim(Â) for Noetherian local rings via flat going-down.
     Proof: algebraMap A Â is a local ring hom (via evalOneₐ), so maximalIdeal Â lies over
     maximalIdeal A, then height_eq_height_add gives ht(M_A) ≤ ht(M_Â) = dim(Â). -/
@@ -179,22 +202,7 @@ lemma ringKrullDim_le_of_adic_completion
   set M := IsLocalRing.maximalIdeal A
   set Ahat := AdicCompletion M A
   haveI : IsLocalRing Ahat := φ.symm.isLocalRing
-  -- algebraMap A Ahat is local: r ∈ M → evalOneₐ(algebraMap r) = 0 → not a unit
-  haveI : IsLocalHom (algebraMap A Ahat) := by
-    constructor
-    intro r hr
-    by_contra h_not_unit
-    have hr_mem : r ∈ M := (IsLocalRing.mem_maximalIdeal r).mpr h_not_unit
-    have h_mk_zero : (Ideal.Quotient.mk M) r = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr hr_mem
-    have h_eval_zero : (AdicCompletion.evalOneₐ M) (algebraMap A Ahat r) = 0 := by
-      rw [show algebraMap A Ahat r = AdicCompletion.of M A r from by
-        rw [AdicCompletion.algebraMap_apply]
-        rfl]
-      rw [AdicCompletion.evalOneₐ_of, h_mk_zero]
-    have h_unit := hr.map (AdicCompletion.evalOneₐ M).toRingHom
-    rw [AlgHom.toRingHom_eq_coe, show (AdicCompletion.evalOneₐ M : Ahat →+* _)
-      (algebraMap A Ahat r) = (0 : A ⧸ M) from h_eval_zero] at h_unit
-    exact not_isUnit_zero h_unit
+  haveI : IsLocalHom (algebraMap A Ahat) := isLocalHom_algebraMap_adicCompletion
   haveI : IsNoetherianRing Ahat := isNoetherianRing_of_ringEquiv T φ.symm
   haveI : Module.Flat A Ahat := AdicCompletion.flat_of_isNoetherian _
   haveI : Algebra.HasGoingDown A Ahat := Algebra.HasGoingDown.of_flat
@@ -205,8 +213,7 @@ lemma ringKrullDim_le_of_adic_completion
       ← IsLocalRing.maximalIdeal_height_eq_ringKrullDim (R := Ahat)]
   have h := Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown M
     (IsLocalRing.maximalIdeal Ahat)
-  simp only [h, WithBot.coe_le_coe]
-  exact le_self_add
+  simpa only [h, WithBot.coe_le_coe] using le_self_add
 
 lemma smul_top_eq_bot_quotient {A : Type*} [CommRing A] [IsLocalRing A] :
     (IsLocalRing.maximalIdeal A) •
@@ -242,8 +249,7 @@ instance residueField_isPrecomplete (A : Type*) [CommRing A] [IsLocalRing A] :
     intro n
     by_cases hn : n = 0
     · subst hn
-      simp only [pow_zero, Ideal.one_eq_top, Submodule.top_smul]
-      exact SModEq.top
+      simpa only [pow_zero, Ideal.one_eq_top, Submodule.top_smul] using SModEq.top
     · rw [pow_smul_top_eq_bot_quotient n hn]
       have h1 := hf (Nat.one_le_iff_ne_zero.mpr hn)
       rw [pow_one, smul_top_eq_bot_quotient] at h1
@@ -267,8 +273,7 @@ lemma map_mkQ_mk_eq_of_evalOneₐ {A : Type*} [CommRing A] [IsLocalRing A]
   rw [Submodule.Quotient.eq]
   by_cases hn : n = 0
   · subst hn
-    simp only [pow_zero, Ideal.one_eq_top, Submodule.top_smul]
-    exact Submodule.mem_top
+    simpa only [pow_zero, Ideal.one_eq_top, Submodule.top_smul] using Submodule.mem_top
   · rw [pow_smul_top_eq_bot_quotient n hn, Submodule.mem_bot, sub_eq_zero]
     simp only [AdicCompletion.evalOneₐ, AlgHom.coe_comp, Function.comp_apply,
       AdicCompletion.evalₐ_mk, Ideal.Quotient.factorₐ_apply_mk]
@@ -504,21 +509,7 @@ lemma quotient_prime_dim_one
   have hdim_A : ringKrullDim A = 2 := le_antisymm hdim_A_le (by
     set M := IsLocalRing.maximalIdeal A
     haveI : IsLocalRing Ahat := φ.symm.isLocalRing
-    haveI : IsLocalHom (algebraMap A Ahat) := by
-      constructor
-      intro r hr
-      by_contra h_not_unit
-      have hr_mem : r ∈ M := (IsLocalRing.mem_maximalIdeal r).mpr h_not_unit
-      have h_mk_zero : (Ideal.Quotient.mk M) r = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr hr_mem
-      have h_eval_zero : (AdicCompletion.evalOneₐ M) (algebraMap A Ahat r) = 0 := by
-        rw [show algebraMap A Ahat r = AdicCompletion.of M A r from by
-          rw [AdicCompletion.algebraMap_apply]
-          rfl]
-        rw [AdicCompletion.evalOneₐ_of, h_mk_zero]
-      have h_unit := hr.map (AdicCompletion.evalOneₐ M).toRingHom
-      rw [AlgHom.toRingHom_eq_coe, show (AdicCompletion.evalOneₐ M : Ahat →+* _)
-        (algebraMap A Ahat r) = (0 : A ⧸ M) from h_eval_zero] at h_unit
-      exact not_isUnit_zero h_unit
+    haveI : IsLocalHom (algebraMap A Ahat) := isLocalHom_algebraMap_adicCompletion
     haveI : Module.Flat A Ahat := AdicCompletion.flat_of_isNoetherian _
     haveI : Algebra.HasGoingDown A Ahat := Algebra.HasGoingDown.of_flat
     haveI : (IsLocalRing.maximalIdeal Ahat).LiesOver M :=
@@ -629,8 +620,7 @@ lemma quotient_not_analytically_irreducible
     have h1 : algebraMap A Ahat a = 0 := by
       apply φ.injective
       rw [← hb_def, h, map_zero]
-    have h_inj : Function.Injective (algebraMap A Ahat) := by
-      exact AdicCompletion.of_injective _ _
+    have h_inj : Function.Injective (algebraMap A Ahat) := AdicCompletion.of_injective _ _
     exact ha.ne_zero (h_inj (h1.trans (map_zero _).symm))
   -- span{b} ≤ Q with ht(Q)=1; if span{b} were prime then span{b}=Q, contradicting Q not principal
   have hb_not_prime : ¬ (Ideal.span ({b} : Set T)).IsPrime :=
@@ -762,10 +752,9 @@ lemma quotient_not_analytically_irreducible
                Ideal.Quotient.algebraMap_eq]
     rw [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective]
     have hgn_zero : g_n n ((AdicCompletion.evalₐ M n) s) = 0 := by
-      have := hfn_zero n
       change (g_n n).comp
         ((AdicCompletion.evalₐ M n).toRingHom.comp φ.symm.toRingHom) t = 0
-      exact this
+      exact hfn_zero n
     obtain ⟨x, hx_lift⟩ := Ideal.Quotient.mk_surjective (AdicCompletion.evalₐ M n s)
     rw [← hx_lift, hg_n_mk] at hgn_zero
     rw [Ideal.Quotient.eq_zero_iff_mem, ← hmap_pow,
@@ -826,9 +815,7 @@ theorem exists_prime_bad_quotient
   -- q = Q' ∩ A nonzero by trivial generic formal fiber; height 1 by faithful flatness
   set q : Ideal A := Ideal.comap (algebraMap A Ahat) Q' with hq_def
   have hq_prime : q.IsPrime := Ideal.comap_isPrime (algebraMap A Ahat) Q'
-  have hq_ne : q ≠ ⊥ := by
-    intro hq_bot
-    exact hQ'_ne (htrivial Q' hQ'_prime hq_bot)
+  have hq_ne : q ≠ ⊥ := fun hq_bot => hQ'_ne (htrivial Q' hQ'_prime hq_bot)
   have hq_height : q.height = 1 :=
     contraction_height_one A φ q hq_ne hq_prime rfl
   -- UFD: height-1 prime q = (a) for prime a

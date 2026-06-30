@@ -52,8 +52,8 @@ private lemma inv_norm_bounded_integrable
           exact (mul_le_mul_of_nonneg_left (hg_bounded w)
             (inv_nonneg.mpr (norm_nonneg _))).trans (by rw [mul_comm]))
   have h_far : IntegrableOn (fun w => ‖v - w‖⁻¹ * g w)
-      (Set.univ \ Metric.closedBall v 1) := by
-    exact hg_int.norm.integrableOn.mono'
+      (Set.univ \ Metric.closedBall v 1) :=
+    hg_int.norm.integrableOn.mono'
       ((Measurable.aestronglyMeasurable (Measurable.inv
         (measurable_norm.comp (measurable_const.sub measurable_id')))).mul
         (hg_meas.mono_measure Measure.restrict_le_self))
@@ -95,8 +95,8 @@ lemma schwartz_fderiv_component_schwartz
   have h_norm_eval : ‖(ContinuousLinearMap.apply ℝ ℝ (Pi.single j 1 : Fin 3 → ℝ))‖ ≤ 1 := by
     apply ContinuousLinearMap.opNorm_le_bound _ zero_le_one
     intro L
-    simp only [ContinuousLinearMap.apply_apply]
-    exact le_trans (L.le_opNorm _) (by simp [Pi.norm_single])
+    simpa only [ContinuousLinearMap.apply_apply] using
+      le_trans (L.le_opNorm _) (by simp [Pi.norm_single])
   calc ‖(ContinuousLinearMap.apply ℝ ℝ (Pi.single j 1 : Fin 3 → ℝ)).compContinuousMultilinearMap
         (iteratedFDeriv ℝ k (fderiv ℝ f) v)‖ * (1 + ‖v‖) ^ N
       ≤ ‖ContinuousLinearMap.apply ℝ ℝ (Pi.single j 1 : Fin 3 → ℝ)‖ *
@@ -174,8 +174,8 @@ private lemma coulomb_entry_conv_hasFDerivAt_aux
     have h_pos : 0 < 1 + ‖v - u‖ := by linarith [norm_nonneg (v - u)]
     have h_pos2 : 0 < 1 + ‖v₀ - u‖ := by linarith [norm_nonneg (v₀ - u)]
     calc ‖fderiv ℝ g (v - u)‖
-        ≤ C8 / (1 + ‖v - u‖) ^ 8 := by
-          exact (le_div_iff₀ (by positivity)).mpr (hC8 (v - u))
+        ≤ C8 / (1 + ‖v - u‖) ^ 8 :=
+          (le_div_iff₀ (by positivity)).mpr (hC8 (v - u))
       _ ≤ C8 / ((1 + ‖v₀ - u‖) / 2) ^ 8 := by
           gcongr
       _ = C8 * 2 ^ 8 / (1 + ‖v₀ - u‖) ^ 8 := by
@@ -363,6 +363,61 @@ lemma coulomb_entry_conv_deriv_bounded
     _ ≤ M := by simp only [abs_norm] at hM; exact hM v
     _ ≤ M + 1 := le_add_of_nonneg_right one_pos.le
 
+/-- The Coulomb flux component equals the K/L decomposition pointwise:
+    (∫ w, mulVec A(v-w) (f(w)•∇f(v) - f(v)•∇f(w)))_i = Σ_j [∂_j f(v) * K_j(v) - f(v) * L_j(v)]
+    where K_j(v) = ∫ A_{ij}(v-w) f(w) dw and L_j(v) = ∫ A_{ij}(v-w) ∂_j f(w) dw. -/
+lemma coulomb_flux_eq_decomposed
+    (f : (Fin 3 → ℝ) → ℝ) (hf_pos : ∀ v, 0 < f v) (hf_smooth : ContDiff ℝ 3 f)
+    (hf_schwartz : ∀ (N : ℕ) {k : ℕ}, k ≤ 2 →
+      ∃ C > 0, ∀ v, ‖iteratedFDeriv ℝ k f v‖ * (1 + ‖v‖) ^ N ≤ C)
+    (i : Fin 3) (v : Fin 3 → ℝ) :
+    (∫ w, mulVec (landauMatrix coulombKernel (v - w))
+      (f w • vGrad f v - f v • vGrad f w)) i =
+    ∑ j : Fin 3,
+      (fderiv ℝ f v (Pi.single j 1) *
+        (∫ w, landauMatrix coulombKernel (v - w) i j * f w) -
+       f v * (∫ w, landauMatrix coulombKernel (v - w) i j *
+        fderiv ℝ f w (Pi.single j 1))) := by
+  -- Extract k=0 decay
+  have hf_decay : ∀ N : ℕ, ∃ C > 0, ∀ v, |f v| * (1 + ‖v‖) ^ N ≤ C :=
+    schwartz_pointwise_decay hf_schwartz
+  have hdf_decay : ∀ j, ∀ N : ℕ, ∃ C > 0, ∀ v,
+      |fderiv ℝ f v (Pi.single j 1)| * (1 + ‖v‖) ^ N ≤ C :=
+    fun j => schwartz_fderiv_component_decay hf_schwartz j
+  have h_Af : ∀ j, Integrable (fun w => landauMatrix coulombKernel (v - w) i j * f w) :=
+    fun j => coulomb_entry_schwartz_integrable f (hf_smooth.of_le (by decide)) hf_decay v i j
+  have h_Adf : ∀ j, Integrable (fun w => landauMatrix coulombKernel (v - w) i j *
+      fderiv ℝ f w (Pi.single j 1)) := by
+    intro j
+    have h_cont_diff_df : ContDiff ℝ 2 (fun w => fderiv ℝ f w (Pi.single j 1)) :=
+      (hf_smooth.fderiv_right (by decide)).clm_apply contDiff_const
+    exact coulomb_entry_schwartz_integrable _ h_cont_diff_df (hdf_decay j) v i j
+  rw [eval_integral (fun k =>
+    (landau_flux_integrable_coulomb f hf_pos hf_smooth hf_schwartz v).eval k) i]
+  simp only [mulVec, dotProduct]
+  rw [integral_finsetSum _ (fun j _ => by
+    have : (fun w => landauMatrix coulombKernel (v - w) i j *
+        (f w • vGrad f v - f v • vGrad f w) j) =
+      (fun w => fderiv ℝ f v (Pi.single j 1) * (landauMatrix coulombKernel (v - w) i j * f w) -
+        f v * (landauMatrix coulombKernel (v - w) i j * fderiv ℝ f w (Pi.single j 1))) := by
+      ext w
+      simp [vGrad, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+      ring
+    rw [this]; exact ((h_Af j).const_mul _).sub ((h_Adf j).const_mul _))]
+  congr 1; ext j
+  have h_eq : ∀ w, landauMatrix coulombKernel (v - w) i j *
+      (f w • vGrad f v - f v • vGrad f w) j =
+    fderiv ℝ f v (Pi.single j 1) * (landauMatrix coulombKernel (v - w) i j * f w) -
+    f v * (landauMatrix coulombKernel (v - w) i j * fderiv ℝ f w (Pi.single j 1)) := by
+    intro w
+    simp [vGrad, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+    ring
+  simp_rw [h_eq]
+  rw [integral_sub ((h_Af j).const_mul _) ((h_Adf j).const_mul _),
+      integral_const_mul_of_integrable (h_Af j),
+      integral_const_mul_of_integrable (h_Adf j)]
+
+
 /-- The Coulomb flux component v ↦ (∫_w A(v-w)·[f(w)∇f(v)-f(v)∇f(w)])_i is differentiable.
 
     Proof strategy: Decompose the flux as
@@ -378,13 +433,6 @@ lemma coulomb_flux_differentiable
     Differentiable ℝ (fun v =>
       (∫ w, mulVec (landauMatrix coulombKernel (v - w))
         (f w • vGrad f v - f v • vGrad f w)) i) := by
-  -- Extract k=0 decay for coulomb_entry_schwartz_integrable
-  have hf_decay : ∀ N : ℕ, ∃ C > 0, ∀ v, |f v| * (1 + ‖v‖) ^ N ≤ C := by
-    intro N; obtain ⟨C, hC, hb⟩ := hf_schwartz N (k := 0) (by norm_num)
-    exact ⟨C, hC, fun v => by
-      have := hb v
-      simp only [norm_iteratedFDeriv_zero, Real.norm_eq_abs] at this
-      exact this⟩
   -- Lift hf_schwartz to the ∀ N {k}, k ≤ 1 form needed by coulomb_entry_conv_differentiable
   have hf_schwartz_le1 : ∀ (N : ℕ) {k : ℕ}, k ≤ 1 → ∃ C > 0, ∀ v,
       ‖iteratedFDeriv ℝ k f v‖ * (1 + ‖v‖) ^ N ≤ C :=
@@ -426,21 +474,6 @@ lemma coulomb_flux_differentiable
     have h_f_diff : Differentiable ℝ f := hf_smooth.differentiable (by decide)
     exact (h_df_diff.mul (hK_diff j)).sub (h_f_diff.mul (hL_diff j))
   -- The flux equals the decomposed form at each point
-  -- Entry integrabilities for the flux decomposition
-  have h_Af : ∀ v j, Integrable (fun w => landauMatrix coulombKernel (v - w) i j * f w) :=
-    fun v j => coulomb_entry_schwartz_integrable f (hf_smooth.of_le (by decide)) hf_decay v i j
-  -- Extract decay for ∂_j f for integrability
-  have hdf_decay : ∀ j, ∀ N : ℕ, ∃ C > 0, ∀ v,
-      |fderiv ℝ f v (Pi.single j 1)| * (1 + ‖v‖) ^ N ≤ C := by
-    intro jj N; obtain ⟨C, hC, hb⟩ := hdf_schwartz jj N (k := 0) (by decide)
-    exact ⟨C, hC, fun v => by
-      have := hb v
-      simp only [norm_iteratedFDeriv_zero, Real.norm_eq_abs] at this
-      exact this⟩
-  have h_Adf : ∀ v j, Integrable (fun w => landauMatrix coulombKernel (v - w) i j *
-      fderiv ℝ f w (Pi.single j 1)) :=
-    fun v j => coulomb_entry_schwartz_integrable _ (hf_smooth.fderiv_right (by decide) |>.clm_apply
-      contDiff_const) (hdf_decay j) v i j
   -- Show the two functions are equal
   have h_fn_eq : (fun v => (∫ w, mulVec (landauMatrix coulombKernel (v - w))
       (f w • vGrad f v - f v • vGrad f w)) i) =
@@ -448,102 +481,9 @@ lemma coulomb_flux_differentiable
       (fderiv ℝ f v (Pi.single j 1) *
         (∫ w, landauMatrix coulombKernel (v - w) i j * f w) -
        f v * (∫ w, landauMatrix coulombKernel (v - w) i j *
-        fderiv ℝ f w (Pi.single j 1)))) := by
-    ext v
-    -- Step 1: extract component i from vector integral
-    rw [eval_integral (fun k =>
-      (landau_flux_integrable_coulomb f hf_pos hf_smooth hf_schwartz v).eval k) i]
-    -- Step 2: expand mulVec as dot product
-    simp only [mulVec, dotProduct]
-    -- Step 3: exchange sum and integral (need each summand integrable)
-    rw [integral_finsetSum _ (fun j _ => by
-      have : (fun w => landauMatrix coulombKernel (v - w) i j *
-          (f w • vGrad f v - f v • vGrad f w) j) =
-        (fun w => fderiv ℝ f v (Pi.single j 1) * (landauMatrix coulombKernel (v - w) i j * f w) -
-          f v * (landauMatrix coulombKernel (v - w) i j * fderiv ℝ f w (Pi.single j 1))) := by
-        ext w
-        simp [vGrad, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
-        ring
-      rw [this]; exact ((h_Af v j).const_mul _).sub ((h_Adf v j).const_mul _))]
-    -- Step 4: for each j, expand and distribute the integral
-    congr 1; ext j
-    have h_eq : ∀ w, landauMatrix coulombKernel (v - w) i j *
-        (f w • vGrad f v - f v • vGrad f w) j =
-      fderiv ℝ f v (Pi.single j 1) * (landauMatrix coulombKernel (v - w) i j * f w) -
-      f v * (landauMatrix coulombKernel (v - w) i j * fderiv ℝ f w (Pi.single j 1)) := by
-      intro w
-      simp [vGrad, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
-      ring
-    simp_rw [h_eq]
-    rw [integral_sub ((h_Af v j).const_mul _) ((h_Adf v j).const_mul _),
-        integral_const_mul_of_integrable (h_Af v j),
-        integral_const_mul_of_integrable (h_Adf v j)]
-  rw [h_fn_eq]
-  exact h_decomp_diff
-
-/-- The Coulomb flux component equals the K/L decomposition pointwise:
-    (∫ w, mulVec A(v-w) (f(w)•∇f(v) - f(v)•∇f(w)))_i = Σ_j [∂_j f(v) * K_j(v) - f(v) * L_j(v)]
-    where K_j(v) = ∫ A_{ij}(v-w) f(w) dw and L_j(v) = ∫ A_{ij}(v-w) ∂_j f(w) dw. -/
-lemma coulomb_flux_eq_decomposed
-    (f : (Fin 3 → ℝ) → ℝ) (hf_pos : ∀ v, 0 < f v) (hf_smooth : ContDiff ℝ 3 f)
-    (hf_schwartz : ∀ (N : ℕ) {k : ℕ}, k ≤ 2 →
-      ∃ C > 0, ∀ v, ‖iteratedFDeriv ℝ k f v‖ * (1 + ‖v‖) ^ N ≤ C)
-    (i : Fin 3) (v : Fin 3 → ℝ) :
-    (∫ w, mulVec (landauMatrix coulombKernel (v - w))
-      (f w • vGrad f v - f v • vGrad f w)) i =
-    ∑ j : Fin 3,
-      (fderiv ℝ f v (Pi.single j 1) *
-        (∫ w, landauMatrix coulombKernel (v - w) i j * f w) -
-       f v * (∫ w, landauMatrix coulombKernel (v - w) i j *
-        fderiv ℝ f w (Pi.single j 1))) := by
-  -- Extract k=0 decay
-  have hf_decay : ∀ N : ℕ, ∃ C > 0, ∀ v, |f v| * (1 + ‖v‖) ^ N ≤ C := by
-    intro N; obtain ⟨C, hC, hb⟩ := hf_schwartz N (k := 0) (by decide)
-    exact ⟨C, hC, fun v => by
-      have := hb v
-      simp only [norm_iteratedFDeriv_zero, Real.norm_eq_abs] at this
-      exact this⟩
-  have hdf_schwartz := fun j => schwartz_fderiv_component_schwartz f hf_smooth hf_schwartz j
-  have hdf_decay : ∀ j, ∀ N : ℕ, ∃ C > 0, ∀ v,
-      |fderiv ℝ f v (Pi.single j 1)| * (1 + ‖v‖) ^ N ≤ C := by
-    intro jj N; obtain ⟨C, hC, hb⟩ := hdf_schwartz jj N (k := 0) (by decide)
-    exact ⟨C, hC, fun v => by
-      have := hb v
-      simp only [norm_iteratedFDeriv_zero, Real.norm_eq_abs] at this
-      exact this⟩
-  have h_Af : ∀ j, Integrable (fun w => landauMatrix coulombKernel (v - w) i j * f w) :=
-    fun j => coulomb_entry_schwartz_integrable f (hf_smooth.of_le (by decide)) hf_decay v i j
-  have h_Adf : ∀ j, Integrable (fun w => landauMatrix coulombKernel (v - w) i j *
-      fderiv ℝ f w (Pi.single j 1)) := by
-    intro j
-    have h_cont_diff_df : ContDiff ℝ 2 (fun w => fderiv ℝ f w (Pi.single j 1)) :=
-      (hf_smooth.fderiv_right (by decide)).clm_apply contDiff_const
-    exact coulomb_entry_schwartz_integrable _ h_cont_diff_df (hdf_decay j) v i j
-  rw [eval_integral (fun k =>
-    (landau_flux_integrable_coulomb f hf_pos hf_smooth hf_schwartz v).eval k) i]
-  simp only [mulVec, dotProduct]
-  rw [integral_finsetSum _ (fun j _ => by
-    have : (fun w => landauMatrix coulombKernel (v - w) i j *
-        (f w • vGrad f v - f v • vGrad f w) j) =
-      (fun w => fderiv ℝ f v (Pi.single j 1) * (landauMatrix coulombKernel (v - w) i j * f w) -
-        f v * (landauMatrix coulombKernel (v - w) i j * fderiv ℝ f w (Pi.single j 1))) := by
-      ext w
-      simp [vGrad, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
-      ring
-    rw [this]; exact ((h_Af j).const_mul _).sub ((h_Adf j).const_mul _))]
-  congr 1; ext j
-  have h_eq : ∀ w, landauMatrix coulombKernel (v - w) i j *
-      (f w • vGrad f v - f v • vGrad f w) j =
-    fderiv ℝ f v (Pi.single j 1) * (landauMatrix coulombKernel (v - w) i j * f w) -
-    f v * (landauMatrix coulombKernel (v - w) i j * fderiv ℝ f w (Pi.single j 1)) := by
-    intro w
-    simp [vGrad, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
-    ring
-  simp_rw [h_eq]
-  rw [integral_sub ((h_Af j).const_mul _) ((h_Adf j).const_mul _),
-      integral_const_mul_of_integrable (h_Af j),
-      integral_const_mul_of_integrable (h_Adf j)]
-
+        fderiv ℝ f w (Pi.single j 1)))) :=
+    funext (coulomb_flux_eq_decomposed f hf_pos hf_smooth hf_schwartz i)
+  rwa [h_fn_eq]
 
 /-- Coulomb convolution of a Schwartz-decaying function is uniformly bounded:
     |∫ A_{ij}(v-w) * g(w) dw| ≤ M for all v. Uses |A_{ij}(z)| ≤ ‖z‖⁻¹ and the

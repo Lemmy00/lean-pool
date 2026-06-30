@@ -349,116 +349,6 @@ noncomputable def embeddingMap (m : ℝ) [Fact (0 < m)] :
       rw [this]
       exact MeasureTheory.MemLp.toLp_const_smul c hf }
 
-/-- ℝ-linear view of the Lp multiplication CLM (avoiding `restrictScalars`). -/
-private noncomputable def momentumWeightSqrt_mathlib_mul_CLM_real (m : ℝ) [Fact (0 < m)] :
-    Lp ℂ 2 (volume : Measure SpaceTime) →L[ℝ]
-      Lp ℂ 2 (volume : Measure SpaceTime) where
-  toLinearMap :=
-    { toFun := momentumWeightSqrtMathlibMulCLM m
-      map_add' := fun x y => map_add _ x y
-      map_smul' := fun c x => by
-        change momentumWeightSqrtMathlibMulCLM m (c • x)
-            = c • momentumWeightSqrtMathlibMulCLM m x
-        have hcx : c • x = (c : ℂ) • x := lp_real_smul_eq_complex c x
-        have hmap : momentumWeightSqrtMathlibMulCLM m ((c : ℂ) • x) =
-            (c : ℂ) • momentumWeightSqrtMathlibMulCLM m x :=
-          ContinuousLinearMap.map_smul _ _ _
-        rw [hcx, hmap, ← lp_real_smul_eq_complex] }
-  cont := (momentumWeightSqrtMathlibMulCLM m).continuous
-
-/-- Continuous linear map obtained by composing the proven building blocks. -/
-noncomputable def embeddingMapCLM (m : ℝ) [Fact (0 < m)] :
-    TestFunction →L[ℝ] Lp ℂ 2 (volume : Measure SpaceTime) :=
-  ((momentumWeightSqrt_mathlib_mul_CLM_real m).comp (schwartzToL2CLMReal m)).comp
-    ((fourierTransformCLMReal).comp toComplexCLM)
-
-lemma embeddingMapCLM_apply (m : ℝ) [Fact (0 < m)] (f : TestFunction) :
-    embeddingMapCLM m f = embeddingMap m f := by
-  classical
-  set g := SchwartzMap.fourierTransformCLM ℂ (toComplex f) with hg
-  set A := (SchwartzMap.toLpCLM ℂ ℂ 2 (volume : Measure SpaceTime)) g with hA
-  have h_eval : embeddingMapCLM m f = (momentumWeightSqrtMathlibMulCLM m) A := by
-    rfl
-  have h_mul := momentumWeightSqrt_mathlib_mul_CLM_spec (m := m) A
-  have h_mul' : embeddingMapCLM m f =ᵐ[volume]
-      fun k => (momentumWeightSqrtMathlib m k : ℂ) * A k := by
-    simpa [h_eval]
-  have h_A : (fun k => A k) =ᵐ[volume] fun k => g k := by
-    filter_upwards [g.coeFn_toLp 2 (volume : Measure SpaceTime)] with k hk
-    simpa [A, g, hA, hg] using hk
-  have h_weight : (fun k => (momentumWeightSqrtMathlib m k : ℂ) * A k)
-      =ᵐ[volume] fun k => (momentumWeightSqrtMathlib m k : ℂ) * g k := by
-    refine h_A.mono ?_
-    intro k hk
-    simp [hk]
-  have h_mul'' : embeddingMapCLM m f =ᵐ[volume]
-      fun k => (momentumWeightSqrtMathlib m k : ℂ) * g k :=
-    h_mul'.trans h_weight
-  have h_sqrt : (fun k => (momentumWeightSqrtMathlib m k : ℂ) * g k)
-      =ᵐ[volume] sqrtPropagatorMap m f := by
-    refine Filter.Eventually.of_forall ?_
-    intro k
-    simp [sqrtPropagatorMap, g, mul_comm]
-  have h_mem := sqrtPropagatorMap_memLp (m := m) (f := f)
-  have h_lp : embeddingMap m f =ᵐ[volume] sqrtPropagatorMap m f := by
-    simpa [embeddingMap] using h_mem.coeFn_toLp
-  have h_ae : embeddingMapCLM m f =ᵐ[volume] embeddingMap m f :=
-    (h_mul''.trans h_sqrt).trans h_lp.symm
-  exact Lp.ext_iff.mpr h_ae
-
-/-- Existence of a linear embedding realizing the free covariance as a squared norm.
-    The target space H is an inner product space (L² is a Hilbert space).
-    Note: InnerProductSpace ℝ H implies NormedSpace ℝ H via InnerProductSpace.toNormedSpace.
--/
-theorem sqrtPropagatorEmbedding (m : ℝ) [Fact (0 < m)] :
-  ∃ (H : Type) (_ : NormedAddCommGroup H) (_ : InnerProductSpace ℝ H)
-    (T : TestFunction →ₗ[ℝ] H),
-    ∀ f : TestFunction, freeCovarianceFormR m f f = ‖T f‖^2 := by
-  refine ⟨TargetHilbertSpace m, inferInstance, inferInstance, embeddingMap m, ?_⟩
-  intro f
-  rw [← sqrtPropagatorMap_norm_eq_covariance]
-  unfold sqrtPropagatorMapNormSq
-  symm
-  have h_memLp := sqrtPropagatorMap_memLp (m := m) (f := f)
-  change ‖embeddingMap m f‖ ^ 2 = ∫ (k : SpaceTime), ‖sqrtPropagatorMap m f k‖ ^ 2
-  change ‖h_memLp.toLp (sqrtPropagatorMap m f)‖ ^ 2 = _
-  have h_norm : ‖h_memLp.toLp (sqrtPropagatorMap m f)‖ = ENNReal.toReal (eLpNorm (sqrtPropagatorMap
-    m f) 2 volume) :=
-    MeasureTheory.Lp.norm_toLp (sqrtPropagatorMap m f) h_memLp
-  rw [h_norm]
-  have h_integrable := sqrtPropagatorMap_sq_integrable (m := m) (f := f)
-  have h_two_ne : (2 : NNReal) ≠ 0 := by norm_num
-  calc (ENNReal.toReal (eLpNorm (sqrtPropagatorMap m f) 2 volume)) ^ 2
-      = ENNReal.toReal ((eLpNorm (sqrtPropagatorMap m f) 2 volume) ^ 2) := by
-          symm; exact ENNReal.toReal_pow _ 2
-    _ = ENNReal.toReal (∫⁻ k, (‖sqrtPropagatorMap m f k‖₊ : ENNReal) ^ 2) := by
-          congr 1
-          have h_eq := MeasureTheory.eLpNorm_nnreal_pow_eq_lintegral (f := sqrtPropagatorMap m f)
-            (p := 2) (μ := volume) h_two_ne
-          simp only [ENNReal.coe_ofNat, NNReal.coe_ofNat] at h_eq
-          have h_pow_cast : (eLpNorm (sqrtPropagatorMap m f) 2 volume) ^ (2 : ℕ) = (eLpNorm
-            (sqrtPropagatorMap m f) 2 volume) ^ (2 : ℝ) := by
-            simp [pow_two]
-          calc (eLpNorm (sqrtPropagatorMap m f) 2 volume) ^ (2 : ℕ)
-              = (eLpNorm (sqrtPropagatorMap m f) 2 volume) ^ (2 : ℝ) := h_pow_cast
-            _ = ∫⁻ (x : SpaceTime), ‖sqrtPropagatorMap m f x‖ₑ ^ 2 := h_eq
-            _ = ∫⁻ (k : SpaceTime), (‖sqrtPropagatorMap m f k‖₊ : ENNReal) ^ 2 := by
-              refine lintegral_congr_ae ?_; filter_upwards with k; simp only [enorm]; norm_cast
-    _ = ∫ k, ‖sqrtPropagatorMap m f k‖ ^ 2 := by
-          have h_ae_meas := h_integrable.aestronglyMeasurable
-          have h_nonneg : ∀ᵐ k ∂volume, 0 ≤ ‖sqrtPropagatorMap m f k‖ ^ 2 :=
-            Filter.Eventually.of_forall fun k => sq_nonneg _
-          rw [MeasureTheory.integral_eq_lintegral_of_nonneg_ae h_nonneg h_ae_meas]
-          congr 1
-          refine lintegral_congr_ae ?_
-          filter_upwards with k
-          rw [ENNReal.ofReal_pow (norm_nonneg _)]
-          simp only [pow_two]
-          conv_rhs => arg 1; rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
-          conv_rhs => arg 2; rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
-
-/-! ## Auxiliary Lemmas for Continuity -/
-
 /-- Squared L² norm of the embedded function in terms of the pointwise integral. -/
 lemma embeddingMap_norm_sq (m : ℝ) [Fact (0 < m)] (f : TestFunction) :
     ‖embeddingMap m f‖ ^ 2 = ∫ (k : SpaceTime), ‖sqrtPropagatorMap m f k‖ ^ 2 ∂volume := by
@@ -502,6 +392,78 @@ lemma embeddingMap_norm_sq (m : ℝ) [Fact (0 < m)] (f : TestFunction) :
             simp only [pow_two]
             conv_rhs => arg 1; rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
             conv_rhs => arg 2; rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
+
+/-- ℝ-linear view of the Lp multiplication CLM (avoiding `restrictScalars`). -/
+private noncomputable def momentumWeightSqrt_mathlib_mul_CLM_real (m : ℝ) [Fact (0 < m)] :
+    Lp ℂ 2 (volume : Measure SpaceTime) →L[ℝ]
+      Lp ℂ 2 (volume : Measure SpaceTime) where
+  toLinearMap :=
+    { toFun := momentumWeightSqrtMathlibMulCLM m
+      map_add' := fun x y => map_add _ x y
+      map_smul' := fun c x => by
+        change momentumWeightSqrtMathlibMulCLM m (c • x)
+            = c • momentumWeightSqrtMathlibMulCLM m x
+        have hcx : c • x = (c : ℂ) • x := lp_real_smul_eq_complex c x
+        have hmap : momentumWeightSqrtMathlibMulCLM m ((c : ℂ) • x) =
+            (c : ℂ) • momentumWeightSqrtMathlibMulCLM m x :=
+          ContinuousLinearMap.map_smul _ _ _
+        rw [hcx, hmap, ← lp_real_smul_eq_complex] }
+  cont := (momentumWeightSqrtMathlibMulCLM m).continuous
+
+/-- Continuous linear map obtained by composing the proven building blocks. -/
+noncomputable def embeddingMapCLM (m : ℝ) [Fact (0 < m)] :
+    TestFunction →L[ℝ] Lp ℂ 2 (volume : Measure SpaceTime) :=
+  ((momentumWeightSqrt_mathlib_mul_CLM_real m).comp (schwartzToL2CLMReal m)).comp
+    ((fourierTransformCLMReal).comp toComplexCLM)
+
+lemma embeddingMapCLM_apply (m : ℝ) [Fact (0 < m)] (f : TestFunction) :
+    embeddingMapCLM m f = embeddingMap m f := by
+  classical
+  set g := SchwartzMap.fourierTransformCLM ℂ (toComplex f) with hg
+  set A := (SchwartzMap.toLpCLM ℂ ℂ 2 (volume : Measure SpaceTime)) g with hA
+  have h_eval : embeddingMapCLM m f = (momentumWeightSqrtMathlibMulCLM m) A := rfl
+  have h_mul := momentumWeightSqrt_mathlib_mul_CLM_spec (m := m) A
+  have h_mul' : embeddingMapCLM m f =ᵐ[volume]
+      fun k => (momentumWeightSqrtMathlib m k : ℂ) * A k := by
+    simpa [h_eval]
+  have h_A : (fun k => A k) =ᵐ[volume] fun k => g k := by
+    filter_upwards [g.coeFn_toLp 2 (volume : Measure SpaceTime)] with k hk
+    simpa [A, g, hA, hg] using hk
+  have h_weight : (fun k => (momentumWeightSqrtMathlib m k : ℂ) * A k)
+      =ᵐ[volume] fun k => (momentumWeightSqrtMathlib m k : ℂ) * g k := by
+    refine h_A.mono ?_
+    intro k hk
+    simp [hk]
+  have h_mul'' : embeddingMapCLM m f =ᵐ[volume]
+      fun k => (momentumWeightSqrtMathlib m k : ℂ) * g k :=
+    h_mul'.trans h_weight
+  have h_sqrt : (fun k => (momentumWeightSqrtMathlib m k : ℂ) * g k)
+      =ᵐ[volume] sqrtPropagatorMap m f := by
+    refine Filter.Eventually.of_forall ?_
+    intro k
+    simp [sqrtPropagatorMap, g, mul_comm]
+  have h_mem := sqrtPropagatorMap_memLp (m := m) (f := f)
+  have h_lp : embeddingMap m f =ᵐ[volume] sqrtPropagatorMap m f := by
+    simpa [embeddingMap] using h_mem.coeFn_toLp
+  have h_ae : embeddingMapCLM m f =ᵐ[volume] embeddingMap m f :=
+    (h_mul''.trans h_sqrt).trans h_lp.symm
+  exact Lp.ext_iff.mpr h_ae
+
+/-- Existence of a linear embedding realizing the free covariance as a squared norm.
+    The target space H is an inner product space (L² is a Hilbert space).
+    Note: InnerProductSpace ℝ H implies NormedSpace ℝ H via InnerProductSpace.toNormedSpace.
+-/
+theorem sqrtPropagatorEmbedding (m : ℝ) [Fact (0 < m)] :
+  ∃ (H : Type) (_ : NormedAddCommGroup H) (_ : InnerProductSpace ℝ H)
+    (T : TestFunction →ₗ[ℝ] H),
+    ∀ f : TestFunction, freeCovarianceFormR m f f = ‖T f‖^2 := by
+  refine ⟨TargetHilbertSpace m, inferInstance, inferInstance, embeddingMap m, ?_⟩
+  intro f
+  rw [← sqrtPropagatorMap_norm_eq_covariance]
+  unfold sqrtPropagatorMapNormSq
+  exact (embeddingMap_norm_sq (m := m) (f := f)).symm
+
+/-! ## Auxiliary Lemmas for Continuity -/
 
 lemma freeCovarianceFormR_eq_normSq (m : ℝ) [Fact (0 < m)] (f : TestFunction) :
     freeCovarianceFormR m f f = ‖embeddingMap m f‖ ^ 2 := by
@@ -800,8 +762,8 @@ lemma freeCovarianceFormR_reflection_cross
   calc
     freeCovarianceFormR m (QFT.compTimeReflectionReal f) g
         = freeCovarianceFormR m f (QFT.compTimeReflectionReal g) := h_step
-    _ = freeCovarianceFormR m (QFT.compTimeReflectionReal g) f := by
-        exact freeCovarianceFormR_symm m f (compTimeReflectionReal g)
+    _ = freeCovarianceFormR m (QFT.compTimeReflectionReal g) f :=
+        freeCovarianceFormR_symm m f (compTimeReflectionReal g)
 
 /-- Left linearity of freeCovarianceFormR for any fixed right argument. -/
 lemma freeCovarianceFormR_left_linear_any_right

@@ -111,9 +111,8 @@ lemma E₂_sub_one_isBigO_exp : (fun z : ℍ => E₂ z - 1) =O[atImInfty]
 
 /-- E₂ → 1 at i∞. -/
 lemma E₂_tendsto_one_atImInfty : Filter.Tendsto E₂ atImInfty (nhds 1) := by
-  suffices h : Filter.Tendsto (fun z : ℍ => E₂ z - 1) atImInfty (nhds 0) by
-    simpa using h.add_const 1
-  exact tendsto_zero_of_exp_decay (by positivity : 0 < 2 * π) E₂_sub_one_isBigO_exp
+  simpa using (tendsto_zero_of_exp_decay (by positivity : 0 < 2 * π)
+    E₂_sub_one_isBigO_exp).add_const 1
 
 /-- E₄ → 1 at i∞. -/
 lemma E₄_tendsto_one_atImInfty : Filter.Tendsto E₄.toFun atImInfty (nhds 1) :=
@@ -170,13 +169,11 @@ lemma serre_D_tendsto_of_tendsto (k : ℤ) (f : ℍ → ℂ) (c : ℂ)
     Filter.Tendsto (serreD k f) atImInfty (nhds (-(k : ℂ) * c / 12)) := by
   rw [show serreD k f = fun z => D f z - (k : ℂ) * 12⁻¹ * E₂ z * f z from serre_D_eq k f]
   have hD := D_tendsto_zero_of_isBoundedAtImInfty hf_holo hf_bdd
-  have hprod := E₂_tendsto_one_atImInfty.mul hf_lim
   have hlim : (0 : ℂ) - (k : ℂ) * 12⁻¹ * 1 * c = -(k : ℂ) * c / 12 := by ring
   rw [← hlim]
   refine hD.sub ?_
-  have hconst : Filter.Tendsto (fun _ : ℍ => (k : ℂ) * 12⁻¹)
-      atImInfty (nhds ((k : ℂ) * 12⁻¹)) := tendsto_const_nhds
-  convert hconst.mul hprod using 1 <;> ring_nf
+  convert (tendsto_const_nhds (x := (k : ℂ) * 12⁻¹)).mul
+    (E₂_tendsto_one_atImInfty.mul hf_lim) using 1 <;> ring_nf
 
 /-- Special case: if `f → 1` at i∞, then `serreD k f → -k/12`. -/
 lemma serre_D_tendsto_neg_k_div_12 (k : ℤ) (f : ℍ → ℂ)
@@ -227,10 +224,8 @@ def serreDE₂ModularForm : ModularForm (CongruenceSubgroup.Gamma 1) 4 where
 /-- serreD 1 E₂ → -1/12 at i∞. -/
 lemma serre_DE₂_tendsto_atImInfty :
     Filter.Tendsto (serreD 1 E₂) atImInfty (nhds (-(1/12 : ℂ))) := by
-  have h := serre_D_tendsto_neg_k_div_12 1 E₂ E₂_holo'
-    E₂_isBoundedAtImInfty E₂_tendsto_one_atImInfty
-  simp only [Int.cast_one, neg_div] at h
-  exact h
+  simpa [Int.cast_one, neg_div] using
+    serre_D_tendsto_neg_k_div_12 1 E₂ E₂_holo' E₂_isBoundedAtImInfty E₂_tendsto_one_atImInfty
 
 /-! ## Generic q-expansion summability and derivative bounds -/
 
@@ -241,10 +236,8 @@ lemma summable_pow_shift (k : ℕ) :
   have h_eq : ∀ m : ℕ, (m + 1 : ℝ) ^ k * rexp (-2 * π * m) =
       rexp (2 * π) * ((m + 1) ^ k * rexp (-2 * π * (m + 1))) := fun m => by
     have : rexp (-2 * π * m) = rexp (2 * π) * rexp (-2 * π * (m + 1)) := by
-      rw [← Real.exp_add]
-      ring_nf
-    rw [this]
-    ring
+      rw [← Real.exp_add]; ring_nf
+    rw [this]; ring
   simp_rw [h_eq]
   apply Summable.mul_left
   refine (h.comp_injective Nat.succ_injective).congr (fun m => ?_)
@@ -286,8 +279,7 @@ lemma qexp_deriv_bound_of_coeff_bound {a : ℕ+ → ℂ} {k : ℕ}
         rw [norm_mul, norm_mul, norm_mul, Complex.norm_ofNat, Complex.norm_real,
             Complex.norm_I, mul_one, Complex.norm_natCast, Real.norm_of_nonneg pi_pos.le]
       calc ‖a n * (2 * π * I * ↑↑n) * cexp (2 * π * I * ↑↑n * z)‖
-          = ‖a n‖ * ‖(2 * π * I * ↑↑n)‖ * ‖cexp (2 * π * I * ↑↑n * z)‖ := by
-            rw [norm_mul, norm_mul]
+          = ‖a n‖ * ‖(2 * π * I * ↑↑n)‖ * ‖cexp (2 * π * I * ↑↑n * z)‖ := by rw [norm_mul, norm_mul]
         _ ≤ (n : ℝ)^k * (2 * π * n) * rexp (-2 * π * n * z.im) := by
             rw [h_norm_2pin]
             have hexp : ‖cexp (2 * π * I * ↑↑n * z)‖ ≤ rexp (-2 * π * n * z.im) := by

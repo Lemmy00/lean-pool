@@ -114,24 +114,18 @@ def _root_.LieAlgebra.Dim2.Affine.equivToLieAlgOfAffineEquiv : 𝔞𝔣𝔣 K K 
       Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
     unfold Affine ofAffineEquivAux
     unfold mkAbelian at *
+    have hf : ∀ x : K, f x = f 1 * x := fun x => by
+      have : f x = x • f 1 := by rw [← map_smul]; simp
+      rw [this, smul_eq_mul, mul_comm]
+    have hg : ∀ x : K, g x = g 1 * x := fun x => by
+      have : g x = x • g 1 := by rw [← map_smul]; simp
+      rw [this, smul_eq_mul, mul_comm]
     ext i
     fin_cases i
     · simp only []
       change f (g 1) - g (f 1) = 0
-      have hf : ∀ x : K, f x = f 1 * x := fun x => by
-        have : f x = x • f 1 := by rw [← map_smul]; simp
-        rw [this, smul_eq_mul, mul_comm]
-      have hg : ∀ x : K, g x = g 1 * x := fun x => by
-        have : g x = x • g 1 := by rw [← map_smul]; simp
-        rw [this, smul_eq_mul, mul_comm]
       rw [hf (g 1), hg (f 1)]; ring
     · simp only [Fin.mk_one, Matrix.cons_val_one]
-      have hf : ∀ x : K, f x = f 1 * x := fun x => by
-        have : f x = x • f 1 := by rw [← map_smul]; simp
-        rw [this, smul_eq_mul, mul_comm]
-      have hg : ∀ x : K, g x = g 1 * x := fun x => by
-        have : g x = x • g 1 := by rw [← map_smul]; simp
-        rw [this, smul_eq_mul, mul_comm]
       change f y - g x + 0 = f 1 * y - g 1 * x
       rw [hf y, hg x]
       simp
@@ -157,8 +151,7 @@ def _root_.LieAlgebra.Dim2.Affine.equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆
   map_lie' := by
     intro x y
     simp only [Bracket.bracket, Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero,
-      Matrix.cons_val_one,
-      ]
+      Matrix.cons_val_one]
     simp only [RealHyperbolicAux, RealHyperbolicAux']
     ext
     · simp only [Fin.isValue, mul_comm, sub_self]
@@ -178,8 +171,7 @@ def _root_.LieAlgebra.Dim2.Affine.equivToRealHyperbolic : Affine K ≃ₗ⁅K⁆
     exact List.ofFn_inj.mp rfl
   right_inv := by
     intro ⟨k, v⟩
-    simp only [Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-      ]
+    simp only [Nat.add_one_sub_one, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one]
     ext
     · rfl
     · simp only [mkAbelian]
@@ -672,8 +664,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Hyperbolic.stdBasis : Basis (Fin 3) K (
 theorem _root_.LieAlgebra.Dim3.Hyperbolic.stdBasis₁ : (stdBasis 0 : Hyperbolic K) = e₁ := by
   unfold stdBasis Hyperbolic
   rw [e₁_def]
-  simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
-    ]
+  simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
   ext i
   fin_cases i <;> simp
 
@@ -950,8 +941,7 @@ theorem _root_.LieAlgebra.Dim3.Family.commutator_is_span_e₂e₃ (hα : α ≠ 
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
-    simp_all only [ne_eq, isUnit_iff_ne_zero,not_false_eq_true, IsUnit.inv_mul_cancel,e₂_def,
-      ]
+    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def]
   have e₃_bracket : ⁅e₁, e₂⁆ = e₃ := by
     rw [Family.bracket]
     unfold e₁ e₂ e₃
@@ -1029,8 +1019,7 @@ theorem _root_.LieAlgebra.Dim3.Family.e₂_bracket {hα : α ≠ 0} : ⁅(e₁α
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
-    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel,
-      ]
+    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel]
 
 theorem _root_.LieAlgebra.Dim3.Family.e₃_bracket : ⁅(e₁ : Family K α β),
   (e₂ : Family K α β)⁆ = e₃ := by
@@ -1069,8 +1058,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
     simp only [Matrix.cons_val_zero,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.head_cons, mul_one, mul_zero, sub_zero,
       Matrix.cons_val_one, mul_neg, add_neg_cancel, sub_self]
-    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def,
-      ]
+    simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel, e₂_def]
   have e₃_bracket : ⁅e₁, e₂⁆ = e₃ := by
     rw [Family.bracket]
     unfold e₁ e₂ e₃
@@ -1179,8 +1167,7 @@ noncomputable def _root_.LieAlgebra.Dim3.Family.commutatorBasis (α β : K) (hα
       use a
       use b
       apply Subtype.ext
-      simp only [SetLike.mk_smul_mk, AddMemClass.mk_add_mk]
-      exact h)
+      simpa only [SetLike.mk_smul_mk, AddMemClass.mk_add_mk] using h)
   exact B_basis
 
 theorem _root_.LieAlgebra.Dim3.Family.dim_commutator {hα : α ≠ 0} : finrank K (commutator K
@@ -1202,8 +1189,7 @@ theorem _root_.LieAlgebra.Dim3.Family.B_basis_repr {hα : α ≠ 0} {x : commuta
   let ⟨x, hx⟩ := x
   have h_repr := Basis.repr_fin_two (commutatorBasis α β hα) ⟨x, hx⟩
   have : x ∈ span K {e₂, e₃} := by
-    rw [← commutator_is_span_e₂e₃ (hα := hα)]
-    exact hx
+    rwa [← commutator_is_span_e₂e₃ (hα := hα)]
   let ⟨a, b, h⟩ := mem_span_pair.mp this
   have w := h
   unfold e₂ e₃ at h
@@ -1266,15 +1252,13 @@ theorem _root_.LieAlgebra.Dim3.Family.ade₁_pc : ∀ x ∈ (commutator K (Famil
   ade₁ x ∈ (commutator K (Family K α β)) := by
   intro x hx
   unfold ade₁
-  simp only [ad_apply]
-  exact lie_mem_commutator e₁ x
+  simpa only [ad_apply] using lie_mem_commutator e₁ x
 
 theorem _root_.LieAlgebra.Dim3.Family.ad_pc (x : Family K α β) : ∀ y ∈ (commutator K
     (Family K α β)), (adjoint x) y ∈ (commutator K (Family K α β)) := by
   intro y hy
   unfold adjoint
-  simp only [ad_apply]
-  exact lie_mem_commutator x y
+  simpa only [ad_apply] using lie_mem_commutator x y
 
 /-- TODO. -/
 def _root_.LieAlgebra.Dim3.Family.adRestr (x : Family K α β) : (commutator K
@@ -1327,8 +1311,7 @@ theorem _root_.LieAlgebra.Dim3.Family.M_is_ade₁_restr {hα : α ≠ 0} : Linea
       unfold e₁
       fin_cases i
       · simp only [Fin.zero_eta, Matrix.cons_val_zero,one_mul]
-      · simp only [Matrix.cons_val_zero, one_mul, Fin.mk_one, Matrix.cons_val_one,
-        ]
+      · simp only [Matrix.cons_val_zero, one_mul, Fin.mk_one, Matrix.cons_val_one]
 
 theorem _root_.LieAlgebra.Dim3.Family.tr_ade₁ (hα : α ≠ 0) : LinearMap.trace _ (commutator K
     (Family K α β)) (ade₁Restr α β) = β :=by

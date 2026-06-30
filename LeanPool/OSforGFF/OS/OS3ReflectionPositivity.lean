@@ -166,16 +166,7 @@ lemma freeCovarianceFormR_reflection_matrix_posSemidef
           c j • (f j).val) := by
         congr 1
         ext i
-        -- The goal after ext is to show:
-        -- ∑ j, c i * freeCovarianceFormR m (θf_i) (f_j) * c j = c i * freeCovarianceFormR m (θf_i)
-        -- (∑ j, c j • f_j)
-        -- This follows by factoring out c i and applying h_right i
-        -- Goal: ∑ j, c i * freeCovarianceFormR m (θf_i) (f_j) * c j = c i * freeCovarianceFormR m
-        -- (θf_i) (∑ j, c j • f_j)
-        -- We need to rewrite: ∑ j, c i * freeCovarianceFormR m (θf_i) (f_j) * c j
-        -- as: c i * ∑ j, freeCovarianceFormR m (θf_i) (f_j) * c j
-        -- Then apply h_right i
-        -- The key insight: we can rewrite each term using mul_assoc and then factor out c i
+        -- Factor out c i (via mul_assoc + Finset.mul_sum), then apply h_right i.
         conv_lhs =>
           rw [show ∑ j,
             c i * freeCovarianceFormR m (QFT.compTimeReflectionReal (f i).val) (f j).val * c j =
@@ -189,8 +180,8 @@ lemma freeCovarianceFormR_reflection_matrix_posSemidef
       rw [h_rewrite, h_left]
   -- Step 2: Use linearity of time reflection
   have h_step2 : ∑ i, c i • QFT.compTimeReflectionReal (f i).val =
-    QFT.compTimeReflectionReal (∑ i, c i • (f i).val) := by
-    exact (compTimeReflectionReal_linear_combination (fun i => (f i).val) c).symm
+    QFT.compTimeReflectionReal (∑ i, c i • (f i).val) :=
+    (compTimeReflectionReal_linear_combination (fun i => (f i).val) c).symm
   -- Step 3: The sum of positive-time functions is positive-time
   obtain ⟨g, hg⟩ := PositiveTimeTestFunction.sum_smul_mem f c
   -- Step 4: Combine and apply reflection positivity
@@ -227,8 +218,7 @@ lemma freeCovarianceFormR_reflection_expansion
     intro u v
     calc
       freeCovarianceFormR m u (-v)
-          = freeCovarianceFormR m (-v) u := by
-              exact freeCovarianceFormR_symm m u (-v)
+          = freeCovarianceFormR m (-v) u := freeCovarianceFormR_symm m u (-v)
       _ = -freeCovarianceFormR m v u := h_neg_left v u
       _ = -freeCovarianceFormR m u v := by
             simp [freeCovarianceFormR_symm]
@@ -251,8 +241,7 @@ lemma freeCovarianceFormR_reflection_expansion
       simpa [sub_eq_add_neg, θg] using h_add
     calc
       freeCovarianceFormR m f (f - θg)
-          = freeCovarianceFormR m (f - θg) f := by
-              exact freeCovarianceFormR_symm m f (f - θg)
+          = freeCovarianceFormR m (f - θg) f := freeCovarianceFormR_symm m f (f - θg)
       _ = freeCovarianceFormR m f f
             + freeCovarianceFormR m (-θg) f := h_add'
       _ = Cf + (-freeCovarianceFormR m θg f) := by
@@ -281,13 +270,11 @@ lemma freeCovarianceFormR_reflection_expansion
       calc
         freeCovarianceFormR m (-θg) (-θg)
             = -freeCovarianceFormR m θg (-θg) := h₁'
-        _ = -(-freeCovarianceFormR m θg θg) := by
-              exact neg_inj.mpr h₂'
+        _ = -(-freeCovarianceFormR m θg θg) := neg_inj.mpr h₂'
         _ = freeCovarianceFormR m θg θg := by simp
     calc
       freeCovarianceFormR m (-θg) (f - θg)
-          = freeCovarianceFormR m (f - θg) (-θg) := by
-              exact freeCovarianceFormR_symm m (-θg) (f - θg)
+          = freeCovarianceFormR m (f - θg) (-θg) := freeCovarianceFormR_symm m (-θg) (f - θg)
       _ = freeCovarianceFormR m f (-θg)
             + freeCovarianceFormR m (-θg) (-θg) := h_add'
       _ = -freeCovarianceFormR m f θg
@@ -409,8 +396,7 @@ lemma gaussianFreeField_real_entry_factor
         -- Exponential of sums factorises; use `Real.exp_add` twice
         calc
         Real.exp (-(1 / 2 : ℝ) * (Cf + Cg - 2 * Cfg))
-          = Real.exp (A + Cfg) := by
-              exact Real.exp_eq_exp.mpr h_factor
+          = Real.exp (A + Cfg) := Real.exp_eq_exp.mpr h_factor
         _ = Real.exp A * Real.exp Cfg := by
               simp [Real.exp_add]
         _ =
@@ -697,15 +683,6 @@ private lemma posSemidef_of_isRePSD_isHermitian
   rw [Complex.nonneg_iff]
   exact ⟨hM v, (quadForm_im_eq_zero_of_hermitian hH v).symm⟩
 
-/-- Bridge: `Matrix.PosSemidef` over `ℂ` implies `IsRePSD`. -/
-private lemma isRePSD_of_posSemidef
-    {n : ℕ} {M : Fin n → Fin n → ℂ} (hM : (Matrix.of M).PosSemidef) :
-    IsRePSD M := by
-  intro v
-  have h := hM.dotProduct_mulVec_nonneg v
-  rw [quadForm_eq_double_sum] at h
-  exact (Complex.nonneg_iff.mp h).1
-
 /-- Complex Schur product theorem: the Hadamard product of two `PosSemidef`
     complex matrices is `PosSemidef`.  Follows from the Kronecker product
     (`PosSemidef.kronecker`) restricted to the diagonal (`PosSemidef.submatrix`).
@@ -865,8 +842,7 @@ private lemma gff_complexZ_entry_factor (fi fj : TestFunctionℂ) :
     and `compTimeReflection` is a continuous linear map.
 -/
 private lemma star_apply (f : TestFunctionℂ) (x : SpaceTime) :
-    (star f) x = starRingEnd ℂ (f (QFT.timeReflection x)) := by
-  rfl
+    (star f) x = starRingEnd ℂ (f (QFT.timeReflection x)) := rfl
 
 private lemma star_sum_antilinear {n : ℕ} (v : Fin n → ℂ) (g : Fin n → TestFunctionℂ) :
     star (∑ j, starRingEnd ℂ (v j) • g j) = ∑ j, v j • star (g j) := by

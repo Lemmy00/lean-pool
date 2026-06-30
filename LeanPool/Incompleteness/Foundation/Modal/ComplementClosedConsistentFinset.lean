@@ -32,8 +32,7 @@ abbrev Inconsistent (𝓢 : S) (Φ : FormulaFinset α) : Prop := ¬(Consistent �
 
 omit [DecidableEq α] in
 lemma iff_theory_consistent_formulae_consistent {Φ : FormulaFinset α} :
-    FormulaSet.Consistent 𝓢 Φ ↔ FormulaFinset.Consistent 𝓢 Φ := by
-      classical
+    FormulaSet.Consistent 𝓢 Φ ↔ FormulaFinset.Consistent 𝓢 Φ := by classical
   simp [Consistent, FormulaSet.Consistent]
 
 omit [DecidableEq α] in
@@ -83,8 +82,7 @@ lemma unprovable_iff_singleton_compl_consistent : FormulaFinset.Consistent 𝓢 
 
 omit [DecidableEq α] in
 lemma provable_iff_singleton_compl_inconsistent :
-    (FormulaFinset.Inconsistent 𝓢 ({-φ})) ↔ 𝓢 ⊢! φ := by
-      classical
+    (FormulaFinset.Inconsistent 𝓢 ({-φ})) ↔ 𝓢 ⊢! φ := by classical
   constructor;
   · contrapose;
     apply unprovable_iff_singleton_compl_consistent.mpr;
@@ -104,17 +102,7 @@ lemma intro_triunion_consistent
   rw [←iff_theory_consistent_formulae_consistent];
   convert FormulaSet.intro_triunion_consistent h;
   ext;
-  constructor;
-  · simp only [Finset.coe_union, Set.mem_union, Finset.mem_coe];
-    rintro ((hp₁ | hp₂) | hp₃);
-    · left; left; assumption;
-    · left; right; assumption;
-    · right; assumption;
-  · simp only [Set.mem_union, Finset.coe_union, Finset.mem_coe];
-    rintro ((hp₁ | hp₂) | hp₃);
-    · left; left; assumption;
-    · left; right; assumption;
-    · right; assumption;
+  simp only [Finset.coe_union, Set.mem_union, Finset.mem_coe, or_assoc]
 
 end «lp_section_1»
 
@@ -194,10 +182,7 @@ lemma subset {l : List (Formula α)} {φ : Formula α} (h : φ ∈ Φ[l])
     simp_all;
   | cons ψ qs ih =>
     simp_all only [enum, next, List.mem_cons, exists_eq_or_imp];
-    split at h;
-    · rcases Finset.mem_insert.mp h with (rfl | h)
-      · tauto;
-      · rcases ih h <;> tauto;
+    split at h <;>
     · rcases Finset.mem_insert.mp h with (rfl | h)
       · tauto;
       · rcases ih h <;> tauto;
@@ -267,9 +252,7 @@ lemma mem_compl_of_not_mem (hs : ψ ∈ Ψ) : ψ ∉ X → -ψ ∈ X := by
   · contradiction;
   · assumption;
 
-lemma mem_of_not_mem_compl (hs : ψ ∈ Ψ) : -ψ ∉ X → ψ ∈ X := by
-  apply Not.imp_symm;
-  exact mem_compl_of_not_mem hs;
+lemma mem_of_not_mem_compl (hs : ψ ∈ Ψ) : -ψ ∉ X → ψ ∈ X := Not.imp_symm (mem_compl_of_not_mem hs)
 
 lemma equality_def : X₁ = X₂ ↔ X₁.1 = X₂.1 := by
   constructor;
@@ -302,9 +285,7 @@ lemma membership_iff (hq_sub : ψ ∈ Ψ) : (ψ ∈ X) ↔ (X *⊢[𝓢]! ψ) :=
     have := complement_derive_bot hp hnp;
     simpa;
 
-lemma mem_verum (h : ⊤ ∈ Ψ) : ⊤ ∈ X := by
-  apply membership_iff h |>.mpr;
-  exact verum!;
+lemma mem_verum (h : ⊤ ∈ Ψ) : ⊤ ∈ X := membership_iff h |>.mpr verum!
 
 @[simp] lemma mem_falsum : ⊥ ∉ X := FormulaSet.not_mem_falsum_of_consistent X.consistent
 

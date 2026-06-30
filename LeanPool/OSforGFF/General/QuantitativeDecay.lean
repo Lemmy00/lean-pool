@@ -107,7 +107,6 @@ def schwartzHasPolynomialDecay (f : SchwartzMap E ℂ) (k : ℕ) :
 def schwartzHasPolynomialDecayReal (f : SchwartzMap E ℂ) (N : ℝ) (_hN : N > 0) :
     PolynomialDecayBound f N := by
   let _ := _hN
-  -- Use the natural number version with k = ⌈N⌉
   obtain ⟨C, hC_pos, hbound⟩ := schwartzHasPolynomialDecay f (⌈N⌉₊)
   refine ⟨C, hC_pos, fun x => ?_⟩
   have h1 : 1 ≤ 1 + ‖x‖ := le_add_of_nonneg_right (norm_nonneg x)
@@ -139,8 +138,7 @@ lemma exp_decay_implies_polynomial_decay (m α : ℝ) (hm : m > 0) (hα : α > 0
     -- For u ≥ 0: u^α ≤ (α/t)^α * exp(t*u) for any t > 0
     have h_poly_exp : (1 + x) ^ α ≤ (α / m) ^ α * Real.exp (m * (1 + x)) := by
       have := ProbabilityTheory.rpow_abs_le_mul_exp_abs (1 + x) (p := α) hα.le (ne_of_gt hm)
-      simp only [abs_of_nonneg (le_of_lt h_one_plus_pos), abs_of_pos hm] at this
-      exact this
+      simpa only [abs_of_nonneg (le_of_lt h_one_plus_pos), abs_of_pos hm] using this
     -- Rearrange: (1+x)^α * exp(-mx) ≤ (α/m)^α * exp(m(1+x)) * exp(-mx)
     --                                = (α/m)^α * exp(m + mx - mx) = (α/m)^α * exp(m)
     have h_exp_combine : Real.exp (m * (1 + x)) * Real.exp (-m * x) = Real.exp m := by
@@ -154,8 +152,7 @@ lemma exp_decay_implies_polynomial_decay (m α : ℝ) (hm : m > 0) (hα : α > 0
         = Real.exp (-m * x) * 1 := by ring
       _ = Real.exp (-m * x) * ((1 + x)^α * (1 + x)^(-α)) := by rw [h_rpow_cancel]
       _ = (1 + x)^α * Real.exp (-m * x) * (1 + x)^(-α) := by ring
-      _ ≤ ((α / m)^α * Real.exp (m * (1 + x))) * Real.exp (-m * x) * (1 + x)^(-α) := by
-          gcongr
+      _ ≤ ((α / m)^α * Real.exp (m * (1 + x))) * Real.exp (-m * x) * (1 + x)^(-α) := by gcongr
       _ = (α / m)^α * (Real.exp (m * (1 + x)) * Real.exp (-m * x)) * (1 + x)^(-α) := by ring
       _ = (α / m)^α * Real.exp m * (1 + x)^(-α) := by rw [h_exp_combine]
       _ ≤ ((α / m)^α * Real.exp m + 1) * (1 + x)^(-α) := by
@@ -265,8 +262,7 @@ lemma one_add_half_pow_le (x : ℝ) (hx : x ≥ 0) (N : ℝ) (hN : N > 0) :
   have h1_rpow_pos : 0 < (1 + x / 2) ^ N := Real.rpow_pos_of_pos h1 N
   have h2_rpow_pos : 0 < (1 + x) ^ N := Real.rpow_pos_of_pos h2 N
   have h_two_rpow_pos : 0 < (2:ℝ) ^ N := Real.rpow_pos_of_pos h2_pos N
-  rw [inv_eq_one_div, inv_eq_one_div, mul_one_div]
-  rw [div_le_div_iff₀ h1_rpow_pos h2_rpow_pos]
+  rw [inv_eq_one_div, inv_eq_one_div, mul_one_div, div_le_div_iff₀ h1_rpow_pos h2_rpow_pos]
   calc 1 * (1 + x) ^ N = (1 + x) ^ N := by ring
     _ ≤ (2:ℝ) ^ N * (1 + x / 2) ^ N := h_rpow_le
 
@@ -336,8 +332,7 @@ private lemma convolution_polynomial_decay_exists
               · simp only [A, mem_setOf_eq] at hy
                 exact Real.rpow_le_rpow (by positivity) (by linarith) (lt_of_le_of_lt
                   (Nat.cast_nonneg _) hN_dim).le
-      _ = c_A * ∫ y in A, ‖v (x - y)‖ := by
-          rw [MeasureTheory.integral_const_mul]
+      _ = c_A * ∫ y in A, ‖v (x - y)‖ := by rw [MeasureTheory.integral_const_mul]
       _ ≤ c_A * ∫ y, ‖v (x - y)‖ := by
           have h_set_le := setIntegral_le_integral (s := A) hv_shift.norm
             (Eventually.of_forall fun _ => norm_nonneg _)
@@ -384,8 +379,7 @@ private lemma convolution_polynomial_decay_exists
               apply div_le_div_of_nonneg_left (le_of_lt hC_v_pos)
               · positivity
               · exact Real.rpow_le_rpow (by positivity) (by linarith) hN_pos.le
-      _ = (∫ y in Aᶜ, ‖u y‖) * c_Ac := by
-          rw [MeasureTheory.integral_mul_const]
+      _ = (∫ y in Aᶜ, ‖u y‖) * c_Ac := by rw [MeasureTheory.integral_mul_const]
       _ ≤ I_u * c_Ac := by
           have h_set_le := setIntegral_le_integral (s := Aᶜ) hu_int.norm
             (Eventually.of_forall fun _ => norm_nonneg _)
@@ -450,7 +444,6 @@ private lemma convolution_compactSupport_decay_exists (f : SchwartzMap E ℂ) (K
     ∃ _result : PolynomialDecayBound
       (fun y => ∫ x, f x * (kernelSingular K R₀ (x - y) : ℂ)) (N : ℝ), True := by
   refine ⟨?_, trivial⟩
-  let _ := _hN
   -- K_sing has support in closedBall 0 R₀
   -- (f ⋆ K_sing)(y) = ∫ f(x) K_sing(x-y) dx
   -- For |y| large, x-y ∈ supp(K_sing) implies x ∈ closedBall y R₀
@@ -482,8 +475,7 @@ private lemma convolution_compactSupport_decay_exists (f : SchwartzMap E ℂ) (K
     unfold kernelSingular at hz
     by_contra h_not
     push Not at h_not
-    have : z ∉ closedBall (0 : E) R₀ := by
-      simp [mem_closedBall, dist_zero_right, not_le.mpr h_not]
+    have : z ∉ closedBall (0 : E) R₀ := by simp [mem_closedBall, dist_zero_right, not_le.mpr h_not]
     simp [indicator_of_notMem this] at hz
   -- Key step: Peetre's inequality
   -- If K_sing(x-y) ≠ 0, then ‖x-y‖ ≤ R₀, so:
@@ -519,9 +511,8 @@ private lemma convolution_compactSupport_decay_exists (f : SchwartzMap E ℂ) (K
       _ ≤ (1 + ‖x‖) ^ (N : ℝ) * (1 + R₀) ^ (N : ℝ) := h_pow
       _ = (1 + R₀) ^ (N : ℝ) * (1 + ‖x‖) ^ (N : ℝ) := by ring
   -- Shifted kernel integrability (needed in multiple places)
-  have hK_shift_int : Integrable (fun x => |kernelSingular K R₀ (x - y)|) volume := by
-    have h := hK_sing_int.comp_sub_right y
-    exact h.abs
+  have hK_shift_int : Integrable (fun x => |kernelSingular K R₀ (x - y)|) volume :=
+    (hK_sing_int.comp_sub_right y).abs
   -- Main calculation using Peetre inequality
   -- The integral bound follows from:
   -- 1. ‖f x‖ ≤ C_f / (1 + ‖x‖)^N (Schwartz decay)
@@ -529,8 +520,7 @@ private lemma convolution_compactSupport_decay_exists (f : SchwartzMap E ℂ) (K
   -- 3. Change of variables: ∫ |K_sing(x-y)| dx = ∫ |K_sing(z)| dz = I_Ksing
   calc ‖∫ x, f x * (kernelSingular K R₀ (x - y) : ℂ)‖
       ≤ ∫ x, ‖f x * (kernelSingular K R₀ (x - y) : ℂ)‖ := norm_integral_le_integral_norm _
-    _ = ∫ x, ‖f x‖ * ‖(kernelSingular K R₀ (x - y) : ℂ)‖ := by
-        congr 1; ext x; exact norm_mul _ _
+    _ = ∫ x, ‖f x‖ * ‖(kernelSingular K R₀ (x - y) : ℂ)‖ := by congr 1; ext x; exact norm_mul _ _
     _ ≤ ∫ x, (C_f / (1 + ‖x‖)^(N : ℝ)) * |kernelSingular K R₀ (x - y)| := by
         -- Use Schwartz decay and ‖(r : ℂ)‖ = |r|
         apply integral_mono_of_nonneg
@@ -597,9 +587,7 @@ private lemma convolution_compactSupport_decay_exists (f : SchwartzMap E ℂ) (K
     _ = (C_f * (1 + R₀)^(N : ℝ) / (1 + ‖y‖)^(N : ℝ)) * I_Ksing := by
         congr 1
         -- Change of variables: z = x - y
-        have hcov : ∫ x, |kernelSingular K R₀ (x - y)| = ∫ z, |kernelSingular K R₀ z| :=
-          MeasureTheory.integral_sub_right_eq_self (fun z => |kernelSingular K R₀ z|) y
-        exact hcov
+        exact MeasureTheory.integral_sub_right_eq_self (fun z => |kernelSingular K R₀ z|) y
     _ ≤ C / (1 + ‖y‖)^(N : ℝ) := by
         have h_rpow_pos : 0 < (1 + ‖y‖)^(N : ℝ) := Real.rpow_pos_of_pos h_one_plus_y_pos N
         -- Goal: C_f * (1 + R₀) ^ N / (1 + ‖y‖) ^ N * I_Ksing ≤ C / (1 + ‖y‖) ^ N
@@ -658,8 +646,7 @@ private lemma convolution_expDecay_polynomial_decay_exists (f : SchwartzMap E �
       · -- Interior case: ‖z‖ > R₀
         have h_strict : ‖z‖ > R₀ := lt_of_le_of_ne hz (Ne.symm h_boundary)
         have hmem : z ∈ (closedBall (0 : E) R₀)ᶜ := by
-          simp only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le]
-          exact h_strict
+          simpa only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le] using h_strict
         rw [indicator_of_mem hmem, mul_one]
         exact hK_decay z hz
     · exact ⟨M, fun z => by rw [Complex.norm_real]; exact hM z⟩
@@ -676,7 +663,6 @@ private lemma convolution_expDecay_polynomial_decay_exists (f : SchwartzMap E �
     refine ⟨C, hC_pos, ?_⟩
     intro z
     simp only [K_refl]
-    have h_neg : ‖(kernelTail K R₀ (-z) : ℂ)‖ = ‖(kernelTail K R₀ (-z) : ℂ)‖ := rfl
     calc ‖(kernelTail K R₀ (-z) : ℂ)‖
         ≤ C / (1 + ‖-z‖)^N := hbound (-z)
       _ = C / (1 + ‖z‖)^N := by rw [norm_neg]
@@ -722,8 +708,7 @@ private lemma convolution_expDecay_polynomial_decay_exists (f : SchwartzMap E �
         have h_nonneg : 0 ≤ C_poly * (1 + ‖z‖)^(-N) := by
           apply mul_nonneg (le_of_lt hC_poly_pos)
           exact Real.rpow_nonneg (by linarith [norm_nonneg z]) _
-        rw [Real.norm_eq_abs, abs_of_nonneg h_nonneg]
-        exact hb
+        rwa [Real.norm_eq_abs, abs_of_nonneg h_nonneg]
   -- The integral ∫ f(x) K_tail(x - y) dx equals (f ⋆ K_refl)(y)
   have h_conv_eq : ∀ y, ∫ x, f x * (kernelTail K R₀ (x - y) : ℂ) =
       ∫ x, f x * K_refl (y - x) := by
@@ -884,14 +869,11 @@ theorem schwartz_bilinear_translation_decay_polynomial_proof
       have h1 : 1 ≤ 1 + ‖x‖ := by linarith [norm_nonneg x]
       have h2 : 1 ≤ (1 + ‖x‖)^N := Real.one_le_rpow h1 hN_pos.le
       calc ‖f x‖ ≤ C_f / (1 + ‖x‖)^N := hf_bound x
-        _ ≤ C_f / 1 := by
-            apply div_le_div_of_nonneg_left (le_of_lt hC_f_pos) one_pos h2
+        _ ≤ C_f / 1 := by apply div_le_div_of_nonneg_left (le_of_lt hC_f_pos) one_pos h2
         _ = C_f := by ring
     have hint1 : Integrable (fun x => f x * (kernelSingular K R₀ (x - y) : ℂ)) volume := by
-      have hK_sing_shift : Integrable (fun x => kernelSingular K R₀ (x - y)) volume :=
-        hK_sing_int.comp_sub_right y
       have hK_sing_shift_C : Integrable (fun x => (kernelSingular K R₀ (x - y) : ℂ)) volume :=
-        hK_sing_shift.ofReal
+        (hK_sing_int.comp_sub_right y).ofReal
       exact hK_sing_shift_C.bdd_mul (c := C_f) f.continuous.aestronglyMeasurable
         (Eventually.of_forall hf_bdd)
     have hint2 : Integrable (fun x => f x * (kernelTail K R₀ (x - y) : ℂ)) volume := by

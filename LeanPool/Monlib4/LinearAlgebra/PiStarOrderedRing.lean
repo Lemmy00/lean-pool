@@ -20,8 +20,7 @@ def Set.ofPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, Zero (B 
     ∀ i, Set (B i) := fun i x => Pi.single i x ∈ s
 
 theorem Set.piOfPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, AddZeroClass (B i)]
-    {s : ∀ i, Set (B i)} (h : ∀ i, s i 0) : (Set.univ.pi s).ofPi = s :=
-  by
+    {s : ∀ i, Set (B i)} (h : ∀ i, s i 0) : (Set.univ.pi s).ofPi = s := by
   ext i x
   change Pi.single i x ∈ Set.univ.pi s ↔ x ∈ s i
   constructor
@@ -32,8 +31,7 @@ theorem Set.piOfPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, Ad
   · intro hx j _
     by_cases hj : j = i
     · rw [hj]
-      rw [Pi.single_eq_same]
-      exact hx
+      rwa [Pi.single_eq_same]
     · rw [Pi.single_eq_of_ne hj]
       exact h j
 
@@ -51,8 +49,7 @@ def AddSubmonoid.ofPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i,
       exact this }
 
 theorem AddSubmonoid.piOfPi {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i, AddZeroClass (B i)]
-    (h : ∀ i, AddSubmonoid (B i)) : (AddSubmonoid.pi Set.univ h).ofPi = h :=
-  by
+    (h : ∀ i, AddSubmonoid (B i)) : (AddSubmonoid.pi Set.univ h).ofPi = h := by
   ext i x
   change Pi.single i x ∈ AddSubmonoid.pi Set.univ h ↔ x ∈ h i
   rw [AddSubmonoid.mem_pi]
@@ -75,8 +72,7 @@ theorem Set.ofPi_mem' {ι : Type _} {B : ι → Type _} [DecidableEq ι] [∀ i,
   intro j _
   by_cases hj : j = i
   · rw [hj]
-    rw [Pi.single_eq_same]
-    exact hx
+    rwa [Pi.single_eq_same]
   · rw [Pi.single_eq_of_ne hj]
     exact h j
 
@@ -96,8 +92,7 @@ theorem AddSubmonoid.mem_closure_pi {ι : Type _} {B : ι → Type _}
 theorem Pi.StarOrderedRing.nonneg_def {ι : Type _} {α : ι → Type _} [∀ i, NonUnitalSemiring (α i)]
     [∀ i, PartialOrder (α i)] [∀ i, StarRing (α i)] [∀ i, StarOrderedRing (α i)]
     (h : ∀ (i : ι) (x : α i), 0 ≤ x ↔ ∃ y, star y * y = x) (x : ∀ i, α i) :
-    0 ≤ x ↔ ∃ y, star y * y = x :=
-  by
+    0 ≤ x ↔ ∃ y, star y * y = x := by
   simp_rw [Pi.le_def, Pi.zero_apply, funext_iff, Pi.mul_apply, Pi.star_apply, h]
   exact
     ⟨fun hx => ⟨fun i => (hx i).choose, fun i => (hx i).choose_spec⟩,
@@ -112,13 +107,8 @@ instance {ι : Type _} {α : ι → Type _} [∀ i, Ring (α i)]
 theorem Pi.StarOrderedRing.le_def {ι : Type _} {α : ι → Type _} [∀ i, Ring (α i)]
     [∀ i, PartialOrder (α i)] [∀ i, StarRing (α i)] [∀ i, StarOrderedRing (α i)]
     (h : ∀ (i : ι) (x : α i), 0 ≤ x ↔ ∃ y, star y * y = x) (x y : ∀ i, α i) :
-    x ≤ y ↔ ∃ z, star z * z = y - x :=
-  by
-  calc
-    x ≤ y ↔ 0 ≤ y - x := by rw [sub_nonneg]
-    _ ↔ ∃ z, star z * z = y - x := ?_
-  rw [← Pi.StarOrderedRing.nonneg_def]
-  exact h
+    x ≤ y ↔ ∃ z, star z * z = y - x := by
+  rwa [← sub_nonneg, ← Pi.StarOrderedRing.nonneg_def]
 
 /-- Dependent functions over star-ordered rings are star-ordered coordinatewise. -/
 theorem Pi.starOrderedRing {ι : Type _} {B : ι → Type _} [∀ i, Ring (B i)] [∀ i, PartialOrder (B i)]

@@ -49,6 +49,12 @@ private lemma distributionPairingCLM_measurable (φ : TestFunction) :
     Measurable (distributionPairingCLM φ) :=
   WeakDual.eval_measurable φ
 
+private lemma freeCovarianceFormR_neg_neg (m : ℝ) [Fact (0 < m)] (f : TestFunction) :
+    freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f := by
+  rw [show -f = (-1 : ℝ) • f from (neg_one_smul ℝ f).symm,
+    freeCovarianceFormR_smul_left, freeCovarianceFormR_smul_right]
+  ring
+
 /-! ## Gaussian Measures on Field Configurations
 -/
 
@@ -109,10 +115,8 @@ noncomputable def constructGaussianMeasureMinlosFree (m : ℝ) [Fact (0 < m)] :
     Classical.choose_spec ex4
   -- Continuity, symmetry, and normalization
   have h_cont := freeCovarianceFormR_continuous m
-  have h_symm : ∀ f, freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f := by
-    intro f
-    have h1 : -f = (-1 : ℝ) • f := (neg_one_smul ℝ f).symm
-    rw [h1, freeCovarianceFormR_smul_left, freeCovarianceFormR_smul_right]; ring
+  have h_symm : ∀ f, freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f :=
+    freeCovarianceFormR_neg_neg m
   have h_zero : freeCovarianceFormR m (0) (0) = 0 := by simp [freeCovarianceFormR]
   -- Use Minlos: directly obtain a ProbabilityMeasure with the Gaussian characteristic functional
   have h_minlos :=
@@ -151,10 +155,8 @@ theorem gff_real_characteristic (m : ℝ) [Fact (0 < m)] :
       freeCovarianceFormR m f f = ‖T f‖^2 :=
     Classical.choose_spec ex4
   have h_cont := freeCovarianceFormR_continuous m
-  have h_symm : ∀ f, freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f := by
-    intro f
-    have h1 : -f = (-1 : ℝ) • f := (neg_one_smul ℝ f).symm
-    rw [h1, freeCovarianceFormR_smul_left, freeCovarianceFormR_smul_right]; ring
+  have h_symm : ∀ f, freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f :=
+    freeCovarianceFormR_neg_neg m
   have h_zero : freeCovarianceFormR m (0) (0) = 0 := by simp [freeCovarianceFormR]
   have h_minlos :=
     gaussian_measure_characteristic_functional
@@ -338,10 +340,8 @@ lemma freeCovarianceFormR_gaussian_cf_pd (m : ℝ) [Fact (0 < m)] :
   have h_eq : ∀ f : TestFunction,
       freeCovarianceFormR m f f = ‖T f‖^2 :=
     Classical.choose_spec ex4
-  have h_symm : ∀ f, freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f := by
-    intro f
-    have h1 : -f = (-1 : ℝ) • f := (neg_one_smul ℝ f).symm
-    rw [h1, freeCovarianceFormR_smul_left, freeCovarianceFormR_smul_right]; ring
+  have h_symm : ∀ f, freeCovarianceFormR m (-f) (-f) = freeCovarianceFormR m f f :=
+    freeCovarianceFormR_neg_neg m
   exact gaussian_positive_definite_bochner T (freeCovarianceFormR m) h_eq h_symm
 
 /-- The free covariance form as a MinlosAnalytic.CovarianceForm structure. -/
@@ -387,14 +387,10 @@ theorem gaussianFreeField_free_centered (m : ℝ) [Fact (0 < m)] :
   have h_complex_zero : ∫ ω, (ω φ : ℂ) ∂(gaussianFreeFieldFree m).toMeasure = 0 :=
     MinlosAnalytic.moment_zero_from_realCF
       (freeCovarianceForm m) (gaussianFreeFieldFree m) h_realCF φ hInt
-  -- Step 4: Convert from complex to real integral
-  -- The integral ∫ (ω φ : ℂ) = ofReal(∫ ω φ) by integral_ofReal
-  -- So if ∫ (ω φ : ℂ) = 0, then ∫ ω φ = 0
-  have h_ofReal :
-      ∫ ω, (ω φ : ℂ) ∂(gaussianFreeFieldFree m).toMeasure =
-        Complex.ofReal (∫ ω, ω φ ∂(gaussianFreeFieldFree m).toMeasure) := by
-    exact integral_ofReal
-  rw [h_ofReal] at h_complex_zero
+  -- Step 4: Convert from complex to real integral via integral_ofReal
+  rw [show (∫ ω, (ω φ : ℂ) ∂(gaussianFreeFieldFree m).toMeasure) =
+      Complex.ofReal (∫ ω, ω φ ∂(gaussianFreeFieldFree m).toMeasure) from integral_ofReal]
+    at h_complex_zero
   exact Complex.ofReal_eq_zero.mp h_complex_zero
 
 /-- **Fernique's Theorem for GFF (exponential form)**: For every real test function `φ`,

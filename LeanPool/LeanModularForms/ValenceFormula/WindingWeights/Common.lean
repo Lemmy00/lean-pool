@@ -30,16 +30,14 @@ noncomputable section
 
 theorem fdBoundary_H_at_one_eq_rho_plus_one (H : ℝ) :
     fdBoundaryH H 1 = ellipticPointRhoPlusOne := by
-  simp only [fdBoundaryH]
-  simp only [show (1 : ℝ) ≤ 1 from le_refl 1, ↓reduceIte]
-  simp only [ellipticPointRhoPlusOne, ellipticPointRhoPlusOne', UpperHalfPlane.coe_mk]
-  simp only [Complex.ofReal_one, one_mul]
+  simp only [fdBoundaryH, show (1 : ℝ) ≤ 1 from le_refl 1, ↓reduceIte,
+    ellipticPointRhoPlusOne, ellipticPointRhoPlusOne', UpperHalfPlane.coe_mk,
+    Complex.ofReal_one, one_mul]
   ring
 
 theorem fdBoundary_H_at_two_eq_I (H : ℝ) :
     fdBoundaryH H 2 = I := by
-  simp only [fdBoundaryH]
-  simp only [show ¬((2 : ℝ) ≤ 1) from by norm_num,
+  simp only [fdBoundaryH, show ¬((2 : ℝ) ≤ 1) from by norm_num,
              show (2 : ℝ) ≤ 2 from le_refl 2, ↓reduceIte]
   rw [show (↑(Real.pi : ℝ) / 3 + (↑(2 : ℝ) - 1) * (↑(Real.pi : ℝ) / 2 - ↑(Real.pi : ℝ) / 3)) * I =
     ↑(Real.pi / 2) * I from by push_cast; ring,
@@ -48,8 +46,7 @@ theorem fdBoundary_H_at_two_eq_I (H : ℝ) :
 
 theorem fdBoundary_H_at_three_eq_rho (H : ℝ) :
     fdBoundaryH H 3 = ellipticPointRho := by
-  simp only [fdBoundaryH]
-  simp only [show ¬((3 : ℝ) ≤ 1) from by norm_num,
+  simp only [fdBoundaryH, show ¬((3 : ℝ) ≤ 1) from by norm_num,
              show ¬((3 : ℝ) ≤ 2) from by norm_num,
              show (3 : ℝ) ≤ 3 from le_refl 3, ↓reduceIte]
   rw [show (↑(Real.pi : ℝ) / 2
@@ -77,8 +74,7 @@ theorem fdBoundary_H_seg2 (H : ℝ) {t : ℝ} (ht1 : ¬(t ≤ 1)) (ht2 : ¬(t �
 theorem fdBoundary_H_seg3 (H : ℝ) {t : ℝ} (ht1 : ¬(t ≤ 1)) (ht2 : ¬(t ≤ 2))
     (ht3 : ¬(t ≤ 3)) (ht4 : t ≤ 4) :
     fdBoundaryH H t = -1/2 + (↑(Real.sqrt 3) / 2 + (↑t - 3) *
-      (↑H - ↑(Real.sqrt 3) / 2)) * I := by
-  simp only [fdBoundaryH, ht1, ht2, ht3, ht4, ↓reduceIte]
+      (↑H - ↑(Real.sqrt 3) / 2)) * I := by simp only [fdBoundaryH, ht1, ht2, ht3, ht4, ↓reduceIte]
 
 theorem fdBoundary_H_seg4 (H : ℝ) {t : ℝ} (ht1 : ¬(t ≤ 1)) (ht2 : ¬(t ≤ 2))
     (ht3 : ¬(t ≤ 3)) (ht4 : ¬(t ≤ 4)) :
@@ -124,17 +120,16 @@ lemma continuousOn_clog_im_nonneg :
   · exact (continuous_ofReal.continuousAt.comp_continuousWithinAt
       (continuousOn_arg_im_nonneg z ⟨hz_im, hz_ne⟩)).mul continuousWithinAt_const
 
-lemma ftc_log_piece_upper {g h : ℝ → ℂ} {a b : ℝ} (hab : a ≤ b)
-    (hh_cont : ContinuousOn h (Icc a b)) (hh_diff : ∀ t ∈ Ioo a b, DifferentiableAt ℝ h t)
-    (hh_deriv_cont : ContinuousOn (deriv h) (Icc a b)) (hh_im_nn : ∀ t ∈ Icc a b, 0 ≤ (h t).im)
-    (hh_ne : ∀ t ∈ Icc a b, h t ≠ 0) (hh_slit_interior : ∀ t ∈ Ioo a b, h t ∈ slitPlane)
-    (heq : ∀ t ∈ Ioo a b, g t = h t ∧ deriv g t = deriv h t)
-    (heq_a : g a = h a) (heq_b : g b = h b) :
-    IntervalIntegrable (fun t => deriv g t / g t) volume a b ∧
-    ∫ t in a..b, deriv g t / g t = Complex.log (g b) - Complex.log (g a) := by
-  have hh_log_cont : ContinuousOn (fun t => Complex.log (h t)) (Icc a b) := by
-    apply ContinuousOn.comp continuousOn_clog_im_nonneg hh_cont
-    intro t ht; exact ⟨hh_im_nn t ht, hh_ne t ht⟩
+/-- Shared integrability/congruence scaffolding for the upper/lower FTC log pieces:
+    integrability of `deriv h / h`, ae-agreement of the `g` and `h` log-derivatives on `Ι a b`,
+    and the resulting integrability of `deriv g / g`. -/
+private lemma logDeriv_integrable_congr {g h : ℝ → ℂ} {a b : ℝ} (hab : a ≤ b)
+    (hh_cont : ContinuousOn h (Icc a b)) (hh_deriv_cont : ContinuousOn (deriv h) (Icc a b))
+    (hh_ne : ∀ t ∈ Icc a b, h t ≠ 0)
+    (heq : ∀ t ∈ Ioo a b, g t = h t ∧ deriv g t = deriv h t) :
+    IntervalIntegrable (fun t => deriv h t / h t) volume a b ∧
+    (∀ᵐ t ∂volume, t ∈ Ι a b → deriv g t / g t = deriv h t / h t) ∧
+    IntervalIntegrable (fun t => deriv g t / g t) volume a b := by
   have hh_div_cont : ContinuousOn (fun t => deriv h t / h t) (Icc a b) :=
     hh_deriv_cont.div hh_cont hh_ne
   have hint_h : IntervalIntegrable (fun t => deriv h t / h t) volume a b :=
@@ -147,14 +142,28 @@ lemma ftc_log_piece_upper {g h : ℝ → ℂ} {a b : ℝ} (hab : a ≤ b)
     rw [uIoc_of_le hab] at ht_mem
     obtain ⟨hval, hderiv⟩ := heq t ⟨ht_mem.1, lt_of_le_of_ne ht_mem.2 ht_ne⟩
     rw [hval, hderiv]
-  have hint_g : IntervalIntegrable (fun t => deriv g t / g t) volume a b := by
-    constructor
-    · exact MeasureTheory.Integrable.congr
-        (show Integrable _ (volume.restrict (Ioc a b)) from hint_h.1)
-        ((MeasureTheory.ae_restrict_iff' measurableSet_Ioc).mpr
-          (h_congr.mono (fun t ht hm => (ht (uIoc_of_le hab ▸ hm)).symm)))
-    · rw [show Ioc b a = ∅ from Set.Ioc_eq_empty (not_lt.mpr hab)]
-      exact MeasureTheory.integrableOn_empty
+  refine ⟨hint_h, h_congr, ?_⟩
+  constructor
+  · exact MeasureTheory.Integrable.congr
+      (show Integrable _ (volume.restrict (Ioc a b)) from hint_h.1)
+      ((MeasureTheory.ae_restrict_iff' measurableSet_Ioc).mpr
+        (h_congr.mono (fun t ht hm => (ht (uIoc_of_le hab ▸ hm)).symm)))
+  · rw [show Ioc b a = ∅ from Set.Ioc_eq_empty (not_lt.mpr hab)]
+    exact MeasureTheory.integrableOn_empty
+
+lemma ftc_log_piece_upper {g h : ℝ → ℂ} {a b : ℝ} (hab : a ≤ b)
+    (hh_cont : ContinuousOn h (Icc a b)) (hh_diff : ∀ t ∈ Ioo a b, DifferentiableAt ℝ h t)
+    (hh_deriv_cont : ContinuousOn (deriv h) (Icc a b)) (hh_im_nn : ∀ t ∈ Icc a b, 0 ≤ (h t).im)
+    (hh_ne : ∀ t ∈ Icc a b, h t ≠ 0) (hh_slit_interior : ∀ t ∈ Ioo a b, h t ∈ slitPlane)
+    (heq : ∀ t ∈ Ioo a b, g t = h t ∧ deriv g t = deriv h t)
+    (heq_a : g a = h a) (heq_b : g b = h b) :
+    IntervalIntegrable (fun t => deriv g t / g t) volume a b ∧
+    ∫ t in a..b, deriv g t / g t = Complex.log (g b) - Complex.log (g a) := by
+  have hh_log_cont : ContinuousOn (fun t => Complex.log (h t)) (Icc a b) := by
+    apply ContinuousOn.comp continuousOn_clog_im_nonneg hh_cont
+    intro t ht; exact ⟨hh_im_nn t ht, hh_ne t ht⟩
+  obtain ⟨hint_h, h_congr, hint_g⟩ :=
+    logDeriv_integrable_congr hab hh_cont hh_deriv_cont hh_ne heq
   have h_ftc := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hab
     hh_log_cont (fun t ht => (hh_diff t ht).hasDerivAt.clog_real
       (hh_slit_interior t ht)) hint_h
@@ -178,36 +187,16 @@ lemma ftc_log_piece_lower {g h : ℝ → ℂ} {a b : ℝ} (hab : a ≤ b)
     intro t ht; constructor
     · simp only [Complex.neg_im, Left.nonneg_neg_iff]; exact hh_im_np t ht
     · exact neg_ne_zero.mpr (hh_ne t ht)
-  have hh_div_cont : ContinuousOn (fun t => deriv h t / h t) (Icc a b) :=
-    hh_deriv_cont.div hh_cont hh_ne
-  have hint_h : IntervalIntegrable (fun t => deriv h t / h t) volume a b :=
-    (hh_div_cont.mono (uIcc_of_le hab ▸ Subset.rfl)).intervalIntegrable
-  have hb_ae : ({b} : Set ℝ)ᶜ ∈ ae volume :=
-    mem_ae_iff.mpr (by rw [compl_compl]; exact measure_singleton b)
-  have h_congr : ∀ᵐ t ∂volume, t ∈ Ι a b → deriv g t / g t = deriv h t / h t := by
-    filter_upwards [hb_ae] with t ht_ne_b ht_mem
-    have ht_ne : t ≠ b := fun h => ht_ne_b (mem_singleton_iff.mpr h)
-    rw [uIoc_of_le hab] at ht_mem
-    obtain ⟨hval, hderiv⟩ := heq t ⟨ht_mem.1, lt_of_le_of_ne ht_mem.2 ht_ne⟩
-    rw [hval, hderiv]
-  have hint_g : IntervalIntegrable (fun t => deriv g t / g t) volume a b := by
-    constructor
-    · exact MeasureTheory.Integrable.congr
-        (show Integrable _ (volume.restrict (Ioc a b)) from hint_h.1)
-        ((MeasureTheory.ae_restrict_iff' measurableSet_Ioc).mpr
-          (h_congr.mono (fun t ht hm => (ht (uIoc_of_le hab ▸ hm)).symm)))
-    · rw [show Ioc b a = ∅ from Set.Ioc_eq_empty (not_lt.mpr hab)]
-      exact MeasureTheory.integrableOn_empty
+  obtain ⟨hint_h, h_congr, hint_g⟩ :=
+    logDeriv_integrable_congr hab hh_cont hh_deriv_cont hh_ne heq
   have hnh_slit : ∀ t ∈ Ioo a b, (-(h t)) ∈ slitPlane := by
     intro t ht; rw [Complex.mem_slitPlane_iff]; right
-    simp only [Complex.neg_im, ne_eq, neg_eq_zero]
-    exact ne_of_lt (hh_im_neg_interior t ht)
+    simpa only [Complex.neg_im, ne_eq, neg_eq_zero] using ne_of_lt (hh_im_neg_interior t ht)
   have h_ftc := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hab
     hnh_log_cont (fun t ht => by
       have hda := (hh_diff t ht).hasDerivAt.neg
       have := hda.clog_real (hnh_slit t ht)
-      have goal_eq : -deriv h t / -h t = deriv h t / h t := by
-        simp only [neg_div_neg_eq]
+      have goal_eq : -deriv h t / -h t = deriv h t / h t := by simp only [neg_div_neg_eq]
       exact goal_eq ▸ this) hint_h
   exact ⟨hint_g, by
     calc ∫ t in a..b, deriv g t / g t
@@ -281,5 +270,24 @@ lemma eventuallyEq_of_Iio {g h : ℝ → ℂ} {b : ℝ}
 lemma eventuallyEq_of_Ioi {g h : ℝ → ℂ} {a : ℝ}
     (hg_eq : ∀ t, a < t → g t = h t) (t : ℝ) (ht : a < t) : g =ᶠ[𝓝 t] h :=
   Filter.eventually_of_mem (Ioi_mem_nhds ht) (fun s hs => hg_eq s hs)
+
+/-- `sin(π/12) < 1/2`, used to bound ε from 2·sin(π/12) bounds. -/
+lemma sin_pi_12_lt_half : Real.sin (Real.pi / 12) < 1 / 2 :=
+  calc Real.sin (Real.pi / 12) < Real.sin (Real.pi / 6) :=
+        Real.sin_lt_sin_of_lt_of_le_pi_div_two (by nlinarith [Real.pi_pos])
+          (by nlinarith [Real.pi_pos]) (by nlinarith [Real.pi_pos])
+    _ = 1 / 2 := Real.sin_pi_div_six
+
+/-- `sin(π/12) > 0`. -/
+lemma sin_pi_12_pos : 0 < Real.sin (Real.pi / 12) :=
+  ArcCalculus.sin_pos_of_mem_Ioo_zero_pi (by constructor <;> nlinarith [Real.pi_pos])
+
+/-- `arcsin(ε/2) < π/12` whenever `0 < ε < 2·sin(π/12)`. -/
+lemma arcsin_eps_div_two_lt_pi_12 {ε : ℝ} (hε_pos : 0 < ε)
+    (hε_lt_2sin : ε < 2 * Real.sin (Real.pi / 12)) :
+    Real.arcsin (ε / 2) < Real.pi / 12 :=
+  calc Real.arcsin (ε / 2) < Real.arcsin (Real.sin (Real.pi / 12)) :=
+        Real.arcsin_lt_arcsin (by linarith) (by linarith) (Real.sin_le_one _)
+    _ = Real.pi / 12 := Real.arcsin_sin (by nlinarith [Real.pi_pos]) (by nlinarith [Real.pi_pos])
 
 end

@@ -193,8 +193,7 @@ def _root_.LO.FirstOrder.Arith.znthDef : Sg0.Semisentence 3 := .mkSigma
 
 private lemma znth_graph {x s i : V} :
     x = znth s i ↔ ∃ l ≤ 2 * s, l = lh s ∧ (Seq s ∧ i < l → ⟪i, x⟫ ∈ s) ∧ (¬(Seq s ∧
-        i < l) → x = 0) := by
-  simp [znth, Classical.choose!_eq_iff]
+        i < l) → x = 0) := by simp [znth, Classical.choose!_eq_iff]
 
 lemma znth_defined : Sg0-Function₂ (znth : V → V → V) via znthDef := by
   intro v;
@@ -488,8 +487,7 @@ def vecToSeq : {n : ℕ} → (Fin n → V) → V
   induction n with
   | zero => simp [vecToSeq]
   | succ n ih =>
-    simp only [vecToSeq]
-    exact (ih _).seqCons _
+    simpa only [vecToSeq] using (ih _).seqCons _
 
 @[simp] lemma lh_vecToSeq {n} (v : Fin n → V) : lh (vecToSeq v) = n := by
   induction n with
@@ -537,9 +535,7 @@ lemma order_ball_induction_sigma1 {f : V → V → V} (hf : Sg1-Function₂ f) {
           (BoldfaceFunction.comp₁ (.var _)))
       apply Boldface.and
         (Boldface.comp₂ (.var 0) (by definability))
-      apply Boldface.ball_lt (.var _)
-      apply Boldface.ball_lt (.var _)
-      apply Boldface.ball_lt (.var _)
+      iterate 3 apply Boldface.ball_lt (.var _)
       apply Boldface.imp
         (Boldface.comp₂ (.var _) (BoldfaceFunction.comp₂ (.var _) (.var _)))
       apply Boldface.imp
