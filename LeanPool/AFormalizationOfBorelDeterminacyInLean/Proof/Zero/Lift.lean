@@ -183,11 +183,6 @@ include hW in lemma liftMedium_mem : H.toWLift.liftMediumVal ∈ T' := by
                 rw [WLLift.liftVal_lift]
                 simp [toWLift]
 attribute [simp_lengths] toWLift'_toWLLift
-/-lemma extracted_1 {H : WLLift' hyp} (hp) (R) (h') :
-  (ExtensionsAt.val' (ExtensionsAt.map π (x := H.lift)
-    (y := @PreLift.x A inferInstance G k hyp H.toPreLift) h' (H.extension hp R))) =
-    ... := by
-    rw [ExtensionsAt.map_val'] --adding π fixes-/
 lemma extension_conLong hp R : (hW.toWLift'.extensionLift hp R).ConLong := by
   have hm : H.x.val[2 * k + 1] :: (((hW.toWLift'.extensionMap hp R).val').drop (2 * k + 2))
     ∈ H.game.tree := by
@@ -212,8 +207,7 @@ lemma extension_conLong hp R : (hW.toWLift'.extensionLift hp R).ConLong := by
     rw [hval']
     rw [← List.singleton_append]
     rw [← liftNode]
-    rw [← WLLift.liftMediumVal_length H.toWLift]
-    exact hsub
+    rwa [← WLLift.liftMediumVal_length H.toWLift]
   conv => simp [PreLift.ConLong]
   convert hm using 1
   rw [← List.getElem_cons_drop (by
@@ -223,8 +217,8 @@ lemma extension_conLong hp R : (hW.toWLift'.extensionLift hp R).ConLong := by
     exact Nat.lt_of_lt_of_le H.h'lvl (Nat.le_succ _))]
   congr 1
   have ht : (hW.toWLift'.extensionMap hp R).val'.take (2 * k + 2) =
-      H.x.val.take (2 * k + 2) := by
-    exact WLLift'.extensionMap_take hW.toWLift' hp R (n := 2 * k + 2) (by simp)
+      H.x.val.take (2 * k + 2) :=
+    WLLift'.extensionMap_take hW.toWLift' hp R (n := 2 * k + 2) (by simp)
   have hget := congrArg (fun xs : List A => xs[2 * k + 1]?) ht
   change (List.take (2 * k + 2) (hW.toWLift'.extensionMap hp R).val')[2 * k + 1]? =
       (List.take (2 * k + 2) H.x.val)[2 * k + 1]? at hget
@@ -426,8 +420,8 @@ lemma lift_mem n : hL.1.mk.toWLLift.liftMediumVal ++
               ((List.take n (List.drop (2 * k + 2) H.x.val)).zipInitsMap fun a y ↦
                 (a, subAt hL.1.mk.toWLLift.liftTree y)) =
               (List.take n (List.drop (2 * k + 2) H.x.val)).zipInitsMap
-                (fun a _ ↦ a) := by
-            exact (List.zipInitsMap_map
+                (fun a _ ↦ a) :=
+            (List.zipInitsMap_map
               (x := List.take n (List.drop (2 * k + 2) H.x.val))
               (f := fun a y ↦ (a, subAt hL.1.mk.toWLLift.liftTree y))
               (g := Prod.fst)).symm
@@ -450,8 +444,8 @@ lemma lift_mem n : hL.1.mk.toWLLift.liftMediumVal ++
                     (List.drop (2 * k + 2) (List.take hL.1.mk.minLength H.x.val)))
                   y)) =
               (List.take n (List.drop (2 * k + 2) H.x.val)).zipInitsMap
-                (fun a _ ↦ a) := by
-            exact (List.zipInitsMap_map
+                (fun a _ ↦ a) :=
+            (List.zipInitsMap_map
               (x := List.take n (List.drop (2 * k + 2) H.x.val))
               (f := fun a y ↦
                 (a, subAt

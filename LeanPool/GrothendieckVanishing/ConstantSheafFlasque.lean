@@ -231,9 +231,8 @@ theorem isFlasqueSheaf_zeroOutsideInt_top (X : TopCat.{u}) [IrreducibleSpace X] 
     presheafToSheaf_const_flasque_of_irreducible X A (U := U) (V := W) i
   have hconst' : Epi
       (((sheafToPresheaf J AddCommGrpCat.{u}).obj
-        ((presheafToSheaf J AddCommGrpCat.{u}).obj TopCat.Presheaf.constZ)).map i.op) := by
-    change Epi (((presheafToSheaf J AddCommGrpCat.{u}).obj P).obj.map i.op)
-    exact hconst
+        ((presheafToSheaf J AddCommGrpCat.{u}).obj TopCat.Presheaf.constZ)).map i.op) :=
+    hconst
   haveI : IsIso (eP.hom.app (op U)) := CategoryTheory.NatIso.hom_app_isIso eP (op U)
   haveI : IsIso (eP.hom.app (op W)) := CategoryTheory.NatIso.hom_app_isIso eP (op W)
   have hepiComp : Epi
@@ -248,8 +247,7 @@ theorem isFlasqueSheaf_zeroOutsideInt_top (X : TopCat.{u}) [IrreducibleSpace X] 
           ((presheafToSheaf J AddCommGrpCat.{u}).obj
             (TopCat.Presheaf.zeroOutside ⊤ TopCat.Presheaf.constZ))).map i.op ≫
         eP.hom.app (op U))
-    rw [eP.hom.naturality i.op]
-    exact hepiComp
+    rwa [eP.hom.naturality i.op]
   change Epi
     (((sheafToPresheaf J AddCommGrpCat.{u}).obj
         ((presheafToSheaf J AddCommGrpCat.{u}).obj

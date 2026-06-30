@@ -4,22 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael R. Douglas, Sarah Hoback, Anna Mei, Ron Nissim
 -/
 
-
 import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.Analysis.Fourier.Inversion
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
-
-
-
-
-
-
-
-
-
 
 /-!
 ## Functional Analysis for AQFT
@@ -87,7 +77,6 @@ The following L∞ × L² multiplication theorems are fully proven (2025-12-13):
 
 open MeasureTheory.Measure
 
-
 variable {d : ℕ} [NeZero d]
 
 -- Add inner product space structure
@@ -124,20 +113,13 @@ instance instMeasurableSpaceLpComplexTwoLeanPool (μ : Measure α) : MeasurableS
 instance instBorelSpaceLpComplexTwoLeanPool (μ : Measure α) : BorelSpace (Lp ℂ 2 μ) := ⟨rfl⟩
 
 -- Check if Complex.ofRealCLM is an isometry
-lemma Complex.ofRealCLM_isometry : Isometry (Complex.ofRealCLM : ℝ →L[ℝ] ℂ) := by
-  -- Complex.ofRealCLM is defined as ofRealLI.toContinuousLinearMap,
-  -- where ofRealLI is a linear isometry
-  have h : ⇑(Complex.ofRealCLM : ℝ →L[ℝ] ℂ) = ⇑Complex.ofRealLI := rfl
-  rw [Isometry, h]
-  -- The coercion to function is the same for both
-  exact Complex.ofRealLI.isometry.edist_eq
+lemma Complex.ofRealCLM_isometry : Isometry (Complex.ofRealCLM : ℝ →L[ℝ] ℂ) :=
+  Complex.ofRealLI.isometry
 
--- Use this to prove our specific case
+/-- The lift `φ ↦ ofRealCLM.compLp φ` to `Lp` is continuous. -/
 lemma Complex.ofRealCLM_continuous_compLp {α : Type*} [MeasurableSpace α] {μ : Measure α} :
-  Continuous (fun φ : Lp ℝ 2 μ => Complex.ofRealCLM.compLp φ : Lp ℝ 2 μ → Lp ℂ 2 μ) := by
-  -- The function φ ↦ L.compLp φ is the application of the continuous linear map
-  -- ContinuousLinearMap.compLpL p μ L, which is continuous
-  exact (ContinuousLinearMap.compLpL 2 μ Complex.ofRealCLM).continuous
+  Continuous (fun φ : Lp ℝ 2 μ => Complex.ofRealCLM.compLp φ : Lp ℝ 2 μ → Lp ℂ 2 μ) :=
+  (ContinuousLinearMap.compLpL 2 μ Complex.ofRealCLM).continuous
 
 /--
 Compose an Lp function with a continuous linear map.
@@ -184,8 +166,6 @@ noncomputable def liftMeasureRealToComplex
 
 end LiftMeasure
 
-
-
 /-! ## Fourier Transform as Linear Isometry on L² Spaces
 
 The key challenge in defining the Fourier transform on L² spaces is that the Fourier integral
@@ -212,7 +192,6 @@ abbrev SchwartzRd (d : ℕ) := SchwartzMap (EuclideanRd d) ℂ
 abbrev L2Complex (d : ℕ) := Lp ℂ 2 (volume : Measure (EuclideanRd d))
 
 /-! ### Core construction components (using Mathlib APIs) -/
-
 
 /-- Embedding Schwartz functions into L² space using Mathlib's toLpCLM.
     This is a continuous linear map from Schwartz space to L²(ℝᵈ, ℂ).
@@ -433,7 +412,7 @@ lemma integrableOn_compact_diff_ball {d : ℕ}
       exact h_bound x hx
     have h_const : IntegrableOn (fun _ => M) (K \ Metric.ball 0 δ) volume :=
       MeasureTheory.integrableOn_const (μ := volume) (s := K \ Metric.ball 0 δ)
-        (by exact ne_top_of_lt h_finite)
+        (ne_top_of_lt h_finite)
     have h_ae : ∀ᵐ x ∂(volume.restrict (K \ Metric.ball 0 δ)), ‖f x‖ ≤ M := by
       rw [ae_restrict_iff' (hK.diff Metric.isOpen_ball).measurableSet]
       exact ae_of_all _ hM_bound
@@ -577,8 +556,7 @@ theorem schwartz_bilinear_integrable_of_translationInvariant_L1
           ‖K₀ (p.1 - p.2)‖ * ‖g p.2‖) = (fun p => ‖K₀ p.1‖ * ‖g p.2‖) ∘ e := by
         ext p
         rfl
-      rw [heq, he_preserves.integrable_comp_emb e.measurableEmbedding]
-      exact hprod
+      rwa [heq, he_preserves.integrable_comp_emb e.measurableEmbedding]
     -- Multiply by constant Cf
     exact hchange.const_mul Cf
   · -- AEStronglyMeasurable of the integrand
@@ -742,8 +720,7 @@ theorem schwartz_vanishing_linear_bound_general
     rw [Prod.norm_def]
     simp only [_root_.sub_self, norm_zero, max_eq_left (norm_nonneg t)]
     rw [Real.norm_eq_abs, abs_of_nonneg ht]
-  rw [h_dist] at h_mvt
-  exact h_mvt
+  rwa [h_dist] at h_mvt
 
 end SchwartzLinearBound
 
@@ -840,8 +817,7 @@ theorem schwartz_integrable_decay {V : Type*} [NormedAddCommGroup V]
     intro k hk
     -- Use the bound for each term
     -- We need to know ‖iteratedFDeriv ℝ 0 f x‖ = ‖f x‖
-    have h_norm : ‖iteratedFDeriv ℝ 0 f x‖ = ‖f x‖ := by
-       rw [norm_iteratedFDeriv_zero]
+    have h_norm : ‖iteratedFDeriv ℝ 0 f x‖ = ‖f x‖ := norm_iteratedFDeriv_zero
     -- Rearrange to match hC
     have h_rearrange : ‖f x‖ * ((N.choose k : ℝ) * ‖x‖^k) = (N.choose k : ℝ) * (‖x‖^k *
       ‖iteratedFDeriv ℝ 0 f x‖) := by
@@ -911,12 +887,10 @@ lemma bumpSelfConv_support_subset (φ : ContDiffBump (0 : E)) :
   obtain ⟨y, hy, z, hz, hyz⟩ := hx'
   have hy_ball : y ∈ Metric.ball (0 : E) φ.rOut := by
     have := φ.support_normed_eq (μ := volume)
-    rw [this] at hy
-    exact hy
+    rwa [this] at hy
   have hz_ball : z ∈ Metric.ball (0 : E) φ.rOut := by
     have := φ.support_normed_eq (μ := volume)
-    rw [this] at hz
-    exact hz
+    rwa [this] at hz
   rw [Metric.mem_ball] at hy_ball hz_ball ⊢
   rw [dist_zero_right] at hy_ball hz_ball ⊢
   rw [← hyz]
@@ -993,8 +967,7 @@ theorem double_mollifier_convergence
       Measure.restrict_eq_self_of_ae_mem h_ae
     have h_meas : MeasurableSet {x : E | x ≠ 0} := isOpen_ne.measurableSet
     have h := hC.aestronglyMeasurable (μ := volume) h_meas
-    rw [h_restrict] at h
-    exact h
+    rwa [h_restrict] at h
   -- Step 2: C converges to C(a) at a (since C is continuous at a)
   have hCconv : Tendsto (uncurry fun _ : ι => C) (l ×ˢ 𝓝 a) (𝓝 (C a)) := by
     have h : uncurry (fun _ : ι => C) = C ∘ Prod.snd := by
@@ -1123,8 +1096,7 @@ theorem double_mollifier_convergence
                 rw [← h_ta] at htv
                 have hr : (φ i).rOut < ‖a‖ / 3 := by
                    rw [mem_preimage, Metric.mem_ball, dist_zero_right] at hi
-                   rw [Real.norm_of_nonneg (le_of_lt (φ i).rOut_pos)] at hi
-                   exact hi
+                   rwa [Real.norm_of_nonneg (le_of_lt (φ i).rOut_pos)] at hi
                 have : ‖a‖ < ‖a‖ := by
                    rcases htv with ⟨ht, _⟩
                    calc ‖a‖ ≤ 2 * (φ i).rOut := ht

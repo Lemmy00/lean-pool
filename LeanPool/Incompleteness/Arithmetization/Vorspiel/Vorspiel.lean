@@ -32,16 +32,13 @@ end Matrix
 
 namespace Set
 
-@[simp 1100] lemma subset_union_three₁ (s t u : Set α) :
-    s ⊆ s ∪ t ∪ u :=
+@[simp 1100] lemma subset_union_three₁ (s t u : Set α) : s ⊆ s ∪ t ∪ u :=
   Set.subset_union_of_subset_left (by simp) _
 
-@[simp] lemma subset_union_three₂ (s t u : Set α) :
-    t ⊆ s ∪ t ∪ u :=
+@[simp] lemma subset_union_three₂ (s t u : Set α) : t ⊆ s ∪ t ∪ u :=
   Set.subset_union_of_subset_left (by simp) _
 
-@[simp 1100] lemma subset_union_three₃ (s t u : Set α) :
-    u ⊆ s ∪ t ∪ u :=
+@[simp 1100] lemma subset_union_three₃ (s t u : Set α) : u ⊆ s ∪ t ∪ u :=
   Set.subset_union_of_subset_right (by rfl) _
 
 end Set
@@ -376,12 +373,10 @@ abbrev _root_.LO.FirstOrder.Semiformula.Rlz (φ : Semiformula L M n) (e : Fin n 
 @[simp] lemma models₀_not_iff (σ : Sentence L) : M ⊧ₘ₀ (∼σ) ↔ ¬M ⊧ₘ₀ σ := by simp [models₀_iff]
 
 @[simp] lemma models₀_or_iff (σ π : Sentence L) :
-    M ⊧ₘ₀ (σ ⋎ π) ↔ M ⊧ₘ₀ σ ∨ M ⊧ₘ₀ π := by
-  simp [models₀_iff]
+    M ⊧ₘ₀ (σ ⋎ π) ↔ M ⊧ₘ₀ σ ∨ M ⊧ₘ₀ π := by simp [models₀_iff]
 
 @[simp] lemma models₀_imply_iff (σ π : Sentence L) :
-    M ⊧ₘ₀ (σ ==> π) ↔ M ⊧ₘ₀ σ → M ⊧ₘ₀ π := by
-  simp [models₀_iff]
+    M ⊧ₘ₀ (σ ==> π) ↔ M ⊧ₘ₀ σ → M ⊧ₘ₀ π := by simp [models₀_iff]
 
 end «lp_section_4»
 
@@ -447,8 +442,7 @@ namespace Vector
 
 variable {α : Type*}
 
-@[simp] lemma nil_get (v : Vector α 0) : v.get = ![] := by
-  ext i; exact i.elim0
+@[simp] lemma nil_get (v : Vector α 0) : v.get = ![] := by ext i; exact i.elim0
 
 end Vector
 end List

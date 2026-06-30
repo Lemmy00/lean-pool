@@ -47,8 +47,7 @@ private lemma mul_modform_ne_zero_of_coeff_one {k₁ k₂ : ℤ}
     simp only [Nat.cast_one] at this; rw [this]
     simp only [PowerSeries.coeff_mul, Finset.antidiagonal_zero, Finset.sum_singleton, hf, hg,
       mul_one]
-  have hcoe : (⇑(f.mul g) : ℍ → ℂ) = 0 := by
-    rw [h]; ext z; simp only [zero_apply, Pi.zero_apply]
+  have hcoe : (⇑(f.mul g) : ℍ → ℂ) = 0 := by rw [h]; ext z; simp only [zero_apply, Pi.zero_apply]
   rw [show qExpansion 1 (f.mul g) = qExpansion 1 (0 : ℍ → ℂ) from
     congr_arg (qExpansion 1) hcoe, qExpansion_zero] at hcoeff
   simp only [PowerSeries.coeff_zero_eq_constantCoeff, PowerSeries.constantCoeff_zero,
@@ -122,8 +121,7 @@ private lemma one_modform_ne_zero : (1 : ModularForm Γ(1) 0) ≠ 0 := by
     Pi.one_apply, zero_apply, one_ne_zero] at this
 
 private lemma evalE₄E₆_one :
-    evalE₄E₆ 1 = DirectSum.of (fun k : ℤ => ModularForm Γ(1) k) 0 1 := by
-  rw [map_one]; rfl
+    evalE₄E₆ 1 = DirectSum.of (fun k : ℤ => ModularForm Γ(1) k) 0 1 := by rw [map_one]; rfl
 
 private lemma evalE₄E₆_X0_sq :
     evalE₄E₆ (MvPolynomial.X 0 ^ 2) =
@@ -156,9 +154,7 @@ private lemma surj_inductive_step (n : ℕ) (hn12 : 12 ≤ n) (hk_even : Even n)
   have hmn_coeff : (qExpansion 1 mn).coeff 0 = 1 := monomial_coeff_zero_eq_one n a b hab
   have hg_cusp : IsCuspForm Γ(1) ↑n (f - c • mn) := by
     rw [IsCuspForm_iff_coeffZero_eq_zero]
-    have hsp : (1 : ℝ) ∈ Γ(1).strictPeriods := by
-      simp only [CongruenceSubgroup.strictPeriods_Gamma, Nat.cast_one,
-        AddSubgroup.mem_zmultiples]
+    have hsp : (1 : ℝ) ∈ Γ(1).strictPeriods := by simp
     set Q := qExpansionAddHom (by norm_num : (0 : ℝ) < 1) hsp (↑n)
     have hQ_smul : Q (c • mn) = c • Q mn :=
       ModularForm.qExpansion_smul (by norm_num : (0 : ℝ) < 1) hsp c mn
@@ -190,11 +186,10 @@ private lemma surj_inductive_step (n : ℕ) (hn12 : 12 ≤ n) (hk_even : Even n)
     simp only [mn, mo, DirectSum.ofPow, DirectSum.ofPow, DirectSum.of_mul_of]
     rw [show (↑n : ℤ) = a • (4 : ℤ) + b • (6 : ℤ) from by
       simp only [Int.nsmul_eq_mul]; linarith, DirectSum.of_eq_same]
-  have hf_eq : f = g + c • mn := by simp only [g, sub_add_cancel]
-  have hf_ds : DirectSum.of _ (↑n : ℤ) f =
-      DirectSum.of _ (↑n : ℤ) g + c • DirectSum.of _ (↑n : ℤ) mn := by
-    rw [hf_eq, map_add, ← DirectSum.of_smul]
-  rw [hf_ds, hmn_eq]
+  rw [show DirectSum.of _ (↑n : ℤ) f =
+      DirectSum.of _ (↑n : ℤ) g + c • DirectSum.of _ (↑n : ℤ) mn from by
+    rw [show f = g + c • mn from by simp only [g, sub_add_cancel], map_add, ← DirectSum.of_smul],
+    hmn_eq]
   obtain ⟨p1, hp1⟩ := hg_in; obtain ⟨p2, hp2⟩ := hmn_in
   exact ⟨p1 + MvPolynomial.C c * p2, by
     rw [map_add, hp1, map_mul, evalE₄E₆_C, hp2,
