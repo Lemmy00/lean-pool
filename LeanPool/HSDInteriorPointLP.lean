@@ -9,7 +9,7 @@ import LeanPool.HSDInteriorPointLP.GeneratedConvergence
 /-!
 # Homogeneous self-dual interior-point method for linear programming
 
-Source: url:https://github.com/makoto-yamashita/proof-on-a-homogeneous-self-dual-interior-point-method-for-linear-programming
+Source: doi:10.1287/moor.19.1.53
 Authors: Makoto Yamashita
 Status: verified
 Main declarations: `HSDInteriorPointLP.YTM_fixed_local_theory_from_paper`

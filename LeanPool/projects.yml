@@ -3009,14 +3009,21 @@ projects:
     authors:
       - Makoto Yamashita
     source:
-      url: https://github.com/makoto-yamashita/proof-on-a-homogeneous-self-dual-interior-point-method-for-linear-programming
+      title: "An O(√nL)-iteration homogeneous and self-dual linear programming algorithm"
+      authors:
+        - Yinyu Ye
+        - Michael J. Todd
+        - Shinji Mizuno
+      doi: "10.1287/moor.19.1.53"
       github_repo: makoto-yamashita/proof-on-a-homogeneous-self-dual-interior-point-method-for-linear-programming
+    license: MIT
     status: verified
     main_declarations:
       - HSDInteriorPointLP.YTM_fixed_local_theory_from_paper
     main_results:
       - declaration: HSDInteriorPointLP.YTM_fixed_local_theory_from_paper
         informal: Packages the fixed Ye-Todd-Mizuno local theory, combining predictor and corrector estimates for the tight and wide central neighborhoods.
+        source_ref: "Y. Ye, M. J. Todd, and S. Mizuno, An O(√nL)-iteration homogeneous and self-dual linear programming algorithm, Mathematics of Operations Research 19(1):53-67, 1994."
       - declaration: HSDInteriorPointLP.HSDGeneratedAlgorithm.gap_stop_even_at_logPairBound
         informal: Proves that the generated even iterate satisfies the gap stopping test at the logarithmic pair bound.
       - declaration: HSDInteriorPointLP.HSDGeneratedAlgorithm.mu_stop_even_at_logPairBound
