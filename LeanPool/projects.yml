@@ -1,4 +1,51 @@
 projects:
+  - slug: biswal
+    title: Chebyshev Quotients and Demazure Multiplicities
+    summary: >-
+      Formalizes positivity results for the coefficients of Chebyshev-type
+      polynomial quotients attached to integer partitions, modelling Demazure
+      multiplicities. Proves that the relevant generating function is a
+      polynomial and that its coefficients are eventually positive (Theorem 1),
+      gives explicit Cauchy-product and matrix-inverse formulas for the
+      coefficients (Theorem 2), and establishes their nonnegativity through a
+      Dyck-path lattice counting model (Theorem 3).
+    branch: algebraic combinatorics
+    entry_module: LeanPool.Biswal
+    authors:
+      - Jujian Zhang
+    source:
+      title: "Chebyshev quotients, Demazure multiplicities, and Dyck-path models"
+      authors:
+        - Evan Chen
+        - Kenny Lau
+        - Seewoo Lee
+        - Ken Ono
+        - Jujian Zhang
+      arxiv: "2604.25246"
+      github_repo: AxiomMath/Biswal
+    license: MIT
+    status: verified
+    main_declarations:
+      - Biswal.Theorem23.thm_manifest_coeff_nonneg
+    main_results:
+      - declaration: Biswal.Theorem1.genFun_is_polynomial
+        informal: >-
+          Proves that the generating function attached to a partition is a
+          polynomial whenever its parts are bounded by the parameter `m`.
+      - declaration: Biswal.Theorem1.genFun_coeff_eventually_pos
+        informal: >-
+          Proves that the coefficients of the generating function attached to a
+          partition are eventually strictly positive.
+      - declaration: Biswal.Theorem23.thm_manifest_coeff_nonneg
+        informal: >-
+          Proves that every coefficient of the generating function is
+          nonnegative, via the explicit Dyck-path lattice counting model.
+    tags:
+      - algebraic-combinatorics
+      - chebyshev
+      - demazure
+    msc:
+      - "05E10"
   - slug: pythagorean-polynomial-parametrization
     title: Polynomial parametrizations of Pythagorean triples
     summary: Formalizes Frisch and Vaserstein's result that Pythagorean triples are not parametrizable by one triple of integer-coefficient polynomials in any number of variables, but are parametrizable by a single triple of integer-valued rational polynomials, including the positive and sixteen-parameter variants.
@@ -199,6 +246,45 @@ projects:
     msc:
       - "11M06"
       - "11J72"
+  - slug: zeta-h123
+    title: Thakur's hypotheses on power sums of F_q[t]
+    summary: Formalizes four components of Thakur's hypotheses on power sums over finite polynomial rings, including uniqueness and monotonicity results for the carry-free digit optimization problems and the Laurent-series expansion of finite-field power sums.
+    branch: number theory
+    entry_module: LeanPool.ZetaH123
+    authors:
+      - Evan Chen
+      - Kenny Lau
+      - Ken Ono
+      - Jujian Zhang
+    source:
+      title: Thakur's hypotheses on power sums of F_q[t]
+      authors:
+        - Evan Chen
+        - Ken Ono
+      arxiv: "2606.16239"
+      github_repo: AxiomMath/zeta-h123
+    license: MIT
+    status: verified
+    main_declarations:
+      - ZetaH123.H1.main_theorem
+      - ZetaH123.Lem41.main
+    main_results:
+      - declaration: ZetaH123.H1.main_theorem
+        informal: Proves uniqueness of the admissible base-q decomposition maximizing the H1 power-sum weight functional.
+      - declaration: ZetaH123.H2.main
+        informal: Proves the H2 unique-minimizer statement for the recursive digit/carry-free optimization problem defining the values s_d(k).
+      - declaration: ZetaH123.H3.main_theorem
+        informal: Proves the H3 monotonicity statement that s_d(k) is strictly less than s_d(k+1) when p does not divide k.
+      - declaration: ZetaH123.Lem41.main
+        informal: Proves the Lemma 4.1 Laurent-series expansion for S_d(k), with nonzero coefficients indexed by the carry-free tuples.
+    tags:
+      - number-theory
+      - function-fields
+      - zeta-functions
+    msc:
+      - "11M38"
+      - "11T55"
+      - "11G09"
   - slug: bruhat-tits
     title: Formalisation of the Bruhat-Tits Tree
     summary: Formalizes the Bruhat-Tits tree for GL₂ over the fraction field of a discrete valuation ring.
@@ -3627,3 +3713,47 @@ projects:
     msc:
       - "11N05"
       - "11N35"
+  - slug: agree-to-disagree
+    title: "Aumann's Agreement Theorem"
+    summary: >-
+      Formalizes Aumann's agreement theorem for information partitions and a
+      common-prior setting, together with a p-belief variant bounding posterior
+      disagreement by 2 * (1 - p).
+    branch: probability theory
+    entry_module: LeanPool.AgreeToDisagree
+    authors:
+      - Ruiz Chen
+      - Ben Eltschig
+      - Ken Ono
+      - Jujian Zhang
+    source:
+      title: "We Can't Agree to Disagree, Formally: Aumann's Theorem and Assumption Accounting in Lean"
+      url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6837298"
+      github_repo: AxiomMath/AgreeToDisagree
+    license: MIT
+    status: verified
+    main_declarations:
+      - AgreeToDisagree.agreeToDisagree
+      - AgreeToDisagree.agreeToDisagree_beliefs
+    main_results:
+      - declaration: AgreeToDisagree.agreeToDisagree
+        informal: >-
+          If it is common knowledge at a state that two agents assign fixed
+          posterior probabilities to an event, and the common-knowledge cell has
+          equal posterior under their priors, then the two posterior
+          probabilities are equal.
+      - declaration: AgreeToDisagree.agreeToDisagree'
+        informal: >-
+          Generalizes the agreement theorem to a family of agents indexed by an
+          arbitrary type.
+      - declaration: AgreeToDisagree.agreeToDisagree_beliefs
+        informal: >-
+          Proves that common p-belief of fixed posteriors bounds the difference
+          between any two agents' real-valued posteriors by 2 * (1 - p).
+    tags:
+      - probability
+      - game-theory
+      - epistemic-logic
+    msc:
+      - "60A10"
+      - "91A40"
