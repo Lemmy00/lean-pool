@@ -268,8 +268,7 @@ lemma circleIntegral_logDeriv_cuspFunction_of_radius (hf : f ≠ 0)
     apply ContinuousOn.inv₀ continuousOn_id
     intro z hz
     simp only [Metric.mem_sphere, dist_zero_right] at hz
-    simp only [id]
-    exact norm_ne_zero_iff.mp (by linarith)
+    simpa only [id] using norm_ne_zero_iff.mp (by linarith)
   have hci_logDeriv : CircleIntegrable (fun q => logDeriv g q) 0 R := by
     apply ContinuousOn.circleIntegrable hR_le
     have h_sphere_sub : Metric.sphere (0 : ℂ) R ⊆ Metric.ball 0 1 :=
@@ -289,8 +288,7 @@ lemma circleIntegral_logDeriv_cuspFunction_of_radius (hf : f ≠ 0)
     simp only
     rw [h_split _ (circleMap_mem_sphere 0 hR_le θ)]
   have h_div_eq : (fun q : ℂ => (↑m : ℂ) / q + logDeriv g q) =
-      (fun q => (↑m : ℂ) * q⁻¹ + logDeriv g q) := by
-    ext; simp [div_eq_mul_inv]
+      (fun q => (↑m : ℂ) * q⁻¹ + logDeriv g q) := by ext; simp [div_eq_mul_inv]
   rw [h_congr, h_div_eq, circleIntegral.integral_add hci_inv hci_logDeriv,
       circleIntegral_const_mul_inv (↑m : ℂ) (ne_of_gt hR_pos),
       circleIntegral_logDeriv_regular_zero g hR_pos hR_lt hg_diff hg_nonvan,
@@ -448,9 +446,7 @@ theorem seg5_logDeriv_integral_value_bridge {H : ℝ} (hH : Real.sqrt 3 / 2 < H)
       logDeriv (modularFormCompOfComplex f) (fdBoundaryH H t) *
         deriv (fdBoundaryH H) t =
       2 * ↑Real.pi * I * (orderAtCusp' f : ℂ) := by
-  have hH_pos : 0 < H := by
-    calc (0 : ℝ) < Real.sqrt 3 / 2 := by positivity
-      _ < H := hH
+  have hH_pos : 0 < H := lt_trans (by positivity) hH
   have h_eq_ae : ∀ᵐ t ∂MeasureTheory.volume,
       t ∈ Set.uIoc 4 5 →
         logDeriv (modularFormCompOfComplex f) (fdBoundaryH H t) *
@@ -464,8 +460,8 @@ theorem seg5_logDeriv_integral_value_bridge {H : ℝ} (hH : Real.sqrt 3 / 2 < H)
         logDeriv (modularFormCompOfComplex f) (fdBoundaryH H t) *
           deriv (fdBoundaryH H) t
       = ∫ t in (4 : ℝ)..5,
-        logDeriv (modularFormCompOfComplex f) (fdBoundarySeg5H H t) := by
-        exact intervalIntegral.integral_congr_ae h_eq_ae
+        logDeriv (modularFormCompOfComplex f) (fdBoundarySeg5H H t) :=
+        intervalIntegral.integral_congr_ae h_eq_ae
     _ = 2 * ↑Real.pi * I * (orderAtCusp' f : ℂ) :=
         seg5_logDeriv_integral_eq_H f hf hH_pos hcusp_nonvan
 

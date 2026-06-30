@@ -52,8 +52,7 @@ def angleAtCrossing (γ : PiecewiseC1Immersion) (t₀ : ℝ)
 theorem angleAtCrossing_smooth (γ : PiecewiseC1Immersion)
     (t₀ : ℝ) (ht₀ : t₀ ∈ Ioo γ.a γ.b)
     (hsmooth : t₀ ∉ γ.toPiecewiseC1Curve.partition) :
-    angleAtCrossing γ t₀ ht₀ = Real.pi := by
-  simp only [angleAtCrossing, hsmooth, ↓reduceDIte]
+    angleAtCrossing γ t₀ ht₀ = Real.pi := by simp only [angleAtCrossing, hsmooth, ↓reduceDIte]
 
 /-- Winding number via explicit angle sum at crossings. -/
 def windingNumberWithAngles'
@@ -73,16 +72,12 @@ def windingNumberWithAngles'
 theorem singleton_mem_Ioo (t₀ : ℝ) (a b : ℝ)
     (ht₀ : t₀ ∈ Ioo a b) :
     ∀ t ∈ ({t₀} : Finset ℝ), t ∈ Ioo a b := by
-  intro t ht
-  simp only [Finset.mem_singleton] at ht
-  rw [ht]; exact ht₀
+  simp_all [Finset.mem_singleton]
 
 theorem singleton_at_crossing (γ : PiecewiseC1Immersion)
     (t₀ : ℝ) (z₀ : ℂ) (hcross : γ.toFun t₀ = z₀) :
     ∀ t ∈ ({t₀} : Finset ℝ), γ.toFun t = z₀ := by
-  intro t ht
-  simp only [Finset.mem_singleton] at ht
-  rw [ht]; exact hcross
+  simp_all [Finset.mem_singleton]
 
 /-- A single smooth crossing contributes 1/2 to the winding number. -/
 theorem windingNumber_smooth_crossing

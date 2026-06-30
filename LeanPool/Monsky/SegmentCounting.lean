@@ -99,8 +99,7 @@ lemma glueChains_assoc {u v w x : ℝ²} (C₁ : Chain u v) (C₂ : Chain v w) (
   induction C₁ with
   | basic         => rfl
   | join h₃ C ih  =>
-    simp only [glueChains, Chain.join.injEq, heq_eq_eq, true_and]
-    exact ih C₂ _ _
+    simpa only [glueChains, Chain.join.injEq, heq_eq_eq, true_and] using ih C₂ _ _
 
 
 lemma reverseChain_glue {u v w : ℝ²} (h : colin u v w) (CL : Chain u v)
@@ -136,64 +135,34 @@ lemma basic_segment_in_openHull {u v : ℝ²} (C : Chain u v) {S : Segment}
 
 
 
-lemma basic_segments_colin_disjoint {u v w : ℝ²} {C : Chain v w} (h : colin u v w) :
-    toSegment u v ∉ toBasicSegments C := by
-  intro hc
-  have this := basic_segment_in_openHull _ hc
-  have other : openHull (toSegment u v) ∩ openHull (toSegment v w) = ∅ := by
-    apply colin_intersection_openHulls_empty
-    apply h
-  have nonempty : ∃ (b : ℝ²), b ∈ openHull (toSegment u v) := by
-    apply open_pol_nonempty
-    linarith
-  rcases nonempty with ⟨p, q⟩
-  have contra' :  p ∈ openHull (toSegment v w) := by
-      tauto_set
-  have contra : openHull (toSegment u v) ∩ openHull (toSegment v w) ≠ ∅ := by
-    rw [← Set.nonempty_iff_ne_empty]
-    tauto
-  contradiction
+/-- Helper: a segment whose open hull lands in `openHull (toSegment u v)` cannot also land in
+`openHull (toSegment v w)` when `u, v, w` are collinear. -/
+private lemma basic_segments_colin_disjoint_aux {u v w : ℝ²} {S : Segment} (h : colin u v w)
+    (hL : openHull S ⊆ openHull (toSegment u v))
+    (hR : openHull S ⊆ openHull (toSegment v w)) : False := by
+  have other : openHull (toSegment u v) ∩ openHull (toSegment v w) = ∅ :=
+    colin_intersection_openHulls_empty (h := h)
+  have ⟨p, q⟩ : ∃ (b : ℝ²), b ∈ openHull S := open_pol_nonempty (by linarith) S
+  rw [Set.eq_empty_iff_forall_notMem] at other
+  exact other p ⟨hL q, hR q⟩
 
+lemma basic_segments_colin_disjoint {u v w : ℝ²} {C : Chain v w} (h : colin u v w) :
+    toSegment u v ∉ toBasicSegments C := fun hc ↦
+  basic_segments_colin_disjoint_aux h (fun _ a ↦ a) (basic_segment_in_openHull _ hc)
 
 lemma basic_segments_colin_disjoint2 {u v w : ℝ²} {C : Chain v w} (h : colin u v w) :
     toSegment v u ∉ toBasicSegments C := by
   intro hc
   have this := basic_segment_in_openHull _ hc
-  rw [← reverseSegment_toSegment, reverseSegment_openHull] at this
-  have other : openHull (toSegment u v) ∩ openHull (toSegment v w) = ∅ := by
-    apply colin_intersection_openHulls_empty
-    apply h
-  have nonempty : ∃ (b : ℝ²), b ∈ openHull (toSegment u v) := by
-    apply open_pol_nonempty
-    linarith
-  rcases nonempty with ⟨p, q⟩
-  have contra' :  p ∈ openHull (toSegment v w) := by
-      tauto_set
-  have contra : openHull (toSegment u v) ∩ openHull (toSegment v w) ≠ ∅ := by
-    rw [← Set.nonempty_iff_ne_empty]
-    tauto
-  contradiction
+  refine basic_segments_colin_disjoint_aux h ?_ this
+  rw [← reverseSegment_toSegment, reverseSegment_openHull]
 
 lemma basic_segments_colin_disjoint_reverse {u v w : ℝ²} {C : Chain v w} (h : colin u v w) :
     toSegment  u v ∉ toBasicSegments (reverseChain C ):= by
-    intro hc
-    have this := basic_segment_in_openHull _ hc
-    have other : openHull (toSegment u v) ∩ openHull (toSegment v w) = ∅ := by
-      apply colin_intersection_openHulls_empty
-      apply h
-    have nonempty : ∃ (b : ℝ²), b ∈ openHull (toSegment u v) := by
-      apply open_pol_nonempty
-      linarith
-    rcases nonempty with ⟨p, q⟩
-    have contra' :  p ∈ openHull (toSegment w v) := by
-        tauto_set
-    have contra : openHull (toSegment u v) ∩ openHull (toSegment v w) ≠ ∅ := by
-      rw [← Set.nonempty_iff_ne_empty]
-      have hvw : openHull (toSegment v w) = openHull (toSegment w v) := by
-        rw [← reverseSegment_toSegment, reverseSegment_openHull]
-      rw [hvw]
-      tauto
-    contradiction
+  intro hc
+  have this := basic_segment_in_openHull _ hc
+  refine basic_segments_colin_disjoint_aux h (fun _ a ↦ a) ?_
+  rwa [← reverseSegment_toSegment (u := v) (v := w), reverseSegment_openHull] at this
 
 lemma reverseChain_basic_segments {u v : ℝ²} (C : Chain u v) :
     toBasicSegments (reverseChain C) =
@@ -208,8 +177,8 @@ lemma reverseChain_basic_segments_disjoint {u v : ℝ²} (C : Chain u v) (huv : 
     Disjoint (toBasicSegments C) (toBasicSegments (reverseChain C)) := by
   induction C with
   | basic =>
-      simp only [toBasicSegments, reverseChain, disjoint_singleton_left, mem_singleton]
-      exact fun h ↦ huv (congrFun h 0)
+      simpa only [toBasicSegments, reverseChain, disjoint_singleton_left, mem_singleton]
+        using fun h ↦ huv (congrFun h 0)
   | @join x y z h₂ C ih =>
       have hyz : y ≠ z := (middle_not_boundary_colin h₂).2
       have hxy : x ≠ y := (middle_not_boundary_colin h₂).1
@@ -294,118 +263,6 @@ lemma avoidingSegmentSet_sub_right {X : Finset ℝ²} {A : Set ℝ²} {S : Segme
   rwa[← reverseSegment_openHull]
 
 
-
-
--- lemma segment_induction {A : Set ℝ²} {X : Finset ℝ²}
---     {f : Segment → Prop} (hBasic : ∀ {S}, S ∈ basicAvoidingSegmentSet X A → f S)
---     (hJoin : ∀ {u v w}, u ∈ X → v ∈ X → w ∈ X → colin u v w → f (toSegment u v) →
---     f (toSegment v w) → f (toSegment u w))
---     : ∀ {S : Segment}, S ∈ avoidingSegmentSet X A → f S := by
---   intro S hS
---   generalize Scard : (Finset.filter (fun p ↦ p ∈ openHull S) X).card = n
---   induction n using Nat.strong_induction_on generalizing S with
---   | h N hN =>
---   by_cases hN₀ : N = 0
---   · apply hBasic
---     simp only [basicAvoidingSegmentSet, mem_filter]
---     refine ⟨hS,?_⟩
---     simp [hN₀, filter_eq_empty_iff] at Scard
---     exact Scard
---   · rw [←Scard, ←ne_eq, Finset.card_ne_zero, filter_nonempty_iff] at hN₀
---     have ⟨x, ⟨hx, hxS⟩⟩ := hN₀
---     have hcolin : colin (S 0) x (S 1) :=
---       ⟨segmentSet_vertex_distinct (avoidingSegmentSet_sub hS), hxS⟩
---     convert hJoin (segmentSet_vertex (avoidingSegmentSet_sub hS) 0) hx
---         (segmentSet_vertex (avoidingSegmentSet_sub hS) 1) hcolin ?_ ?_
---     · exact segment_rfl.symm
---     · refine hN (Finset.filter (fun p ↦ p ∈ openHull (toSegment (S 0) x)) X).card ?_
---         (avoidingSegmentSet_sub_left hS hx hxS) rfl
---       sorry
---     · refine hN (Finset.filter (fun p ↦ p ∈ openHull (toSegment x (S 1))) X).card ?_
---         (avoidingSegmentSet_sub_right hS hx hxS) rfl
---       sorry
-
--- theorem segment_decomposition' {A : Set ℝ²} {X : Finset ℝ²} {S : Segment}
---     (hS : S ∈ avoidingSegmentSet X A) :
---     ∃ (C : Chain (S 0) (S 1)),
---     S = chainToBigSegment C ∧
---     (basicAvoidingSegmentSet X A).filter (fun s ↦ closedHull s ⊆ closedHull S)
---     = toBasicSegments C ∪ (toBasicSegments (reverseChain C)) := by
---   revert S
---   apply segment_induction
---   · intro S hS
---     use @Chain.basic (S 0) (S 1)
---     simp only [chainToBigSegment, Fin.isValue, segment_rfl,
---       toBasicSegments, reverseChain, true_and]
---     ext L
---     constructor
---     · simp only [mem_filter, Fin.isValue, mem_union, mem_singleton,
---         basicAvoidingSegmentSet, avoidingSegmentSet, segmentSet,
---         ne_eq, product_eq_sprod, mem_image, mem_filter, mem_product, Prod.exists,
---         Fin.isValue, and_imp, forall_exists_index]
---       intro a b  haX hbX hneq habL _ hLx hLS
---       simp only [←habL, ←List.ofFn_inj,List.ofFn_succ, Fin.isValue, Fin.succ_zero_eq_one,
---         List.ofFn_zero, List.cons.injEq, and_true, toSegment]
---       by_contra hc; push Not at hc
---       have hf : a ∈ openHull S ∨ b ∈ openHull S := by
---         rw [←habL] at hLS
---         rw [@or_iff_not_imp_left]
---         intro ha; by_contra hb
---         have haB : a ∈ boundary S := by
---           rw [boundary, Set.mem_sdiff]
---           refine ⟨hLS (corner_in_closedHull (i := ⟨0, by omega⟩)), ha⟩
---         have hbB : b ∈ boundary S := by
---           rw [boundary, Set.mem_sdiff]
---           refine ⟨hLS (corner_in_closedHull (i := ⟨1, by omega⟩)), hb⟩
--- simp only [boundary_seg (segmentSet_vertex_distinct (basicAvoidingSegmentSet_sub hS)),
---             coe_image, coe_univ, Set.image_univ, Set.mem_range] at hbB haB
---         have ⟨i, hai⟩ := haB
---         have ⟨j, hbj⟩ := hbB
---         fin_cases i <;> fin_cases j <;> (
---           simp only [Fin.zero_eta, Fin.isValue] at hai hbj
---           rw [←hai, ←hbj] at hc hneq
---           tauto
---         )
---       simp [basicAvoidingSegmentSet] at hS
---       cases' hf with haS hbS
---       · exact hS.2 _ haX haS
---       · exact hS.2 _ hbX hbS
---     · simp only [Fin.isValue, mem_union, mem_singleton, mem_filter]
---       rintro (hLS | hLS) <;> rw [hLS]
---       · simpa
---       · refine ⟨basicAvoidingSegmentSet_reverse hS,?_⟩
---         rw [←reverseSegment_closedHull]
---         rfl
-
---   · intro u v w huX hvX hwX hc ⟨C₁,⟨hSC₁,hC₁⟩⟩ ⟨C₂,⟨hSC₂,hC₂⟩⟩
---     use glueChains hc C₁ C₂
---     have haux {A₁ A₂ A₃ A₄ : Finset (Fin 2 → ℝ²)}
---       : (A₁ ∪ A₃) ∪ (A₄ ∪ A₂) = (A₁ ∪ A₂) ∪ (A₃ ∪ A₄) := by
---       simp only [←coe_inj, coe_union]; tauto_set
---     simp only [chainToBigSegment_glue, segment_rfl, reverseChain_glue,
---         basic_segments_glue, true_and, haux,
---         ←hC₁, ←hC₂]
---     ext L
---     simp [basicAvoidingSegmentSet]
---     constructor
---     · intro ⟨h , hLS⟩
---       cases' colin_sub hc hLS (h.2 _ hvX) with hLleft hLright
---       · left
---         exact ⟨h,hLleft⟩
---       · right
---         exact ⟨h,hLright⟩
---     · rintro (hL | hR)
---       · refine ⟨hL.1, subset_trans hL.2 (closedHull_convex ?_)⟩
---         intro i; fin_cases i
---         · exact corner_in_closedHull (i := ⟨0, by omega⟩)
---         · exact open_sub_closed _ hc.2
---       · refine ⟨hR.1, subset_trans hR.2 (closedHull_convex ?_)⟩
---         intro i; fin_cases i
---         · exact open_sub_closed _ hc.2
---         · exact corner_in_closedHull (i := ⟨1, by omega⟩)
-
-
-
 theorem segment_decomposition {A : Set ℝ²} {X : Finset ℝ²} {S : Segment}
     (hS : S ∈ avoidingSegmentSet X A) :
     ∃ (C : Chain (S 0) (S 1)),
@@ -443,13 +300,11 @@ theorem segment_decomposition {A : Set ℝ²} {X : Finset ℝ²} {S : Segment}
       · exact absurd (h0 ▸ h1) hLdif
     · rintro (hL | hL) <;> rw [hL]
       · refine ⟨?_, fun _ a ↦ a⟩
-        simp only [basicAvoidingSegmentSet, mem_filter]
-        exact ⟨hS,Scard⟩
+        simpa only [basicAvoidingSegmentSet, mem_filter] using ⟨hS,Scard⟩
       · rw [←reverseSegment]
         refine ⟨?_, by rw [reverseSegment_closedHull]⟩
         apply basicAvoidingSegmentSet_reverse
-        simp only [basicAvoidingSegmentSet, mem_filter]
-        exact ⟨hS,Scard⟩
+        simpa only [basicAvoidingSegmentSet, mem_filter] using ⟨hS,Scard⟩
   · have hEl : Finset.Nonempty (filter (fun p ↦ p ∈ openHull S) X) := by
       rw [← Finset.card_pos, Scard]
       exact Nat.zero_lt_of_ne_zero hN

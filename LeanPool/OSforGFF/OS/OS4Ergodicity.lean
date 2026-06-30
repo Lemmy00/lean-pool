@@ -116,6 +116,42 @@ def os4DoublePrimeClustering (m : ℝ) [Fact (0 < m)] : Prop :=
 
 /-! ## GFF Integrability Lemmas -/
 
+/-- The time-translated exponential equals the test-function-translated exponential
+    (pointwise in `ω`), via `timeTranslationDistribution_pairingℂ`. -/
+private lemma timeTranslated_exp_eq (s : ℝ) (f : TestFunctionℂ) :
+    (fun ω => Complex.exp (distributionPairingℂReal (timeTranslationDistribution s ω) f)) =
+    (fun ω => Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s) f))) := by
+  ext ω; rw [timeTranslationDistribution_pairingℂ]
+
+/-- The time-translated exponential is measurable. -/
+private lemma timeTranslated_exp_measurable (s : ℝ) (f : TestFunctionℂ) :
+    Measurable (fun ω => Complex.exp (distributionPairingℂReal
+      (timeTranslationDistribution s ω) f)) := by
+  rw [timeTranslated_exp_eq]
+  exact Complex.continuous_exp.measurable.comp (QFT.distributionPairingℂ_real_measurable _)
+
+/-- The time-translated exponential is strongly measurable. -/
+private lemma timeTranslated_exp_stronglyMeasurable (s : ℝ) (f : TestFunctionℂ) :
+    StronglyMeasurable (fun ω => Complex.exp (distributionPairingℂReal
+      (timeTranslationDistribution s ω) f)) :=
+  (timeTranslated_exp_measurable s f).stronglyMeasurable
+
+/-- The integral of a constant `c : ℂ` over `Icc 0 T` (with `T ≥ 0`) is `T * c`. -/
+private lemma setIntegral_const_Icc_zero {T : ℝ} (hT : 0 ≤ T) (c : ℂ) :
+    ∫ _s in Set.Icc (0 : ℝ) T, c = T * c := by
+  rw [MeasureTheory.setIntegral_const]
+  rw [show MeasureTheory.volume.real (Set.Icc (0 : ℝ) T) = T by
+    simp only [MeasureTheory.Measure.real, Real.volume_Icc, sub_zero]
+    exact ENNReal.toReal_ofReal hT]
+  rfl
+
+/-- A constant `ℂ`-valued function is integrable on `Icc 0 T`. -/
+private lemma integrableOn_const_Icc_zero (T : ℝ) (c : ℂ) :
+    MeasureTheory.IntegrableOn (fun _ : ℝ => c) (Set.Icc 0 T) MeasureTheory.volume := by
+  apply MeasureTheory.integrableOn_const
+  · simp only [Real.volume_Icc, sub_zero]; exact ENNReal.ofReal_ne_top
+  · simp [enorm]
+
 /-- The GFF exponential is integrable with respect to the GFF measure. -/
 lemma gff_exp_pairing_integrable (m : ℝ) [Fact (0 < m)] (f : TestFunctionℂ) :
     Integrable (fun ω => Complex.exp (distributionPairingℂReal ω f))
@@ -250,15 +286,10 @@ lemma gff_exp_L2_norm_constant (m : ℝ) [Fact (0 < m)] (f : TestFunctionℂ) (s
     ∫ ω, ‖Complex.exp (distributionPairingℂReal ω f)‖^2
       ∂(gaussianFreeFieldFree m).toMeasure := by
   let μ := (gaussianFreeFieldFree m).toMeasure
-  -- Step 1: Time translation duality ⟨T_s ω, f⟩ = ⟨ω, T_{-s} f⟩
-  have h_duality : ∀ ω, Complex.exp (distributionPairingℂReal (timeTranslationDistribution s ω) f)
-    =
-      Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s) f)) := fun ω =>
-    congrArg Complex.exp (timeTranslationDistribution_pairingℂ s ω f)
-  -- Step 2: Key identity z * conj(z) = ‖z‖² (both as real, and as ℂ via cast)
+  -- Key identity z * conj(z) = ‖z‖² (both as real, and as ℂ via cast)
   have h_norm_sq_real : ∀ z : ℂ, z * starRingEnd ℂ z = (‖z‖^2 : ℝ) := fun z => by
     rw [RCLike.mul_conj]; push_cast; rfl
-  -- Step 3: Product integral time-invariance (from OS2 via gff_exp_product_time_shift_invariant)
+  -- Product integral time-invariance (from OS2 via gff_exp_product_time_shift_invariant)
   have h_product_eq : ∫ ω, Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s)
     f)) *
          starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s)
@@ -266,7 +297,7 @@ lemma gff_exp_L2_norm_constant (m : ℝ) [Fact (0 < m)] (f : TestFunctionℂ) (s
       ∫ ω, Complex.exp (distributionPairingℂReal ω f) *
          starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) ∂μ :=
     gff_exp_product_time_shift_invariant m f f (-s)
-  -- Step 4: Rewrite LHS using duality
+  -- Rewrite LHS using duality
   have h_lhs_eq : ∫ ω, ‖Complex.exp (distributionPairingℂReal (timeTranslationDistribution s ω)
     f)‖^2 ∂μ =
       ∫ ω, ‖Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s) f))‖^2 ∂μ := by
@@ -314,16 +345,7 @@ lemma time_average_memLp_two (m : ℝ) [Fact (0 < m)] (f : TestFunctionℂ) (T :
       simp only [A]
       exact Complex.continuous_exp.comp (continuous_distributionPairingℂ_timeTranslation ω f)
     · intro s
-      have h_eq : (fun ω => Complex.exp (distributionPairingℂReal (timeTranslationDistribution s
-        ω) f)) =
-          (fun ω => Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s) f))) :=
-             by
-        ext ω; rw [timeTranslationDistribution_pairingℂ]
-      change StronglyMeasurable (fun ω => Complex.exp (distributionPairingℂReal
-        (timeTranslationDistribution s ω) f))
-      rw [h_eq]
-      exact (Complex.continuous_exp.measurable.comp (QFT.distributionPairingℂ_real_measurable
-        _)).stronglyMeasurable
+      exact timeTranslated_exp_stronglyMeasurable s f
   -- Measurability of the time average
   have h_avg_meas : AEStronglyMeasurable
       (fun ω => (1/T : ℂ) * ∫ s in Set.Icc 0 T, A s ω) μ := by
@@ -366,8 +388,7 @@ lemma gff_err_sq_integrable (m : ℝ) [Fact (0 < m)] (T : ℝ) (hT : T > 0) (f :
   have h_sq_int : Integrable (fun ω => ‖(1/T : ℂ) * (∫ s in Set.Icc (0 : ℝ) T,
     A s ω) - EA‖^2) μ := by
     have h_meas := h_diff_L2.1
-    rw [memLp_two_iff_integrable_sq_norm h_meas] at h_diff_L2
-    exact h_diff_L2
+    rwa [memLp_two_iff_integrable_sq_norm h_meas] at h_diff_L2
   -- Goal matches h_sq_int up to notation: smul ↔ mul, and ∫ ω' ... ↔ EA
   have h_EA : ∫ ω' : FieldConfiguration, Complex.exp (distributionPairingℂReal ω' f) ∂μ = EA := by
     simp only [EA, A]
@@ -661,19 +682,7 @@ lemma L2_time_average_variance_bound (m : ℝ) [Fact (0 < m)] (f : TestFunction�
       exact Complex.continuous_exp.comp (continuous_distributionPairingℂ_timeTranslation ω f)
     · -- ∀ s, StronglyMeasurable (A s)
       intro s
-      -- A s = fun ω => exp(⟨T_s ω, f⟩) = fun ω => exp(⟨ω, T_{-s} f⟩) by duality
-      have h_eq : (fun ω => Complex.exp (distributionPairingℂReal (timeTranslationDistribution s
-        ω) f)) =
-          (fun ω => Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s) f))) :=
-             by
-        ext ω; rw [timeTranslationDistribution_pairingℂ]
-      -- A s equals this rewritten function
-      change StronglyMeasurable (fun ω => Complex.exp (distributionPairingℂReal
-        (timeTranslationDistribution s ω) f))
-      rw [h_eq]
-      -- Now prove continuity of the rewritten function → StronglyMeasurable
-      exact (Complex.continuous_exp.measurable.comp (QFT.distributionPairingℂ_real_measurable
-        _)).stronglyMeasurable
+      exact timeTranslated_exp_stronglyMeasurable s f
   -- L² integrability on [0,T] × Ω (crucial for Fubini)
   -- Proof outline:
   -- 1. ∫∫|A(s,ω)|² d(vol|[0,T] × μ) = ∫_[0,T] (∫_Ω |A(s,ω)|² dμ) ds  (Tonelli)
@@ -702,16 +711,8 @@ lemma L2_time_average_variance_bound (m : ℝ) [Fact (0 < m)] (f : TestFunction�
   have h_slice_int : ∀ᵐ ω ∂μ, Integrable (fun s => A s ω) (volume.restrict (Set.Icc 0 T)) :=
     ae_of_all _ fun ω => (h_cont_s ω).continuousOn.integrableOn_compact isCompact_Icc
   -- Helper: A s is strongly measurable in ω for each s
-  have h_sm_slice : ∀ s, StronglyMeasurable (fun ω => A s ω) := by
-    intro s; simp only [A]
-    have h_eq : (fun ω => Complex.exp (distributionPairingℂReal
-        (timeTranslationDistribution s ω) f)) =
-        (fun ω => Complex.exp (distributionPairingℂReal ω
-        (timeTranslationSchwartzℂ (-s) f))) := by
-      ext ω; rw [timeTranslationDistribution_pairingℂ]
-    rw [h_eq]
-    exact (Complex.continuous_exp.measurable.comp
-      (QFT.distributionPairingℂ_real_measurable _)).stronglyMeasurable
+  have h_sm_slice : ∀ s, StronglyMeasurable (fun ω => A s ω) := fun s =>
+    timeTranslated_exp_stronglyMeasurable s f
   -- Fubini integrability for the covariance triple integral swap
   -- L² slices + continuity + measurability → triple product integrable
   have h_Fubini : Integrable (fun (x : FieldConfiguration × (ℝ × ℝ)) =>
@@ -766,6 +767,61 @@ lemma L2_time_average_variance_bound (m : ℝ) [Fact (0 < m)] (f : TestFunction�
 
 /-! ## Clustering Implies Covariance Decay -/
 
+/-- Single-shift covariance-decay bound: the workhorse for both sign branches of
+    `clustering_implies_covariance_decay`. For a nonnegative shift `t`, the clustering
+    bound (exponent `-6`) gives the `-3` covariance bound. -/
+private lemma clustering_decay_at (m : ℝ) [Fact (0 < m)] (f : TestFunctionℂ) (c_ff : ℝ)
+    (hc_ff_nonneg : c_ff ≥ 0)
+    (hc_ff : ∀ s : ℝ, s ≥ 0 →
+      ‖∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
+            distributionPairingℂReal (timeTranslationDistribution s ω) f)
+            ∂(gaussianFreeFieldFree m).toMeasure
+        - (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f))
+            ∂(gaussianFreeFieldFree m).toMeasure) *
+          (∫ ω, Complex.exp (distributionPairingℂReal ω f)
+            ∂(gaussianFreeFieldFree m).toMeasure)‖
+      ≤ c_ff * (1 + s)^(-(6 : ℝ)))
+    (t : ℝ) (ht : t ≥ 0) :
+    let μ := (gaussianFreeFieldFree m).toMeasure
+    let A := fun r ω => Complex.exp (distributionPairingℂReal (timeTranslationDistribution r ω) f)
+    let EA := ∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ
+    ‖∫ ω, A t ω * starRingEnd ℂ (A 0 ω) ∂μ - EA * starRingEnd ℂ EA‖ ≤
+      c_ff * (1 + t)^(-(3 : ℝ)) := by
+  intro μ A EA
+  have h_integrand_eq : ∀ ω, A t ω * starRingEnd ℂ (A 0 ω) =
+      Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
+                   distributionPairingℂReal (timeTranslationDistribution t ω) f) := by
+    intro ω
+    simp only [A]
+    rw [timeTranslationDistribution_zero]
+    rw [(Complex.exp_conj _).symm, distributionPairingℂ_real_conj, ← Complex.exp_add]
+    ring_nf
+  have h_const_eq : EA * starRingEnd ℂ EA =
+      (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) ∂μ) *
+      (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ) := by
+    simp only [EA]
+    rw [show starRingEnd ℂ (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ) =
+        ∫ ω, starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) ∂μ from integral_conj.symm]
+    have h_conj_exp : ∀ ω, starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) =
+        Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) := fun ω => by
+      rw [(Complex.exp_conj _).symm, distributionPairingℂ_real_conj]
+    simp_rw [h_conj_exp]
+    ring
+  have h_int_rw : ∫ ω, A t ω * starRingEnd ℂ (A 0 ω) ∂μ =
+      ∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
+            distributionPairingℂReal (timeTranslationDistribution t ω) f) ∂μ := by
+    congr 1 with ω; exact h_integrand_eq ω
+  calc ‖∫ ω, A t ω * starRingEnd ℂ (A 0 ω) ∂μ - EA * starRingEnd ℂ EA‖
+      = ‖∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
+            distributionPairingℂReal (timeTranslationDistribution t ω) f) ∂μ -
+          (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) ∂μ) *
+          (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ)‖ := by
+        rw [h_int_rw, h_const_eq]
+    _ ≤ c_ff * (1 + t)^(-(6:ℝ)) := hc_ff t ht
+    _ ≤ c_ff * (1 + t)^(-(3:ℝ)) := by
+        apply mul_le_mul_of_nonneg_left _ hc_ff_nonneg
+        exact Real.rpow_le_rpow_of_exponent_le (by linarith) (by norm_num : (-6 : ℝ) ≤ -3)
+
 /-- OS4'' clustering implies covariance decay with exponent -3. -/
 lemma clustering_implies_covariance_decay (m : ℝ) [Fact (0 < m)] (f : TestFunctionℂ)
     (h_cluster : os4DoublePrimeClustering m) :
@@ -788,64 +844,16 @@ lemma clustering_implies_covariance_decay (m : ℝ) [Fact (0 < m)] (f : TestFunc
   -- Handle both cases s ≥ u and s < u
   by_cases h_sign : s ≥ u
   · -- Case s ≥ u: |s - u| = s - u
-    have h_abs : |s - u| = s - u := abs_of_nonneg (sub_nonneg.mpr h_sign)
-    rw [h_abs]
-    have ht : s - u ≥ 0 := sub_nonneg.mpr h_sign
-    -- Rewrite A t ω * conj(A 0 ω) to match OS4'' clustering form
-    have h_integrand_eq : ∀ ω, A (s - u) ω * starRingEnd ℂ (A 0 ω) =
-        Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
-                     distributionPairingℂReal (timeTranslationDistribution (s - u) ω) f) := by
-      intro ω
-      simp only [A]
-      rw [timeTranslationDistribution_zero]
-      have h1 : starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) =
-          Complex.exp (starRingEnd ℂ (distributionPairingℂReal ω f)) := (Complex.exp_conj _).symm
-      rw [h1, distributionPairingℂ_real_conj, ← Complex.exp_add]
-      ring_nf
-    have h_const_eq : EA * starRingEnd ℂ EA =
-        (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) ∂μ) *
-        (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ) := by
-      simp only [EA]
-      have h_conj_int : starRingEnd ℂ (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ) =
-          ∫ ω, starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) ∂μ := integral_conj.symm
-      rw [h_conj_int]
-      have h_conj_exp : ∀ ω, starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) =
-          Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) := fun ω => by
-        rw [(Complex.exp_conj _).symm, distributionPairingℂ_real_conj]
-      simp_rw [h_conj_exp]
-      ring
-    have h_cluster_bound := hc_ff (s - u) ht
-    have h_int_rw : ∫ ω, A (s - u) ω * starRingEnd ℂ (A 0 ω) ∂μ =
-        ∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
-              distributionPairingℂReal (timeTranslationDistribution (s - u) ω) f) ∂μ := by
-      congr 1 with ω; exact h_integrand_eq ω
-    calc ‖∫ ω, A (s - u) ω * starRingEnd ℂ (A 0 ω) ∂μ - EA * starRingEnd ℂ EA‖
-        = ‖∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
-              distributionPairingℂReal (timeTranslationDistribution (s - u) ω) f) ∂μ -
-            (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) ∂μ) *
-            (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ)‖ := by
-          rw [h_int_rw, h_const_eq]
-      _ ≤ c_ff * (1 + (s - u))^(-(6:ℝ)) := h_cluster_bound
-      _ ≤ c_ff * (1 + (s - u))^(-(3:ℝ)) := by
-          apply mul_le_mul_of_nonneg_left _ hc_ff_nonneg
-          have h_base : 1 ≤ 1 + (s - u) := by linarith
-          exact Real.rpow_le_rpow_of_exponent_le h_base (by norm_num : (-6 : ℝ) ≤ -3)
+    rw [abs_of_nonneg (sub_nonneg.mpr h_sign)]
+    exact clustering_decay_at m f c_ff hc_ff_nonneg hc_ff (s - u) (sub_nonneg.mpr h_sign)
   · -- Case s < u: |s - u| = u - s
     push Not at h_sign
-    have h_abs : |s - u| = u - s := by rw [abs_sub_comm]; exact abs_of_nonneg (by linarith)
-    rw [h_abs]
-    have h_pos : u - s > 0 := by linarith
-    have h_nonneg : u - s ≥ 0 := le_of_lt h_pos
-    -- By norm conjugation symmetry: ‖X‖ = ‖conj(X)‖
-    -- Taking conjugate swaps A(s-u) and A(0), then use commutativity
+    rw [show |s - u| = u - s by rw [abs_sub_comm]; exact abs_of_nonneg (by linarith)]
+    have h_nonneg : u - s ≥ 0 := by linarith
+    -- By norm conjugation symmetry, swap A(s-u) and A(0), then apply stationarity with shift u - s
     have h_norm_eq : ‖∫ ω, A (s - u) ω * starRingEnd ℂ (A 0 ω) ∂μ - EA * starRingEnd ℂ EA‖ =
         ‖∫ ω, A 0 ω * starRingEnd ℂ (A (s - u) ω) ∂μ - EA * starRingEnd ℂ EA‖ := by
-      rw [← Complex.norm_conj, map_sub]
-      have h_ic : starRingEnd ℂ (∫ ω, A (s - u) ω * starRingEnd ℂ (A 0 ω) ∂μ) =
-          ∫ ω, starRingEnd ℂ (A (s - u) ω * starRingEnd ℂ (A 0 ω)) ∂μ :=
-        (integral_conj (𝕜 := ℂ)).symm
-      rw [h_ic]
-      -- conj(a * conj(b)) = conj(a) * b and conj(EA * conj(EA)) = conj(EA) * EA = EA * conj(EA)
+      rw [← Complex.norm_conj, map_sub, (integral_conj (𝕜 := ℂ)).symm]
       have h_int_eq : ∫ ω, starRingEnd ℂ (A (s - u) ω * starRingEnd ℂ (A 0 ω)) ∂μ =
           ∫ ω, A 0 ω * starRingEnd ℂ (A (s - u) ω) ∂μ := by
         congr 1 with ω
@@ -856,51 +864,11 @@ lemma clustering_implies_covariance_decay (m : ℝ) [Fact (0 < m)] (f : TestFunc
         ring
       rw [h_int_eq, h_const_eq']
     rw [h_norm_eq]
-    -- Use stationarity with shift (u - s): ∫ A(0) * conj(A(s-u)) = ∫ A(u-s) * conj(A(0))
     have h_stat2 := gff_product_expectation_stationarity m f 0 (s - u)
     simp only at h_stat2
-    have h_simp : (0 : ℝ) - (s - u) = u - s := by ring
-    rw [h_simp] at h_stat2
+    rw [show (0 : ℝ) - (s - u) = u - s by ring] at h_stat2
     rw [h_stat2]
-    -- Now we can apply the s ≥ u case machinery with t = u - s ≥ 0
-    have h_integrand_eq : ∀ ω, A (u - s) ω * starRingEnd ℂ (A 0 ω) =
-        Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
-                     distributionPairingℂReal (timeTranslationDistribution (u - s) ω) f) := by
-      intro ω
-      simp only [A]
-      rw [timeTranslationDistribution_zero]
-      have h1 : starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) =
-          Complex.exp (starRingEnd ℂ (distributionPairingℂReal ω f)) := (Complex.exp_conj _).symm
-      rw [h1, distributionPairingℂ_real_conj, ← Complex.exp_add]
-      ring_nf
-    have h_const_eq : EA * starRingEnd ℂ EA =
-        (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) ∂μ) *
-        (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ) := by
-      simp only [EA]
-      have h_conj_int : starRingEnd ℂ (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ) =
-          ∫ ω, starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) ∂μ := integral_conj.symm
-      rw [h_conj_int]
-      have h_conj_exp : ∀ ω, starRingEnd ℂ (Complex.exp (distributionPairingℂReal ω f)) =
-          Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) := fun ω => by
-        rw [(Complex.exp_conj _).symm, distributionPairingℂ_real_conj]
-      simp_rw [h_conj_exp]
-      ring
-    have h_cluster_bound := hc_ff (u - s) h_nonneg
-    have h_int_rw : ∫ ω, A (u - s) ω * starRingEnd ℂ (A 0 ω) ∂μ =
-        ∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
-              distributionPairingℂReal (timeTranslationDistribution (u - s) ω) f) ∂μ := by
-      congr 1 with ω; exact h_integrand_eq ω
-    calc ‖∫ ω, A (u - s) ω * starRingEnd ℂ (A 0 ω) ∂μ - EA * starRingEnd ℂ EA‖
-        = ‖∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f) +
-              distributionPairingℂReal (timeTranslationDistribution (u - s) ω) f) ∂μ -
-            (∫ ω, Complex.exp (distributionPairingℂReal ω (conjSchwartz f)) ∂μ) *
-            (∫ ω, Complex.exp (distributionPairingℂReal ω f) ∂μ)‖ := by
-          rw [h_int_rw, h_const_eq]
-      _ ≤ c_ff * (1 + (u - s))^(-(6:ℝ)) := h_cluster_bound
-      _ ≤ c_ff * (1 + (u - s))^(-(3:ℝ)) := by
-          apply mul_le_mul_of_nonneg_left _ hc_ff_nonneg
-          have h_base : 1 ≤ 1 + (u - s) := by linarith
-          exact Real.rpow_le_rpow_of_exponent_le h_base (by norm_num : (-6 : ℝ) ≤ -3)
+    exact clustering_decay_at m f c_ff hc_ff_nonneg hc_ff (u - s) h_nonneg
 
 /-- The norm of the GFF covariance is integrable on [0,T] for each fixed first argument.
     Uses gff_covariance_norm_integrableOn_slice_axiom to avoid expensive type unification.
@@ -1030,11 +998,6 @@ lemma variance_decay_from_clustering (m : ℝ) [Fact (0 < m)] (f : TestFunction�
       congr 2
       -- Goal: (1/T) * ∫(A - EA) = (1/T) * ∫A - EA
       -- Step 1: Split the integral: ∫(A - EA) = ∫A - ∫EA
-      have h_EA_int : MeasureTheory.IntegrableOn (fun _ : ℝ => EA) (Set.Icc 0 T)
-        MeasureTheory.volume := by
-        apply MeasureTheory.integrableOn_const
-        · simp only [Real.volume_Icc, sub_zero]; exact ENNReal.ofReal_ne_top
-        · simp [enorm]
       have h_A_int : MeasureTheory.IntegrableOn (fun s => A s ω) (Set.Icc 0 T) MeasureTheory.volume
         := by
         -- A s ω = exp(⟨T_s ω, f⟩) is continuous in s (bounded on compact [0,T])
@@ -1042,18 +1005,10 @@ lemma variance_decay_from_clustering (m : ℝ) [Fact (0 < m)] (f : TestFunction�
         exact Complex.continuous_exp.comp (continuous_distributionPairingℂ_timeTranslation ω f)
       have h_split : ∫ s in Set.Icc (0 : ℝ) T, (A s ω - EA) =
           (∫ s in Set.Icc (0 : ℝ) T, A s ω) - ∫ s in Set.Icc (0 : ℝ) T, EA :=
-        MeasureTheory.integral_sub h_A_int h_EA_int
-      -- Step 2: Compute ∫_{[0,T]} EA = T * EA
-      have h_const_int : ∫ s in Set.Icc (0 : ℝ) T, EA = T * EA := by
-        rw [MeasureTheory.setIntegral_const]
-        have h_vol : MeasureTheory.volume.real (Set.Icc (0 : ℝ) T) = T := by
-          simp only [MeasureTheory.Measure.real, Real.volume_Icc, sub_zero]
-          exact ENNReal.toReal_ofReal (le_of_lt hT)
-        rw [h_vol]; rfl
+        MeasureTheory.integral_sub h_A_int (integrableOn_const_Icc_zero T EA)
       -- Step 3: Algebra: (1/T) * (∫A - T*EA) = (1/T)*∫A - EA
-      rw [h_split, h_const_int]
-      have hT_ne : T ≠ 0 := ne_of_gt hT
-      have hT_cne : (T : ℂ) ≠ 0 := by exact_mod_cast hT_ne
+      rw [h_split, setIntegral_const_Icc_zero (le_of_lt hT) EA]
+      have hT_cne : (T : ℂ) ≠ 0 := by exact_mod_cast ne_of_gt hT
       field_simp [hT_cne]
     simp_rw [h_goal_eq]
     calc ∫ ω, ‖(1 / T) * (∫ s in Set.Icc (0 : ℝ) T, A s ω) - EA‖^2 ∂μ
@@ -1211,22 +1166,13 @@ theorem OS4'_implies_OS4 (m : ℝ) [Fact (0 < m)] :
       let exp_s := fun s => Complex.exp (distributionPairingℂReal (timeTranslationDistribution s
         ω) (f j))
       let mean := ∫ ω', Complex.exp (distributionPairingℂReal ω' (f j)) ∂μ
-      have h_vol_fin : volume (Set.Icc (0 : ℝ) T) ≠ ⊤ := by
-        simp only [Real.volume_Icc, sub_zero, ne_eq]; exact ENNReal.ofReal_ne_top
-      have h_const : ∫ s in Set.Icc (0 : ℝ) T, mean = T * mean := by
-        rw [MeasureTheory.setIntegral_const]
-        have h_vol : MeasureTheory.volume.real (Set.Icc (0 : ℝ) T) = T := by
-          simp only [MeasureTheory.Measure.real, Real.volume_Icc, sub_zero]
-          exact ENNReal.toReal_ofReal (le_of_lt hT)
-        rw [h_vol]; rfl
-      have h_exp_cont : Continuous exp_s :=
-        Complex.continuous_exp.comp (continuous_distributionPairingℂ_timeTranslation ω (f j))
-      have h_exp_int : MeasureTheory.IntegrableOn exp_s (Set.Icc 0 T) := h_exp_cont.integrableOn_Icc
-      have h_const_int : MeasureTheory.IntegrableOn (fun _ => mean) (Set.Icc 0 T) :=
-        MeasureTheory.integrableOn_const h_vol_fin
+      have h_exp_int : MeasureTheory.IntegrableOn exp_s (Set.Icc 0 T) :=
+        (Complex.continuous_exp.comp
+          (continuous_distributionPairingℂ_timeTranslation ω (f j))).integrableOn_Icc
       have h_sub : ∫ s in Set.Icc (0 : ℝ) T, (exp_s s - mean) =
           (∫ s in Set.Icc (0 : ℝ) T, exp_s s) - T * mean := by
-        rw [MeasureTheory.integral_sub h_exp_int h_const_int, h_const]
+        rw [MeasureTheory.integral_sub h_exp_int (integrableOn_const_Icc_zero T mean),
+          setIntegral_const_Icc_zero (le_of_lt hT) mean]
       simp only [exp_s, mean] at h_sub
       rw [h_sub]
       have hT_ne : (T : ℂ) ≠ 0 := by simp only [ne_eq, Complex.ofReal_eq_zero]; exact ne_of_gt hT
@@ -1252,16 +1198,8 @@ theorem OS4'_implies_OS4 (m : ℝ) [Fact (0 < m)] :
       let EA_j := ∫ ω', Complex.exp (distributionPairingℂReal ω' (f j)) ∂μ
       have h_cont : ∀ ω, Continuous (fun s => A_j s ω) := fun ω =>
         Complex.continuous_exp.comp (continuous_distributionPairingℂ_timeTranslation ω (f j))
-      have h_meas_s : ∀ s, Measurable (A_j s) := by
-        intro s
-        have h_eq : (fun ω => Complex.exp (distributionPairingℂReal (timeTranslationDistribution s
-          ω) (f j))) =
-            (fun ω => Complex.exp (distributionPairingℂReal ω (timeTranslationSchwartzℂ (-s) (f
-               j)))) := by
-          ext ω; rw [timeTranslationDistribution_pairingℂ]
-        change Measurable (A_j s)
-        simp only [A_j]; rw [h_eq]
-        exact Complex.continuous_exp.measurable.comp (QFT.distributionPairingℂ_real_measurable _)
+      have h_meas_s : ∀ s, Measurable (A_j s) := fun s =>
+        timeTranslated_exp_measurable s (f j)
       exact OSforGFF.gff_time_integral_aestronglyMeasurable_proved μ A_j EA_j T h_cont h_meas_s
     -- LHS integrability: ‖∑ z_j * Err_j‖² is bounded by Z * ∑ ‖Err_j‖² (via h_cs)
     have h_weighted_int : Integrable (fun ω => ‖∑ j, z j * Err j T ω‖^2) μ := by

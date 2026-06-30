@@ -144,8 +144,7 @@ private lemma integrable_pow_mul_exp_neg_mul_sq (k : ℕ) {b : ℝ} (hb : 0 < b)
     rwa [div_le_iff₀ hfact_pos, mul_comm] at h
   -- Step 2: |x| ≤ (b/2)·x² + 1/(2b) by completing the square
   have hquad : |x| ≤ b / 2 * x ^ 2 + 1 / (2 * b) := by
-    have heq : b / 2 * x ^ 2 + 1 / (2 * b) = (b ^ 2 * x ^ 2 + 1) / (2 * b) := by
-      field_simp
+    have heq : b / 2 * x ^ 2 + 1 / (2 * b) = (b ^ 2 * x ^ 2 + 1) / (2 * b) := by field_simp
     rw [heq, le_div_iff₀ (by positivity : (0 : ℝ) < 2 * b)]
     nlinarith [sq_abs x, sq_nonneg (b * |x| - 1)]
   -- Step 3: Factor exp(-b·x²) = exp(-(b/2)·x²) · exp(-(b/2)·x²) and combine
@@ -159,8 +158,7 @@ private lemma integrable_pow_mul_exp_neg_mul_sq (k : ℕ) {b : ℝ} (hb : 0 < b)
       ≤ ↑k.factorial * Real.exp (|x|) * Real.exp (-(b / 2) * x ^ 2) :=
         mul_le_mul_of_nonneg_right hpow (Real.exp_pos _).le
     _ = ↑k.factorial * (Real.exp (|x|) * Real.exp (-(b / 2) * x ^ 2)) := by ring
-    _ = ↑k.factorial * Real.exp (|x| + -(b / 2) * x ^ 2) := by
-        rw [← Real.exp_add]
+    _ = ↑k.factorial * Real.exp (|x| + -(b / 2) * x ^ 2) := by rw [← Real.exp_add]
     _ ≤ ↑k.factorial * Real.exp (1 / (2 * b)) := by
         apply mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg' _)
         exact Real.exp_le_exp.mpr (by linarith)
@@ -433,8 +431,7 @@ private theorem J_succ_succ (n m : ℕ) : J (n + 1) (m + 1) = (↑(n + 1) : ℝ)
   simp_rw [h_rw, integral_const_mul]
 
 /-- Symmetry of the J integral. -/
-private theorem J_comm (n m : ℕ) : J n m = J m n := by
-  unfold J; congr 1; ext x; ring
+private theorem J_comm (n m : ℕ) : J n m = J m n := by unfold J; congr 1; ext x; ring
 
 /-- Base case: `J(0, 0) = √(2π)`. -/
 private theorem J_zero_zero : J 0 0 = Real.sqrt (2 * Real.pi) := by
@@ -604,13 +601,6 @@ noncomputable def gaussianSchwartz : SchwartzMap ℝ ℝ where
     rw [hrw]
     exact hbound x
 
-/-- Iterated derivCLM agrees pointwise with iterated deriv on any Schwartz function. -/
-private lemma derivCLM_iterate_apply (n : ℕ) (g : SchwartzMap ℝ ℝ) (x : ℝ) :
-    (⇑(SchwartzMap.derivCLM ℝ ℝ))^[n] g x = deriv^[n] (⇑g) x := by
-  induction n generalizing g with
-  | zero => rfl
-  | succ n ih => exact ih _
-
 /-- `x ^ k * exp(-x²/2)` is a Schwartz function, proved by iterating multiplication by x
     via `SchwartzMap.smulLeftCLM`.
 -/
@@ -657,8 +647,7 @@ theorem hermiteFunction_schwartz (n : ℕ) :
       Polynomial.eval_C, Polynomial.eval_X, mul_comm x (Real.sqrt 2)]
   rw [← hQeval]
   -- Handle exp argument and associativity: c * (Q * exp₁) = c * Q * exp₂
-  have hexp : Real.exp (-(x ^ 2 / 2)) = Real.exp (-(x ^ 2) / 2) := by
-    congr 1; ring
+  have hexp : Real.exp (-(x ^ 2 / 2)) = Real.exp (-(x ^ 2) / 2) := by congr 1; ring
   rw [hexp, mul_assoc]
 
 /-! ### Raising/Lowering Operators and Seminorm Bounds
@@ -675,17 +664,6 @@ private lemma normConst_pos (n : ℕ) : 0 < hermiteFunctionNormConst n := by
   unfold hermiteFunctionNormConst
   exact Real.sqrt_pos.mpr (inv_pos.mpr (mul_pos
     (Nat.cast_pos.mpr n.factorial_pos) (Real.sqrt_pos.mpr Real.pi_pos)))
-
-/-- Normalization constant is non-negative. -/
-private lemma normConst_nonneg (n : ℕ) : 0 ≤ hermiteFunctionNormConst n :=
-  le_of_lt (normConst_pos n)
-
-/-- Square of normalization constant: cₙ² = (n!·√π)⁻¹ -/
-private lemma normConst_sq (n : ℕ) :
-    hermiteFunctionNormConst n * hermiteFunctionNormConst n =
-    (↑n.factorial * Real.sqrt Real.pi)⁻¹ := by
-  unfold hermiteFunctionNormConst
-  exact Real.mul_self_sqrt (inv_nonneg.mpr (mul_nonneg (Nat.cast_nonneg' _) (Real.sqrt_nonneg _)))
 
 /-- Normalization constant relation: cₙ = √(n+1) · c_{n+1} -/
 private lemma normConst_succ (n : ℕ) :
@@ -719,15 +697,6 @@ lemma hermiteR_recurrence_zero (t : ℝ) :
     t * (hermiteR 0).eval t = (hermiteR 1).eval t := by
   simp [hermiteR, hermite_zero, hermite_succ, Polynomial.eval_X,
     Polynomial.map_X]
-
-/-- x·ψₙ expressed using normConst and hermiteR, factoring out the exponential. -/
-private lemma mul_x_hermiteFunction_aux (n : ℕ) (x : ℝ) :
-    x * hermiteFunction n x =
-    hermiteFunctionNormConst n *
-    (x * (hermiteR n).eval (x * Real.sqrt 2)) *
-    Real.exp (-(x ^ 2) / 2) := by
-  unfold hermiteFunction
-  ring
 
 /-- Key coefficient identity: c_n / √2 = √((n+1)/2) · c_{n+1}.
     Proof: c_n = √(n+1) · c_{n+1} (normConst_succ), so
@@ -769,8 +738,7 @@ theorem mul_x_hermiteFunction (n : ℕ) (x : ℝ) :
   set t := x * Real.sqrt 2 with ht_def
   set e := Real.exp (-(x ^ 2) / 2) with he_def
   -- Express x as t/√2
-  have hx_eq : x = t / Real.sqrt 2 := by
-    rw [ht_def, mul_div_cancel_right₀ x h2ne]
+  have hx_eq : x = t / Real.sqrt 2 := by rw [ht_def, mul_div_cancel_right₀ x h2ne]
   cases n with
   | zero =>
     -- n = 0: second term vanishes since √(0/2) = 0
@@ -841,8 +809,7 @@ theorem deriv_hermiteFunction (n : ℕ) (x : ℝ) :
   set t := x * Real.sqrt 2 with ht_def
   set e := Real.exp (-(x ^ 2) / 2) with he_def
   -- Express x as t/√2
-  have hx_eq : x = t / Real.sqrt 2 := by
-    rw [ht_def, mul_div_cancel_right₀ x h2ne]
+  have hx_eq : x = t / Real.sqrt 2 := by rw [ht_def, mul_div_cancel_right₀ x h2ne]
   -- Compute HasDerivAt for the polynomial part: chain rule
   -- H_n(u * √2) has derivative √2 * H_n'(u * √2) = √2 * (derivative H_n).eval(u * √2)
   have hpoly_hasderiv : HasDerivAt (fun u => (hermiteR n).eval (u * Real.sqrt 2))
@@ -873,8 +840,7 @@ theorem deriv_hermiteFunction (n : ℕ) (x : ℝ) :
       (Real.sqrt 2 * (Polynomial.derivative (hermiteR n)).eval (x * Real.sqrt 2) * e +
        (hermiteR n).eval (x * Real.sqrt 2) * (-x * e)) x := by
     have h := hpoly_hasderiv.mul hexp_hasderiv
-    rw [he_def] at h
-    exact h
+    rwa [he_def] at h
   -- Compute HasDerivAt for the full hermiteFunction = c_n * (poly * exp)
   have hfn_eq : hermiteFunction n = fun u =>
       hermiteFunctionNormConst n * ((hermiteR n).eval (u * Real.sqrt 2) * Real.exp (-(u ^ 2) / 2))
@@ -890,8 +856,7 @@ theorem deriv_hermiteFunction (n : ℕ) (x : ℝ) :
     -- n = 0: derivative H_0 = 0, so deriv = c_0 * (0 - x * H_0(t)) * e = -x * ψ_0
     simp only [Nat.cast_zero, zero_div, Real.sqrt_zero, zero_mul, zero_sub, Nat.zero_sub]
     -- derivative of hermiteR 0 is 0
-    have hd0 : Polynomial.derivative (hermiteR 0) = 0 := by
-      simp [hermiteR, hermite_zero]
+    have hd0 : Polynomial.derivative (hermiteR 0) = 0 := by simp [hermiteR, hermite_zero]
     rw [hd0, Polynomial.eval_zero, mul_zero, zero_mul, zero_add]
     -- Need: c_0 * (H_0(t) * (-x * e)) = -(√(1/2) * (c_1 * H_1(t) * e))
     unfold hermiteFunction
@@ -900,8 +865,7 @@ theorem deriv_hermiteFunction (n : ℕ) (x : ℝ) :
     simp only [ht_simp]
     have hrec := hermiteR_recurrence_zero t
     set e' := Real.exp (-(t / Real.sqrt 2) ^ 2 / 2) with he'_def
-    have he_eq : e = e' := by
-      rw [he_def, he'_def]; congr 1; rw [hx_eq]
+    have he_eq : e = e' := by rw [he_def, he'_def]; congr 1; rw [hx_eq]
     rw [he_eq]
     have lhs_eq : hermiteFunctionNormConst 0 *
       ((hermiteR 0).eval t * (-(t / Real.sqrt 2) * e')) =
@@ -918,8 +882,7 @@ theorem deriv_hermiteFunction (n : ℕ) (x : ℝ) :
     rw [hx_eq]
     simp only [ht_simp]
     set e' := Real.exp (-(t / Real.sqrt 2) ^ 2 / 2) with he'_def
-    have he_eq : e = e' := by
-      rw [he_def, he'_def]; congr 1; rw [hx_eq]
+    have he_eq : e = e' := by rw [he_def, he'_def]; congr 1; rw [hx_eq]
     rw [he_eq]
     have key1 := normConst_mul_div_sqrt2 n
     have key2 := normConst_div_sqrt2 (n + 1)
@@ -959,14 +922,13 @@ theorem deriv_hermiteFunction (n : ℕ) (x : ℝ) :
 
 /-- Hermite function squared is integrable. -/
 private lemma hermiteFunction_sq_integrable (j : ℕ) :
-    Integrable (fun x => hermiteFunction j x * hermiteFunction j x) volume := by
-  exact (hermiteFunction_memLp j).integrable_mul (hermiteFunction_memLp j)
+    Integrable (fun x => hermiteFunction j x * hermiteFunction j x) volume :=
+  (hermiteFunction_memLp j).integrable_mul (hermiteFunction_memLp j)
 
 /-- L² norm squared of ψ_n equals 1, from orthonormality. -/
 private lemma hermiteFunction_l2_sq (j : ℕ) :
     ∫ x, hermiteFunction j x * hermiteFunction j x = 1 := by
-  have := hermiteFunction_orthonormal j j
-  simp only [ite_true] at this; exact this
+  simpa using hermiteFunction_orthonormal j j
 
 /-- The L² integral of (ψₙ')² equals (2n+1)/2, from the derivative identity and
 orthonormality. -/
@@ -1053,13 +1015,6 @@ private lemma schwartz_tendsto_atBot (φ : SchwartzMap ℝ ℝ) :
   rw [cocompact_eq_atBot_atTop] at hza
   exact hza.mono_left le_sup_left
 
-/-- A Schwartz function on ℝ tends to 0 at atTop. -/
-private lemma schwartz_tendsto_atTop (φ : SchwartzMap ℝ ℝ) :
-    Filter.Tendsto (fun x => φ x) Filter.atTop (nhds 0) := by
-  have hza := ZeroAtInftyContinuousMapClass.zero_at_infty φ
-  rw [cocompact_eq_atBot_atTop] at hza
-  exact hza.mono_left le_sup_right
-
 /-- ψₙ(x)² → 0 as x → -∞. -/
 private lemma hermiteFunction_sq_tendsto_atBot (n : ℕ) :
     Filter.Tendsto (fun x => hermiteFunction n x * hermiteFunction n x)
@@ -1069,16 +1024,6 @@ private lemma hermiteFunction_sq_tendsto_atBot (n : ℕ) :
       fun x => φ x * φ x := by ext x; rw [← hφ x]
   rw [heq, show (0 : ℝ) = 0 * 0 from (mul_zero 0).symm]
   exact (schwartz_tendsto_atBot φ).mul (schwartz_tendsto_atBot φ)
-
-/-- ψₙ(x)² → 0 as x → +∞. -/
-private lemma hermiteFunction_sq_tendsto_atTop (n : ℕ) :
-    Filter.Tendsto (fun x => hermiteFunction n x * hermiteFunction n x)
-      Filter.atTop (nhds 0) := by
-  obtain ⟨φ, hφ⟩ := hermiteFunction_schwartz n
-  have heq : (fun x => hermiteFunction n x * hermiteFunction n x) =
-      fun x => φ x * φ x := by ext x; rw [← hφ x]
-  rw [heq, show (0 : ℝ) = 0 * 0 from (mul_zero 0).symm]
-  exact (schwartz_tendsto_atTop φ).mul (schwartz_tendsto_atTop φ)
 
 /-- Agmon-type sup bound: |ψₙ(x)| grows at most polynomially in n.
     Uses FTC + Cauchy-Schwarz + orthonormality + derivative identity:
@@ -1098,8 +1043,7 @@ theorem hermiteFunction_sup_bound :
   have hderiv : ∀ t ∈ Set.Iic a, HasDerivAt f (f' t) t := by
     intro t _
     have := hasDerivAt_hermiteFunction_sq n t
-    simp only [hf'_def, mul_assoc] at this ⊢
-    exact this
+    simpa only [hf'_def, mul_assoc] using this
   have hf'_int : IntegrableOn f' (Set.Iic a) volume :=
     ((integrable_hermiteFunction_mul_deriv n).const_mul 2).integrableOn
   have htend : Filter.Tendsto f Filter.atBot (nhds 0) :=
@@ -1179,8 +1123,7 @@ theorem hermiteFunction_sup_bound :
   have h1n_pos : (0 : ℝ) < 1 + ↑n := by positivity
   have h1n_nonneg : (0 : ℝ) ≤ 1 + ↑n := le_of_lt h1n_pos
   -- |f|² = f * f
-  have habs_sq : |hermiteFunction n a| ^ 2 ≤ 2 * (1 + ↑n) := by
-    rw [sq_abs, sq]; exact h_sq_le
+  have habs_sq : |hermiteFunction n a| ^ 2 ≤ 2 * (1 + ↑n) := by rw [sq_abs, sq]; exact h_sq_le
   -- |f| ≤ √(2*(1+n))
   have h_abs_le : |hermiteFunction n a| ≤ Real.sqrt (2 * (1 + ↑n)) := by
     rw [← Real.sqrt_sq (abs_nonneg _)]
@@ -1582,36 +1525,6 @@ private lemma integral_f_xpow_gaussian_zero
     have hR_zero_poly : R = 0 := by simp [hR_def, hQ_const, pow_zero, mul_one]
     simp [hR_zero_poly]
 
-private lemma integral_f_poly_gaussian_zero
-    (f : ℝ → ℝ) (hf : MemLp f 2 volume)
-    (horth : ∀ n, ∫ x, f x * hermiteFunction n x = 0)
-    (P : ℝ[X]) :
-    ∫ x, f x * (P.eval x * Real.exp (-(x ^ 2 / 2))) = 0 := by
-  induction P using Polynomial.induction_on' with
-  | add p q hp hq =>
-    have h_split : (fun x => f x * ((p + q).eval x * Real.exp (-(x ^ 2 / 2)))) =
-        (fun x => f x * (p.eval x * Real.exp (-(x ^ 2 / 2))) +
-                   f x * (q.eval x * Real.exp (-(x ^ 2 / 2)))) := by
-      ext x; simp [Polynomial.eval_add, add_mul, mul_add]
-    rw [h_split]
-    have h_int_poly : ∀ (r : ℝ[X]),
-        Integrable (fun x => f x * (r.eval x * Real.exp (-(x ^ 2 / 2)))) volume := by
-      intro r
-      obtain ⟨φ, hφ⟩ := poly_mul_gaussian_schwartz r
-      have hrG : MemLp (fun x => r.eval x * Real.exp (-(x ^ 2 / 2))) 2 volume :=
-        MemLp.ae_eq (Filter.Eventually.of_forall hφ) (φ.memLp 2 volume)
-      refine (L2.integrable_inner (𝕜 := ℝ) (MemLp.toLp f hf) (MemLp.toLp _ hrG)).congr ?_
-      filter_upwards [MemLp.coeFn_toLp hf, MemLp.coeFn_toLp hrG] with x hfx hrGx
-      rw [hfx, hrGx, real_inner_eq_re_inner ℝ, RCLike.inner_apply', conj_trivial,
-        RCLike.re_to_real]
-    rw [integral_add (h_int_poly p) (h_int_poly q), hp, hq, add_zero]
-  | monomial k a =>
-    simp only [Polynomial.eval_monomial]
-    have h_rw : (fun x => f x * (a * x ^ k * Real.exp (-(x ^ 2 / 2)))) =
-        fun x => a * (f x * (x ^ k * Real.exp (-(x ^ 2 / 2)))) := by
-      ext x; ring
-    rw [h_rw, integral_const_mul, integral_f_xpow_gaussian_zero f hf horth k, mul_zero]
-
 /-  Phase 2-3: Conclude f = 0 a.e. from moment vanishing. -/
 
 /-- g := f · exp(-x²/2) is integrable when f ∈ L² (by Cauchy-Schwarz). -/
@@ -1672,14 +1585,12 @@ private lemma integrable_g_mul_exp_linear
     simp only [norm_mul, Real.norm_eq_abs, abs_of_pos hexp1, abs_of_pos hexp2,
       abs_of_pos hexp3, abs_abs]
     calc |f x| * Real.exp (-(x ^ 2 / 2)) * Real.exp (c * |x|)
-        = |f x| * Real.exp (-(x ^ 2 / 2) + c * |x|) := by
-          rw [mul_assoc, ← Real.exp_add]
+        = |f x| * Real.exp (-(x ^ 2 / 2) + c * |x|) := by rw [mul_assoc, ← Real.exp_add]
       _ ≤ |f x| * Real.exp (c ^ 2 + -(x ^ 2 / 4)) := by
           apply mul_le_mul_of_nonneg_left _ (abs_nonneg _)
           apply Real.exp_le_exp_of_le
           nlinarith [sq_nonneg (|x| / 2 - c), sq_abs x]
-      _ = Real.exp (c ^ 2) * (|f x| * Real.exp (-(x ^ 2 / 4))) := by
-          rw [Real.exp_add]; ring
+      _ = Real.exp (c ^ 2) * (|f x| * Real.exp (-(x ^ 2 / 4))) := by rw [Real.exp_add]; ring
 
 /-- The L^1 Fourier transform of g(x) = f(x) exp(-x^2/2) vanishes when all
     polynomial moments of g are zero. Uses DCT with partial sums of exp.
@@ -1901,8 +1812,7 @@ private theorem hermiteFunction_complete_proof :
 theorem hermiteFunction_complete :
     ∀ f : ℝ → ℝ, MemLp f 2 volume →
     (∀ n, ∫ x, f x * hermiteFunction n x = 0) →
-    f =ᵐ[volume] 0 :=
-  hermiteFunction_complete_proof
+    f =ᵐ[volume] 0 := hermiteFunction_complete_proof
 
 /-! ## Multi-dimensional Hermite Functions
 

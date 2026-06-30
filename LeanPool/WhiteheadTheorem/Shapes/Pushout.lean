@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 
 Imported Lean Pool material for `LeanPool.WhiteheadTheorem.Shapes.Pushout`.
 -/
--- import Mathlib.Topology.Category.TopCat.Limits.Pullbacks  -- does not contain pushouts
 
 /-!
 TODO:
@@ -83,7 +82,6 @@ lemma eq_inl_or_eq_inr_of_mem_pushout (a : (pushout f g).carrier) :
     ext x : 1
     change some ((f ≫ pushout.inl f g) x) = some ((g ≫ pushout.inr f g) x)
     rw [pushout.condition]
-  -- let d : pushout f g ⟶ A' := pushout.desc inl' inr' w'
   let d1 : pushout f g ⟶ A' := homToDiscreteSpaceOfFun fun b ↦ some b
   let d2 : pushout f g ⟶ A' := homToDiscreteSpaceOfFun fun b ↦ if b = a then none else some b
   by_contra! h
@@ -184,9 +182,7 @@ lemma pushoutInr_neq_pushoutInr_of_mem_compl_range_of_mem_range :
       simp only [Set.mem_range, not_exists, dite_eq_ite, ite_not, hom_ofHom, ne_eq, pZ, B]
       simp_all only [Set.mem_compl_iff, Set.mem_range, not_exists, ContinuousMap.coe_mk,
         exists_false, ↓reduceIte, ULift.up.injEq, Bool.true_eq_false, not_false_eq_true, B]
-    have {A B : Type u} {f : A → B} {a1 a2 : A} (h : f a1 ≠ f a2) : a1 ≠ a2 :=
-      fun a ↦ h (congrArg f a)
-    exact this p_neq
+    exact fun heq ↦ p_neq (congrArg pYZ heq)
 
 /-- TODO: re-use the code in `pushoutInr_neq_pushoutInr_of_mem_compl_range_of_mem_range` -/
 lemma pushoutInr_neq_pushoutInl_of_mem_compl_range :
@@ -220,9 +216,7 @@ lemma pushoutInr_neq_pushoutInl_of_mem_compl_range :
       change (pushout.inr f g ≫ pYZ).hom z ≠ (pushout.inl f g ≫ pYZ).hom y
       rw [hl, hr]
       decide
-    have {A B : Type u} {f : A → B} {a1 a2 : A} (h : f a1 ≠ f a2) : a1 ≠ a2 :=
-      fun a ↦ h (congrArg f a)
-    exact this p_neq
+    exact fun heq ↦ p_neq (congrArg pYZ heq)
 
 lemma _root_.Function.Injective.preimage_image_of_restrict
     (X Y : Type u) (A : Set X) (s : Set A) (f : X → Y)
@@ -242,13 +236,7 @@ lemma _root_.Function.Injective.preimage_image_of_restrict
     apply Set.mem_preimage.mpr
     obtain ⟨a, has, hax⟩ := hx
     subst hax
-    simp_all only [Set.restrict_apply, Set.mem_image, Subtype.exists, exists_and_right]
-    obtain ⟨val, property⟩ := a
-    simp_all only
-    apply Exists.intro
-    · apply And.intro
-      on_goal 2 => rfl
-      · simp_all only [exists_const]
+    exact ⟨a, has, rfl⟩
 
 /--
 In the pushout square below, if `g X` is closed in `Z`,

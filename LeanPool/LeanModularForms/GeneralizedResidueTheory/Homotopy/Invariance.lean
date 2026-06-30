@@ -53,8 +53,7 @@ private theorem homotopy_uniform_avoidance
     ⟨(t, s), ⟨ht, hs⟩, rfl⟩
   calc Metric.infDist z₀ _ ≤ dist z₀ (H (t, s)) :=
         Metric.infDist_le_dist_of_mem hmem
-    _ = ‖H (t, s) - z₀‖ := by
-        rw [Complex.dist_eq, norm_sub_rev]
+    _ = ‖H (t, s) - z₀‖ := by rw [Complex.dist_eq, norm_sub_rev]
 
 private lemma homotopy_integrand_continuousOn_t
     {H : ℝ × ℝ → ℂ} {a b : ℝ} {z₀ : ℂ} {P : Finset ℝ}
@@ -77,8 +76,7 @@ private lemma homotopy_integrand_continuousOn_t
   obtain ⟨ε, hε_pos, hε_avoid⟩ := exists_ball_avoiding_finset ht_notP'.1
   set ε' := min (ε / 2) (min (t - a) (b - t)) with hε'_def
   have hε'_pos : 0 < ε' := by
-    simp only [hε'_def, lt_min_iff]
-    exact ⟨by linarith, sub_pos.mpr ht_Ioo.1, sub_pos.mpr ht_Ioo.2⟩
+    simpa only [hε'_def, lt_min_iff] using ⟨by linarith, sub_pos.mpr ht_Ioo.1, sub_pos.mpr ht_Ioo.2⟩
   have hε'_le : ε' ≤ ε / 2 := min_le_left _ _
   have h_avoid_P : ∀ t' ∈ Ioo (t - ε') (t + ε'), t' ∉ P := fun t' ht' =>
     hε_avoid t' ⟨by linarith [ht'.1], by linarith [ht'.2]⟩
@@ -115,8 +113,7 @@ private lemma homotopy_integrand_continuousWithinAt_s
   obtain ⟨ε, hε_pos, hε_avoid⟩ := exists_ball_avoiding_finset ht_notP
   set ε' := min (ε / 2) (min (t - a) (b - t)) with hε'_def
   have hε'_pos : 0 < ε' := by
-    simp only [hε'_def, lt_min_iff]
-    exact ⟨by linarith, sub_pos.mpr ht_Ioo.1, sub_pos.mpr ht_Ioo.2⟩
+    simpa only [hε'_def, lt_min_iff] using ⟨by linarith, sub_pos.mpr ht_Ioo.1, sub_pos.mpr ht_Ioo.2⟩
   have hε'_le : ε' ≤ ε / 2 := min_le_left _ _
   have h_avoid_P : ∀ t' ∈ Ioo (t - ε') (t + ε'), t' ∉ P := fun t' ht' =>
     hε_avoid t' ⟨by linarith [ht'.1], by linarith [ht'.2]⟩
@@ -150,8 +147,7 @@ private lemma homotopy_pv_eq_integral
   filter_upwards [Ioo_mem_nhdsGT hδ_pos] with ε hε
   apply intervalIntegral.integral_congr_ae
   filter_upwards with t ht
-  have ht' : t ∈ Icc a b := by
-    rw [Set.uIoc_of_le hab.le] at ht; exact Ioc_subset_Icc_self ht
+  have ht' : t ∈ Icc a b := by rw [Set.uIoc_of_le hab.le] at ht; exact Ioc_subset_Icc_self ht
   simp only [f, ((mem_Ioo.mp hε).2.trans_le (hδ_bound t ht' s hs)), ↓reduceIte, deriv_sub_const]
 
 private lemma homotopy_piecewise_aestronglyMeasurable
@@ -336,21 +332,17 @@ theorem windingNumber_eq_of_piecewise_homotopic
     rw [Set.uIoc_of_le (hab.le)]
     have h_eq_on_Ioo : Set.EqOn (fun t => H (t, 0)) γ₀ (Ioo a b) :=
       fun t' ht' => hH0 t' (Ioo_subset_Icc_self ht')
-    have h_deriv_eq_on : Set.EqOn (deriv (fun t => H (t, 0))) (deriv γ₀) (Ioo a b) :=
-      h_eq_on_Ioo.deriv isOpen_Ioo
     rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards [Ioo_ae_eq_Ioc.mem_iff] with t ht ht_Ioc
-    exact h_deriv_eq_on (ht.mpr ht_Ioc)
+    exact (h_eq_on_Ioo.deriv isOpen_Ioo) (ht.mpr ht_Ioc)
   have hn1_eq : n 1 = generalizedWindingNumber' γ₁ a b z₀ := by
     apply generalizedWindingNumber'_eq_of_eq_on (fun t => H (t, 1)) γ₁ a b z₀ hab hH1
     rw [Set.uIoc_of_le (hab.le)]
     have h_eq_on_Ioo : Set.EqOn (fun t => H (t, 1)) γ₁ (Ioo a b) :=
       fun t' ht' => hH1 t' (Ioo_subset_Icc_self ht')
-    have h_deriv_eq_on : Set.EqOn (deriv (fun t => H (t, 1))) (deriv γ₁) (Ioo a b) :=
-      h_eq_on_Ioo.deriv isOpen_Ioo
     rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards [Ioo_ae_eq_Ioc.mem_iff] with t ht ht_Ioc
-    exact h_deriv_eq_on (ht.mpr ht_Ioc)
+    exact (h_eq_on_Ioo.deriv isOpen_Ioo) (ht.mpr ht_Ioc)
   rw [← hn0_eq, ← hn1_eq, heq]
 
 private lemma smooth_winding_pv_eq_integral
@@ -368,8 +360,7 @@ private lemma smooth_winding_pv_eq_integral
   filter_upwards [Ioo_mem_nhdsGT hδ_pos] with ε hε
   apply intervalIntegral.integral_congr_ae
   filter_upwards with t ht
-  have ht' : t ∈ Icc a b := by
-    rw [Set.uIoc_of_le hab.le] at ht; exact Ioc_subset_Icc_self ht
+  have ht' : t ∈ Icc a b := by rw [Set.uIoc_of_le hab.le] at ht; exact Ioc_subset_Icc_self ht
   simp only [f, ((mem_Ioo.mp hε).2.trans_le (hδ_bound t ht' s hs)), ↓reduceIte, deriv_sub_const]
 
 private lemma smooth_winding_integral_continuousOn
@@ -426,8 +417,7 @@ private theorem windingNumber_continuous_in_param
     ContinuousOn.mul
       (ContinuousOn.inv₀
         (hγ_cont.sub continuous_const).continuousOn
-        (fun ⟨t, s⟩ ⟨ht, hs⟩ => by
-          simp only [ne_eq, sub_eq_zero]; exact hγ_avoid t ht s hs))
+        (fun ⟨t, s⟩ ⟨ht, hs⟩ => by simp only [ne_eq, sub_eq_zero]; exact hγ_avoid t ht s hs))
       hγ_deriv_cont.continuousOn
   obtain ⟨M, hM⟩ : ∃ M, ∀ t ∈ Icc a b, ∀ s ∈ Icc (0 : ℝ) 1, ‖f t s‖ ≤ M := by
     obtain ⟨M, hM⟩ := (isCompact_Icc.prod isCompact_Icc).exists_bound_of_continuousOn hf_cont_on
@@ -542,8 +532,8 @@ private lemma integral_congr_homotopy_endpoint
     fun t' ht' => hHs t' (Ioo_subset_Icc_self ht')
   simp only [Set.uIoc_of_le hab.le]
   filter_upwards [Ioo_ae_eq_Ioc.mem_iff] with t ht ht_Ioc
-  have ht_Ioo : t ∈ Ioo a b := ht.mpr ht_Ioc
-  rw [hHs t (Ioo_subset_Icc_self ht_Ioo), (h_eq.deriv isOpen_Ioo) ht_Ioo]
+  rw [hHs t (Ioo_subset_Icc_self (ht.mpr ht_Ioc)),
+    (h_eq.deriv isOpen_Ioo) (ht.mpr ht_Ioc)]
 
 /-- Contour integrals of a holomorphic function are equal
 along homotopic curves. -/
