@@ -29,8 +29,7 @@ open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 abbrev ℍ' := {z : ℂ | 0 < z.im}
 
 lemma upper_half_plane_isOpen :
-    IsOpen ℍ' := by
-  apply isOpen_lt (by fun_prop) (by fun_prop)
+    IsOpen ℍ' := by apply isOpen_lt (by fun_prop) (by fun_prop)
 
 theorem derivWithin_tsum_fun' {α : Type _} (f : α → ℂ → ℂ) {s : Set ℂ}
     (hs : IsOpen s) (x : ℂ) (hx : x ∈ s) (hf : ∀ y ∈ s, Summable fun n : α => f n y)
@@ -50,49 +49,28 @@ theorem derivWithin_tsum_fun' {α : Type _} (f : α → ℂ → ℂ) {s : Set �
     · use fun n : Finset α => fun a => ∑ i ∈ n, derivWithin (fun z => f i z) s a
     · rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hs]
       intro K hK1 hK2
-      have HU := hu K hK1 hK2
-      obtain ⟨u, hu1, hu2⟩ := HU
-      apply tendstoUniformlyOn_tsum hu1
-      intro n x hx
-      apply hu2 n ⟨x, hx⟩
+      obtain ⟨u, hu1, hu2⟩ := hu K hK1 hK2
+      exact tendstoUniformlyOn_tsum hu1 (fun n x hx => hu2 n ⟨x, hx⟩)
     filter_upwards
     intro t r hr
-    apply HasDerivAt.fun_sum
-    intro q hq
-    apply HasDerivWithinAt.hasDerivAt
-    · apply DifferentiableWithinAt.hasDerivWithinAt
-      apply (hf2 q ⟨r, hr⟩).differentiableWithinAt
-    exact IsOpen.mem_nhds hs hr
-  apply IsOpen.uniqueDiffWithinAt hs hx
+    exact HasDerivAt.fun_sum (fun q _ => HasDerivWithinAt.hasDerivAt
+      (hf2 q ⟨r, hr⟩).differentiableWithinAt.hasDerivWithinAt (IsOpen.mem_nhds hs hr))
+  exact IsOpen.uniqueDiffWithinAt hs hx
 
 
 theorem der_iter_eq_der_aux2 (k n : ℕ) (r : ℍ') :
   DifferentiableAt ℂ
     (fun z : ℂ =>
-      iteratedDerivWithin k (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ' z) ↑r :=
-  by
-  have hh :
-      DifferentiableOn ℂ (fun t => (2 * ↑π * Complex.I * n) ^ k *
-      Complex.exp (2 * ↑π * Complex.I * n * t)) ℍ' := by
-    apply Differentiable.differentiableOn;
-    apply Differentiable.const_mul
-    apply Differentiable.cexp
-    apply Differentiable.const_mul
-    apply differentiable_id
+      iteratedDerivWithin k (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ' z) ↑r := by
   apply DifferentiableOn.differentiableAt
-  · apply DifferentiableOn.congr hh
-    intro x hx
-    apply exp_iter_deriv_within k n hx
-  refine IsOpen.mem_nhds ?_ ?_
-  · apply isOpen_lt (by fun_prop) (by fun_prop)
-  exact r.2
+  · exact DifferentiableOn.congr (by fun_prop) (fun x hx => exp_iter_deriv_within k n hx)
+  exact IsOpen.mem_nhds (isOpen_lt (by fun_prop) (by fun_prop)) r.2
 
 theorem der_iter_eq_der2 (k n : ℕ) (r : ℍ') :
     deriv (iteratedDerivWithin k (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ') ↑r =
       derivWithin (iteratedDerivWithin k (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ')
         ℍ'
-        ↑r :=
-  by
+        ↑r := by
   simp only [mem_setOf_eq]
   apply symm
   apply DifferentiableAt.derivWithin
@@ -103,8 +81,8 @@ theorem der_iter_eq_der2 (k n : ℕ) (r : ℍ') :
 theorem der_iter_eq_der2' (k n : ℕ) (r : ℍ') :
     derivWithin (iteratedDerivWithin k (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ')
       ℍ' ↑r =
-      iteratedDerivWithin (k + 1) (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ' ↑r :=
-  by
+      iteratedDerivWithin (k + 1)
+        (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ' ↑r := by
   rw [iteratedDerivWithin_succ]
 
 
@@ -112,6 +90,28 @@ theorem der_iter_eq_der2' (k n : ℕ) (r : ℍ') :
 noncomputable def ctsExpTwoPiN (K : Set ℂ) : ContinuousMap K ℂ where
   toFun := fun r : K => Complex.exp (2 * ↑π * Complex.I * r)
 
+private lemma summable_two_pi_pow_geometric (r : ℝ) (hr : ‖r‖ < 1) (K : ℕ) :
+    Summable fun n : ℕ => ‖((2 * ↑π * Complex.I * n) ^ K * r ^ n)‖ := by
+  have heq : ∀ (n : ℕ), ((2 * ↑π) ^ K) * ‖((n) ^ K * (r ^ n))‖ =
+      ‖((2 * ↑π * Complex.I * n) ^ K * r ^ n)‖ := by
+    intro n
+    norm_cast
+    simp only [Nat.cast_pow, norm_mul, norm_pow, Real.norm_eq_abs,
+      ofReal_mul, ofReal_ofNat, ofReal_pow, norm_ofNat, norm_real, norm_I,
+      mul_one, norm_natCast]
+    norm_cast
+    simp only [Nat.cast_pow]
+    have hh : |π| = π := by simp [Real.pi_pos.le]
+    rw [hh]
+    ring
+  apply Summable.congr _ heq
+  rw [summable_mul_left_iff]
+  · exact summable_norm_pow_mul_geometric_of_norm_lt_one K hr
+  norm_cast
+  apply pow_ne_zero
+  apply mul_ne_zero
+  · linarith [Real.pi_pos]
+  apply Real.pi_ne_zero
 
 theorem iter_deriv_comp_bound2 (K : Set ℂ) (hK1 : K ⊆ ℍ') (hK2 : IsCompact K) (k : ℕ) :
     ∃ u : ℕ → ℝ,
@@ -119,13 +119,9 @@ theorem iter_deriv_comp_bound2 (K : Set ℂ) (hK1 : K ⊆ ℍ') (hK2 : IsCompact
         ∀ (n : ℕ) (r : K),
         ‖(derivWithin (iteratedDerivWithin k
           (fun s : ℂ => Complex.exp (2 * ↑π * Complex.I * n * s)) ℍ') ℍ' r)‖ ≤ u n := by
-  have : CompactSpace K := by
-    rw [← isCompact_univ_iff]
-    rw [isCompact_iff_isCompact_univ] at hK2
-    apply hK2
+  haveI : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hK2)
   set r : ℝ := ‖BoundedContinuousFunction.mkOfCompact (ctsExpTwoPiN K )‖
-  have hr : ‖BoundedContinuousFunction.mkOfCompact (ctsExpTwoPiN K )‖ < 1 :=
-    by
+  have hr : ‖BoundedContinuousFunction.mkOfCompact (ctsExpTwoPiN K )‖ < 1 := by
     rw [BoundedContinuousFunction.norm_lt_iff_of_compact]
     · intro x; rw [BoundedContinuousFunction.mkOfCompact_apply]; simp_rw [ctsExpTwoPiN]
       simp only [ContinuousMap.coe_mk]
@@ -133,29 +129,7 @@ theorem iter_deriv_comp_bound2 (K : Set ℂ) (hK1 : K ⊆ ℍ') (hK2 : IsCompact
     linarith
   have hr2 : 0 ≤ r := by apply norm_nonneg _
   have hu : Summable fun n : ℕ => ‖((2 * ↑π * Complex.I * n) ^ (k + 1) * r ^ n)‖ :=
-    by
-    have : ∀ (n : ℕ), ((2 * ↑π)^(k+1))* ‖((n) ^ (k + 1) * (r ^ n))‖ =
-      ‖((2 * ↑π * Complex.I * n) ^ (k + 1) * r ^ n)‖ := by
-        intro n
-        norm_cast
-        simp only [Nat.cast_pow, norm_mul, norm_pow, Real.norm_eq_abs,
-          ofReal_mul, ofReal_ofNat, ofReal_pow, norm_ofNat, norm_real, norm_I,
-          mul_one, norm_natCast]
-        norm_cast
-        simp only [Nat.cast_pow]
-        have hh : |π| = π := by simp [Real.pi_pos.le]
-        rw [hh]
-        ring
-    apply Summable.congr _ this
-    rw [summable_mul_left_iff]
-    · apply summable_norm_pow_mul_geometric_of_norm_lt_one
-      convert hr
-      rw [norm_norm]
-    norm_cast
-    apply pow_ne_zero
-    apply mul_ne_zero
-    · linarith
-    apply Real.pi_ne_zero
+    summable_two_pi_pow_geometric r (by rwa [Real.norm_of_nonneg hr2]) (k + 1)
   · use fun n : ℕ => ‖((2 * ↑π * Complex.I * n) ^ (k + 1) * r ^ n)‖, hu
     intro n t
     have go := der_iter_eq_der2' k n ⟨t.1, hK1 t.2⟩
@@ -200,35 +174,19 @@ theorem hasDerivAt_tsum_fun {α : Type _} (f : α → ℂ → ℂ)
     (hu :∀ K ⊆ s, IsCompact K →
           ∃ u : α → ℝ, Summable u ∧ ∀ (n : α) (k : K), ‖(derivWithin (f n) s k)‖ ≤ u n)
     (hf2 : ∀ (n : α) (r : s), DifferentiableAt ℂ (f n) r) :
-    HasDerivAt (fun z => ∑' n : α, f n z) (∑' n : α, derivWithin (fun z => f n z) s x) x :=
-  by
-  have A :
-    ∀ x : ℂ,
-      x ∈ s →
-        Tendsto (fun t : Finset α => ∑ n ∈ t, (fun z => f n z) x) atTop
-          (𝓝 (∑' n : α, (fun z => f n z) x)) :=
-    by
-    intro y hy
-    apply Summable.hasSum
-    simp?
-    apply hf y hy
+    HasDerivAt (fun z => ∑' n : α, f n z) (∑' n : α, derivWithin (fun z => f n z) s x) x := by
+  have A : ∀ x : ℂ, x ∈ s → Tendsto (fun t : Finset α => ∑ n ∈ t, (fun z => f n z) x) atTop
+        (𝓝 (∑' n : α, (fun z => f n z) x)) := fun y hy => (hf y hy).hasSum
   apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ A hx
   · use fun n : Finset α => fun a => ∑ i ∈ n, derivWithin (fun z => f i z) s a
   · rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hs]
     intro K hK1 hK2
-    have HU := hu K hK1 hK2
-    obtain ⟨u, hu1, hu2⟩ := HU
-    apply tendstoUniformlyOn_tsum hu1
-    intro n x hx
-    apply hu2 n ⟨x, hx⟩
+    obtain ⟨u, hu1, hu2⟩ := hu K hK1 hK2
+    exact tendstoUniformlyOn_tsum hu1 (fun n x hx => hu2 n ⟨x, hx⟩)
   filter_upwards
   intro t r hr
-  apply HasDerivAt.fun_sum
-  intro q hq
-  apply HasDerivWithinAt.hasDerivAt
-  · apply DifferentiableWithinAt.hasDerivWithinAt
-    apply (hf2 q ⟨r, hr⟩).differentiableWithinAt
-  exact IsOpen.mem_nhds hs hr
+  exact HasDerivAt.fun_sum (fun q _ => HasDerivWithinAt.hasDerivAt
+    (hf2 q ⟨r, hr⟩).differentiableWithinAt.hasDerivWithinAt (IsOpen.mem_nhds hs hr))
 
 
 theorem hasDerivWithinAt_tsum_fun {α : Type _} (f : α → ℂ → ℂ)
@@ -239,8 +197,7 @@ theorem hasDerivWithinAt_tsum_fun {α : Type _} (f : α → ℂ → ℂ)
           ∃ u : α → ℝ, Summable u ∧ ∀ (n : α) (k : K), ‖(derivWithin (f n) s k)‖ ≤ u n)
     (hf2 : ∀ (n : α) (r : s), DifferentiableAt ℂ (f n) r) :
     HasDerivWithinAt (fun z => ∑' n : α, f n z) (∑' n : α, derivWithin (fun z => f n z) s x) s x :=
-      by
-  apply (hasDerivAt_tsum_fun f hs x hx hf hu hf2).hasDerivWithinAt
+  (hasDerivAt_tsum_fun f hs x hx hf hu hf2).hasDerivWithinAt
 
 
 
@@ -249,15 +206,10 @@ theorem iter_deriv_comp_bound3 (K : Set ℂ) (hK1 : K ⊆ ℍ') (hK2 : IsCompact
     ∃ u : ℕ → ℝ,
       Summable u ∧
         ∀ (n : ℕ) (r : K),
-          (2 * |π| * n) ^ k * ‖(Complex.exp (2 * ↑π * Complex.I * n * r))‖ ≤ u n :=
-  by
-  have : CompactSpace K := by
-    rw [← isCompact_univ_iff]
-    rw [isCompact_iff_isCompact_univ] at hK2
-    apply hK2
+          (2 * |π| * n) ^ k * ‖(Complex.exp (2 * ↑π * Complex.I * n * r))‖ ≤ u n := by
+  haveI : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hK2)
   set r : ℝ := ‖BoundedContinuousFunction.mkOfCompact (ctsExpTwoPiN K )‖
-  have hr : ‖BoundedContinuousFunction.mkOfCompact (ctsExpTwoPiN K )‖ < 1 :=
-    by
+  have hr : ‖BoundedContinuousFunction.mkOfCompact (ctsExpTwoPiN K )‖ < 1 := by
     rw [BoundedContinuousFunction.norm_lt_iff_of_compact]
     · intro x; rw [BoundedContinuousFunction.mkOfCompact_apply]; simp_rw [ctsExpTwoPiN]
       simp only [ContinuousMap.coe_mk]
@@ -265,42 +217,19 @@ theorem iter_deriv_comp_bound3 (K : Set ℂ) (hK1 : K ⊆ ℍ') (hK2 : IsCompact
     linarith
   have hr2 : 0 ≤ r := by apply norm_nonneg _
   have hu : Summable fun n : ℕ => ‖((2 * ↑π * Complex.I * n) ^ (k) * r ^ n)‖ :=
-    by
-    have : ∀ (n : ℕ), ((2 * ↑π)^(k))* ‖((n) ^ (k) * (r ^ n))‖ =
-      ‖((2 * ↑π * Complex.I * n) ^ (k) * r ^ n)‖ := by
-        intro n
-        norm_cast
-        simp only [Nat.cast_pow, norm_mul, norm_pow, Real.norm_eq_abs,
-          ofReal_mul, ofReal_ofNat, ofReal_pow, norm_ofNat, norm_real, norm_I,
-          mul_one, norm_natCast]
-        norm_cast
-        simp only [Nat.cast_pow]
-        have hh : |π| = π := by simp [Real.pi_pos.le]
-        rw [hh]
-        ring
-    apply Summable.congr _ this
-    rw [summable_mul_left_iff]
-    · apply summable_norm_pow_mul_geometric_of_norm_lt_one
-      convert hr
-      rw [norm_norm]
-    norm_cast
-    apply pow_ne_zero
-    apply mul_ne_zero
-    · linarith
-    apply Real.pi_ne_zero
+    summable_two_pi_pow_geometric r (by rwa [Real.norm_of_nonneg hr2]) k
   use fun n : ℕ => ‖((2 * ↑π * Complex.I * n) ^ (k) * r ^ n)‖, hu
   intro n t
   simp only [Complex.norm_mul, norm_pow, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
     RCLike.norm_natCast]
-  have ineqe : ‖(Complex.exp (2 * π * Complex.I * n * t))‖ ≤ ‖r‖ ^ n :=
-    by
+  have ineqe : ‖(Complex.exp (2 * π * Complex.I * n * t))‖ ≤ ‖r‖ ^ n := by
     have hw1 :
       ‖ (Complex.exp (2 * π * Complex.I * n * t))‖ =
         ‖ (Complex.exp (2 * π * Complex.I * t))‖ ^ n := by
           norm_cast
-          rw [← Complex.norm_pow];
-          congr;
-          rw [← exp_nat_mul];
+          rw [← Complex.norm_pow]
+          congr
+          rw [← exp_nat_mul]
           ring_nf
     rw [hw1]
     norm_cast

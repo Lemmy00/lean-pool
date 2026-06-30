@@ -192,8 +192,7 @@ lemma tL_mem_Ioo (p : ℂ) (hp_norm : ‖p‖ > 1) (hp_re : |p.re| < 1 / 2)
   have hH : HHeight = Real.sqrt 3 / 2 + 1 := rfl
   have hdenom_pos : HHeight - Real.sqrt 3 / 2 > 0 := by rw [hH]; linarith
   have hnum_pos : p.im - Real.sqrt 3 / 2 > 0 := by linarith
-  have hnum_lt : p.im - Real.sqrt 3 / 2 < HHeight - Real.sqrt 3 / 2 := by
-    linarith
+  have hnum_lt : p.im - Real.sqrt 3 / 2 < HHeight - Real.sqrt 3 / 2 := by linarith
   simp only [tL, Set.mem_Ioo]
   constructor
   · linarith [div_pos hnum_pos hdenom_pos]
@@ -222,11 +221,7 @@ lemma seg4_im_formula (t : ℝ) (ht : t ∈ Set.Ioc (3 : ℝ) 4) : (fdPolygon t)
   · linarith [ht.1]
   · linarith [ht.1]
   · linarith [ht.1]
-  · have h : (-1/2 + (Real.sqrt 3 / 2 + (t - 3) * (HHeight - Real.sqrt 3 / 2)) * I).im =
-        Real.sqrt 3 / 2 + (t - 3) * (HHeight - Real.sqrt 3 / 2) := by
-      simp [Complex.add_im, Complex.mul_im, Complex.I_re,
-        Complex.I_im, Complex.ofReal_im]
-    exact h
+  · simp [Complex.add_im, Complex.mul_im, Complex.I_re, Complex.I_im, Complex.ofReal_im]
   · linarith [ht.2]
 
 /-- Sign of (fdPolygon t - p).im on seg4: negative before tL, zero at tL,
@@ -272,9 +267,7 @@ lemma seg4_vec_at_tL (p : ℂ) (hp_norm : ‖p‖ > 1) (hp_re : |p.re| < 1 / 2) 
 lemma arg_at_tL_eq_pi (p : ℂ) (hp_norm : ‖p‖ > 1) (hp_re : |p.re| < 1 / 2) (hp_im_pos : 0 < p.im)
     (hp_im : p.im < HHeight) :
     Complex.arg (fdPolygon (tL p) - p) = Real.pi := by
-  have hvec := seg4_vec_at_tL p hp_norm hp_re hp_im_pos hp_im
-  rw [Complex.arg_eq_pi_iff]
-  exact ⟨hvec.1, hvec.2⟩
+  exact Complex.arg_eq_pi_iff.mpr (seg4_vec_at_tL p hp_norm hp_re hp_im_pos hp_im)
 
 /-- Before tL on seg4: arg < 0. -/
 lemma arg_seg4_before (p : ℂ) (hp_norm : ‖p‖ > 1) (hp_re : |p.re| < 1 / 2) (hp_im_pos : 0 < p.im)
@@ -328,8 +321,7 @@ lemma fdPolygon_zero_ne_interior (p : ℂ) (hp_im : p.im < HHeight) : fdPolygon 
 
 /-- fdPolygon 5 ≠ p for interior points. -/
 lemma fdPolygon_five_ne_interior (p : ℂ) (hp_im : p.im < HHeight) : fdPolygon 5 ≠ p := by
-  have h : fdPolygon 5 = fdPolygon 0 := by
-    simp only [fdPolygon]; norm_num
+  have h : fdPolygon 5 = fdPolygon 0 := by simp only [fdPolygon]; norm_num
   rw [h]
   exact fdPolygon_zero_ne_interior p hp_im
 
@@ -397,10 +389,8 @@ lemma fdPolygonRadialCircle_wrapCount (p : ℂ) (hp_norm : ‖p‖ > 1) (hp_re :
 /-- circleParamCW also makes exactly one clockwise loop. -/
 lemma circleParamCW_wrapCount :
     circleParamCWAngle 0 = 2 * Real.pi ∧
-      circleParamCWAngle 5 = 0 := by
-  constructor
-  · simp only [circleParamCWAngle]; norm_num
-  · simp only [circleParamCWAngle]; norm_num
+      circleParamCWAngle 5 = 0 :=
+  ⟨by simp only [circleParamCWAngle]; norm_num, by simp only [circleParamCWAngle]; norm_num⟩
 
 /-- Reference Y-coordinate on imaginary axis. -/
 noncomputable def refY₀ : ℝ := (1 + HHeight) / 2

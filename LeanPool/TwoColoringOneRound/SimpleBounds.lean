@@ -91,11 +91,9 @@ lemma side_measure (b : Color) : (volume : Measure Rand) (side b) = (1 / 2 : ENN
   fin_cases b
   · simp [side, half]
   · have hhalf : (1 - (half : ℝ)) = (1 / 2 : ℝ) := by
-      simp [half]
-      norm_num
+      norm_num [half]
     calc
-      (volume : Measure Rand) (side (1 : Color)) = ENNReal.ofReal (1 - (half : ℝ)) := by
-        simp [side]
+      (volume : Measure Rand) (side (1 : Color)) = ENNReal.ofReal (1 - (half : ℝ)) := by simp [side]
       _ = ENNReal.ofReal (1 / 2 : ℝ) := by simp [hhalf]
       _ = (1 / 2 : ENNReal) := by simp
 
@@ -109,12 +107,8 @@ lemma measurableSet_cell (w : Fin 4 → Color) : MeasurableSet (cell w) := by
   by_cases h : w i = 0 <;> simp [side, h, measurableSet_Iio, measurableSet_Ici]
 
 lemma one_half_pow_four : ((1 / 2 : ENNReal) ^ 4) = (1 / 16 : ENNReal) := by
-  calc
-    ((1 / 2 : ENNReal) ^ 4) = ((2⁻¹ : ENNReal) ^ 4) := by simp [div_eq_mul_inv]
-    _ = ((2 : ENNReal) ^ 4)⁻¹ := by
-          simpa using (ENNReal.inv_pow (a := (2 : ENNReal)) (n := 4)).symm
-    _ = (16⁻¹ : ENNReal) := by norm_num
-    _ = (1 / 16 : ENNReal) := by simp [div_eq_mul_inv]
+  rw [show (1 / 2 : ENNReal) = (2 : ENNReal)⁻¹ by simp [div_eq_mul_inv], ← ENNReal.inv_pow]
+  norm_num [div_eq_mul_inv]
 
 lemma cell_measure (w : Fin 4 → Color) :
     (volume : Measure (Samples 4)) (cell w) = (1 / 16 : ENNReal) := by
@@ -270,8 +264,7 @@ theorem p_simpleUpperAlg : ClassicalAlgorithm.p simpleUpperAlg = (1 / 4 : ENNRea
             symm
             simpa [goodSet] using
               (Finset.sum_filter (s := all) (p := good) (f := fun _ => (1 / 16 : ENNReal)))
-      _ = (goodSet.card : ENNReal) * (1 / 16 : ENNReal) := by
-            simp [Finset.sum_const, nsmul_eq_mul]
+      _ = (goodSet.card : ENNReal) * (1 / 16 : ENNReal) := by simp [Finset.sum_const, nsmul_eq_mul]
   have hcard : goodSet.card = 4 := by decide
   calc
     ClassicalAlgorithm.p simpleUpperAlg
@@ -283,15 +276,10 @@ theorem p_simpleUpperAlg : ClassicalAlgorithm.p simpleUpperAlg = (1 / 4 : ENNRea
     _ = (goodSet.card : ENNReal) * (1 / 16 : ENNReal) := hsum'
     _ = (4 : ENNReal) * (1 / 16 : ENNReal) := by simp [hcard]
     _ = (1 / 4 : ENNReal) := by
-      have : (4 : ENNReal) / 16 = (1 : ENNReal) / 4 := by
-        have h16 : (16 : ENNReal) = (4 : ENNReal) * 4 := by norm_num
-        have :
-            (4 : ENNReal) * (1 : ENNReal) / ((4 : ENNReal) * 4) = (1 : ENNReal) / 4 := by
-          simpa using
-            (ENNReal.mul_div_mul_left (a := (1 : ENNReal)) (b := (4 : ENNReal))
-              (c := (4 : ENNReal)) (by norm_num) (by norm_num))
-        simpa [h16, div_eq_mul_inv] using this
-      simpa [div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm] using this
+      rw [mul_one_div, show (16 : ENNReal) = 4 * 4 by norm_num]
+      simpa using
+        (ENNReal.mul_div_mul_left (a := (1 : ENNReal)) (b := (4 : ENNReal))
+          (c := (4 : ENNReal)) (by norm_num) (by norm_num))
 
 theorem exists_algorithm_p_le_one_quarter :
     ∃ alg : ClassicalAlgorithm, ClassicalAlgorithm.p alg ≤ (1 / 4 : ENNReal) :=
@@ -369,8 +357,7 @@ lemma edgeEvent_one_measure_eq_p (alg : ClassicalAlgorithm) :
       edgeEvent alg 1 =
         (fun x : Samples 5 => (e x).2) ⁻¹' ClassicalAlgorithm.pEvent alg := by
     ext x
-    have hs : iLast.succAbove = Fin.castSucc := by
-      simpa [iLast] using (Fin.succAbove_last (n := 4))
+    have hs : iLast.succAbove = Fin.castSucc := by simpa [iLast] using (Fin.succAbove_last (n := 4))
     -- `(e x).2` is `removeNth` at the last coordinate.
     simp [edgeEvent, nodeColor, ClassicalAlgorithm.pEvent, e, Fin.removeNth_apply, hs]
   calc
@@ -406,8 +393,7 @@ lemma edgeEvent_measure_eq_edgeEvent_one (alg : ClassicalAlgorithm) (i : Fin 5) 
         simp [sub_eq_add_neg, add_assoc, add_comm, add_left_comm]
       simp [nodeColor, hφ, hsub₁, hadd₁]
     have hk1 : (1 : Fin 5) - k = i := by simp [k]
-    have hk2 : (2 : Fin 5) - k = i + 1 := by
-      fin_cases i <;> decide
+    have hk2 : (2 : Fin 5) - k = i + 1 := by fin_cases i <;> decide
     simp [edgeEvent, hnode, hk1, hk2]
   have hnull : NullMeasurableSet (edgeEvent alg 1) (volume : Measure (Samples 5)) :=
     (measurableSet_edgeEvent alg 1).nullMeasurableSet
@@ -447,9 +433,7 @@ theorem no_algorithm_p_lt_one_fifth :
       calc
         (1 : ENNReal) = (volume : Measure (Samples 5)) Set.univ := hone.symm
         _ ≤ ∑' i : Fin 5, (volume : Measure (Samples 5)) (edgeEvent alg i) := hle
-    have hle'' := hle'
-    rw [hsum] at hle''
-    exact hle''
+    rwa [hsum] at hle'
   have hbound : (1 / 5 : ENNReal) ≤ ClassicalAlgorithm.p alg := by
     have hineq' : (1 : ENNReal) ≤ ClassicalAlgorithm.p alg * (5 : ENNReal) := by
       simpa [mul_comm, mul_left_comm, mul_assoc] using hineq

@@ -90,8 +90,7 @@ lemma Discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   simp only [comp_apply, Pi.smul_apply, Pi.mul_apply, smul_eq_mul,
     Int.reduceNeg, zpow_neg] at *
   have hi : -1/(z.1 : ℂ) = (-(z : ℂ))⁻¹ := by
-    rw [neg_div]
-    rw [← neg_inv]
+    rw [neg_div, ← neg_inv]
     simp
   rw [hi] at he
   rw [he, mul_pow, mul_pow, inv_pow, csqrt_I]
@@ -113,9 +112,7 @@ def DiscriminantSIF : SlashInvariantForm (CongruenceSubgroup.Gamma 1) 12 where
 /-- Δ is 1-periodic: Δ(z + 1) = Δ(z) -/
 lemma Δ_periodic (z : ℍ) : Δ ((1 : ℝ) +ᵥ z) = Δ z := by
   have h := SlashInvariantForm.vAdd_width_periodic 1 12 1 DiscriminantSIF z
-  have harg : ((1 : ℕ) * (1 : ℤ) : ℝ) = (1 : ℝ) := by norm_num
-  rw [harg] at h
-  exact h
+  rwa [show ((1 : ℕ) * (1 : ℤ) : ℝ) = (1 : ℝ) by norm_num] at h
 
 /-- Δ transforms under S as: Δ(-1/z) = z¹² · Δ(z) -/
 lemma Δ_S_transform (z : ℍ) : Δ (ModularGroup.S • z) = z ^ (12 : ℕ) * Δ z := by
@@ -156,17 +153,11 @@ lemma atImInfy_pnat_mono (S : Set ℍ) (hS : S ∈ atImInfty) (B : ℝ) : ∃ A 
       simp only [mul_im, natCast_re, coe_im, natCast_im, coe_re, zero_mul, add_zero]
       have hs2 := hs.2
       simp only [sup_le_iff] at *
-      constructor
-      · apply le_trans hs2.1
-        have hn : (1 : ℝ) ≤ n := by
-          norm_cast
-          exact one_le
-        apply (le_mul_iff_one_le_left s.2).mpr hn
-      apply le_trans hs2.2
       have hn : (1 : ℝ) ≤ n := by
         norm_cast
         exact one_le
-      apply (le_mul_iff_one_le_left s.2).mpr hn
+      exact ⟨le_trans hs2.1 ((le_mul_iff_one_le_left s.2).mpr hn),
+        le_trans hs2.2 ((le_mul_iff_one_le_left s.2).mpr hn)⟩
     refine ⟨?_, K⟩
     simp only [sup_le_iff] at K
     apply hA _ K.1
@@ -206,9 +197,7 @@ theorem log_one_neg_cexp_tendto_zero (k : ℕ) :
   rw [this]
   apply Tendsto.comp (y := 𝓝 1)
   · nth_rw 1 [← Complex.log_one]
-    refine ContinuousAt.tendsto (x := 1) (f := Complex.log) ?_
-    apply continuousAt_clog
-    simp
+    exact ContinuousAt.tendsto (continuousAt_clog (by simp))
   apply Tendsto.comp (y := 𝓝 1)
   · exact (continuous_pow 24).tendsto' ( 1 : ℂ) (1 : ℂ) (by simp)
   · simp_rw [sub_eq_add_neg]
@@ -372,8 +361,7 @@ lemma Delta_isTheta_rexp : Delta =Θ[atImInfty] (fun τ => Real.exp (-2 * π * �
     rw [Complex.norm_exp]
   simp only [mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero, sub_zero, Complex.I_re,
     mul_im, zero_mul, add_zero, Complex.I_im, mul_one, sub_self, coe_re, coe_im, zero_sub]
-  have hm : 0 ≤ 2 * rexp (-(2 * π * z.im)) := by
-    positivity
+  have hm : 0 ≤ 2 * rexp (-(2 * π * z.im)) := by positivity
   have h4 := mul_le_mul_of_nonneg_left hA3 hm
   conv at h4 =>
     enter [1]
@@ -422,9 +410,7 @@ theorem div_Delta_is_SIF (k : ℤ) (f : CuspForm (CongruenceSubgroup.Gamma 1) k)
 def CuspFormDivDiscriminant (k : ℤ) (f : CuspForm (CongruenceSubgroup.Gamma 1) k) :
   ModularForm (CongruenceSubgroup.Gamma 1) (k - 12) where
     toFun := f / Delta
-    slash_action_eq' := by
-      intro γ hγ
-      exact div_Delta_is_SIF _ _ γ hγ
+    slash_action_eq' := fun γ hγ => div_Delta_is_SIF _ _ γ hγ
     holo' := by
       rw [mdifferentiable_iff]
       simp only [SlashInvariantForm.coe_mk]
@@ -503,10 +489,8 @@ lemma cexp_aux2 (t : ℝ) (n : ℕ)
     _ = cexp (2 * ↑π * (n + 1) * (Complex.I * Complex.I) * t) := by ring_nf
     _ = rexp (-(2 * π * (n + 1) * t)) := by simp
 
-lemma cexp_aux3 (t : ℝ) (n : ℕ) (ht : 0 < t) : 0 < 1 - rexp (-(2 * π * (n + 1) * t)) := by
-  have _ : rexp (-(2 * π * (n + 1) * t)) < 1 :=
-    exp_lt_one_iff.mpr (by simp only [Left.neg_neg_iff]; positivity)
-  linarith
+lemma cexp_aux3 (t : ℝ) (n : ℕ) (ht : 0 < t) : 0 < 1 - rexp (-(2 * π * (n + 1) * t)) :=
+  sub_pos.mpr (exp_lt_one_iff.mpr (by simp only [Left.neg_neg_iff]; positivity))
 
 lemma cexp_aux4 (t : ℝ) (n : ℕ) : (cexp (-2 * π * (n + 1) * t)).im = 0 := by
   simpa [Complex.ofReal_mul, Complex.ofReal_neg] using exp_ofReal_im (-2 * π * (n + 1) * t)
@@ -524,8 +508,7 @@ lemma Complex.im_finset_prod_eq_zero_of_im_eq_zero {ι : Type*} (s : Finset ι)
     ih (fun i hi => h i (by simp [hi]))]
 
 lemma Complex.im_pow_eq_zero_of_im_eq_zero {z : ℂ} (hz : z.im = 0) (m : ℕ) :
-    (z ^ m).im = 0 := by
-  induction m with
+    (z ^ m).im = 0 := by induction m with
   | zero => simp
   | succ m ih => simp [pow_succ, Complex.mul_im, *]
 
@@ -547,10 +530,8 @@ lemma Delta_imag_axis_real : ResToImagAxis.Real Δ := by
   set g : ℕ → ℂ := fun n => (1 - cexp (2 * π * Complex.I * (n + 1) * (Complex.I * t))) ^ 24
   have hArg (n : ℕ) :
       2 * (π : ℂ) * Complex.I * (n + 1) * (Complex.I * t) = -(2 * (π : ℂ) * (n + 1) * t) := by
-    calc
-      2 * (π : ℂ) * Complex.I * (n + 1) * (Complex.I * t)
-        = 2 * (π : ℂ) * (Complex.I * Complex.I) * (n + 1) * t := by ring
-      _ = -(2 * (π : ℂ) * (n + 1) * t) := by simp
+    have h := Complex.I_sq
+    linear_combination 2 * (π : ℂ) * (↑n + 1) * t * h
   have him_g : ∀ n, (g n).im = 0 := fun n => by
     have : (cexp (-(2 * (π : ℂ) * ((n + 1) : ℂ) * t))).im = 0 := by
       simpa [mul_comm, mul_left_comm, mul_assoc] using (cexp_aux4 t n)

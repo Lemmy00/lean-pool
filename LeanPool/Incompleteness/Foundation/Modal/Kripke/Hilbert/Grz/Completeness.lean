@@ -18,8 +18,7 @@ variable {α : Type u} [DecidableEq α]
 variable {φ ψ : Formula ℕ}
 
 /-- Imported declaration from the Incompleteness formalization. -/
-noncomputable abbrev subformulasGrz (φ :
-    Formula α) :=
+noncomputable abbrev subformulasGrz (φ : Formula α) :=
   φ.subformulas ∪ (φ.subformulas.prebox.image (fun ψ => □(ψ ==> □ψ)))
 
 namespace subformulasGrz
@@ -83,8 +82,8 @@ abbrev miniCanonicalFrame (φ : Formula ℕ) : Kripke.FiniteFrame where
 
 namespace miniCanonicalFrame
 
-lemma reflexive : Std.Refl (miniCanonicalFrame φ).Rel := by
-  exact ⟨fun _ => by simp ⟩
+lemma reflexive : Std.Refl (miniCanonicalFrame φ).Rel :=
+  ⟨fun _ => by simp⟩
 
 lemma transitive : IsTrans (miniCanonicalFrame φ).World (miniCanonicalFrame φ).Rel := by
   constructor

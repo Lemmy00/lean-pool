@@ -148,8 +148,8 @@ instance n_isFinite [QuantumSet A] : Finite (n A) := by
 
 /-- A quantum set is finite-dimensional over `ℂ` via its fixed orthonormal basis. -/
 instance QuantumSet.toFinite [hA : QuantumSet A] :
-    Module.Finite ℂ A := by
-  exact Module.Finite.of_basis hA.onb.toBasis
+    Module.Finite ℂ A :=
+  Module.Finite.of_basis hA.onb.toBasis
 
 lemma QuantumSet.modAut_isSelfAdjoint [hA : QuantumSet A] (r : ℝ) :
     IsSelfAdjoint (ha.modAut r).toLinearMap := by
@@ -184,17 +184,9 @@ lemma QuantumSet.inner_modAut_right_conj [QuantumSet A] (a b : A) :
 lemma QuantumSet.inner_conj'' [QuantumSet A] (a b : A) :
     ⟪a, b⟫_ℂ =
       ⟪ha.modAut ((-(2 * k A) - 1) / 2) (star b),
-        ha.modAut ((-(2 * k A) - 1) / 2) (star a)⟫_ℂ :=
-calc
-  ⟪a, b⟫_ℂ = ⟪ha.modAut (-(2 * k A) - 1) (star b), star a⟫_ℂ := by
-    rw [inner_conj']
-  _ = ⟪ha.modAut ((-(2 * k A) - 1) / 2)
-        (ha.modAut ((-(2 * k A) - 1) / 2) (star b)), star a⟫_ℂ := by
-    rw [modAut_apply_modAut]
-    norm_num
-  _ = ⟪ha.modAut ((-(2 * k A) - 1) / 2) (star b),
         ha.modAut ((-(2 * k A) - 1) / 2) (star a)⟫_ℂ := by
-    rw [modAut_isSymmetric]
+  rw [inner_conj', ← modAut_isSymmetric, modAut_apply_modAut]
+  norm_num
 
 section Complex
 
@@ -245,8 +237,7 @@ theorem TensorProduct.singleton_tmul
   use (b₁.tensorProduct b₂).repr x (0, 0) • b₁ 0, b₂ 0
   have := TensorProduct.of_basis_eq_span x b₁ b₂
   simp only [Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Finset.sum_singleton] at this
-  rw [← TensorProduct.smul_tmul']
-  exact this
+  rwa [← TensorProduct.smul_tmul']
 
 theorem RCLike.inner_tensor_apply {𝕜 : Type*} [RCLike 𝕜] (x y : 𝕜 ⊗[𝕜] 𝕜) :
     ⟪x, y⟫_𝕜 = ⟪LinearMap.mul' 𝕜 _ x, LinearMap.mul' 𝕜 _ y⟫_𝕜 := by
@@ -482,8 +473,7 @@ theorem LinearMap.adjoint_real_eq [hA : QuantumSet A] [hB : QuantumSet B]
           (hb.modAut (-(2 * hB.k) - 1)).toLinearMap) x, u⟫_ℂ := by
           symm
           simp only [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply]
-          rw [QuantumSet.modAut_isSymmetric]
-          rw [LinearMap.adjoint_inner_left]
+          rw [QuantumSet.modAut_isSymmetric, LinearMap.adjoint_inner_left]
           simp only [LinearMap.real_apply, starAlgebra.modAut_star]
           ring_nf
 
@@ -512,8 +502,8 @@ lemma _root_.QuantumSet.rTensor_mul_comp_lTensor_comul_eq_comul_comp_mul
     [QuantumSet A] :
     rTensor A (mul' ℂ A) ∘ₗ (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap
         ∘ₗ lTensor A (Coalgebra.comul) =
-      Coalgebra.comul ∘ₗ mul' ℂ A := by
-  exact FrobeniusAlgebra.rTensor_mul_comp_lTensor_comul_eq_comul_comp_mul
+      Coalgebra.comul ∘ₗ mul' ℂ A :=
+  FrobeniusAlgebra.rTensor_mul_comp_lTensor_comul_eq_comul_comp_mul
     (R := ℂ) (A := A)
 
 open LinearMap in
@@ -521,8 +511,8 @@ lemma _root_.QuantumSet.lTensor_mul_comp_rTensor_comul_eq_comul_comp_mul
     [QuantumSet A] :
     lTensor A (mul' ℂ A) ∘ₗ (TensorProduct.assoc ℂ _ _ _).toLinearMap
         ∘ₗ rTensor A (Coalgebra.comul) =
-      Coalgebra.comul ∘ₗ mul' ℂ A := by
-  exact FrobeniusAlgebra.lTensor_mul_comp_rTensor_comul_eq_comul_comp_mul
+      Coalgebra.comul ∘ₗ mul' ℂ A :=
+  FrobeniusAlgebra.lTensor_mul_comp_rTensor_comul_eq_comul_comp_mul
     (R := ℂ) (A := A)
 
 open scoped TensorProduct

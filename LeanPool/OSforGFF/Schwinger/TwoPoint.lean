@@ -29,8 +29,7 @@ noncomputable section
 /-- If f(n+1) → L, then f(n) → L. This is because atTop is shift-invariant. -/
 private lemma tendsto_of_tendsto_succ {α : Type*} {f : ℕ → α} {L : Filter α}
     (h : Filter.Tendsto (fun n => f (n + 1)) Filter.atTop L) :
-    Filter.Tendsto f Filter.atTop L :=
-  (Filter.tendsto_add_atTop_iff_nat 1).mp h
+    Filter.Tendsto f Filter.atTop L := (Filter.tendsto_add_atTop_iff_nat 1).mp h
 
 /-! ### Two-Point Schwinger Function Infrastructure -/
 
@@ -220,8 +219,7 @@ theorem schwingerTwoPointFunction_eq_kernel
     -- original(n+1) = if (n+1)=0 then 0 else SmearedTwo (standardBumpSequence (n+1))
     --              = SmearedTwo (standardBumpSequence (n+1))  [since n+1 ≠ 0]
     --              = SmearedTwo (φ n)
-    simp only [Nat.succ_ne_zero, dite_false]
-    exact h_smeared
+    simpa only [Nat.succ_ne_zero, dite_false] using h_smeared
   -- In Hausdorff spaces, limUnder equals the limit when it exists
   exact Filter.Tendsto.limUnder_eq h_tendsto
 

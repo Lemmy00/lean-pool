@@ -59,8 +59,7 @@ theorem Player.not_i_eq_other {i} : ¬ i = other i := by cases i <;> simp
 theorem Player.not_other_i_eq_i {i} : ¬ other i = i := by cases i <;> simp
 
 @[simp]
-theorem other_other {i} : other (other i) = i := by
-  cases i <;> simp [other]
+theorem other_other {i} : other (other i) = i := by cases i <;> simp [other]
 
 /-- Two-player game with
 - perfect information
@@ -154,8 +153,7 @@ theorem good_or_other {g : Game} (p : g.Pos) : good (g.turn p) p ∨ good (other
     apply Or.inl
     unfold good
     apply Or.inl
-    simp only [exists_prop, true_and]
-    exact E
+    simpa only [exists_prop, true_and] using E
   case neg A =>
     apply Or.inr
     unfold good
