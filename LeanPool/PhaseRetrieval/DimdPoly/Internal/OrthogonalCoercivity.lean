@@ -84,9 +84,7 @@ private theorem norm_ne_zero_of_ne_zero_pkappa_wip
       simpa using
         (Finset.single_le_sum (f := fun a : Idx d => ‖F a‖ ^ 2) (s := F.support) (a := alpha)
           (fun a _ => by positivity) hmem)
-    have hterm_pos : 0 < ‖F alpha‖ ^ 2 := by
-      have hnorm_pos : 0 < ‖F alpha‖ := norm_pos_iff.mpr hcoeff_ne
-      nlinarith
+    have hterm_pos : 0 < ‖F alpha‖ ^ 2 := pow_pos (norm_pos_iff.mpr hcoeff_ne) 2
     have hsum_pos : 0 < Finset.sum F.support (fun a : Idx d => ‖F a‖ ^ 2) :=
       lt_of_lt_of_le hterm_pos hle
     change Real.sqrt (Finset.sum F.support (fun a : Idx d => ‖F a‖ ^ 2)) = 0 at hnorm
@@ -161,11 +159,9 @@ private theorem phi1D_eq_oneDimPhi_wip
         ((Nat.factorial j : ℂ) * (Nat.choose n j : ℂ)) * (Nat.factorial (n - j) : ℂ)
             = (Nat.choose n j : ℂ) * (Nat.factorial j : ℂ) *
                 (Nat.factorial (n - j) : ℂ) := by ring
-        _ = (Nat.factorial n : ℂ) := by
-            exact_mod_cast Nat.choose_mul_factorial_mul_factorial hjn
+        _ = (Nat.factorial n : ℂ) := by exact_mod_cast Nat.choose_mul_factorial_mul_factorial hjn
         _ = ((Nat.factorial n : ℂ) / (Nat.factorial (n - j) : ℂ)) *
-              (Nat.factorial (n - j) : ℂ) := by
-            field_simp [hfac_ne]
+              (Nat.factorial (n - j) : ℂ) := by field_simp [hfac_ne]
     simpa [mul_assoc, mul_left_comm, mul_comm] using
       congrArg
         (fun x : ℂ =>
@@ -204,8 +200,7 @@ private lemma integrable_oneDimPhi_cross_gaussian_wip
       (fun z : Cd 1 => HermitekLEAN.Phi k m (z 0) *
         (starRingEnd ℂ) (HermitekLEAN.Phi k n (z 0)))
       (gammaD 1)
-  rw [gammaD]
-  rw [MeasureTheory.integrable_withDensity_iff_integrable_smul']
+  rw [gammaD, MeasureTheory.integrable_withDensity_iff_integrable_smul']
   · have hcross :
         Integrable
           (fun z : Cd 1 =>
@@ -295,8 +290,7 @@ private lemma integrable_evalPkappa_cross_wip
     intro alpha halpha
     have hconjsum :
         (starRingEnd ℂ) (∑ beta ∈ G.support, G beta * Phi kappa beta z) =
-          ∑ beta ∈ G.support, (starRingEnd ℂ) (G beta * Phi kappa beta z) := by
-      simp
+          ∑ beta ∈ G.support, (starRingEnd ℂ) (G beta * Phi kappa beta z) := by simp
     rw [hconjsum, Finset.mul_sum]
     refine Finset.sum_congr rfl ?_
     intro beta hbeta
@@ -350,10 +344,9 @@ private theorem evalPkappa_lpNorm_eq_norm_wip
     MeasureTheory.lpNorm (evalPkappa kappa F) 2 (gammaD d) = ‖F‖ := by
   calc
     MeasureTheory.lpNorm (evalPkappa kappa F) 2 (gammaD d)
-      = Real.sqrt (∫ z : Cd d, ‖evalPkappa kappa F z‖ ^ (2 : ℝ) ∂ gammaD d) := by
-          symm
-          exact gaussianL2Norm_eq_lpNorm_wip (evalPkappa kappa F)
-            (memLp_two_evalPkappa_wip hd kappa F).1
+      = Real.sqrt (∫ z : Cd d, ‖evalPkappa kappa F z‖ ^ (2 : ℝ) ∂ gammaD d) :=
+          (gaussianL2Norm_eq_lpNorm_wip (evalPkappa kappa F)
+            (memLp_two_evalPkappa_wip hd kappa F).1).symm
     _ = ‖F‖ := by
           have hpow :
               (∫ z : Cd d, ‖evalPkappa kappa F z‖ ^ (2 : ℝ) ∂ gammaD d) =
@@ -413,8 +406,7 @@ private theorem memLp_two_defectFunctionPkappa_wip
           2 * ‖evalPkappa kappa (F + G) z‖ ^ 2 + 2 * ‖evalPkappa kappa F z‖ ^ 2 := by
         nlinarith [sq_nonneg (‖evalPkappa kappa (F + G) z‖ + ‖evalPkappa kappa F z‖)]
       simpa [sq_abs] using this
-    have hnonneg : 0 ≤ defectFunctionPkappa_wip kappa F G z ^ 2 := by
-      positivity
+    have hnonneg : 0 ≤ defectFunctionPkappa_wip kappa F G z ^ 2 := by positivity
     simpa [Real.norm_eq_abs, abs_of_nonneg hnonneg] using hsqz
   simpa [Real.norm_eq_abs, abs_of_nonneg] using
     MeasureTheory.Integrable.mono' hsq hmeasSq hbound
@@ -449,8 +441,7 @@ private lemma evalPkappa_pointwise_bound_wip
     unfold defectFunctionPkappa_wip
     exact sub_le_iff_le_add.mp (le_abs_self _)
   calc
-    ‖evalPkappa kappa G z‖ = ‖evalPkappa kappa (F + G) z - evalPkappa kappa F z‖ := by
-      rw [hsub]
+    ‖evalPkappa kappa G z‖ = ‖evalPkappa kappa (F + G) z - evalPkappa kappa F z‖ := by rw [hsub]
     _ ≤ ‖evalPkappa kappa (F + G) z‖ + ‖evalPkappa kappa F z‖ := norm_sub_le _ _
     _ ≤ defectFunctionPkappa_wip kappa F G z + ‖evalPkappa kappa F z‖ + ‖evalPkappa kappa F z‖ := by
           linarith
@@ -463,13 +454,12 @@ private theorem norm_le_defect_add_two_wip
   let _ := hd
   have hdef_mem := memLp_two_defectFunctionPkappa_wip hd kappa F G
   have htwoF_mem :
-      MeasureTheory.MemLp (fun z : Cd d => 2 * ‖evalPkappa kappa F z‖) 2 (gammaD d) := by
-    exact (memLp_two_evalPkappa_wip hd kappa F).norm.const_smul (2 : ℝ)
+      MeasureTheory.MemLp (fun z : Cd d => 2 * ‖evalPkappa kappa F z‖) 2 (gammaD d) :=
+    (memLp_two_evalPkappa_wip hd kappa F).norm.const_smul (2 : ℝ)
   have hsum_mem :
       MeasureTheory.MemLp
         (defectFunctionPkappa_wip kappa F G + fun z : Cd d => 2 * ‖evalPkappa kappa F z‖)
-        2 (gammaD d) := by
-    exact hdef_mem.add htwoF_mem
+        2 (gammaD d) := hdef_mem.add htwoF_mem
   have hmono :
       MeasureTheory.lpNorm (evalPkappa kappa G) 2 (gammaD d) ≤
         MeasureTheory.lpNorm
@@ -498,8 +488,7 @@ private theorem norm_le_defect_add_two_wip
     calc
       MeasureTheory.lpNorm (fun z : Cd d => 2 * ‖evalPkappa kappa F z‖) 2 (gammaD d)
           = MeasureTheory.lpNorm
-              ((2 : ℝ) • fun z : Cd d => ‖evalPkappa kappa F z‖) 2 (gammaD d) := by
-              rfl
+              ((2 : ℝ) • fun z : Cd d => ‖evalPkappa kappa F z‖) 2 (gammaD d) := by rfl
       _ = ‖(2 : ℝ)‖ *
             MeasureTheory.lpNorm (fun z : Cd d => ‖evalPkappa kappa F z‖) 2 (gammaD d) := by
             rw [MeasureTheory.lpNorm_const_smul]
@@ -510,9 +499,8 @@ private theorem norm_le_defect_add_two_wip
       _ = 2 * ‖F‖ := by rw [evalPkappa_lpNorm_eq_norm_wip hd kappa F]
       _ = 2 := by simp [hF_norm]
   calc
-    ‖G‖ = MeasureTheory.lpNorm (evalPkappa kappa G) 2 (gammaD d) := by
-          symm
-          exact evalPkappa_lpNorm_eq_norm_wip hd kappa G
+    ‖G‖ = MeasureTheory.lpNorm (evalPkappa kappa G) 2 (gammaD d) :=
+          (evalPkappa_lpNorm_eq_norm_wip hd kappa G).symm
     _ ≤ MeasureTheory.lpNorm
           (defectFunctionPkappa_wip kappa F G + fun z : Cd d => 2 * ‖evalPkappa kappa F z‖)
           2 (gammaD d) := hmono
@@ -545,18 +533,15 @@ theorem orthogonal_coercivity
     exact mul_nonneg (le_of_lt hC_F_perp_pos) (defect_nonneg_wip hd F 0)
   · let t : ℝ := ‖G‖
     let H : Pk := (((t : ℂ)⁻¹) : ℂ) • G
-    have ht_ne : t ≠ 0 := by
-      exact norm_ne_zero_of_ne_zero_pkappa_wip hd hG
-    have ht_pos : 0 < t := by
-      exact lt_of_le_of_ne (norm_nonneg_pkappa_wip hd G) ht_ne.symm
+    have ht_ne : t ≠ 0 := norm_ne_zero_of_ne_zero_pkappa_wip hd hG
+    have ht_pos : 0 < t := lt_of_le_of_ne (norm_nonneg_pkappa_wip hd G) ht_ne.symm
     have hH_orth : OrthogonalToPk kappa F H := by
       simpa [OrthogonalToPk, H] using
         orthogonalToPk_smul_right_wip hd F G (((t : ℂ)⁻¹) : ℂ) horth
     have hH_norm : ‖H‖ = 1 := by
       dsimp [H, t]
       rw [norm_smul_pkappa_wip hd]
-      have htinv : t⁻¹ * t = 1 := by
-        field_simp [ht_ne]
+      have htinv : t⁻¹ * t = 1 := by field_simp [ht_ne]
       simpa [Complex.norm_real, Real.norm_eq_abs, abs_of_pos ht_pos,
         abs_of_nonneg (inv_nonneg.mpr (le_of_lt ht_pos)), t] using htinv
     have hG_eq : G = t • H := by
@@ -607,20 +592,19 @@ theorem orthogonal_coercivity
         calc
           ‖G‖ = t := rfl
           _ ≤ delta⁻¹ * defectPk kappa F G := ht_le_delta
-          _ ≤ C_F_perp * defectPk kappa F G := by
-            exact mul_le_mul_of_nonneg_right hdelta_inv_le (defect_nonneg_wip hd F G)
+          _ ≤ C_F_perp * defectPk kappa F G :=
+            mul_le_mul_of_nonneg_right hdelta_inv_le (defect_nonneg_wip hd F G)
     · have hge4 : 4 ≤ t := le_of_not_gt hlt4
       have htwo_defect : t ≤ 2 * defectPk kappa F G := by
-        have hdefect_nonneg : 0 ≤ defectPk kappa F G := defect_nonneg_wip hd F G
-        nlinarith
+        nlinarith [defect_nonneg_wip hd F G]
       have htwo_le_C : 2 ≤ C_F_perp := by
         dsimp [C_F_perp]
         exact le_max_left _ _
       calc
         ‖G‖ = t := rfl
         _ ≤ 2 * defectPk kappa F G := htwo_defect
-        _ ≤ C_F_perp * defectPk kappa F G := by
-          exact mul_le_mul_of_nonneg_right htwo_le_C (defect_nonneg_wip hd F G)
+        _ ≤ C_F_perp * defectPk kappa F G :=
+          mul_le_mul_of_nonneg_right htwo_le_C (defect_nonneg_wip hd F G)
 
 end
 

@@ -14,8 +14,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 theorem ite_eq_ite_iff {α : Type _} (a b c : α) :
     (∀ {p : Prop} [hp : Decidable p], @ite α p hp a c
-      = @ite α p hp b c) ↔ a = b :=
-  by
+      = @ite α p hp b c) ↔ a = b := by
   constructor
   · intro h
     exact h (p := True)
@@ -23,8 +22,7 @@ theorem ite_eq_ite_iff {α : Type _} (a b c : α) :
     simp [h]
 
 theorem ite_eq_ite_iff_of_pi {n α : Type _} [DecidableEq n] (a b c : n → α) :
-    (∀ i j : n, ite (i = j) (a i) (c i) = ite (i = j) (b i) (c i)) ↔ a = b :=
-  by
+    (∀ i j : n, ite (i = j) (a i) (c i) = ite (i = j) (b i) (c i)) ↔ a = b := by
   constructor
   · intro h
     funext i
@@ -35,23 +33,8 @@ theorem ite_eq_ite_iff_of_pi {n α : Type _} [DecidableEq n] (a b c : n → α) 
     intro i j
     rfl
 
-
--- theorem dite_add_dite {α : Type _} [Add α] (P : Prop) [Decidable P]
---     (a b : P → α) (c d : ¬P → α) :
---     ((dite P (fun x => a x) fun x => c x) + dite P (fun x => b x) fun x => d x) =
---       dite P (fun x => a x + b x) fun x => c x + d x :=
---   by
---   rw [eq_comm]
---   simp only [dite_eq_iff']
---   constructor
---   · intro h
---     simp only [h, dif_pos]
---   · intro h
---     simp only [h, dif_neg, not_false_iff]
-
 theorem hMul_dite {α : Type _} [Mul α] (P : Prop) [Decidable P] (a : α) (b : P → α) (c : ¬P → α) :
-    (a * dite P (fun x => b x) fun x => c x) = dite P (fun x => a * b x) fun x => a * c x :=
-  by
+    (a * dite P (fun x => b x) fun x => c x) = dite P (fun x => a * b x) fun x => a * c x := by
   rw [eq_comm]
   simp only [dite_eq_iff']
   constructor
@@ -61,8 +44,7 @@ theorem hMul_dite {α : Type _} [Mul α] (P : Prop) [Decidable P] (a : α) (b : 
     simp only [h, dif_neg, not_false_iff]
 
 theorem dite_hMul {α : Type _} [Mul α] (P : Prop) [Decidable P] (a : α) (b : P → α) (c : ¬P → α) :
-    (dite P (fun x => b x) fun x => c x) * a = dite P (fun x => b x * a) fun x => c x * a :=
-  by
+    (dite P (fun x => b x) fun x => c x) * a = dite P (fun x => b x * a) fun x => c x * a := by
   rw [eq_comm]
   simp only [dite_eq_iff']
   constructor

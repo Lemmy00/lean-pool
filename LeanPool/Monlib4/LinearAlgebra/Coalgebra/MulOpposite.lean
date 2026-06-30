@@ -86,9 +86,6 @@ private lemma coassoc_aux_1
   (TensorProduct.assoc R Aᵐᵒᵖ Aᵐᵒᵖ Aᵐᵒᵖ).toLinearMap ∘ₗ
     (TensorProduct.opLinearEquiv.toLinearMap
       ∘ₗ (MulOpposite.opLinearEquiv R).toLinearMap).rTensor Aᵐᵒᵖ
-  -- = 0:=
-  -- ((TensorProduct.map (MulOpposite.opLinearEquiv R).toLinearMap
-  --   (MulOpposite.opLinearEquiv R).toLinearMap)).rTensor A
   = (TensorProduct.map (MulOpposite.opLinearEquiv R).toLinearMap
       (((MulOpposite.opLinearEquiv R).toLinearMap.rTensor _)))
     ∘ₗ (TensorProduct.assoc R A A _).toLinearMap :=
@@ -106,8 +103,7 @@ private lemma coassoc_aux_2
   (MulOpposite.opLinearEquiv R).symm.toLinearMap.rTensor _
     ∘ₗ ((TensorProduct.opLinearEquiv (A := A) (B := A)).toLinearMap)
     ∘ₗ (MulOpposite.opLinearEquiv R).toLinearMap
-  = (MulOpposite.opLinearEquiv R).toLinearMap.lTensor A :=
-by
+  = (MulOpposite.opLinearEquiv R).toLinearMap.lTensor A := by
     apply TensorProduct.ext'
     intro x y
     simp
@@ -124,8 +120,7 @@ private lemma coassoc_aux3
     TensorProduct.map (MulOpposite.opLinearEquiv R).toLinearMap
         ((TensorProduct.map (MulOpposite.opLinearEquiv R).toLinearMap
       (MulOpposite.opLinearEquiv R).toLinearMap))
-        ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap :=
-by
+        ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap := by
     apply TensorProduct.ext_threefold
     intro x y z
     simp
@@ -149,8 +144,7 @@ private lemma MulOpposite_coassoc
       (comul (R := R) (A := Aᵐᵒᵖ)).rTensor Aᵐᵒᵖ ∘ₗ
         (comul (R := R) (A := Aᵐᵒᵖ)) =
     (comul (R := R) (A := Aᵐᵒᵖ)).lTensor Aᵐᵒᵖ ∘ₗ
-      (comul (R := R) (A := Aᵐᵒᵖ)) :=
-by
+      (comul (R := R) (A := Aᵐᵒᵖ)) := by
   calc
     (TensorProduct.assoc R Aᵐᵒᵖ Aᵐᵒᵖ Aᵐᵒᵖ).toLinearMap ∘ₗ
       (comul (R := R) (A := Aᵐᵒᵖ)).rTensor Aᵐᵒᵖ ∘ₗ

@@ -156,8 +156,7 @@ theorem gaussian_pairing_product_integrable_free_2point
   have hψIm_int : Integrable (fun ω => distributionPairing ω ψIm) (gaussianFreeFieldFree
     m).toMeasure := by
     have h_le : (1 : ENNReal) ≤ 2 := by norm_num
-    have h_int := MemLp.integrable h_le hψIm_mem
-    simpa [distributionPairingCLM_apply] using h_int
+    simpa [distributionPairingCLM_apply] using MemLp.integrable h_le hψIm_mem
   -- Expand the complex product: (a+bi)(c+di) = (ac-bd) + i(ad+bc)
   have h_pointwise : (fun ω => distributionPairingℂReal ω φ * distributionPairingℂReal ω ψ) =
     (fun ω => (distributionPairing ω φRe * distributionPairing ω ψRe - distributionPairing ω φIm *
@@ -181,8 +180,7 @@ theorem gaussian_pairing_product_integrable_free_2point
     -- Need to prove 2⁻¹ + 2⁻¹ = 1⁻¹, i.e., 1/2 + 1/2 = 1
     apply ENNReal.HolderTriple.mk
     -- Use the fact that inv_one gives us 1⁻¹ = 1
-    simp only [inv_one]
-    exact ENNReal.inv_two_add_inv_two
+    simpa only [inv_one] using ENNReal.inv_two_add_inv_two
   have h_ac_bd : Integrable (fun ω => distributionPairing ω φRe * distributionPairing ω ψRe -
     distributionPairing ω φIm * distributionPairing ω ψIm)
                    (gaussianFreeFieldFree m).toMeasure := by

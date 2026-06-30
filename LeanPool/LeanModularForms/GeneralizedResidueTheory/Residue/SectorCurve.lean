@@ -70,8 +70,7 @@ def sectorCurve (r : ℝ) (α : ℝ) (t : ℝ) : ℂ :=
 
 /-- The sector curve at t=0 is 0. -/
 theorem sectorCurve_zero (r : ℝ) (α : ℝ) :
-    sectorCurve r α 0 = 0 := by
-  simp [sectorCurve]
+    sectorCurve r α 0 = 0 := by simp [sectorCurve]
 
 /-- The sector curve at t=3 is 0. -/
 theorem sectorCurve_three (r : ℝ) (α : ℝ) :
@@ -82,25 +81,21 @@ theorem sectorCurve_three (r : ℝ) (α : ℝ) :
 
 /-- The sector curve is a closed curve (starts and ends at 0). -/
 theorem sectorCurve_closed (r : ℝ) (α : ℝ) :
-    sectorCurve r α 0 = sectorCurve r α 3 := by
-  rw [sectorCurve_zero, sectorCurve_three]
+    sectorCurve r α 0 = sectorCurve r α 3 := by rw [sectorCurve_zero, sectorCurve_three]
 
 /-- The sector curve at t=1 is r (the transition from radial to arc). -/
 theorem sectorCurve_one (r : ℝ) (α : ℝ) :
-    sectorCurve r α 1 = ↑r := by
-  simp [sectorCurve]
+    sectorCurve r α 1 = ↑r := by simp [sectorCurve]
 
 /-- The sector curve at t=2 is r * exp(i * alpha) (end of arc). -/
 theorem sectorCurve_two (r : ℝ) (α : ℝ) :
     sectorCurve r α 2 = ↑r * exp (I * ↑α) := by
-  simp only [sectorCurve, show ¬(2 : ℝ) ≤ 1 from by norm_num,
-    show (2 : ℝ) ≤ 2 from le_refl 2, ↓reduceIte]
-  congr 1; congr 1; push_cast; ring
+  simp only [sectorCurve, show ¬(2 : ℝ) ≤ 1 from by norm_num, show (2 : ℝ) ≤ 2 from le_refl 2,
+    ↓reduceIte]; congr 1; congr 1; push_cast; ring
 
 /-- Segment 1: for t in [0,1], the sector curve is `t * r`. -/
 theorem sectorCurve_seg1 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Icc 0 1) :
-    sectorCurve r α t = ↑(t * r) := by
-  simp [sectorCurve, ht.2]
+    sectorCurve r α t = ↑(t * r) := by simp [sectorCurve, ht.2]
 
 /-- Segment 2: for t in [1,2], the sector curve is `r * exp(i*(t-1)*alpha)`. -/
 theorem sectorCurve_seg2 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Icc 1 2) :
@@ -113,8 +108,7 @@ theorem sectorCurve_seg2 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Icc 1 2) :
 theorem sectorCurve_seg3 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Icc 2 3) :
     sectorCurve r α t = ↑((3 - t) * r) * exp (I * ↑α) := by
   rcases eq_or_lt_of_le ht.1 with rfl | h2
-  · -- t = 2: second branch applies (2 ≤ 2), result matches by computation
-    simp only [sectorCurve, show ¬(2 : ℝ) ≤ 1 from by norm_num,
+  · simp only [sectorCurve, show ¬(2 : ℝ) ≤ 1 from by norm_num,
       show (2 : ℝ) ≤ 2 from le_refl 2, ↓reduceIte]
     push_cast; ring_nf
   · simp only [sectorCurve, if_neg (not_le.mpr (lt_trans one_lt_two h2)),
@@ -124,33 +118,27 @@ theorem sectorCurve_seg3 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Icc 2 3) :
 theorem sectorCurve_continuousOn (r : ℝ) (α : ℝ) :
     ContinuousOn (sectorCurve r α) (Icc 0 3) := by
   have h_union : Icc (0 : ℝ) 3 = Icc 0 1 ∪ Icc 1 2 ∪ Icc 2 3 := by
-    ext x; simp only [mem_Icc, mem_union]; constructor
+    ext x; simp only [mem_Icc, mem_union]
+    constructor
     · intro ⟨h0, h3⟩
       by_cases h1 : x ≤ 1
-      · left; left; exact ⟨h0, h1⟩
-      · push Not at h1
-        by_cases h2 : x ≤ 2
-        · left; right; exact ⟨le_of_lt h1, h2⟩
-        · push Not at h2; right; exact ⟨le_of_lt h2, h3⟩
-    · rintro ((⟨h0, h1⟩ | ⟨h1, h2⟩) | ⟨h2, h3⟩)
-      · exact ⟨h0, le_trans h1 (by norm_num)⟩
-      · exact ⟨le_trans (by norm_num) h1, le_trans h2 (by norm_num)⟩
-      · exact ⟨le_trans (by norm_num) h2, h3⟩
+      · exact Or.inl (Or.inl ⟨h0, h1⟩)
+      · push Not at h1; by_cases h2 : x ≤ 2
+        · exact Or.inl (Or.inr ⟨le_of_lt h1, h2⟩)
+        · push Not at h2; exact Or.inr ⟨le_of_lt h2, h3⟩
+    · rintro ((⟨h0, h1⟩ | ⟨h1, h2⟩) | ⟨h2, h3⟩) <;> exact ⟨by linarith, by linarith⟩
   rw [h_union]
-  have hc1 : ContinuousOn (sectorCurve r α) (Icc 0 1) := by
-    apply ContinuousOn.congr _ (fun t ht => sectorCurve_seg1 r α t ht)
-    exact (continuous_ofReal.comp (continuous_id.mul continuous_const)).continuousOn
-  have hc2 : ContinuousOn (sectorCurve r α) (Icc 1 2) := by
-    apply ContinuousOn.congr _ (fun t ht => sectorCurve_seg2 r α t ht)
-    apply ContinuousOn.mul continuousOn_const
-    exact (Complex.continuous_exp.comp
-      (continuous_const.mul (continuous_ofReal.comp
-        ((continuous_id.sub continuous_const).mul continuous_const)))).continuousOn
-  have hc3 : ContinuousOn (sectorCurve r α) (Icc 2 3) := by
-    apply ContinuousOn.congr _ (fun t ht => sectorCurve_seg3 r α t ht)
-    apply ContinuousOn.mul _ continuousOn_const
-    exact (continuous_ofReal.comp
-      ((continuous_const.sub continuous_id).mul continuous_const)).continuousOn
+  have hc1 : ContinuousOn (sectorCurve r α) (Icc 0 1) :=
+    (continuous_ofReal.comp (continuous_id.mul continuous_const)).continuousOn.congr
+      (fun t ht => sectorCurve_seg1 r α t ht)
+  have hc2 : ContinuousOn (sectorCurve r α) (Icc 1 2) :=
+    (continuousOn_const.mul (Complex.continuous_exp.comp (continuous_const.mul
+      (continuous_ofReal.comp ((continuous_id.sub continuous_const).mul
+        continuous_const)))).continuousOn).congr (fun t ht => sectorCurve_seg2 r α t ht)
+  have hc3 : ContinuousOn (sectorCurve r α) (Icc 2 3) :=
+    ((continuous_ofReal.comp ((continuous_const.sub continuous_id).mul
+      continuous_const)).continuousOn.mul continuousOn_const).congr
+      (fun t ht => sectorCurve_seg3 r α t ht)
   exact ((hc1.union_of_isClosed hc2 isClosed_Icc isClosed_Icc).union_of_isClosed hc3
     (isClosed_Icc.union isClosed_Icc) isClosed_Icc)
 
@@ -177,12 +165,8 @@ theorem deriv_sectorCurve_seg1 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Ioo 0 
     filter_upwards [h_nhds] with s hs
     simp only [sectorCurve, if_pos (le_of_lt (mem_Iio.mp hs))]
   rw [Filter.EventuallyEq.deriv_eq h_eq]
-  have : HasDerivAt (fun s => (↑(s * r) : ℂ)) (↑r) t := by
-    have h1 : HasDerivAt (fun s => s * r) r t := by
-      have := (hasDerivAt_id t).mul_const r
-      simpa using this
-    exact h1.ofReal_comp
-  exact this.deriv
+  have h1 : HasDerivAt (fun s => s * r) r t := by simpa using (hasDerivAt_id t).mul_const r
+  exact h1.ofReal_comp.deriv
 
 /-- Derivative on segment 2 (t in (1,2)):
   `deriv (sectorCurve r alpha) t = r * (I * alpha) * exp(I * (t-1) * alpha)`. -/
@@ -196,8 +180,7 @@ theorem deriv_sectorCurve_seg2 (r : ℝ) (α : ℝ) (t : ℝ) (ht : t ∈ Ioo 1 
   rw [Filter.EventuallyEq.deriv_eq h_eq]
   have h_inner : HasDerivAt (fun s => (↑((s - 1) * α) : ℂ)) (↑α) t := by
     have h1 : HasDerivAt (fun s => (s - 1) * α) α t := by
-      have := ((hasDerivAt_id t).sub_const 1).mul_const α
-      simpa using this
+      simpa using ((hasDerivAt_id t).sub_const 1).mul_const α
     exact h1.ofReal_comp
   have h_exp : HasDerivAt (fun s => exp (I * ↑((s - 1) * α)))
       (I * ↑α * exp (I * ↑((t - 1) * α))) t := by
@@ -662,13 +645,8 @@ theorem pv_sector_dz_over_z (r : ℝ) (hr : 0 < r) (α : ℝ)
           else 0)
       (𝓝[>] 0) (𝓝 (I * ↑α)) :=
     tendsto_const_nhds.congr' (h_ev.mono (fun ε h => h.symm))
-  constructor
-  · -- The PV exists
-    exact ⟨I * ↑α, h_tendsto⟩
-  · -- The PV value is I * α
-    have : cauchyPrincipalValue' (fun z => z⁻¹) (sectorCurve r α) 0 3 0 = I * ↑α := by
-      unfold cauchyPrincipalValue'
-      exact h_tendsto.limUnder_eq
-    exact this
+  refine ⟨⟨I * ↑α, h_tendsto⟩, ?_⟩
+  unfold cauchyPrincipalValue'
+  exact h_tendsto.limUnder_eq
 
 end

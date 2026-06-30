@@ -146,8 +146,7 @@ private lemma integral_addCircle_volume_eq_smul_haar
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : AddCircle T → E) :
     ∫ t : AddCircle T, f t = T • ∫ t : AddCircle T, f t ∂AddCircle.haarAddCircle := by
-  rw [AddCircle.volume_eq_smul_haarAddCircle]
-  rw [integral_smul_measure]
+  rw [AddCircle.volume_eq_smul_haarAddCircle, integral_smul_measure]
   simp [ENNReal.toReal_ofReal T_pos.le]
 
 /-- Integral of periodic function over `Ioo(-π, π)` equals integral over `AddCircle T`. -/
@@ -184,10 +183,8 @@ private lemma norm_polyEvalCircle_le {D : ℕ} (a : Fin D → ℂ) (r : ℝ) (t 
         calc ‖a k‖ * ‖r‖ ^ (k.val + 1) * ‖fourier ((k.val + 1 : ℕ) : ℤ) t‖
             ≤ ‖a k‖ * ‖r‖ ^ (k.val + 1) * ‖(fourier ((k.val + 1 : ℕ) : ℤ) : C(AddCircle T, ℂ))‖ :=
               mul_le_mul_of_nonneg_left (ContinuousMap.norm_coe_le_norm _ _) (by positivity)
-          _ = ‖a k‖ * ‖r‖ ^ (k.val + 1) := by
-              rw [fourier_norm]; ring
-          _ = ‖a k‖ * |r| ^ (k.val + 1) := by
-              rw [Real.norm_eq_abs]
+          _ = ‖a k‖ * ‖r‖ ^ (k.val + 1) := by rw [fourier_norm]; ring
+          _ = ‖a k‖ * |r| ^ (k.val + 1) := by rw [Real.norm_eq_abs]
 
 /-- ‖polyEvalCircle a r t‖² ≤ D * ∑ ‖a_k‖² * r^{2(k+1)}, a convenient bound.
     Actually, we prove the simpler bound: ≤ (∑ ‖a_k‖ * |r|^{k+1})² . -/
@@ -295,8 +292,7 @@ private lemma integrableOn_polar_norm {D : ℕ} (a : Fin D → ℂ) :
             Real.exp (-r ^ 2))‖ =
           ∫ θ in Set.Icc (-Real.pi) Real.pi,
           ‖r * (‖polyEvalCircle a r (QuotientAddGroup.mk θ)‖ ^ 2 *
-            Real.exp (-r ^ 2))‖ := by
-        intro r; exact (integral_Icc_eq_integral_Ioo).symm
+            Real.exp (-r ^ 2))‖ := by intro r; exact (integral_Icc_eq_integral_Ioo).symm
       simp_rw [hIoo_eq_Icc]
       exact hcont_int.aestronglyMeasurable.mono_measure Measure.restrict_le_self
     · -- Pointwise norm bound
@@ -426,24 +422,18 @@ private lemma integrableOn_polar_norm {D : ℕ} (a : Fin D → ℂ) :
               -- With a = r^(D-1): (1+r^(D-1))²*C² ≤ 2*(1+(r^(D-1))²)*C² = 2*(1+r^(2*(D-1)))*C²
               have hrd := pow_nonneg hr_nn (D - 1)
               have hsq2 : ((1 + r ^ (D - 1)) * C) ^ 2 ≤
-                  2 * (1 + (r ^ (D - 1)) ^ 2) * C ^ 2 := by
-                nlinarith [sq_nonneg (1 - r ^ (D - 1))]
+                  2 * (1 + (r ^ (D - 1)) ^ 2) * C ^ 2 := by nlinarith [sq_nonneg (1 - r ^ (D - 1))]
               -- r^3 * 2 * (1 + (r^(D-1))²) * C² ≤ 4 * (r^3 + r^3*(r^(D-1))²) * C²
               -- r^3 * (r^(D-1))² = r^(2D+1)
               have hpow_eq : r ^ 3 * (r ^ (D - 1)) ^ 2 = r * r ^ (D * 2) := by
-                have hD1 : D - 1 + 1 = D := Nat.succ_pred_eq_of_pos hD_pos
-                have hexp_eq : 3 + (D - 1) * 2 = 1 + D * 2 := by
-                  have := Nat.sub_add_cancel (show 1 ≤ D from hD_pos)
-                  nlinarith
+                have hexp_eq : 3 + (D - 1) * 2 = 1 + D * 2 := by omega
                 rw [← pow_mul, ← pow_add, hexp_eq, pow_add, pow_one]
               calc r ^ 3 * (∑ x, r ^ x.val * ‖a x‖) ^ 2
                   ≤ r ^ 3 * (2 * (1 + (r ^ (D - 1)) ^ 2) * C ^ 2) := by
                     exact mul_le_mul_of_nonneg_left
                       (le_trans hsq hsq2) (pow_nonneg hr_nn 3)
-                _ = 2 * C ^ 2 * (r ^ 3 + r ^ 3 * (r ^ (D - 1)) ^ 2) := by
-                    ring
-                _ = 2 * C ^ 2 * (r ^ 3 + r * r ^ (D * 2)) := by
-                    rw [hpow_eq]
+                _ = 2 * C ^ 2 * (r ^ 3 + r ^ 3 * (r ^ (D - 1)) ^ 2) := by ring
+                _ = 2 * C ^ 2 * (r ^ 3 + r * r ^ (D * 2)) := by rw [hpow_eq]
                 _ ≤ r * r ^ (D * 2) * C ^ 2 * 4 + r ^ 3 * C ^ 2 * 4 := by
                     nlinarith [pow_nonneg hr_nn 3,
                       mul_nonneg hr_nn (pow_nonneg hr_nn (D * 2)),
@@ -702,8 +692,7 @@ private lemma radial_gaussian_integral (n : ℕ) :
     · congr 1; congr 1
       rw [← rpow_natCast r 2]
       norm_num
-  rw [setIntegral_congr_fun measurableSet_Ioi pow_eq]
-  rw [integral_rpow_mul_exp_neg_rpow hp hq]
+  rw [setIntegral_congr_fun measurableSet_Ioi pow_eq, integral_rpow_mul_exp_neg_rpow hp hq]
   -- Now we have: 2 * (1/2 * Γ((2n+2)/2)) = n!
   -- (2n+2)/2 = n+1, and Γ(n+1) = n!
   have h1 : (2 * (n : ℝ) + 1 + 1) / 2 = ↑n + 1 := by ring
@@ -713,8 +702,7 @@ private lemma radial_gaussian_integral (n : ℕ) :
 -- Helper: ‖polyEval a z‖ = ‖polyEvalCircle a r (mk θ)‖ when z = polarCoord.symm(r, θ)
 private lemma norm_polyEval_eq_norm_polyEvalCircle {D : ℕ} (a : Fin D → ℂ) (r : ℝ) (θ : ℝ) :
     ‖polyEval a (Complex.polarCoord.symm (r, θ))‖ =
-    ‖polyEvalCircle a r (QuotientAddGroup.mk θ)‖ := by
-  rw [polyEval_polarCoord_eq]
+    ‖polyEvalCircle a r (QuotientAddGroup.mk θ)‖ := by rw [polyEval_polarCoord_eq]
 
 -- The polar form of the Gaussian integral for ‖U‖²
 private lemma fockNorm_polar {D : ℕ} (a : Fin D → ℂ) :
@@ -793,8 +781,7 @@ theorem fockNorm_eq_gaussian_integral {D : ℕ} (a : Fin D → ℂ) :
     rw [Finset.mul_sum]
     congr 1
     ext k
-    have : (r ^ 2) ^ (k.val + 1) = r ^ (2 * (k.val + 1)) := by
-      rw [← pow_mul]
+    have : (r ^ 2) ^ (k.val + 1) = r ^ (2 * (k.val + 1)) := by rw [← pow_mul]
     rw [this]
     ring
   simp_rw [integrand_eq]

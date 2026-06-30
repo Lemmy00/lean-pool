@@ -44,6 +44,9 @@ open BigOperators MeasureTheory Complex TopologicalSpace Finsupp
 
 noncomputable section
 
+private lemma real_inner_eq_mul (a b : ℝ) : @inner ℝ ℝ _ a b = b * a :=
+  RCLike.inner_apply a b
+
 /-! ## CF constantly 1 implies random variable is 0 a.e. -/
 
 /-- If X : Ω → ℝ is measurable and ∫ exp(I * ↑(t * X(ω))) dν = 1 for all t ∈ ℝ,
@@ -77,9 +80,8 @@ lemma ae_eq_zero_of_charfun_eq_one {Ω : Type*} [MeasurableSpace Ω]
   -- Step 2: Deduce X = 0 a.e.
   have h_ae : ∀ᵐ y ∂(ν.map X), y = 0 := by
     rw [h_eq]; exact ae_dirac_iff (measurableSet_singleton 0) |>.mpr rfl
-  rw [show (∀ᵐ ω ∂ν, X ω = 0) ↔ ∀ᵐ y ∂(ν.map X), y = 0 from
+  rwa [show (∀ᵐ ω ∂ν, X ω = 0) ↔ ∀ᵐ y ∂(ν.map X), y = 0 from
     (ae_map_iff hX.aemeasurable (measurableSet_singleton 0)).symm]
-  exact h_ae
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
@@ -297,10 +299,9 @@ lemma linear_combination_ae
           -(t * ∑ j, β j * ω' (e j)) from by
         rw [Finset.mul_sum, ← Finset.sum_neg_distrib]; congr 1; ext j; ring]
     rw [h_sum_x, h_normalized] at h
-    rw [show (fun ω' => exp (I * ↑(t * X ω'))) =
+    rwa [show (fun ω' => exp (I * ↑(t * X ω'))) =
       (fun ω' => exp (I * ↑(∑ i : Fin (k + 1), s' i * ω' (x' i)))) from by
       funext ω'; congr 2; exact_mod_cast (h_sum_ω ω').symm]
-    exact h
   have := ae_eq_zero_of_charfun_eq_one hX_meas hX_cf
   filter_upwards [this] with ω hω
   linarith [show X ω = 0 from hω]
@@ -500,12 +501,6 @@ private lemma gs_seminorm_add_kernel (p : Seminorm ℝ F) (x z : F) (hz : p z = 
   · calc p x = p (x + z + (-z)) := by congr 1; abel
     _ ≤ p (x + z) + p (-z) := map_add_le_add p _ _
     _ = p (x + z) := by rw [map_neg_eq_map, hz, add_zero]
-
-omit [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] in
-private lemma gs_seminorm_sub_kernel (p : Seminorm ℝ F) (x z : F) (hz : p z = 0) :
-    p (x - z) = p x := by
-  rw [sub_eq_add_neg]
-  exact gs_seminorm_add_kernel p x (-z) (by rwa [map_neg_eq_map])
 
 omit [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] in
 private lemma gs_innerProd_sub_left (p : Seminorm ℝ F) (hp : p.IsHilbertian)
@@ -867,14 +862,12 @@ private lemma joint_kernel_bound_finite
     Measure.isProbabilityMeasure_map h_meas_z.aemeasurable
   let μ' : ProbabilityMeasure V := ⟨μ, h_prob⟩
   -- Step 1: Coordinate access: (eval_z ω) i = ω (z i)
-  have h_coord : ∀ (ω : E → ℝ) (i : Fin (n + 1)), (eval_z ω) i = ω (z i) := by
-    intro ω i; rfl
+  have h_coord : ∀ (ω : E → ℝ) (i : Fin (n + 1)), (eval_z ω) i = ω (z i) := fun _ _ => rfl
   -- Step 2: Inner product on V: ⟨eval_z(ω), v⟩ = ∑ j, v j * ω(z j)
   have h_inner : ∀ (ω : E → ℝ) (v : V),
       @inner ℝ V _ (eval_z ω) v = ∑ j, v j * ω (z j) := by
     intro ω v; erw [PiLp.inner_apply]
-    simp only [show ∀ (a b : ℝ), @inner ℝ ℝ _ a b = b * a from
-      fun a b => RCLike.inner_apply a b, h_coord]
+    simp only [real_inner_eq_mul, h_coord]
   -- Step 3: CF of μ' equals v ↦ Φ(∑ vⱼ zⱼ)
   have h_cf : ∀ v : V, charFun μ'.toMeasure v = Φ (∑ i, v i • z i) := by
     intro v; rw [charFun_apply]
@@ -903,8 +896,7 @@ private lemma joint_kernel_bound_finite
           apply mul_le_mul_of_nonneg_left _ hCinv_nn
           apply integral_mono
           · have h1 := gaussDensity_mul_charFun_re_integrable' μ' _ (fun _ => rfl) σ hσ
-            have h2 := gaussDensity_integrable' (V := V) σ hσ
-            exact h2.sub h1 |>.congr
+            exact (gaussDensity_integrable' (V := V) σ hσ).sub h1 |>.congr
               (Filter.Eventually.of_forall fun x => by simp [Pi.sub_apply]; ring)
           · exact (gaussDensity_integrable' (V := V) σ hσ).mul_const ε_q
           · intro x
@@ -1028,8 +1020,7 @@ private lemma joint_kernel_bound_finite
       lt_trans (by positivity : (0 : ℝ) < ε_q / (ε_q + η)) h_c_lb
     calc (ν {ω | δ ≤ S ω}).toReal
         ≤ ε_q / (1 - Real.exp (-(σ₀ ^ 2 * δ / 2))) := by
-          rw [le_div_iff₀ h_c_pos, mul_comm]
-          exact h_bound
+          rwa [le_div_iff₀ h_c_pos, mul_comm]
       _ < ε_q / (ε_q / (ε_q + η)) := by
           apply div_lt_div_of_pos_left hε_q (by positivity) h_c_lb
       _ = ε_q + η := by field_simp
@@ -1216,9 +1207,8 @@ private lemma kernel_concentration_bound
       let c_list : Fin n → ℕ →₀ ℚ := fun j => f (good.equivFin.symm j)
       have h_c_supp : ∀ j, (c_list j).support ⊆ Finset.range N := by
         intro j
-        have := (good.equivFin.symm j).2
-        simp only [good, Finset.mem_filter, Finset.mem_univ, true_and] at this
-        exact this
+        simpa only [good, Finset.mem_filter, Finset.mem_univ, true_and]
+          using (good.equivFin.symm j).2
       -- {∃ i ∈ good, ω(z(f i)) ≠ 0} = {∃ j : Fin n, ω(z(c_list j)) ≠ 0}
       have h_set_eq : {ω : E → ℝ | ∃ i ∈ good, ω (z (f i)) ≠ 0} =
           {ω | ∃ j : Fin n, ω (z (c_list j)) ≠ 0} := by
@@ -1333,8 +1323,7 @@ private lemma tail_bound_uniform_gaussian_average
   have h_inner_V : ∀ (ω : E → ℝ) (v : V),
       @inner ℝ V _ (eval_e ω) v = ∑ j, v j * ω (e j) := by
     intro ω v; erw [PiLp.inner_apply]
-    simp only [show ∀ (a b : ℝ), @inner ℝ ℝ _ a b = b * a from
-      fun a b => RCLike.inner_apply a b, h_coord]
+    simp only [real_inner_eq_mul, h_coord]
   have h_cf : ∀ v : V, charFun μ'.toMeasure v = Φ (∑ i, v i • e i) := by
     intro v; rw [charFun_apply]
     change ∫ y : V, cexp (@inner ℝ V _ y v * I) ∂(ν.map eval_e) = Φ (∑ i, v i • e i)
@@ -1372,8 +1361,7 @@ private lemma tail_bound_uniform_gaussian_average
     intro v
     change @inner ℝ V _ v (S_fun v) = _
     erw [PiLp.inner_apply]
-    simp_rw [show ∀ (a b : ℝ), @inner ℝ ℝ _ a b = b * a from
-      fun a b => RCLike.inner_apply a b, hS_coord', Finset.sum_mul]
+    simp_rw [real_inner_eq_mul, hS_coord', Finset.sum_mul]
     rw [← Seminorm.innerProd_self p_inner, p_inner.innerProd_sum_left hp_inner]
     simp_rw [gs_innerProd_sum_right p_inner hp_inner,
       p_inner.innerProd_smul_left hp_inner, gs_innerProd_smul_right p_inner hp_inner]
@@ -1384,8 +1372,7 @@ private lemma tail_bound_uniform_gaussian_average
       have h_expand_inner : ∀ (a b : V),
           @inner ℝ V _ (S_fun a) b = ∑ j, ∑ l, Mij j l * a l * b j := by
         intro a b; erw [PiLp.inner_apply]
-        simp_rw [show ∀ (a b : ℝ), @inner ℝ ℝ _ a b = b * a from
-          fun a b => RCLike.inner_apply a b, hS_coord', Finset.mul_sum]
+        simp_rw [real_inner_eq_mul, hS_coord', Finset.mul_sum]
         congr 1; ext j; congr 1; ext l; ring
       rw [h_expand_inner]
       rw [show @inner ℝ V _ v (S_fun w) = @inner ℝ V _ (S_fun w) v from
@@ -1427,14 +1414,12 @@ private lemma tail_bound_uniform_gaussian_average
       have h_single_left : ∀ (v : V),
           @inner ℝ V _ (EuclideanSpace.single j 1) v = v j := by
         intro v; erw [PiLp.inner_apply]
-        simp only [show ∀ (a b : ℝ), @inner ℝ ℝ _ a b = b * a from
-          fun a b => RCLike.inner_apply a b]
+        simp only [real_inner_eq_mul]
         simp [PiLp.single_apply]
       have h_single_right : ∀ (v : V),
           @inner ℝ V _ v (EuclideanSpace.single l 1) = v l := by
         intro v; erw [PiLp.inner_apply]
-        simp only [show ∀ (a b : ℝ), @inner ℝ ℝ _ a b = b * a from
-          fun a b => RCLike.inner_apply a b]
+        simp only [real_inner_eq_mul]
         simp [PiLp.single_apply]
       simp only [h_single_left, h_single_right, PiLp.single_apply] at key
       exact key.symm.symm
@@ -1721,9 +1706,7 @@ theorem nuclear_cylindrical_concentration
   set m := m₀ + 1
   -- Step 3: HS constant for embedding p m₀ → p m
   obtain ⟨h_le_m, C_HS, h_HS_bound⟩ := hp_hs m₀
-  have hC_HS : 0 ≤ C_HS := by
-    have := h_HS_bound 0 Fin.elim0 (fun i => Fin.elim0 i)
-    exact this
+  have hC_HS : 0 ≤ C_HS := h_HS_bound 0 Fin.elim0 (fun i => Fin.elim0 i)
   -- Step 4: Quadratic bound on kernel elements
   have h_kernel_quad : ∀ x : E, (p m) x = 0 → ∀ t : ℝ,
       1 - (Φ (t • x)).re ≤ ε / 8 := by

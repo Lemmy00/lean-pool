@@ -44,6 +44,18 @@ namespace UpperBound
 open scoped BigOperators
 open LocalRule
 
+/-- The cardinality of a 4-way disjunction subtype is bounded by the sum of the parts. -/
+private lemma card_or4_le {α : Type*} [Fintype α] (p q r s : α → Prop)
+    [DecidablePred p] [DecidablePred q] [DecidablePred r] [DecidablePred s] :
+    Fintype.card {e : α // p e ∨ q e ∨ r e ∨ s e} ≤
+      Fintype.card {e : α // p e} +
+        (Fintype.card {e : α // q e} +
+          (Fintype.card {e : α // r e} + Fintype.card {e : α // s e})) := by
+  refine le_trans (Fintype.card_subtype_or (p := p) (q := fun e => q e ∨ r e ∨ s e)) ?_
+  refine Nat.add_le_add_left ?_ _
+  refine le_trans (Fintype.card_subtype_or (p := q) (q := fun e => r e ∨ s e)) ?_
+  exact Nat.add_le_add_left (Fintype.card_subtype_or (p := r) (q := s)) _
+
 /-!
 ### `n = 9`
 
@@ -67,8 +79,7 @@ abbrev Small9 : Type := Set.Iio two9
 /-- Imported auxiliary declaration for the 2-coloring one-round formalization. -/
 abbrev Big9 : Type := Set.Ici two9
 
-lemma card_Small9 : Fintype.card Small9 = 4 := by
-  simp [Small9, two9]
+lemma card_Small9 : Fintype.card Small9 = 4 := by simp [Small9, two9]
 
 lemma card_Big9 : Fintype.card Big9 = 5 := by
   -- `simp` reduces the card to `n - 4`, then `decide` finishes.
@@ -78,11 +89,9 @@ lemma card_Big9 : Fintype.card Big9 = 5 := by
 def round9 (a : Sym9) : Bool :=
   decide (two9 ≤ a)
 
-@[simp] lemma round9_eq_true {a : Sym9} : round9 a = true ↔ two9 ≤ a := by
-  simp [round9]
+@[simp] lemma round9_eq_true {a : Sym9} : round9 a = true ↔ two9 ≤ a := by simp [round9]
 
-@[simp] lemma round9_eq_false {a : Sym9} : round9 a = false ↔ a < two9 := by
-  simp [round9, not_le]
+@[simp] lemma round9_eq_false {a : Sym9} : round9 a = false ↔ a < two9 := by simp [round9, not_le]
 
 /-- Imported auxiliary declaration for the 2-coloring one-round formalization. -/
 abbrev f9 : Coloring9 :=
@@ -107,55 +116,30 @@ private abbrev Edge1001 : Type := {e : Edge n // pat1001 e}
 private abbrev Edge0110 : Type := {e : Edge n // pat0110 e}
 
 private lemma card_edge0000 : Fintype.card Edge0000 = 24 := by
-  classical
-  have h :
-      Fintype.card Edge0000 = (Fintype.card Small9).descFactorial 4 := by
-    exact EdgePatterns.card_pat0000 (n := n) (two := two9)
-  have hnum : (Fintype.card Small9).descFactorial 4 = 24 := by
-    calc
-      (Fintype.card Small9).descFactorial 4 = (4 : Nat).descFactorial 4 := by
-        rw [card_Small9]
-      _ = 24 := by decide
-  exact h.trans hnum
+  have h : Fintype.card Edge0000 = (Fintype.card Small9).descFactorial 4 :=
+    EdgePatterns.card_pat0000 (n := n) (two := two9)
+  rw [h, card_Small9]
+  decide
 
 private lemma card_edge1111 : Fintype.card Edge1111 = 120 := by
-  classical
-  have h :
-      Fintype.card Edge1111 = (Fintype.card Big9).descFactorial 4 := by
-    exact EdgePatterns.card_pat1111 (n := n) (two := two9)
-  have hnum : (Fintype.card Big9).descFactorial 4 = 120 := by
-    have hBig : Fintype.card Big9 = 5 := card_Big9
-    rw [hBig]
-    decide
-  exact h.trans hnum
+  have h : Fintype.card Edge1111 = (Fintype.card Big9).descFactorial 4 :=
+    EdgePatterns.card_pat1111 (n := n) (two := two9)
+  rw [h, card_Big9]
+  decide
 
 private lemma card_edge1001 : Fintype.card Edge1001 = 240 := by
-  classical
-  have h :
-      Fintype.card Edge1001 =
-        (Fintype.card Big9).descFactorial 2 * (Fintype.card Small9).descFactorial 2 := by
-    exact EdgePatterns.card_pat1001 (n := n) (two := two9)
-  have hnum :
-      (Fintype.card Big9).descFactorial 2 * (Fintype.card Small9).descFactorial 2 = 240 := by
-    have hBig : Fintype.card Big9 = 5 := card_Big9
-    have hSmall : Fintype.card Small9 = 4 := card_Small9
-    rw [hBig, hSmall]
-    decide
-  exact h.trans hnum
+  have h : Fintype.card Edge1001 =
+      (Fintype.card Big9).descFactorial 2 * (Fintype.card Small9).descFactorial 2 :=
+    EdgePatterns.card_pat1001 (n := n) (two := two9)
+  rw [h, card_Big9, card_Small9]
+  decide
 
 private lemma card_edge0110 : Fintype.card Edge0110 = 240 := by
-  classical
-  have h :
-      Fintype.card Edge0110 =
-        (Fintype.card Big9).descFactorial 2 * (Fintype.card Small9).descFactorial 2 := by
-    exact EdgePatterns.card_pat0110 (n := n) (two := two9)
-  have hnum :
-      (Fintype.card Big9).descFactorial 2 * (Fintype.card Small9).descFactorial 2 = 240 := by
-    have hBig : Fintype.card Big9 = 5 := card_Big9
-    have hSmall : Fintype.card Small9 = 4 := card_Small9
-    rw [hBig, hSmall]
-    decide
-  exact h.trans hnum
+  have h : Fintype.card Edge0110 =
+      (Fintype.card Big9).descFactorial 2 * (Fintype.card Small9).descFactorial 2 :=
+    EdgePatterns.card_pat0110 (n := n) (two := two9)
+  rw [h, card_Big9, card_Small9]
+  decide
 
 private lemma edgeCount_9 : edgeCount n = 3024 := by
   classical
@@ -166,8 +150,7 @@ private lemma edgeCount_9 : edgeCount n = 3024 := by
           invFun := fun x => ⟨x, x.injective⟩
           left_inv := by intro e; apply Subtype.ext; funext i; rfl
           right_inv := by intro x; ext i; rfl }
-    have hcongr : edgeCount n = Fintype.card (Fin 4 ↪ Sym n) := by
-      simpa [edgeCount] using this
+    have hcongr : edgeCount n = Fintype.card (Fin 4 ↪ Sym n) := by simpa [edgeCount] using this
     simp [hcongr, Sym, n, Fintype.card_embedding_eq]
   exact this.trans (by decide : (9 : Nat).descFactorial 4 = 3024)
 
@@ -191,61 +174,19 @@ theorem monoFraction_f9_le_13_63 : monoFraction f9 ≤ (13 : ℚ) / 63 := by
         ≤
           Fintype.card Edge0000
             + (Fintype.card Edge1111 + (Fintype.card Edge1001 + Fintype.card Edge0110)) := by
-    -- Break into three applications of `Fintype.card_subtype_or`,
-    -- avoiding re-association simp loops.
-    have h0 :
-        Fintype.card {e : Edge n // pat0000 e ∨ (pat1111 e ∨ pat1001 e ∨ pat0110 e)}
-          ≤ Fintype.card {e : Edge n // pat0000 e}
-              + Fintype.card {e : Edge n // (pat1111 e ∨ pat1001 e ∨ pat0110 e)} :=
-      Fintype.card_subtype_or
-        (p := pat0000)
-        (q := fun e => pat1111 e ∨ pat1001 e ∨ pat0110 e)
-    have h1 :
-        Fintype.card {e : Edge n // pat1111 e ∨ (pat1001 e ∨ pat0110 e)}
-          ≤ Fintype.card {e : Edge n // pat1111 e}
-              + Fintype.card {e : Edge n // (pat1001 e ∨ pat0110 e)} :=
-      Fintype.card_subtype_or
-        (p := pat1111)
-        (q := fun e => pat1001 e ∨ pat0110 e)
-    have h2 :
-        Fintype.card {e : Edge n // pat1001 e ∨ pat0110 e}
-          ≤
-            Fintype.card {e : Edge n // pat1001 e}
-              + Fintype.card {e : Edge n // pat0110 e} :=
-      Fintype.card_subtype_or (p := pat1001) (q := pat0110)
-    have hRest :
-        Fintype.card {e : Edge n // (pat1111 e ∨ pat1001 e ∨ pat0110 e)}
-          ≤ Fintype.card {e : Edge n // pat1111 e}
-              + (Fintype.card {e : Edge n // pat1001 e}
-                + Fintype.card {e : Edge n // pat0110 e}) := by
-      -- `pat1111 ∨ pat1001 ∨ pat0110` is definitionally
-      -- `pat1111 ∨ (pat1001 ∨ pat0110)`.
-      exact le_trans h1 (Nat.add_le_add_left h2 (Fintype.card {e : Edge n // pat1111 e}))
-    have hAll :
-        Fintype.card {e : Edge n // pat0000 e ∨ pat1111 e ∨ pat1001 e ∨ pat0110 e}
-          ≤ Fintype.card {e : Edge n // pat0000 e}
-              + (Fintype.card {e : Edge n // pat1111 e}
-                + (Fintype.card {e : Edge n // pat1001 e}
-                  + Fintype.card {e : Edge n // pat0110 e})) := by
-      -- `pat0000 ∨ pat1111 ∨ pat1001 ∨ pat0110` is definitionally
-      -- `pat0000 ∨ (pat1111 ∨ pat1001 ∨ pat0110)`.
-      exact le_trans h0 (Nat.add_le_add_left hRest (Fintype.card {e : Edge n // pat0000 e}))
-    -- Rewrite the subtype cards as `Edge....` by unfolding the local type synonyms.
-    dsimp [Edge0000, Edge1111, Edge1001, Edge0110]
-    exact hAll
+    dsimp only [Edge0000, Edge1111, Edge1001, Edge0110]
+    exact card_or4_le pat0000 pat1111 pat1001 pat0110
   have hmonoNat : monoCount f9 ≤ 624 := by
     have : monoCount f9 ≤
         Fintype.card Edge0000
           + (Fintype.card Edge1111 + (Fintype.card Edge1001 + Fintype.card Edge0110)) := by
       simpa [hmonoPatterns] using hUnion
     simpa [card_edge0000, card_edge1111, card_edge1001, card_edge0110, Nat.add_assoc] using this
-  have hcount : (monoCount f9 : ℚ) ≤ (624 : ℚ) := by
-    exact_mod_cast hmonoNat
+  have hcount : (monoCount f9 : ℚ) ≤ (624 : ℚ) := by exact_mod_cast hmonoNat
   have hE : (edgeCount n : ℚ) = 3024 := by exact_mod_cast edgeCount_9
   -- Divide both sides by `edgeCount`.
   have hdiv : monoFraction f9 ≤ (624 : ℚ) / (edgeCount n : ℚ) := by
-    have hEpos : (0 : ℚ) ≤ (edgeCount n : ℚ) := by
-      exact_mod_cast (Nat.zero_le (edgeCount n))
+    have hEpos : (0 : ℚ) ≤ (edgeCount n : ℚ) := by exact_mod_cast (Nat.zero_le (edgeCount n))
     simpa [monoFraction] using (div_le_div_of_nonneg_right hcount hEpos)
   have hred : (624 : ℚ) / (edgeCount n : ℚ) = (13 : ℚ) / 63 := by
     simp [hE, show (624 : ℚ) / 3024 = (13 : ℚ) / 63 by norm_num]
@@ -405,53 +346,9 @@ private lemma monoCount_le_bound :
           Fintype.card (Edge0000 (n := n) hn)
             + (Fintype.card (Edge1111 (n := n) hn)
               + (Fintype.card (Edge1001 (n := n) hn) + Fintype.card (Edge0110 (n := n) hn))) := by
-    have h0 :
-        Fintype.card {e : Edge n //
-            pat0000 (n := n) hn e ∨
-              (pat1111 (n := n) hn e ∨ pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)}
-          ≤
-            Fintype.card {e : Edge n // pat0000 (n := n) hn e}
-              + Fintype.card {e : Edge n //
-                  (pat1111 (n := n) hn e ∨ pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)} :=
-      Fintype.card_subtype_or (p := pat0000 (n := n) hn)
-        (q := fun e => pat1111 (n := n) hn e ∨ pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)
-    have h1 :
-        Fintype.card {e : Edge n //
-            pat1111 (n := n) hn e ∨ (pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)}
-          ≤
-            Fintype.card {e : Edge n // pat1111 (n := n) hn e}
-              + Fintype.card {e : Edge n // (pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)} :=
-      Fintype.card_subtype_or (p := pat1111 (n := n) hn)
-        (q := fun e => pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)
-    have h2 :
-        Fintype.card {e : Edge n // pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e}
-          ≤
-            Fintype.card {e : Edge n // pat1001 (n := n) hn e}
-              + Fintype.card {e : Edge n // pat0110 (n := n) hn e} :=
-      Fintype.card_subtype_or (p := pat1001 (n := n) hn) (q := pat0110 (n := n) hn)
-    have hRest :
-        Fintype.card {e : Edge n //
-            (pat1111 (n := n) hn e ∨ pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e)}
-          ≤
-            Fintype.card {e : Edge n // pat1111 (n := n) hn e}
-              + (Fintype.card {e : Edge n // pat1001 (n := n) hn e}
-                + Fintype.card {e : Edge n // pat0110 (n := n) hn e}) := by
-      have hadd := Nat.add_le_add_left h2 (Fintype.card {e : Edge n // pat1111 (n := n) hn e})
-      exact le_trans h1 hadd
-    have hAll :
-        Fintype.card {e : Edge n //
-            pat0000 (n := n) hn e ∨
-              pat1111 (n := n) hn e ∨ pat1001 (n := n) hn e ∨ pat0110 (n := n) hn e}
-          ≤
-            Fintype.card {e : Edge n // pat0000 (n := n) hn e}
-              + (Fintype.card {e : Edge n // pat1111 (n := n) hn e}
-                + (Fintype.card {e : Edge n // pat1001 (n := n) hn e}
-                  + Fintype.card {e : Edge n // pat0110 (n := n) hn e})) := by
-      have hadd := Nat.add_le_add_left hRest (Fintype.card {e : Edge n // pat0000 (n := n) hn e})
-      exact le_trans h0 hadd
-    -- Unfold `Edge....` abbreviations.
-    dsimp [Edge0000, Edge1111, Edge1001, Edge0110]
-    exact hAll
+    dsimp only [Edge0000, Edge1111, Edge1001, Edge0110]
+    exact card_or4_le (pat0000 (n := n) hn) (pat1111 (n := n) hn) (pat1001 (n := n) hn)
+      (pat0110 (n := n) hn)
   have hMono :
       monoCount (f (n := n) hn)
         ≤
@@ -480,6 +377,11 @@ private lemma monoCount_le_bound :
   -- Turn `x + x` into `2 * x`.
   simpa [two_mul, Nat.add_assoc, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using this
 
+/-- The discriminant-style product `4·m·(m-1)·(4m-k)` is nonnegative once `1 ≤ m` and `0 ≤ 4m-k`. -/
+private lemma prod_quarter_nonneg {m k : ℚ} (hm1 : 1 ≤ m) (hk : 0 ≤ 4 * m - k) :
+    0 ≤ 4 * m * (m - 1) * (4 * m - k) :=
+  mul_nonneg (mul_nonneg (mul_nonneg (by norm_num) (by linarith)) (by linarith)) hk
+
 private lemma bound_le_quarter_of_even (m : Nat) (hm : 3 ≤ m) :
     (4 : ℚ) *
         ((2 * (m.descFactorial 4) + 2 * (m.descFactorial 2 * m.descFactorial 2) : Nat) : ℚ)
@@ -487,11 +389,9 @@ private lemma bound_le_quarter_of_even (m : Nat) (hm : 3 ≤ m) :
   have hm1 : 1 ≤ m := le_trans (by decide : 1 ≤ 3) hm
   have hm2 : 2 ≤ m := le_trans (by decide : 2 ≤ 3) hm
   have h2m1 : 1 ≤ 2 * m := by
-    have : 2 ≤ 2 * m := by
-      simpa [two_mul] using Nat.mul_le_mul_left 2 hm1
+    have : 2 ≤ 2 * m := by simpa [two_mul] using Nat.mul_le_mul_left 2 hm1
     exact le_trans (by decide : 1 ≤ 2) this
-  have h2m2 : 2 ≤ 2 * m := by
-    simpa [two_mul] using Nat.mul_le_mul_left 2 hm1
+  have h2m2 : 2 ≤ 2 * m := by simpa [two_mul] using Nat.mul_le_mul_left 2 hm1
   have h2m3 : 3 ≤ 2 * m := by
     have : 6 ≤ 2 * m := by simpa [two_mul] using Nat.mul_le_mul_left 2 hm
     exact le_trans (by decide : 3 ≤ 6) this
@@ -507,28 +407,9 @@ private lemma bound_le_quarter_of_even (m : Nat) (hm : 3 ≤ m) :
       Nat.cast_sub hm1, Nat.cast_sub hm2, Nat.cast_sub hm, Nat.cast_sub h2m1, Nat.cast_sub h2m2,
       Nat.cast_sub h2m3]
     ring
-  have hm0Q : (0 : ℚ) ≤ (m : ℚ) := by exact_mod_cast (Nat.zero_le m)
   have hm1Q : (1 : ℚ) ≤ (m : ℚ) := by exact_mod_cast hm1
-  have hmMinus1 : (0 : ℚ) ≤ (m : ℚ) - 1 := by linarith
   have h4m9 : (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) - 9 := by nlinarith [hmQ]
-  have hProd :
-      (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) * ((m : ℚ) - 1) * ((4 : ℚ) * (m : ℚ) - 9) := by
-    have h4 : (0 : ℚ) ≤ (4 : ℚ) := by norm_num
-    have h4m : (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) := mul_nonneg h4 hm0Q
-    have h4m_m1 : (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) * ((m : ℚ) - 1) := mul_nonneg h4m hmMinus1
-    exact mul_nonneg h4m_m1 h4m9
-  have hSub :
-      (0 : ℚ)
-        ≤
-          ((2 * m).descFactorial 4 : ℚ)
-            -
-              (4 : ℚ) *
-                ((2 * (m.descFactorial 4) + 2 * (m.descFactorial 2 * m.descFactorial 2) : Nat) :
-                  ℚ) := by
-    -- Avoid `simp` rewriting `0 ≤ a - b` into `b ≤ a`.
-    rw [hdiff]
-    exact hProd
-  exact (sub_nonneg).1 hSub
+  exact (sub_nonneg).1 (hdiff ▸ prod_quarter_nonneg hm1Q h4m9)
 
 private lemma bound_le_quarter_of_odd (m : Nat) (hm : 2 ≤ m) :
     (4 : ℚ) *
@@ -566,29 +447,11 @@ private lemma bound_le_quarter_of_odd (m : Nat) (hm : 2 ≤ m) :
     -- Expand remaining casts like `↑(m + 1)` into `↑m + 1` so `ring_nf` can normalize.
     simp [Nat.cast_add, Nat.cast_mul]
     ring_nf
-  have hm0Q : (0 : ℚ) ≤ (m : ℚ) := by exact_mod_cast (Nat.zero_le m)
   have hm1 : 1 ≤ m := le_trans (by decide : 1 ≤ 2) hm
   have hmQ : (2 : ℚ) ≤ (m : ℚ) := by exact_mod_cast hm
   have hm1Q : (1 : ℚ) ≤ (m : ℚ) := by exact_mod_cast hm1
-  have hmMinus1 : (0 : ℚ) ≤ (m : ℚ) - 1 := by linarith
   have h4m5 : (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) - 5 := by nlinarith [hmQ]
-  have hProd :
-      (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) * ((m : ℚ) - 1) * ((4 : ℚ) * (m : ℚ) - 5) := by
-    have h4 : (0 : ℚ) ≤ (4 : ℚ) := by norm_num
-    have h4m : (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) := mul_nonneg h4 hm0Q
-    have h4m_m1 : (0 : ℚ) ≤ (4 : ℚ) * (m : ℚ) * ((m : ℚ) - 1) := mul_nonneg h4m hmMinus1
-    exact mul_nonneg h4m_m1 h4m5
-  have hSub :
-      (0 : ℚ)
-        ≤
-          ((2 * m + 1).descFactorial 4 : ℚ)
-            -
-              (4 : ℚ) *
-                ((m.descFactorial 4 + (m + 1).descFactorial 4 +
-                      2 * (m.descFactorial 2 * (m + 1).descFactorial 2) : Nat) : ℚ) := by
-    rw [hdiff]
-    exact hProd
-  exact (sub_nonneg).1 hSub
+  exact (sub_nonneg).1 (hdiff ▸ prod_quarter_nonneg hm1Q h4m5)
 
 /-- The rounding-based coloring has monochromatic fraction at most `1/4` for every `n ≥ 5`. -/
 theorem monoFraction_f_le_one_quarter : monoFraction (f (n := n) hn) ≤ (1 : ℚ) / 4 := by
@@ -691,8 +554,7 @@ theorem monoFraction_f_le_one_quarter : monoFraction (f (n := n) hn) ≤ (1 : �
         have hCard :
             Fintype.card (Big (n := 2 * m + 1) hn) = (2 * m + 1) - (2 * m + 1) / 2 := by
           simp [Big, two]
-        have hRewrite : 2 * m + 1 = m + (m + 1) := by
-          simpa [two_mul] using (Nat.add_assoc m m 1)
+        have hRewrite : 2 * m + 1 = m + (m + 1) := by simpa [two_mul] using (Nat.add_assoc m m 1)
         calc
           Fintype.card (Big (n := 2 * m + 1) hn) = (2 * m + 1) - (2 * m + 1) / 2 := hCard
           _ = (2 * m + 1) - m := by simp [hDiv]

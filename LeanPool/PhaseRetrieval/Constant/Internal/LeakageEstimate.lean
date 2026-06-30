@@ -57,11 +57,6 @@ private lemma fourier_orthogonality (m n : ℤ) :
     intro t; rw [← fourier_neg (n := n), ← fourier_add]; ring_nf
   simp_rw [key]; rw [integral_fourier]; simp [sub_eq_zero]
 
-/-- `‖fourier n t‖ = 1` pointwise. -/
-private lemma norm_fourier_eq_one (n : ℤ) (t : AddCircle T) :
-    ‖(fourier n t : ℂ)‖ = 1 := by
-  simp [fourier_apply, AddCircle.toCircle]
-
 /-- Rewrite `blockPoly` at `r · fourier(1)(t)` as a Fourier series. -/
 private lemma blockPoly_fourier_expansion {D : ℕ} (a : Fin D → ℂ) (ℓ : ℕ)
     (r : ℝ) (t : AddCircle T) :
@@ -219,8 +214,7 @@ private lemma blockPoly_circle_norm_sq {D : ℕ} (a : Fin D → ℂ) (ℓ : ℕ)
         by_cases hkk : k1 = k2
         · subst hkk
           simp only [ite_true, mul_one, Complex.mul_conj']; push_cast; rfl
-        · have hne : ¬((k1.val + 1 : ℕ) : ℤ) = ((k2.val + 1 : ℕ) : ℤ) := by
-            push_cast; omega
+        · have hne : ¬((k1.val + 1 : ℕ) : ℤ) = ((k2.val + 1 : ℕ) : ℤ) := by push_cast; omega
           simp only [hne, ite_false, mul_zero, hkk]
       simp_rw [heval, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
       push_cast; ring

@@ -110,8 +110,7 @@ theorem close_up_two_gen_coprime
     obtain ⟨q, hq⟩ := Ideal.mem_span_singleton.mp this
     refine ⟨R, ⟨le_refl _, fun r hr => hr, le_max_right _ _⟩, le_refl _, 0, ?_⟩
     change c - 0 * y₁ ∈ Ideal.span {y₂}
-    simp only [zero_mul, sub_zero]
-    exact Ideal.mem_span_singleton.mpr ⟨q, hq⟩
+    simpa only [zero_mul, sub_zero] using Ideal.mem_span_singleton.mpr ⟨q, hq⟩
   exact intersection_close_up R y₁ y₂ c hc hcoprime hy₁_zero hy₂_zero hM_bot
     hM_not_assoc hAss_ht hR_card hT_card
 
@@ -249,10 +248,7 @@ theorem close_up_two_gen
     set y₁_S := (⟨(y₁ : T), hle y₁.2⟩ : S.carrier)
     set y₂_S := (⟨(y₂ : T), hle y₂.2⟩ : S.carrier)
     have hc_eq : (⟨(c : T), hle c.2⟩ : S.carrier) = x₁ * y₁_S + x₂ * y₂_S := by
-      have : (⟨(c : T), hle c.2⟩ : S.carrier) - x₁ * y₁_S = x₂ * y₂_S := by
-        rw [hx₂, mul_comm]
-      rw [add_comm]
-      exact (sub_eq_iff_eq_add.mp this)
+      linear_combination hx₂
     rw [hc_eq]
     exact Ideal.add_mem _
       (Ideal.mul_mem_left _ x₁ (Ideal.subset_span (Set.mem_insert _ _)))
@@ -285,10 +281,7 @@ lemma exists_prime_mem_of_ne_bot_closeup {S : Type*} [CommRing S] [IsDomain S]
     [UniqueFactorizationMonoid S]
     (Q : Ideal S) [hQ : Q.IsPrime] (hQ_ne_bot : Q ≠ ⊥) :
     ∃ q : S, Prime q ∧ q ∈ Q := by
-  obtain ⟨a, haQ, ha_ne⟩ : ∃ a ∈ Q, a ≠ (0 : S) := by
-    by_contra h
-    push Not at h
-    exact hQ_ne_bot (le_antisymm (fun x hx => (Submodule.mem_bot _).mpr (h x hx)) bot_le)
+  obtain ⟨a, haQ, ha_ne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hQ_ne_bot
   have ha_nu : ¬IsUnit a := fun hu => hQ.ne_top (Ideal.eq_top_of_isUnit_mem Q haQ hu)
   suffices ∀ x : S, x ≠ 0 → ¬IsUnit x → x ∈ Q → ∃ q : S, Prime q ∧ q ∈ Q from
     this a ha_ne ha_nu haQ
