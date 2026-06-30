@@ -3,6 +3,7 @@ Copyright (c) 2026 Adam Benenson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Benenson
 -/
+
 import LeanPool.CencovPetz.Basic
 import LeanPool.CencovPetz.CencovFinite
 import LeanPool.CencovPetz.CencovSplitPoint
@@ -31,7 +32,7 @@ import LeanPool.CencovPetz.UniformSimplex
 /-!
 # Finite Čencov-Petz Uniqueness
 
-Source: url:https://github.com/abenenson/cencov-petz
+Source: url:https://bookstore.ams.org/mmono-53
 Authors: Adam Benenson
 Status: verified
 Main declarations: `LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_continuous`

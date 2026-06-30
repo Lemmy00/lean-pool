@@ -87,10 +87,10 @@ projects:
     authors:
       - Adam Benenson
     source:
-      title: Finite Čencov-Petz uniqueness theorem
+      title: Statistical Decision Rules and Optimal Inference
       authors:
-        - Adam Benenson
-      url: https://github.com/abenenson/cencov-petz
+        - N. N. Chentsov
+      url: https://bookstore.ams.org/mmono-53
       github_repo: abenenson/cencov-petz
     license: Apache-2.0
     status: verified
@@ -99,6 +99,7 @@ projects:
     main_results:
       - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_continuous
         informal: Proves that every continuous monotone metric family on a finite probability simplex is a scalar multiple of the Fisher information metric.
+        source_ref: "N. N. Chentsov, Statistical Decision Rules and Optimal Inference, AMS Translations of Mathematical Monographs 53, 1982."
       - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_isRational
         informal: Establishes the scalar Fisher-form identity at rational simplex points using split representations.
       - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_isSplitRepresentable
