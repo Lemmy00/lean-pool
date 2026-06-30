@@ -488,7 +488,6 @@ import LeanPool.Erdos403
 import LeanPool.Erdos403.Basic
 import LeanPool.Erdos403.FactBase
 import LeanPool.Erdos403.Sharp
-import LeanPool.Erdos403.Superseded
 import LeanPool.ErdosTuzaValtr
 import LeanPool.ErdosTuzaValtr.All
 import LeanPool.ErdosTuzaValtr.Config.Default

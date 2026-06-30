@@ -7,7 +7,6 @@ Authors: Trevor Morris
 import LeanPool.Erdos403.Basic
 import LeanPool.Erdos403.FactBase
 import LeanPool.Erdos403.Sharp
-import LeanPool.Erdos403.Superseded
 
 /-!
 # Sums of Distinct Factorials That Are Powers of Two (Erdos Problem 403)
