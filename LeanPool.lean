@@ -700,6 +700,10 @@ import LeanPool.Erdos367.GeneralKUpperBound
 import LeanPool.Erdos367.K3AbcUpperBound
 import LeanPool.Erdos367.PellLimsup
 import LeanPool.Erdos367.RFullLowerBound
+import LeanPool.Erdos403
+import LeanPool.Erdos403.Basic
+import LeanPool.Erdos403.FactBase
+import LeanPool.Erdos403.Sharp
 import LeanPool.ErdosTuzaValtr
 import LeanPool.ErdosTuzaValtr.All
 import LeanPool.ErdosTuzaValtr.Config.Default
