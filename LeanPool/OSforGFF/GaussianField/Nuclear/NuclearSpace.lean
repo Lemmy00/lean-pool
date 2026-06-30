@@ -100,8 +100,7 @@ lemma exists_CLF_le_seminorm
     -- g(f) = q(f)
     have hg_f : g f = q f := by
       have h := hg_ext ⟨f, Submodule.mem_span_singleton.mpr ⟨1, one_smul _ _⟩⟩
-      simp only [f₀, LinearPMap.mkSpanSingleton'_apply_self] at h
-      exact h
+      simpa only [f₀, LinearPMap.mkSpanSingleton'_apply_self] using h
     -- |g(x)| ≤ q(x) from g(x) ≤ q(x) and g(-x) ≤ q(-x) = q(x)
     have hg_abs : ∀ x, |g x| ≤ q x := by
       intro x; rw [abs_le]
@@ -199,8 +198,7 @@ lemma seminorm_le_nuclear_expansion
       calc |hN.coeff m f| * q (hN.basis m)
           ≤ |hN.coeff m f| * ((C₁ : ℝ) * (s₁.sup hN.p) (hN.basis m)) := by
             apply mul_le_mul_of_nonneg_left _ (abs_nonneg _)
-            have h := hqbound (hN.basis m)
-            exact h
+            exact hqbound (hN.basis m)
         _ ≤ |hN.coeff m f| * ((C₁ : ℝ) * (D * (1 + (m : ℝ)) ^ S)) := by
             apply mul_le_mul_of_nonneg_left _ (abs_nonneg _)
             exact mul_le_mul_of_nonneg_left (hDbound m) (le_of_lt hC₁_pos)

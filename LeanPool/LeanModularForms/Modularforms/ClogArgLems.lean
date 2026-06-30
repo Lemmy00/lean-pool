@@ -60,11 +60,9 @@ lemma arg_pow_aux (n : ℕ) (x : ℂ) (hx : x ≠ 0) (hna : |arg x| < π / n) :
       exact (lt_add_one n)
 
 lemma one_add_abs_half_ne_zero {x : ℂ} (hb : ‖x‖ < 1 / 2) : 1 + x ≠ 0 := by
-  by_contra h
-  rw [@add_eq_zero_iff_neg_eq] at h
-  rw [← h] at hb
-  simp at hb
-  linarith
+  intro h
+  rw [add_eq_zero_iff_neg_eq] at h
+  simp [← h] at hb; linarith
 
 lemma arg_pow (n : ℕ) (f : ℕ → ℂ) (hf : Tendsto f atTop (𝓝 0)) : ∀ᶠ m : ℕ in atTop,
     Complex.arg ((1 + f m) ^ n) = n * Complex.arg (1 + f m) := by
@@ -81,21 +79,12 @@ lemma arg_pow (n : ℕ) (f : ℕ → ℂ) (hf : Tendsto f atTop (𝓝 0)) : ∀�
     by_cases hn0 : n = 0
     · rw [hn0]
       simp only [pow_zero, arg_one, CharP.cast_eq_zero, zero_mul, implies_true, exists_const]
-    · have hpi : 0 < π / n := by
-        apply div_pos
-        · exact Real.pi_pos
-        simp only [Nat.cast_pos]
-        omega
+    · have hpi : 0 < π / n := div_pos Real.pi_pos (by exact_mod_cast Nat.pos_of_ne_zero hn0)
       obtain ⟨a, hA⟩ := h3 (π / n) hpi
       obtain ⟨a2, ha2⟩ := hf (1/2) (one_half_pos)
-      use max a a2
-      intro b hb
-      rw [arg_pow_aux n (1 + f b) ?_]
-      · apply hA b
-        exact le_of_max_le_left hb
-      have ha2 := ha2 b (le_of_max_le_right hb)
-      simp only [ne_eq]
-      apply one_add_abs_half_ne_zero ha2
+      exact ⟨max a a2, fun b hb => by
+        rw [arg_pow_aux n (1 + f b) (one_add_abs_half_ne_zero (ha2 b (le_of_max_le_right hb)))]
+        exact hA b (le_of_max_le_left hb)⟩
   simp only [one_mem_slitPlane]
 
 lemma arg_pow2 (n : ℕ) (f : ℍ → ℂ) (hf : Tendsto f atImInfty (𝓝 0)) : ∀ᶠ m : ℍ in atImInfty,
@@ -122,11 +111,7 @@ lemma arg_pow2 (n : ℕ) (f : ℍ → ℂ) (hf : Tendsto f atImInfty (𝓝 0)) :
         intro b hb
         aesop
       simp only [preimage_setOf_eq, subset_refl]
-    · have hpi : 0 < π / n := by
-        apply div_pos
-        · exact Real.pi_pos
-        simp only [Nat.cast_pos]
-        omega
+    · have hpi : 0 < π / n := div_pos Real.pi_pos (by exact_mod_cast Nat.pos_of_ne_zero hn0)
       have hA1 := h3 (π / n) hpi
       have hA2 := hf (1/2) (one_half_pos)
       rw [Filter.eventually_iff_exists_mem ] at hA1 hA2
@@ -138,26 +123,18 @@ lemma arg_pow2 (n : ℕ) (f : ℍ → ℂ) (hf : Tendsto f atImInfty (𝓝 0)) :
         simp only [inf_eq_inter, inter_mem_iff, mem_comap, mem_atTop_sets] at *
         refine ⟨ha1, ha2⟩, ?_⟩
       intro b hb
-      rw [arg_pow_aux n (1 + f b) ?_]
-      · apply hA1 b
-        exact mem_of_mem_inter_left hb
-      have ha2 := hA2 b ( mem_of_mem_inter_right hb)
-      simp only [ne_eq]
-      apply one_add_abs_half_ne_zero ha2
+      rw [arg_pow_aux n (1 + f b)
+        (one_add_abs_half_ne_zero (hA2 b (mem_of_mem_inter_right hb)))]
+      exact hA1 b (mem_of_mem_inter_left hb)
   simp only [one_mem_slitPlane]
 
 lemma clog_pow (n : ℕ) (f : ℕ → ℂ) (hf : Tendsto f atTop (𝓝 0)) : ∀ᶠ m : ℕ in atTop,
     Complex.log ((1 + f m) ^ n) = n * Complex.log (1 + f m) := by
   have h := arg_pow n f hf
   simp only [eventually_atTop] at *
-  simp_rw [Complex.log]
   obtain ⟨a, ha⟩ := h
-  use a
-  intro b hb
-  have h2 := ha b hb
-  rw [h2]
-  simp only [norm_pow, Real.log_pow, ofReal_mul, ofReal_natCast]
-  ring
+  exact ⟨a, fun b hb => by simp_rw [Complex.log, ha b hb, norm_pow, Real.log_pow,
+    ofReal_mul, ofReal_natCast]; ring⟩
 
 lemma clog_pow2 (n : ℕ) (f : ℍ → ℂ) (hf : Tendsto f atImInfty (𝓝 0)) : ∀ᶠ m : ℍ in atImInfty,
     Complex.log ((1 + f m) ^ n) = n * Complex.log (1 + f m) := by
@@ -165,13 +142,10 @@ lemma clog_pow2 (n : ℕ) (f : ℍ → ℂ) (hf : Tendsto f atImInfty (𝓝 0)) 
   simp_rw [Complex.log]
   obtain ⟨a, ha0, ha⟩ := h
   use a
-  refine ⟨ha0, ?_⟩
-  intro b hb
+  refine ⟨ha0, fun b hb => ?_⟩
   have h2 := ha hb
   simp only [mem_atTop_sets, mem_preimage, mem_setOf_eq] at *
-  rw [h2]
-  simp only [norm_pow, Real.log_pow, ofReal_mul, ofReal_natCast]
-  ring
+  rw [h2]; simp only [norm_pow, Real.log_pow, ofReal_mul, ofReal_natCast]; ring
 
 
 
@@ -184,8 +158,4 @@ lemma log_summable_pow (f : ℕ → ℂ) (hf : Summable f) (m : ℕ) :
   have H := clog_pow m f hft
   simp only [norm_mul, Complex.norm_natCast, eventually_atTop] at *
   obtain ⟨a, ha⟩ := H
-  use a
-  intro b hb
-  apply le_of_eq
-  rw [ha b hb]
-  simp only [Complex.norm_mul, norm_natCast]
+  exact ⟨a, fun b hb => by simp [ha b hb]⟩

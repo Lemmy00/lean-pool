@@ -74,18 +74,14 @@ omit [DecidableEq R] in
 theorem monom_coords_hom (x₀ x : X) (a b : R) :
     monomCoeff R X x₀ (a + b, x) =
       monomCoeff R X x₀ (a, x) + monomCoeff R X x₀ (b, x) := by
-  repeat
-    (
-      rw [monomCoeff])
+  simp only [monomCoeff]
   cases x == x₀ <;> simp
 
 omit [DecidableEq R] in
 /-- Associativity of scalar multiplication coordinates for a formal sum with one term. -/
 theorem monom_coords_mul (x₀ : X) (a b : R) :
     monomCoeff R X x₀ (a * b, x) = a * monomCoeff R X x₀ (b, x) := by
-  repeat
-    (
-      rw [monomCoeff])
+  simp only [monomCoeff]
   cases x == x₀ <;> simp
 
 omit [DecidableEq R] in
@@ -149,8 +145,7 @@ theorem nonzero_coord_in_support (s : FormalSum R X) :
           contradiction
         exact decide_eq_false eqn'
       rw [p']
-      simp only [decide_eq_true_eq]
-      exact step
+      simpa only [decide_eq_true_eq] using step
 
 /-!
 ### Equality of coordinates on a list
@@ -243,23 +238,12 @@ theorem refl (s : FormalSum R X) : eqlCoords R X s s :=
 
 omit [DecidableEq R] in
 /-- Relation by equal coordinates is  symmetric. -/
-theorem symm {s₁ s₂ : FormalSum R X} : eqlCoords R X s₁ s₂ → eqlCoords R X s₂ s₁ := by
-  intro hyp
-  apply funext
-  intro x
-  apply Eq.symm
-  exact congrFun hyp x
+theorem symm {s₁ s₂ : FormalSum R X} : eqlCoords R X s₁ s₂ → eqlCoords R X s₂ s₁ := Eq.symm
 
 omit [DecidableEq R] in
 /-- Relation by equal coordinates is transitive. -/
 theorem trans {s₁ s₂ s₃ : FormalSum R X} :
-    eqlCoords R X s₁ s₂ → eqlCoords R X s₂ s₃ → eqlCoords R X s₁ s₃ := by
-  intro hyp₁ hyp₂
-  apply funext
-  intro x
-  have l₁ := congrFun hyp₁ x
-  have l₂ := congrFun hyp₂ x
-  exact Eq.trans l₁ l₂
+    eqlCoords R X s₁ s₂ → eqlCoords R X s₂ s₃ → eqlCoords R X s₁ s₃ := Eq.trans
 
 omit [DecidableEq R] in
 /-- Relation by equal coordinates is an equivalence relation. -/
@@ -295,33 +279,35 @@ We also show that the coordinate functions are defined on the quotient. -/
 
 namespace FreeModule
 
+/-- Equality on both supports gives equal quotients. -/
+theorem eqlquot_of_equalOnList (s₁ s₂ : FormalSum R X)
+    (ch₁ : equalOnList s₁.support s₁.coords s₂.coords)
+    (ch₂ : equalOnList s₂.support s₁.coords s₂.coords) : @Eq (R[X]) ⟦s₁⟧ ⟦s₂⟧ := by
+  apply Quotient.sound
+  apply funext
+  intro x
+  exact
+    if h₁ : (0 = s₁.coords x) then
+      if h₂ : (0 = s₂.coords x) then by
+        rw [← h₁, h₂]
+      else by
+        have lem : x ∈ s₂.support := by
+          apply nonzero_coord_in_support
+          assumption
+        exact eq_mem_of_equalOnList s₂.support s₁.coords s₂.coords x lem ch₂
+    else by
+      have lem : x ∈ s₁.support := by
+        apply nonzero_coord_in_support
+        assumption
+      exact eq_mem_of_equalOnList s₁.support s₁.coords s₂.coords x lem ch₁
+
 /-- Decidable equality for quotient elements in the free module -/
 @[reducible, instance]
 def decideEqualQuotient (s₁ s₂ : FormalSum R X) :
     Decidable (@Eq (R[X]) ⟦s₁⟧ ⟦s₂⟧) :=
   if ch₁ : equalOnList s₁.support s₁.coords s₂.coords then
     if ch₂ : equalOnList s₂.support s₁.coords s₂.coords then
-      Decidable.isTrue
-        (by
-          apply Quotient.sound
-          apply funext
-          intro x
-          exact
-            if h₁ : (0 = s₁.coords x) then
-              if h₂ : (0 = s₂.coords x) then by
-                rw [← h₁, h₂]
-              else by
-                have lem : x ∈ s₂.support := by
-                  apply nonzero_coord_in_support
-                  assumption
-                let lem' := eq_mem_of_equalOnList s₂.support s₁.coords s₂.coords x lem ch₂
-                exact lem'
-            else by
-              have lem : x ∈ s₁.support := by
-                apply nonzero_coord_in_support
-                assumption
-              let lem' := eq_mem_of_equalOnList s₁.support s₁.coords s₂.coords x lem ch₁
-              exact lem')
+      Decidable.isTrue (eqlquot_of_equalOnList s₁ s₂ ch₁ ch₂)
     else
       Decidable.isFalse
         (by
@@ -364,28 +350,7 @@ theorem eql_on_support_of_true {l : List X} {f g : X → R} :
 theorem eqlquot_of_beq_support (s₁ s₂ : FormalSum R X)
   (c₁ : beqOnSupport s₁.support s₁.coords s₂.coords)
   (c₂ : beqOnSupport s₂.support s₁.coords s₂.coords) : @Eq (R[X]) ⟦s₁⟧ ⟦s₂⟧ :=
-        by
-        let ch₁ := eql_on_support_of_true c₁
-        let ch₂ := eql_on_support_of_true c₂
-        apply Quotient.sound
-        apply funext
-        intro x
-        exact
-          if h₁ : (0 = s₁.coords x) then
-            if h₂ : (0 = s₂.coords x) then by
-              rw [← h₁, h₂]
-            else by
-              have lem : x ∈ s₂.support := by
-                apply nonzero_coord_in_support
-                assumption
-              let lem' := eq_mem_of_equalOnList s₂.support s₁.coords s₂.coords x lem ch₂
-              exact lem'
-          else by
-            have lem : x ∈ s₁.support := by
-              apply nonzero_coord_in_support
-              assumption
-            let lem' := eq_mem_of_equalOnList s₁.support s₁.coords s₂.coords x lem ch₁
-            exact lem'
+  eqlquot_of_equalOnList s₁ s₂ (eql_on_support_of_true c₁) (eql_on_support_of_true c₂)
 
 
 /--
@@ -440,10 +405,8 @@ Decidable equality for the free module.
 
 /-- Coordinates are well defined on the quotient. -/
 theorem equal_coords_of_approx (s₁ s₂ : FormalSum R X) :
-    s₁ ≈ s₂ → s₁.coords = s₂.coords := by
-    intro hyp
-    apply funext; intro x₀
-    exact congrFun hyp x₀
+    s₁ ≈ s₂ → s₁.coords = s₂.coords :=
+  fun hyp => funext fun x₀ => congrFun hyp x₀
 
 /-- coordinates for the quotient -/
 def coordinates (x₀ : X) : R[X] → R := by
@@ -826,11 +789,7 @@ theorem coeff_factors (x : X) (s : FormalSum R X) : FreeModuleAux.coeff x (sum s
 theorem coords_well_defined (x : X) (s₁ s₂ : FormalSum R X) :
     s₁ ≃ s₂ → s₁.coords x = s₂.coords x := by
   intro hyp
-  have l : FreeModuleAux.coeff x (sum s₂) = s₂.coords x := by
-    simp only [coeff_factors]
-  rw [← l]
-  rw [← coeff_factors]
-  rw [hyp]
+  rw [← coeff_factors x s₂, ← coeff_factors x s₁, hyp]
 
 /-!
 ### Equal coordinates implies related by elementary moves.
@@ -920,9 +879,6 @@ theorem nonzero_coeff_has_complement (x₀ : X) (s : FormalSum R X) :
 
 /-- If all coordinates are zero, then moves relate to the empty sum. -/
 theorem equiv_e_of_zero_coeffs (s : FormalSum R X) (hyp : ∀ x : X, s.coords x = 0) : s ≃ [] :=
-  -- let canc : IsAddLeftCancel R :=
-  --   ⟨fun a b c h => by
-  --     rw [← neg_add_cancel_left a b, h, neg_add_cancel_left]⟩
   match mt : s with
   | [] => rfl
   | h :: t => by
@@ -1042,8 +998,7 @@ theorem equiv_of_equal_coeffs (s₁ s₂ : FormalSum R X)
           if p₁ : 0 = a₁ then by
             have cf₂ : s₂.coords x₀ = a₀ := by
               rw [← hyp]
-              simp only [coords, monomCoeff, BEq.rfl, add_eq_left]
-              exact Eq.symm p₁
+              simpa only [coords, monomCoeff, BEq.rfl, add_eq_left] using Eq.symm p₁
             let ⟨ys, eqn, _⟩ :=
               nonzero_coeff_has_complement x₀ s₂
                 (by
@@ -1183,50 +1138,13 @@ by constructing a norm ball containing all the non-zero coordinates, and then ma
 non-zero coordinates.
 -/
 
-theorem fst_le_max (a b : Nat) : a ≤ max a b := by
-    exact if c : a ≤ b
-          then by
-              unfold max
-              unfold Nat.instMax
-              unfold maxOfLe
-              simp only [if_pos c]
-              assumption
-          else by
-              unfold max
-              unfold Nat.instMax
-              unfold maxOfLe
-              simp only [if_neg c, Std.le_refl]
+theorem fst_le_max (a b : Nat) : a ≤ max a b := Nat.le_max_left a b
 
 
-theorem snd_le_max (a b : Nat) : b ≤ max a b := by
-    exact if c : a ≤ b
-    then by
-      unfold max
-      unfold Nat.instMax
-      unfold maxOfLe
-      simp only [if_pos c, Std.le_refl]
-    else by
-      unfold max
-      unfold Nat.instMax
-      unfold maxOfLe
-      simp only [if_neg c]
-      apply Nat.le_of_lt
-      let c' := Nat.gt_of_not_le c
-      assumption
+theorem snd_le_max (a b : Nat) : b ≤ max a b := Nat.le_max_right a b
 
 
-theorem eq_fst_or_snd_of_max (a b : Nat) : (max a b = a) ∨ (max a b = b) := by
-      exact if c : a ≤ b
-        then by
-          unfold max
-          unfold Nat.instMax
-          unfold maxOfLe
-          simp only [if_pos c, or_true]
-        else by
-          unfold max
-          unfold Nat.instMax
-          unfold maxOfLe
-          simp only [if_neg c, true_or]
+theorem eq_fst_or_snd_of_max (a b : Nat) : (max a b = a) ∨ (max a b = b) := by omega
 
 /-- The successor of the largest norm with nonzero coordinate on a support list. -/
 def maxNormSuccOnSupp (norm : X → Nat) (crds : X → R) (s : List X) : Nat :=
@@ -1285,8 +1203,7 @@ theorem supp_below_max (norm : X → Nat) (crds : X → R) (s : List X) :
         apply snd_le_max
       else
         by
-        simp only [c, ↓reduceIte, ge_iff_le]
-        exact l
+        simpa only [c, ↓reduceIte, ge_iff_le] using l
 
 omit [DecidableEq X] in
 theorem supp_zero_of_max_zero (norm : X → Nat) (crds : X → R) (s : List X) :
@@ -1312,20 +1229,13 @@ theorem normsucc_le (norm : X → Nat) (s₁ s₂ : FormalSum R X) (eql : s₁ �
       else by
         simp only [normSucc]
         simp only [normSucc] at c
-        let c' : maxNormSuccOnSupp norm (coords s₁) (support s₁) > 0 :=
-            by
-            cases Nat.eq_zero_or_pos (maxNormSuccOnSupp norm (coords s₁) (support s₁))
-            · contradiction
-            · assumption
+        let c' : maxNormSuccOnSupp norm (coords s₁) (support s₁) > 0 := Nat.pos_of_ne_zero c
         let l := max_in_support norm s₁.coords s₁.support c'
         let ⟨x₀, p⟩ := l
         let nonzr' := p.left
         let l := congrFun eql x₀
         rw [l] at nonzr'
-        let nonzr : 0 ≠ s₂.coords x₀ := by
-          intro hyp
-          let l' := Eq.symm hyp
-          contradiction
+        let nonzr : 0 ≠ s₂.coords x₀ := Ne.symm nonzr'
         let in_supp := nonzero_coord_in_support s₂ x₀ nonzr
         rw [p.right]
         apply supp_below_max norm s₂.coords s₂.support x₀ in_supp nonzr'

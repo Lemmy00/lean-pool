@@ -31,11 +31,8 @@ theorem modform_tendto_ndhs_zero {k : ℤ} (n : ℕ) [ModularFormClass F Γ(n) k
     Tendsto (fun x ↦ (⇑f ∘ ↑ofComplex) (Periodic.invQParam (↑n) x)) (𝓝[≠] 0)
     (𝓝 (cuspFunction n f 0)) := by
   simp only [comp_apply]
-  have hi : IsCusp OnePoint.infty Γ(n) := by
-    apply Γ(n).isCusp_of_mem_strictPeriods (h := n)
-    · have h := inst.1
-      positivity
-    · simp
+  have hi : IsCusp OnePoint.infty Γ(n) :=
+    Γ(n).isCusp_of_mem_strictPeriods (h := n) (by have h := inst.1; positivity) (by simp)
   have h1 := Function.Periodic.boundedAtFilter_cuspFunction (h := n)
     (by simp only [Nat.cast_pos]; exact Nat.pos_of_neZero n)
     ((OnePoint.isBoundedAt_infty_iff.mp (ModularFormClass.bdd_at_cusps f hi)).comp_tendsto
@@ -140,9 +137,7 @@ lemma IteratedDeriv_smul (a : ℂ) (f : ℂ → ℂ) (m : ℕ) :
   induction m with
   | zero => simp
   | succ m hm =>
-    rw [iteratedDeriv_succ, iteratedDeriv_succ, hm]
-    ext x
-    rw [@Pi.smul_def]
+    ext x; rw [iteratedDeriv_succ, iteratedDeriv_succ, hm, Pi.smul_def]
     exact deriv_const_smul_field a ..
 
 
@@ -155,34 +150,26 @@ instance instFunLikeUpperHalfPlaneFun :
     FunLike (ℍ → ℂ) ℍ ℂ := { coe := fun ⦃a₁⦄ ↦ a₁, coe_injective := fun ⦃_ _⦄ a ↦ a}
 
 lemma qExpansion_ext (f g : ℍ → ℂ) (h : f = g) : qExpansion 1 f =
-    qExpansion 1 g := by
-  rw [h]
+    qExpansion 1 g := by rw [h]
 
 lemma cuspFunction_congr_funLike
     {α β : Type*} [FunLike α ℍ ℂ] [FunLike β ℍ ℂ] (n : ℕ) (f : α) (g : β) (h : ⇑f = ⇑g) :
     cuspFunction n f = cuspFunction n g := by
   ext z
-  by_cases hz : z = 0
-  · simp [cuspFunction, Periodic.cuspFunction, h]
-  · simp [cuspFunction, Periodic.cuspFunction, h, hz]
+  by_cases hz : z = 0 <;> simp [cuspFunction, Periodic.cuspFunction, h, hz]
 
 lemma qExpansion_ext2 {α β : Type*} [FunLike α ℍ ℂ] [FunLike β ℍ ℂ] (f : α) (g : β) (h : ⇑f = ⇑g) :
     qExpansion 1 f = qExpansion 1 g := by
-  have hcf : cuspFunction 1 f = cuspFunction 1 g := congrArg (cuspFunction 1) h
-  ext m
-  simp [qExpansion_coeff, hcf]
+  ext m; simp [qExpansion_coeff, congrArg (cuspFunction 1) h]
 
 --generalize this away from ℂ
 lemma IteratedDeriv_zero_fun (n : ℕ) (z : ℂ) : iteratedDeriv n (fun _ : ℂ => (0 : ℂ)) z = 0 := by
-  induction n with
-  | zero => simp
-  | succ n hn => simp
+  induction n <;> simp
 
 lemma iteratedDeriv_const_eq_zero (m : ℕ) (hm : 0 < m) (c : ℂ) :
     iteratedDeriv m (fun _ : ℂ => c) = fun _ : ℂ => 0 := by
-  ext z
-  have := iteratedDeriv_const_add hm (f := fun (x : ℂ) => (0 : ℂ)) c (x := z)
-  simpa only [add_zero, IteratedDeriv_zero_fun] using this
+  ext z; simpa only [add_zero, IteratedDeriv_zero_fun] using
+    iteratedDeriv_const_add hm (f := fun (x : ℂ) => (0 : ℂ)) c (x := z)
 
 lemma qExpansion_pow (f : ModularForm Γ(1) k) (n : ℕ) :
   qExpansion 1 ((((DirectSum.of (ModularForm Γ(1)) k ) f) ^ n) (n * k)) = (qExpansion 1 f) ^ n := by

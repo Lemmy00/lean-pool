@@ -105,7 +105,6 @@ lemma fubini_triple_reorder {F : α → α → α → ℂ}
     ∫ k, ∫ x, ∫ y, F x y k ∂volume ∂volume ∂volume := by
   let fL : α × (α × α) → ℂ := fun p => F p.1 p.2.1 p.2.2
   let fR : α × (α × α) → ℂ := fun q => F q.2.1 q.2.2 q.1
-  have hfL_eq : ∀ p, fL p = fR (tripleReorder p) := fun _ => rfl
   have hfR : Integrable fR ((volume : Measure α).prod (volume.prod volume)) := by
     rw [← (measurePreserving_tripleReorder (α := α)).integrable_comp_emb
         (tripleReorder (α := α)).measurableEmbedding]
@@ -275,8 +274,7 @@ theorem exp_pos_integrableOn_Iio (a : ℝ) {b : ℝ} (h : 0 < b) :
   have h_neg : MeasureTheory.IntegrableOn (fun x => Real.exp (-b * x)) (Set.Ioi (-a))
     MeasureTheory.volume :=
     exp_neg_integrableOn_Ioi (-a) h
-  have h_eq : (fun x => Real.exp (b * x)) = (fun x => Real.exp (-b * (-x))) := by
-    ext x; ring_nf
+  have h_eq : (fun x => Real.exp (b * x)) = (fun x => Real.exp (-b * (-x))) := by ext x; ring_nf
   rw [h_eq]
   have h_set : Set.Iio a = -Set.Ioi (-a) := by
     ext x
@@ -353,15 +351,10 @@ theorem fourier_exp_decay_positive_halfline (μ : ℝ) (hμ : 0 < μ) (k : ℝ) 
     convert h_div using 1; field_simp
   -- Limit at +∞: e^{cx}/c → 0 since Re(c) < 0
   have h_tendsto : Filter.Tendsto (fun x : ℝ => Complex.exp (c * x) / c) Filter.atTop (nhds 0) := by
-    have h_exp_tendsto := tendsto_cexp_atTop_zero hc_re
-    have h_zero_div : (0 : ℂ) / c = 0 := zero_div c
-    rw [← h_zero_div]
-    exact Filter.Tendsto.div_const h_exp_tendsto c
+    simpa using (tendsto_cexp_atTop_zero hc_re).div_const c
   -- Integrability
-  have h_int : IntegrableOn (fun x : ℝ => Complex.exp (c * x)) (Set.Ioi 0) volume := by
-    have hsimp : c = Complex.I * k - μ := rfl
-    rw [hsimp]
-    exact integrableOn_exp_decay_Ioi μ hμ k
+  have h_int : IntegrableOn (fun x : ℝ => Complex.exp (c * x)) (Set.Ioi 0) volume :=
+    integrableOn_exp_decay_Ioi μ hμ k
   -- Apply FTC: ∫₀^∞ f' = lim f - f(0)
   have h_ftc := integral_Ioi_of_hasDerivAt_of_tendsto' h_antideriv h_int h_tendsto
   rw [h_ftc]
@@ -412,15 +405,10 @@ theorem fourier_exp_decay_negative_halfline (μ : ℝ) (hμ : 0 < μ) (k : ℝ) 
     convert h_div using 1; field_simp
   -- Limit at -∞: e^{cx}/c → 0 since Re(c) > 0
   have h_tendsto : Filter.Tendsto (fun x : ℝ => Complex.exp (c * x) / c) Filter.atBot (nhds 0) := by
-    have h_exp_tendsto := tendsto_cexp_atBot_zero hc_re
-    have h_zero_div : (0 : ℂ) / c = 0 := zero_div c
-    rw [← h_zero_div]
-    exact Filter.Tendsto.div_const h_exp_tendsto c
+    simpa using (tendsto_cexp_atBot_zero hc_re).div_const c
   -- Integrability
-  have h_int : IntegrableOn (fun x : ℝ => Complex.exp (c * x)) (Set.Iic 0) volume := by
-    have hsimp : c = Complex.I * k + μ := rfl
-    rw [hsimp]
-    exact integrableOn_exp_growth_Iic μ hμ k
+  have h_int : IntegrableOn (fun x : ℝ => Complex.exp (c * x)) (Set.Iic 0) volume :=
+    integrableOn_exp_growth_Iic μ hμ k
   -- Apply FTC: ∫_{-∞}^0 f' = f(0) - lim_{-∞} f
   have h_ftc := integral_Iic_of_hasDerivAt_of_tendsto' h_antideriv h_int h_tendsto
   rw [h_ftc]
@@ -708,8 +696,7 @@ theorem fourier_inversion_exp_decay (μ : ℝ) (hμ : 0 < μ) (x : ℝ) :
   -- Adjust coefficient
   have h_coeff : (1 / (2 * π) : ℂ) = ((2 * π)⁻¹ : ℝ) := by
     simp only [one_div, Complex.ofReal_inv, Complex.ofReal_mul, Complex.ofReal_ofNat]
-  rw [h_coeff]
-  exact hinv
+  rwa [h_coeff]
 
 /-! ### The Lorentzian Fourier Transform (Main Result)
 
@@ -776,8 +763,7 @@ theorem fourier_lorentzian_1d (μ : ℝ) (hμ : 0 < μ) (x : ℝ) :
 lemma exp_factorization_reflection (μ : ℝ) (x y : ℝ) (hx : 0 ≤ x) (hy : y ≤ 0) :
     Real.exp (-μ * |x - y|) = Real.exp (-μ * x) * Real.exp (μ * y) := by
   have h_diff : |x - y| = x - y := abs_of_nonneg (by linarith)
-  rw [h_diff]
-  rw [← Real.exp_add]
+  rw [h_diff, ← Real.exp_add]
   congr 1
   ring
 

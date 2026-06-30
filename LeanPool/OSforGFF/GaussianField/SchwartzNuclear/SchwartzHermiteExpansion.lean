@@ -63,8 +63,7 @@ theorem schwartzHermiteBasis1D_apply (n : ℕ) (x : ℝ) :
 
 /-- Coercion: the underlying function of the Schwartz map is hermiteFunction n. -/
 theorem schwartzHermiteBasis1D_coe (n : ℕ) :
-    ⇑(schwartzHermiteBasis1D n) = hermiteFunction n :=
-  funext (schwartzHermiteBasis1D_apply n)
+    ⇑(schwartzHermiteBasis1D n) = hermiteFunction n := funext (schwartzHermiteBasis1D_apply n)
 
 /-! ## Section 2: The 1D Hermite Coefficients -/
 
@@ -143,8 +142,7 @@ private theorem deriv2_hermiteFunction (n : ℕ) (x : ℝ) :
         ((hermiteFunction_differentiable _).differentiableAt.const_mul _)]
   simp only [deriv_const_mul_field]
   rw [deriv_hermiteFunction (n - 1) x, deriv_hermiteFunction (n + 1) x]
-  rw [show n + 1 - 1 = n from Nat.succ_sub_one n]
-  rw [show n + 1 + 1 = n + 2 from rfl]
+  rw [show n + 1 - 1 = n from Nat.succ_sub_one n, show n + 1 + 1 = n + 2 from rfl]
   -- The term (n - 1) + 1 from deriv_hermiteFunction (n-1) doesn't simplify to n
   -- when n = 0. Case split:
   cases n with
@@ -174,8 +172,7 @@ private theorem x_sq_mul_hermiteFunction (n : ℕ) (x : ℝ) :
     Real.sqrt ((↑(n + 1) : ℝ) / 2) * (x * hermiteFunction (n + 1) x) +
     Real.sqrt ((↑n : ℝ) / 2) * (x * hermiteFunction (n - 1) x) := by ring
   rw [hdist, mul_x_hermiteFunction (n + 1) x, mul_x_hermiteFunction (n - 1) x]
-  rw [show n + 1 - 1 = n from Nat.succ_sub_one n]
-  rw [show n + 1 + 1 = n + 2 from rfl]
+  rw [show n + 1 - 1 = n from Nat.succ_sub_one n, show n + 1 + 1 = n + 2 from rfl]
   -- The problematic term: √(n/2) * √((n-1+1)/2) * ψ_{n-1+1}
   -- When n = 0: √(0/2) = 0 so both sides have 0 for this term
   -- When n ≥ 1: n-1+1 = n so this is √(n/2) * √(n/2) * ψ_n
@@ -184,8 +181,7 @@ private theorem x_sq_mul_hermiteFunction (n : ℕ) (x : ℝ) :
     simp [Real.sqrt_zero]
     ring
   | succ m =>
-    rw [show m + 1 - 1 = m from Nat.succ_sub_one m]
-    rw [show m + 1 = m + 1 from rfl]
+    rw [show m + 1 - 1 = m from Nat.succ_sub_one m, show m + 1 = m + 1 from rfl]
     ring
 
 theorem hermiteFunction_harmonic_oscillator_eigenvalue (n : ℕ) (x : ℝ) :
@@ -231,10 +227,8 @@ theorem schwartz_integration_by_parts_twice
     intro x; rw [iteratedDeriv_succ, iteratedDeriv_succ, iteratedDeriv_zero]
   simp_rw [hf2, hg2]
   -- Key: deriv (⇑f) = ⇑(derivCLM ℝ ℝ f) as functions
-  have hf' : deriv (⇑f) = ⇑(derivCLM ℝ ℝ f) := by
-    ext x; simp [derivCLM_apply]
-  have hg' : deriv (⇑g) = ⇑(derivCLM ℝ ℝ g) := by
-    ext x; simp [derivCLM_apply]
+  have hf' : deriv (⇑f) = ⇑(derivCLM ℝ ℝ f) := by ext x; simp [derivCLM_apply]
+  have hg' : deriv (⇑g) = ⇑(derivCLM ℝ ℝ g) := by ext x; simp [derivCLM_apply]
   -- Rewrite second derivatives using derivCLM
   rw [hf', hg']
   -- Now LHS = ∫ x, deriv (⇑(derivCLM ℝ ℝ f)) x * g x
@@ -434,13 +428,12 @@ private lemma cauchy_schwarz_integral (f g : ℝ → ℝ) (hf : Integrable (fun 
   · -- B > 0: substitute t = -C/B
     have hB_pos : 0 < B := lt_of_le_of_ne hB_nn (Ne.symm hB)
     have h := hquad (-C / B)
-    have hsimp : A + 2 * (-C / B) * C + (-C / B) ^ 2 * B = A - C ^ 2 / B := by
-      field_simp; ring
+    have hsimp : A + 2 * (-C / B) * C + (-C / B) ^ 2 * B = A - C ^ 2 / B := by field_simp; ring
     rw [hsimp] at h
     have hCsq : C ^ 2 ≤ A * B := by
       have h1 : C ^ 2 / B ≤ A := by linarith
       calc C ^ 2 = C ^ 2 / B * B := by field_simp
-        _ ≤ A * B := by exact mul_le_mul_of_nonneg_right h1 hB_pos.le
+        _ ≤ A * B := mul_le_mul_of_nonneg_right h1 hB_pos.le
     -- |C| = √(C²) ≤ √(AB) = √A · √B
     calc |C| = Real.sqrt (C ^ 2) := by rw [Real.sqrt_sq_eq_abs]
       _ ≤ Real.sqrt (A * B) := Real.sqrt_le_sqrt hCsq
@@ -452,12 +445,11 @@ private lemma abs_hermiteCoeff1D_le_sqrt_integral_sq (n : ℕ) (f : SchwartzMap 
   unfold hermiteCoeff1D
   have hint : Integrable (fun x => f x * hermiteFunction n x) :=
     (f.memLp 2 volume).integrable_mul (hermiteFunction_memLp n)
-  have hf2 : Integrable (fun x => f x ^ 2) := by
-    have h := (f.memLp 2 volume).integrable_mul (f.memLp 2 volume)
-    exact h.congr (by filter_upwards with x; change f x * f x = f x ^ 2; ring)
+  have hf2 : Integrable (fun x => f x ^ 2) :=
+    ((f.memLp 2 volume).integrable_mul (f.memLp 2 volume)).congr
+      (by filter_upwards with x; change f x * f x = f x ^ 2; ring)
   have hψ2 : Integrable (fun x => hermiteFunction n x ^ 2) := by
-    have h := (hermiteFunction_memLp n).integrable_mul (hermiteFunction_memLp n)
-    exact h.congr (by
+    exact ((hermiteFunction_memLp n).integrable_mul (hermiteFunction_memLp n)).congr (by
       filter_upwards with x
       change hermiteFunction n x * hermiteFunction n x = hermiteFunction n x ^ 2
       ring)
@@ -669,8 +661,7 @@ private lemma pow_clm_sup_seminorm_bound (T : (SchwartzMap ℝ ℝ) →L[ℝ] (S
           h_k (T f)
       _ ≤ C_k * (C_T * (Finset.Iic q_T).sup (fun p => SchwartzMap.seminorm ℝ p.1 p.2) f) :=
           by gcongr; exact h_T f
-      _ = C_k * C_T * (Finset.Iic q_T).sup (fun p => SchwartzMap.seminorm ℝ p.1 p.2) f :=
-          by ring
+      _ = C_k * C_T * (Finset.Iic q_T).sup (fun p => SchwartzMap.seminorm ℝ p.1 p.2) f := by ring
 
 theorem hermiteCoeff1D_decay :
     ∀ k : ℝ, ∃ (C : ℝ) (q : ℕ × ℕ), 0 < C ∧
@@ -715,8 +706,7 @@ theorem hermiteCoeff1D_decay :
           ((harmonicOscillator ^ m) f) := h_l2'
     _ ≤ C₀ * (C_H * (Finset.Iic q_H).sup (fun p => SchwartzMap.seminorm ℝ p.1 p.2) f) :=
         by exact mul_le_mul_of_nonneg_left h_H' hC₀_pos.le
-    _ = C₀ * C_H * (Finset.Iic q_H).sup (fun p => SchwartzMap.seminorm ℝ p.1 p.2) f :=
-        by ring
+    _ = C₀ * C_H * (Finset.Iic q_H).sup (fun p => SchwartzMap.seminorm ℝ p.1 p.2) f := by ring
 
 /-! ## Section 6: Schwartz Convergence
 
@@ -878,23 +868,16 @@ private lemma bessel_identity (f : SchwartzMap ℝ ℝ) (N : ℕ) :
     hint_fS.const_mul (-2)
   -- Expand and compute
   calc ∫ x, (f x - S x) ^ 2
-      = ∫ x, (f x ^ 2 + (-2 * (f x * S x) + S x ^ 2)) := by
-        congr 1; ext x; ring
+      = ∫ x, (f x ^ 2 + (-2 * (f x * S x) + S x ^ 2)) := by congr 1; ext x; ring
     _ = (∫ x, f x ^ 2) + ∫ x, (-2 * (f x * S x) + S x ^ 2) :=
         integral_add hint_f2 (hint_neg2fS.add hint_S2)
     _ = (∫ x, f x ^ 2) + ((∫ x, -2 * (f x * S x)) + ∫ x, S x ^ 2) :=
         by rw [integral_add hint_neg2fS hint_S2]
-    _ = (∫ x, f x ^ 2) + (-2 * (∫ x, f x * S x) + ∫ x, S x ^ 2) :=
-        by rw [integral_const_mul]
+    _ = (∫ x, f x ^ 2) + (-2 * (∫ x, f x * S x) + ∫ x, S x ^ 2) := by rw [integral_const_mul]
     _ = (∫ x, f x ^ 2) + (-2 * ∑ n ∈ Finset.range N, hermiteCoeff1D n f ^ 2 +
         ∑ n ∈ Finset.range N, hermiteCoeff1D n f ^ 2) := by
         rw [cross_term_integral, partial_sum_l2_norm_sq]
     _ = _ := by ring
-
--- Helper: ∫ f² ≥ 0
-private lemma integral_f_sq_nonneg (f : SchwartzMap ℝ ℝ) :
-    0 ≤ ∫ x, (f x) ^ 2 :=
-  integral_nonneg (fun x => sq_nonneg (f x))
 
 -- Helper: Bessel's inequality
 private lemma bessel_inequality (f : SchwartzMap ℝ ℝ) (N : ℕ) :
@@ -1238,8 +1221,8 @@ private lemma hermiteFunction_norm_le_seminorm (n : ℕ) (x : ℝ) :
 -- Helper: iteratedFDeriv of schwartzHermiteBasis1D equals that of hermiteFunction
 private lemma iteratedFDeriv_schwartzHermiteBasis1D_eq (n k : ℕ) (x : ℝ) :
     iteratedFDeriv ℝ k (⇑(schwartzHermiteBasis1D n)) x =
-    iteratedFDeriv ℝ k (hermiteFunction n) x := by
-  exact congr_arg (iteratedFDeriv ℝ k · x) (schwartzHermiteBasis1D_coe n)
+    iteratedFDeriv ℝ k (hermiteFunction n) x :=
+  congr_arg (iteratedFDeriv ℝ k · x) (schwartzHermiteBasis1D_coe n)
 
 -- Helper: uniform bound on iteratedFDeriv of cₙ * ψₙ by |cₙ| * p_{0,k}(ψₙ)
 private lemma hermite_term_iteratedFDeriv_bound (f : SchwartzMap ℝ ℝ) (k n : ℕ) (x : ℝ) :
@@ -1359,8 +1342,7 @@ private lemma schwartz_seminorm_remainder_le (f : SchwartzMap ℝ ℝ) (k l : �
       (fun i _ => (contDiff_const.mul (hermiteFunction_contDiff i l)).of_le le_rfl)
     -- h_eq : iteratedFDeriv ℝ l (∑ j ∈ s, g j ·) = ∑ j ∈ s, iteratedFDeriv ℝ l (g j)
     have := congr_fun h_eq x
-    simp only [Finset.sum_apply] at this
-    exact this
+    simpa only [Finset.sum_apply] using this
   -- Step 4: iteratedFDeriv of r = ∑'_{i∉s} iteratedFDeriv(gₙ)
   have h_iFD_r : iteratedFDeriv ℝ l (⇑r) x =
       ∑' (i : ↥(↑s : Set ℕ)ᶜ), iteratedFDeriv ℝ l (g ↑i) x := by
@@ -1377,8 +1359,7 @@ private lemma schwartz_seminorm_remainder_le (f : SchwartzMap ℝ ℝ) (k l : �
     set h_sum := fun y => ∑ i ∈ s, g i y with h_sum_def
     have h_neg_cd : ContDiff ℝ l (-h_sum) := hg_cd.neg
     -- (fun y => f y - h_sum y) = ⇑f + (-h_sum) as Pi functions
-    have h_rw : (fun y => f y - h_sum y) = ⇑f + (-h_sum) := by
-      ext; simp [sub_eq_add_neg]
+    have h_rw : (fun y => f y - h_sum y) = ⇑f + (-h_sum) := by ext; simp [sub_eq_add_neg]
     rw [h_rw, iteratedFDeriv_add hf_cd h_neg_cd, Pi.add_apply,
       iteratedFDeriv_neg, Pi.neg_apply, h_iFD_f]
     -- iteratedFDeriv of h_sum
@@ -1390,8 +1371,7 @@ private lemma schwartz_seminorm_remainder_le (f : SchwartzMap ℝ ℝ) (k l : �
       calc iteratedFDeriv ℝ l (fun y => ∑ i ∈ s, g i y) x
           = (∑ j ∈ s, iteratedFDeriv ℝ l (g j)) x := congr_fun h_eq x
         _ = ∑ i ∈ s, iteratedFDeriv ℝ l (g i) x := Finset.sum_apply x s _
-    rw [h_iFD_h]
-    rw [← h_summ_iFD.sum_add_tsum_compl (s := s)]
+    rw [h_iFD_h, ← h_summ_iFD.sum_add_tsum_compl (s := s)]
     abel
   -- Step 5: Bound |x|^k * ‖iteratedDeriv l r x‖
   rw [norm_iteratedFDeriv_eq_norm_iteratedDeriv.symm, h_iFD_r]
@@ -1430,8 +1410,7 @@ private lemma schwartz_seminorm_remainder_le (f : SchwartzMap ℝ ℝ) (k l : �
       ≤ |x| ^ k * ∑' (i : ↥(↑s : Set ℕ)ᶜ), ‖iteratedFDeriv ℝ l (g ↑i) x‖ :=
         mul_le_mul_of_nonneg_left (norm_tsum_le_tsum_norm h_norm_summ)
           (pow_nonneg (abs_nonneg x) k)
-    _ = ∑' (i : ↥(↑s : Set ℕ)ᶜ), (|x| ^ k * ‖iteratedFDeriv ℝ l (g ↑i) x‖) := by
-        rw [tsum_mul_left]
+    _ = ∑' (i : ↥(↑s : Set ℕ)ᶜ), (|x| ^ k * ‖iteratedFDeriv ℝ l (g ↑i) x‖) := by rw [tsum_mul_left]
     _ ≤ ∑' (i : ↥(↑s : Set ℕ)ᶜ),
           (|hermiteCoeff1D (↑i) f| *
             SchwartzMap.seminorm ℝ k l (schwartzHermiteBasis1D (↑i))) :=
@@ -1448,8 +1427,7 @@ private lemma schwartz_seminorm_remainder_le (f : SchwartzMap ℝ ℝ) (k l : �
           obtain ⟨⟨m, hm⟩, _, rfl⟩ := hn
           exact hm hn_s
         have h_le := h_vanish t' h_disj
-        rw [ht'_def, Finset.sum_map] at h_le
-        exact h_le
+        rwa [ht'_def, Finset.sum_map] at h_le
 
 lemma schwartz_hermite_hasSum (f : SchwartzMap ℝ ℝ) :
     HasSum (fun n => hermiteCoeff1D n f • schwartzHermiteBasis1D n) f := by

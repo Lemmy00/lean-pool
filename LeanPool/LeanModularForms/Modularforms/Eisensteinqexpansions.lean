@@ -58,15 +58,13 @@ def gammaSetNMap (N : ℕ) (v : gammaSetN N) : gammaSet 1 1 0 := by
 lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
   rw [gammaSet]
   simp only [Fin.isValue, mem_setOf_eq, ←Int.isCoprime_iff_gcd_eq_one, and_iff_right_iff_imp]
-  intro h
-  exact Subsingleton.eq_zero (Int.cast ∘ v)
+  exact fun _ => Subsingleton.eq_zero (Int.cast ∘ v)
 
 lemma gammaSetN_map_eq (N : ℕ) (v : gammaSetN N) : v.1 = N • gammaSetNMap N v := by
   have hv2 := v.2
   simp only [gammaSetN, singleton_smul] at hv2
   rw [@mem_smul_set] at hv2
-  have h1 := hv2.choose_spec.2
-  exact h1.symm
+  exact hv2.choose_spec.2.symm
 
 /-- The equivalence between `gammaSetN N` and the primitive gamma-set for `N ≠ 0`. -/
 def gammaSetNEquiv (N : ℕ) (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 1 0 where
@@ -76,8 +74,7 @@ def gammaSetNEquiv (N : ℕ) (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 1 0 whe
     simp only [gammaSetN, singleton_smul, nsmul_eq_mul, mem_smul_set]
     use v
     simp
-  left_inv v := by
-    simp_rw [← gammaSetN_map_eq N v]
+  left_inv v := by simp_rw [← gammaSetN_map_eq N v]
   right_inv v := by
     simp only [nsmul_eq_mul]
     have H : N • v.1 ∈ gammaSetN N := by
@@ -145,8 +142,7 @@ def GammaSetOneEquiv : (Fin 2 → ℤ) ≃ (Σn : ℕ, gammaSetN n) where
              omega
            · fin_cases i
              · refine Int.mul_ediv_cancel' ?_
-               simp only [Fin.isValue]
-               exact Int.gcd_dvd_left _ _
+               simpa only [Fin.isValue] using Int.gcd_dvd_left _ _
              · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Fin.mk_one,
                Pi.smul_apply, Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.nsmul_eq_mul]
                exact Int.mul_ediv_cancel' (Int.gcd_dvd_right _ _)
@@ -154,10 +150,8 @@ def GammaSetOneEquiv : (Fin 2 → ℤ) ≃ (Σn : ℕ, gammaSetN n) where
 
 theorem q_exp_iden_2 (k : ℕ) (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     ∑' x : ℤ × ℤ, 1 / ((x.1 : ℂ) * z + x.2) ^ k =
-      2 * (riemannZeta (k)) + 2 * ∑' c : ℕ+, ∑' d : ℤ, 1 / (c * (z : ℂ) + d) ^ k :=
-  by
-  have hkk : 1 < (k ) := by
-    linarith
+      2 * (riemannZeta (k)) + 2 * ∑' c : ℕ+, ∑' d : ℤ, 1 / (c * (z : ℂ) + d) ^ k := by
+  have hkk : 1 < (k ) := by linarith
   rw [Summable.tsum_prod, sum_int_even]
   · simp only [Int.cast_zero, zero_mul, zero_add, one_div, Int.cast_natCast, add_left_inj]
     rw [sum_int_even]
@@ -223,7 +217,7 @@ lemma EQ0 (k : ℕ) (z : ℍ) : ∑' (x : Fin 2 → ℤ),
   rw [← (piFinTwoEquiv fun _ => ℤ).tsum_eq]
   apply tsum_congr
   intro x
-  simp
+  rfl
 
 lemma EQ1 (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) (z : ℍ) : ∑' (x : Fin 2 → ℤ),
     1 / (x 0 * (z : ℂ) + x 1) ^ ↑k = 2 * riemannZeta ↑k +
@@ -237,13 +231,11 @@ lemma EQ1 (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) (z : ℍ) : ∑' (x : 
     enter [1,2,1]
     ext c
     rw [h1 c]
-  rw [tsum_mul_left]
-  rw [← mul_assoc]
+  rw [tsum_mul_left, ← mul_assoc]
   congr 1
   rw [Summable.tsum_comm]
   · rw [← tsum_sigma_eqn2]
-    rw [← (piFinTwoEquiv fun _ => ℕ+).symm.tsum_eq]
-    rw [Summable.tsum_prod']
+    rw [← (piFinTwoEquiv fun _ => ℕ+).symm.tsum_eq, Summable.tsum_prod']
     · simp only [Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one]
       congr
       ext i
@@ -348,10 +340,8 @@ lemma E_k_q_expansion (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) (z : ℍ) 
   simp_rw [eisSummand]
   have HE1 := EQ1 k hk hk2 z
   have HE2 := EQ2 k hk z
-  have z2 : (riemannZeta (k)) ≠ 0 := by
-    refine riemannZeta_ne_zero_of_one_lt_re ?_
-    simp
-    omega
+  have z2 : (riemannZeta (k)) ≠ 0 :=
+    riemannZeta_ne_zero_of_one_lt_re (by simp; omega)
   rw [← inv_mul_eq_iff_eq_mul₀ z2 ] at HE2
   simp only [Fin.isValue, one_div, neg_mul, zpow_neg, zpow_natCast] at HE1 HE2 ⊢
   -- Lean 4.29: `rw` fails on binder name `c` vs `x` for gammaSet tsum.
@@ -367,7 +357,6 @@ lemma E_k_q_expansion (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) (z : ℍ) 
     rfl
   simp_rw [← mul_assoc]
   rw [HE1, mul_add]
-  have : 2⁻¹ * (riemannZeta (k))⁻¹ * (2 * riemannZeta (k)) = 1 := by
-    field_simp
+  have : 2⁻¹ * (riemannZeta (k))⁻¹ * (2 * riemannZeta (k)) = 1 := by field_simp
   rw [this]
   ring

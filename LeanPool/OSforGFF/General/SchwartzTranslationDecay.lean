@@ -65,8 +65,7 @@ Proof: Schwartz decay gives ‖x‖^k · ‖f(x)‖ ≤ seminorm k 0 f for all k
 Taking k = 1: ‖f(x)‖ ≤ C/‖x‖ → 0 as ‖x‖ → ∞.
 -/
 lemma schwartz_tendsto_zero (f : SchwartzMap E ℂ) :
-    Tendsto f (cocompact E) (nhds 0) :=
-  zero_at_infty f
+    Tendsto f (cocompact E) (nhds 0) := zero_at_infty f
 
 /-! ## Kernel decomposition -/
 
@@ -111,8 +110,7 @@ lemma kernelTail_tendsto_zero (K : E → ℝ) (R₀ : ℝ)
       simp only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le] at hz
       simp only [kernelTail, dist_zero_right]
       have hmem : z ∈ (closedBall (0 : E) R₀)ᶜ := by
-        simp only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le]
-        exact hz
+        simpa only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le] using hz
       rw [indicator_of_mem hmem, mul_one]
       have hbound := hK_decay z hz.le
       have : |K z| ≤ 0 := le_trans hbound (div_nonpos_of_nonpos_of_nonneg hC (Real.rpow_nonneg
@@ -244,8 +242,7 @@ lemma integrable_tail_small {f : E → ℂ} (hf : Integrable f) (ε : ℝ) (hε 
   simp only [dist_zero_right] at hN
   -- hN : ‖∫ x in s N, ‖f x‖‖ < ε, but ∫ x in s N, ‖f x‖ ≥ 0, so this gives what we need
   have h_nonneg : 0 ≤ ∫ x in s N, ‖f x‖ := setIntegral_nonneg (hs_meas N) (fun _ _ => norm_nonneg _)
-  rw [Real.norm_eq_abs, abs_of_nonneg h_nonneg] at hN
-  exact hN
+  rwa [Real.norm_eq_abs, abs_of_nonneg h_nonneg] at hN
 
 /-- Convolution of an integrable function with a function vanishing at infinity
 also vanishes at infinity. This is a fundamental result in harmonic analysis.
@@ -341,8 +338,7 @@ theorem convolution_vanishes_of_integrable_and_C0
           hK_meas ?_
         intro x hxK
         exact mul_le_mul_of_nonneg_left (hg_small_on_K x hxK).le (norm_nonneg _)
-      have h2 : ∫ x in K, ‖f x‖ * η = η * ∫ x in K, ‖f x‖ := by
-        rw [integral_mul_const]; ring
+      have h2 : ∫ x in K, ‖f x‖ * η = η * ∫ x in K, ‖f x‖ := by rw [integral_mul_const]; ring
       have h3 : ∫ x in K, ‖f x‖ ≤ If := setIntegral_le_integral hf_int.norm
         (Eventually.of_forall (fun _ => norm_nonneg _))
       linarith [mul_le_mul_of_nonneg_left h3 hη_pos.le]
@@ -462,8 +458,7 @@ theorem schwartz_bilinear_prod_integrable
         (volume.prod volume) := by
       have heq : (fun p : E × E => (K_sing (p.1 - p.2) : ℂ) * g (p.2 - a)) =
           (fun p => (K_sing p.1 : ℂ) * g (p.2 - a)) ∘ e := by ext p; rfl
-      rw [heq, he_preserves.integrable_comp_emb e.measurableEmbedding]
-      exact h_prod_Ks_g
+      rwa [heq, he_preserves.integrable_comp_emb e.measurableEmbedding]
     -- Now bound: |f(x) K_sing(x-y) g(y-a)| ≤ Cf * |K_sing(x-y) * g(y-a)|
     have hCf_pos : 0 < max Cf 1 := lt_max_of_lt_right one_pos
     have h_dom : Integrable (fun p : E × E => max Cf 1 * ‖(K_sing (p.1 - p.2) : ℂ) * g (p.2 - a)‖)
@@ -479,8 +474,7 @@ theorem schwartz_bilinear_prod_integrable
     · filter_upwards with ⟨x, y⟩
       simp only [Function.uncurry]
       calc ‖f x * (K_sing (x - y) : ℂ) * g (y - a)‖
-          = ‖f x‖ * ‖(K_sing (x - y) : ℂ)‖ * ‖g (y - a)‖ := by
-            rw [norm_mul, norm_mul]
+          = ‖f x‖ * ‖(K_sing (x - y) : ℂ)‖ * ‖g (y - a)‖ := by rw [norm_mul, norm_mul]
         _ ≤ max Cf 1 * ‖(K_sing (x - y) : ℂ)‖ * ‖g (y - a)‖ := by
             apply mul_le_mul_of_nonneg_right
             · exact mul_le_mul_of_nonneg_right (le_trans (hCf x) (le_max_left _ _))
@@ -856,28 +850,24 @@ private lemma schwartz_bilinear_kernel_convolution_continuous
         have hxy_not_sphere : ‖x - y₀‖ ≠ R₀ := by
           intro h
           apply hx_sphere
-          rw [Metric.mem_sphere, dist_eq_norm]
-          exact h
+          rwa [Metric.mem_sphere, dist_eq_norm]
         apply ContinuousAt.comp (g := Complex.ofReal)
         · exact Complex.continuous_ofReal.continuousAt
         · unfold kernelTail
           by_cases hz_outside : ‖x - y₀‖ > R₀
           · apply ContinuousAt.mul
             · have h_mem : x - y₀ ∈ (closedBall (0 : E) R₀)ᶜ := by
-                simp only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le]
-                exact hz_outside
+                simpa only [mem_compl_iff, mem_closedBall, dist_zero_right, not_le] using hz_outside
               exact hK_cont.continuousAt ((isOpen_compl_iff.mpr isClosed_closedBall).mem_nhds
                 h_mem)
             · apply ContinuousOn.continuousAt_indicator continuousOn_const
               rw [frontier_compl, frontier_closedBall (0 : E) hR₀.ne']
-              simp only [mem_sphere_zero_iff_norm]
-              exact hxy_not_sphere
+              simpa only [mem_sphere_zero_iff_norm] using hxy_not_sphere
           · push Not at hz_outside
             have hz_inside : ‖x - y₀‖ < R₀ := lt_of_le_of_ne hz_outside hxy_not_sphere
             have h_mem_interior : x - y₀ ∈ interior (closedBall (0 : E) R₀) := by
               rw [interior_closedBall _ hR₀.ne']
-              simp only [mem_ball, dist_zero_right]
-              exact hz_inside
+              simpa only [mem_ball, dist_zero_right] using hz_inside
             have h_eq : (fun z => K z * (closedBall (0 : E) R₀)ᶜ.indicator (fun _ => (1 : ℝ)) z)
               =ᶠ[nhds (x - y₀)] (fun _ => 0) := by
               have h_open : IsOpen (interior (closedBall (0 : E) R₀)) := isOpen_interior
@@ -979,8 +969,7 @@ theorem schwartz_bilinear_translation_decay_proof
     intro y
     -- Need: (∫ f * K_sing) + (∫ f * K_tail) = ∫ f * K
     symm
-    rw [hdec]
-    rw [← integral_add]
+    rw [hdec, ← integral_add]
     · congr 1
       ext x
       push_cast
@@ -1109,8 +1098,7 @@ theorem schwartz_bilinear_translation_decay_proof
       have hK_tail_bdd_abs : ∃ M : ℝ, ∀ z : E, |kernelTail K R₀ z| ≤ M := by
         refine ⟨M_tail, ?_⟩
         intro z
-        have h := hM_tail z
-        simpa [K_tail, Complex.norm_real] using h
+        simpa [K_tail, Complex.norm_real] using hM_tail z
       exact schwartz_bilinear_prod_integrable f g K hK_meas hK_loc R₀ hR₀
         hK_tail_bdd_abs a
     -- Step 2: Apply Fubini to swap integration order
@@ -1133,8 +1121,7 @@ theorem schwartz_bilinear_translation_decay_proof
   have h_translate : ∫ y : E, g (y - a) * H y = ∫ w : E, g w * H (w + a) := by
     have : ∫ y : E, g (y - a) * H y = ∫ w : E, g ((w + a) - a) * H (w + a) := by
       rw [integral_add_right_eq_self (fun y => g (y - a) * H y) a]
-    simp only [add_sub_cancel_right] at this
-    exact this
+    simpa only [add_sub_cancel_right] using this
   -- Step 10e-iii: Rewrite w + a = w - (-a)
   have h_neg : ∫ w : E, g w * H (w + a) = ∫ w : E, g w * H (w - (-a)) := by
     congr 1; ext w; congr 1; simp only [sub_neg_eq_add]

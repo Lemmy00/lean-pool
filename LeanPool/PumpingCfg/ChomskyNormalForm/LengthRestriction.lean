@@ -56,8 +56,7 @@ lemma only_nonterminals {u : List (Symbol T N)}
     · simp at hu
     · rename_i n
       use n :: u'
-      simp only [List.map_cons, List.cons.injEq, true_and]
-      exact hu'
+      simpa only [List.map_cons, List.cons.injEq, true_and] using hu'
 
 lemma Wellformed.mem_nonterminal {r : ContextFreeRule T N} (hr : r.Wellformed)
     (i : Fin r.output.length) (h2 : 2 ≤ r.output.length) :
@@ -169,8 +168,7 @@ lemma embedSymbol_terminal {t : T} :
 abbrev embedString (u : List (Symbol T g.NT)) : List (Symbol T g.NT') := u.map embedSymbol
 
 lemma embedString_nonterminal {n : g.NT} :
-    embedString [Symbol.nonterminal n] = [Symbol.nonterminal (Sum.inl n)] :=
-  rfl
+    embedString [Symbol.nonterminal n] = [Symbol.nonterminal (Sum.inl n)] := rfl
 
 lemma embedString_terminals {u : List T} :
     embedString (u.map Symbol.terminal) = u.map (@Symbol.terminal T g.NT') := by
