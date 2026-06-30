@@ -12,7 +12,7 @@ import LeanPool.PLAcceleratedNesterovLean.MainTheorem
 /-!
 # Accelerated Nesterov convergence under local Polyak-Lojasiewicz conditions
 
-Source: url:https://github.com/M1ngXU/PL-Accelerated-Nesterov-Lean
+Source: arxiv:2603.21516
 Authors: Max Obreiter, Tobias Steinbrecher, Robert Foerster
 Status: verified
 Main declarations: `PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate`
