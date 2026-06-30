@@ -2090,10 +2090,6 @@ import LeanPool.SingularModuli
 import LeanPool.SingularModuli.QuadraticOrder.Basic
 import LeanPool.SingularModuli.QuadraticOrder.CanonicalForm
 import LeanPool.SingularModuli.QuadraticOrder.Discriminant
-import LeanPool.SingularModuli.QuadraticOrder.IdealCount
-import LeanPool.SingularModuli.QuadraticOrder.InvertibleCount
-import LeanPool.SingularModuli.QuadraticOrder.Localization
-import LeanPool.SingularModuli.QuadraticOrder.MaximalCase
 import LeanPool.SingularModuli.QuadraticOrder.Norm
 import LeanPool.SingularModuli.QuadraticOrder.Prime
 import LeanPool.SingularModuli.QuadraticOrder.Prime.Inert
