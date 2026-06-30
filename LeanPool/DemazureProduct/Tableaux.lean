@@ -11,9 +11,9 @@ import LeanPool.DemazureProduct.Avoiding321
 This file relates Hecke factorizations of 321-avoiding ASP permutations to
 set-valued Young tableaux defined on the inversion set.
 
-This material is not present in [An extended Demazure product](https://arxiv.org/abs/2206.14227).
-
-This file is largely experimental and is still under development. Use at your own risk.
+This material is not present in [An extended Demazure product](https://arxiv.org/abs/2206.14227);
+it gives an additional formal correspondence between fixed-shift set-valued tableaux and
+Hecke factorizations for the 321-avoiding case.
 -/
 
 namespace LeanPool.DemazureProduct
