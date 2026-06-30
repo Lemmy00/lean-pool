@@ -382,6 +382,17 @@ import LeanPool.Clawristotle.TorusIntegration
 import LeanPool.Clawristotle.VMLInputDerive
 import LeanPool.Clawristotle.VMLStructures
 import LeanPool.Clawristotle.VelocityDecayInstance
+import LeanPool.CompactSpectral
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactOperatorOrthonormal
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint.Approximation
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint.Basic
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint.CutoffProjector
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint.OpNormEigenvalue
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint.SpectralFiniteness
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.CompactSelfAdjoint.SpectralTheorem
+import LeanPool.CompactSpectral.Analysis.InnerProductSpace.RayleighCompact
+import LeanPool.CompactSpectral.Topology.WeakHilbertCompact
 import LeanPool.Computability
 import LeanPool.Computability.ArithHierarchy
 import LeanPool.Computability.AutGrp
