@@ -1,4 +1,51 @@
 projects:
+  - slug: biswal
+    title: Chebyshev Quotients and Demazure Multiplicities
+    summary: >-
+      Formalizes positivity results for the coefficients of Chebyshev-type
+      polynomial quotients attached to integer partitions, modelling Demazure
+      multiplicities. Proves that the relevant generating function is a
+      polynomial and that its coefficients are eventually positive (Theorem 1),
+      gives explicit Cauchy-product and matrix-inverse formulas for the
+      coefficients (Theorem 2), and establishes their nonnegativity through a
+      Dyck-path lattice counting model (Theorem 3).
+    branch: algebraic combinatorics
+    entry_module: LeanPool.Biswal
+    authors:
+      - Jujian Zhang
+    source:
+      title: "Chebyshev quotients, Demazure multiplicities, and Dyck-path models"
+      authors:
+        - Evan Chen
+        - Kenny Lau
+        - Seewoo Lee
+        - Ken Ono
+        - Jujian Zhang
+      arxiv: "2604.25246"
+      github_repo: AxiomMath/Biswal
+    license: MIT
+    status: verified
+    main_declarations:
+      - Biswal.Theorem23.thm_manifest_coeff_nonneg
+    main_results:
+      - declaration: Biswal.Theorem1.genFun_is_polynomial
+        informal: >-
+          Proves that the generating function attached to a partition is a
+          polynomial whenever its parts are bounded by the parameter `m`.
+      - declaration: Biswal.Theorem1.genFun_coeff_eventually_pos
+        informal: >-
+          Proves that the coefficients of the generating function attached to a
+          partition are eventually strictly positive.
+      - declaration: Biswal.Theorem23.thm_manifest_coeff_nonneg
+        informal: >-
+          Proves that every coefficient of the generating function is
+          nonnegative, via the explicit Dyck-path lattice counting model.
+    tags:
+      - algebraic-combinatorics
+      - chebyshev
+      - demazure
+    msc:
+      - "05E10"
   - slug: pythagorean-polynomial-parametrization
     title: Polynomial parametrizations of Pythagorean triples
     summary: Formalizes Frisch and Vaserstein's result that Pythagorean triples are not parametrizable by one triple of integer-coefficient polynomials in any number of variables, but are parametrizable by a single triple of integer-valued rational polynomials, including the positive and sixteen-parameter variants.
@@ -79,6 +126,43 @@ projects:
       - "60B11"
       - "60E10"
       - "28A33"
+  - slug: cencov-petz
+    title: Finite Čencov-Petz Uniqueness
+    summary: Formalizes the finite/discrete Čencov-Petz uniqueness theorem, showing that any continuous metric family on finite probability simplexes that is monotone under Markov morphisms is a scalar multiple of the Fisher information metric.
+    branch: information geometry
+    entry_module: LeanPool.CencovPetz
+    authors:
+      - Adam Benenson
+    source:
+      title: Statistical Decision Rules and Optimal Inference
+      authors:
+        - N. N. Chentsov
+      url: https://bookstore.ams.org/mmono-53
+      github_repo: abenenson/cencov-petz
+    license: Apache-2.0
+    status: verified
+    main_declarations:
+      - LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_continuous
+    main_results:
+      - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_continuous
+        informal: Proves that every continuous monotone metric family on a finite probability simplex is a scalar multiple of the Fisher information metric.
+        source_ref: "N. N. Chentsov, Statistical Decision Rules and Optimal Inference, AMS Translations of Mathematical Monographs 53, 1982."
+      - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_isRational
+        informal: Establishes the scalar Fisher-form identity at rational simplex points using split representations.
+      - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.eq_smul_fisher_of_isSplitRepresentable
+        informal: Proves the scalar Fisher-form identity for simplex points represented as pushforwards of uniform distributions under splitting maps.
+      - declaration: LeanPool.CencovPetz.MonotoneMetricFamily.uniformScalar_eq_uniformScalar_two
+        informal: Shows that the uniform-point scalar is independent of simplex dimension once the dimension is at least two.
+      - declaration: LeanPool.CencovPetz.TangentFin.Bilin.B_eq_smul_fisherBilin_uniform
+        informal: Proves that the permutation-invariant bilinear form at a uniform finite simplex point is a scalar multiple of the Fisher bilinear form.
+    tags:
+      - information-geometry
+      - fisher-information
+      - markov-morphisms
+      - finite-simplex
+    msc:
+      - "62B10"
+      - "53C21"
   - slug: demazureoperatorslean
     title: Demazure Operators and Lean
     summary: Formalizes Demazure operators on multivariate polynomials and their nilpotence, braid, commutation, and symmetric-polynomial linearity relations, with auxiliary Coxeter-theory support including strong exchange and a conditional Matsumoto theorem.
@@ -125,6 +209,50 @@ projects:
       - "05E05"
       - "13P10"
       - "20F55"
+  - slug: demazure-product
+    title: Extended Demazure Product on ASP Permutations
+    summary: Formalizes the extended Demazure product on almost-sign-preserving integer permutations, including slipface models, residuals, greedy and stingy characterizations, reduction theorems, adjacent-transposition formulas, and 321-avoiding factorization results.
+    branch: algebraic combinatorics
+    entry_module: LeanPool.DemazureProduct
+    authors:
+      - Nathan Pflueger
+    source:
+      title: An extended Demazure product on integer permutations via min-plus matrix multiplication
+      authors:
+        - Nathan Pflueger
+      arxiv: "2206.14227"
+      github_repo: npflueger/demazure
+    license: Apache-2.0
+    status: verified
+    main_declarations:
+      - LeanPool.DemazureProduct.AspPerm.star
+    main_results:
+      - declaration: LeanPool.DemazureProduct.AspPerm.star
+        informal: Defines the extended Demazure product on almost-sign-preserving permutations.
+      - declaration: LeanPool.DemazureProduct.AspPerm.star_assoc
+        informal: Proves associativity of the extended Demazure product on almost-sign-preserving permutations.
+      - declaration: LeanPool.DemazureProduct.Reduction.starGreedy
+        informal: Characterizes the Demazure product as the Bruhat-maximum of ordinary products of smaller factors.
+      - declaration: LeanPool.DemazureProduct.Reduction.reduce
+        informal: Reduces inequalities against a Demazure product to ordinary products of Bruhat-smaller factors with fixed shift.
+      - declaration: LeanPool.DemazureProduct.Reduction.lres_stingy
+        informal: Gives the stingy characterization of the left residual as a Bruhat-minimum of ordinary products.
+      - declaration: LeanPool.DemazureProduct.ReducedProducts.star_eq_mul_iff_reducedProduct
+        informal: Shows that the Demazure product equals ordinary multiplication exactly for reduced ASP products.
+      - declaration: LeanPool.DemazureProduct.Transpositions.starSigma
+        informal: Proves the adjacent-transposition formula for multiplying an ASP permutation by a no-consecutive-pair involution.
+      - declaration: LeanPool.DemazureProduct.ASP321a.dprod_eq_iff
+        informal: Characterizes Demazure factorizations of 321-avoiding ASP permutations by isolated inversion-set decompositions.
+      - declaration: LeanPool.DemazureProduct.Tableaux.setValuedTableauEquivHeckeFactorization
+        informal: Relates fixed-shift set-valued tableaux to Hecke factorizations of 321-avoiding ASP permutations.
+    tags:
+      - algebraic-combinatorics
+      - demazure-product
+      - bruhat-order
+      - permutations
+    msc:
+      - "05E05"
+      - "20F55"
   - slug: zeta_3_irrational
     title: Irrationality of ζ(3)
     summary: Formalizes Beukers' proof of Apéry's theorem for ζ(3), including the integral identities, denominator estimates, positivity, upper bounds, and final irrationality contradiction.
@@ -162,6 +290,45 @@ projects:
     msc:
       - "11M06"
       - "11J72"
+  - slug: zeta-h123
+    title: Thakur's hypotheses on power sums of F_q[t]
+    summary: Formalizes four components of Thakur's hypotheses on power sums over finite polynomial rings, including uniqueness and monotonicity results for the carry-free digit optimization problems and the Laurent-series expansion of finite-field power sums.
+    branch: number theory
+    entry_module: LeanPool.ZetaH123
+    authors:
+      - Evan Chen
+      - Kenny Lau
+      - Ken Ono
+      - Jujian Zhang
+    source:
+      title: Thakur's hypotheses on power sums of F_q[t]
+      authors:
+        - Evan Chen
+        - Ken Ono
+      arxiv: "2606.16239"
+      github_repo: AxiomMath/zeta-h123
+    license: MIT
+    status: verified
+    main_declarations:
+      - ZetaH123.H1.main_theorem
+      - ZetaH123.Lem41.main
+    main_results:
+      - declaration: ZetaH123.H1.main_theorem
+        informal: Proves uniqueness of the admissible base-q decomposition maximizing the H1 power-sum weight functional.
+      - declaration: ZetaH123.H2.main
+        informal: Proves the H2 unique-minimizer statement for the recursive digit/carry-free optimization problem defining the values s_d(k).
+      - declaration: ZetaH123.H3.main_theorem
+        informal: Proves the H3 monotonicity statement that s_d(k) is strictly less than s_d(k+1) when p does not divide k.
+      - declaration: ZetaH123.Lem41.main
+        informal: Proves the Lemma 4.1 Laurent-series expansion for S_d(k), with nonzero coefficients indexed by the carry-free tuples.
+    tags:
+      - number-theory
+      - function-fields
+      - zeta-functions
+    msc:
+      - "11M38"
+      - "11T55"
+      - "11G09"
   - slug: bruhat-tits
     title: Formalisation of the Bruhat-Tits Tree
     summary: Formalizes the Bruhat-Tits tree for GL₂ over the fraction field of a discrete valuation ring.
@@ -524,6 +691,42 @@ projects:
     msc:
       - "11N25"
       - "05D05"
+  - slug: erdos403
+    title: Sums of Distinct Factorials That Are Powers of Two (Erdos Problem 403)
+    summary: >-
+      Reconstructs the finiteness theorem for Erdos Problem 403: only finitely many sums of
+      distinct factorials are powers of two, and every such power is at most 2^7 = 128 (the
+      extremal solution 2! + 3! + 5! = 128). The sharp bound is proved in the factorial number
+      system via a single fixed modulus 12!, with all computations kernel-pure.
+    branch: number theory
+    entry_module: LeanPool.Erdos403
+    authors:
+      - Trevor Morris
+    source:
+      title: "Erdos Problem 403: sums of distinct factorials that are powers of two"
+      authors:
+        - Trevor Morris
+      url: "https://www.erdosproblems.com/403"
+      github_repo: gotrevor/erdos-403
+    license: Apache-2.0
+    status: verified
+    main_declarations:
+      - Erdos403.erdos_403_sharp
+      - Erdos403.erdos_403_finite
+    main_results:
+      - declaration: Erdos403.erdos_403_sharp
+        informal: >-
+          Every power of two that is a sum of distinct factorials is at most 2^7, with 128 the
+          largest solution.
+      - declaration: Erdos403.erdos_403_finite
+        informal: >-
+          Only finitely many sums of distinct factorials are powers of two.
+    tags:
+      - number-theory
+      - factorials
+      - erdos-problems
+    msc:
+      - "11B83"
   - slug: erdos137
     title: "Erdős Problem #137: powerful products of consecutive integers"
     summary: >-
@@ -3142,6 +3345,84 @@ projects:
       - commuting-probability
     msc:
       - "20P05"
+  - slug: hsd-interior-point-lp
+    title: Homogeneous self-dual interior-point method for linear programming
+    summary: Formalizes a homogeneous self-dual interior-point method for linear programming, including primal-dual data, Newton block solvability from full row rank, fixed Ye-Todd-Mizuno predictor/corrector local estimates, contraction bounds, and logarithmic stopping certificates for generated iterates.
+    branch: linear optimization
+    entry_module: LeanPool.HSDInteriorPointLP
+    authors:
+      - Makoto Yamashita
+    source:
+      title: "An O(√nL)-iteration homogeneous and self-dual linear programming algorithm"
+      authors:
+        - Yinyu Ye
+        - Michael J. Todd
+        - Shinji Mizuno
+      doi: "10.1287/moor.19.1.53"
+      github_repo: makoto-yamashita/proof-on-a-homogeneous-self-dual-interior-point-method-for-linear-programming
+    license: MIT
+    status: verified
+    main_declarations:
+      - HSDInteriorPointLP.YTM_fixed_local_theory_from_paper
+    main_results:
+      - declaration: HSDInteriorPointLP.YTM_fixed_local_theory_from_paper
+        informal: Packages the fixed Ye-Todd-Mizuno local theory, combining predictor and corrector estimates for the tight and wide central neighborhoods.
+        source_ref: "Y. Ye, M. J. Todd, and S. Mizuno, An O(√nL)-iteration homogeneous and self-dual linear programming algorithm, Mathematics of Operations Research 19(1):53-67, 1994."
+      - declaration: HSDInteriorPointLP.HSDGeneratedAlgorithm.gap_stop_even_at_logPairBound
+        informal: Proves that the generated even iterate satisfies the gap stopping test at the logarithmic pair bound.
+      - declaration: HSDInteriorPointLP.HSDGeneratedAlgorithm.mu_stop_even_at_logPairBound
+        informal: Proves that the generated even iterate satisfies the duality-measure stopping test at the scaled logarithmic pair bound.
+      - declaration: HSDInteriorPointLP.HLP_newton_block_system_solvable_from_full_row_rank
+        informal: Shows solvability of the Newton block system from the full-row-rank assumption through finite-dimensional linear algebra.
+      - declaration: HSDInteriorPointLP.YTM_contraction_power_le_exp
+        informal: Bounds the fixed YTM contraction power by the corresponding exponential decay estimate.
+    tags:
+      - linear-programming
+      - interior-point-methods
+      - optimization
+      - homogeneous-self-dual
+    msc:
+      - "90C05"
+      - "90C51"
+  - slug: connes-kreimer
+    title: Connes-Kreimer Hopf algebra of rooted trees
+    summary: Formalizes the planar Connes-Kreimer/Foissy Hopf algebra of rooted trees, its cut coproduct, bialgebra and Hopf algebra structures, the commutative quotient, Adams operators, and the Eulerian idempotent on the quotient.
+    branch: algebraic combinatorics
+    entry_module: LeanPool.ConnesKreimer
+    authors:
+      - Carles Marín
+    source:
+      title: "How a Tree Remembers Its Cuts: the Connes-Kreimer-Foissy Hopf Algebra of Rooted Trees, Machine-Checked in Lean 4"
+      authors:
+        - Carles Marín
+      doi: "10.5281/zenodo.20762280"
+      github_repo: karlesmarin/connes-kreimer-lean
+    license: Apache-2.0
+    status: verified
+    main_declarations:
+      - CK.instCKHopf
+      - CK.instHabHopf
+      - CK.eulerian1_idem_ab
+    main_results:
+      - declaration: CK.instCKHopf
+        informal: Constructs the planar rooted-tree Connes-Kreimer/Foissy Hopf algebra as a Mathlib `HopfAlgebra`.
+      - declaration: CK.instHabHopf
+        informal: Constructs the Hopf algebra structure on the commutative quotient of the planar rooted-tree algebra.
+      - declaration: CK.eulerian1_idem_ab
+        informal: Proves that the first Eulerian idempotent is idempotent on the commutative quotient.
+      - declaration: CK.coassoc_map
+        informal: Lifts the list-level cut coassociativity proof to equality of linear maps for the coproduct.
+      - declaration: PowerSeries.logOf_mul
+        informal: Proves additivity of `PowerSeries.logOf` for power series with constant coefficient one.
+    tags:
+      - hopf-algebras
+      - rooted-trees
+      - renormalization
+      - combinatorics
+    msc:
+      - "16T05"
+      - "05C05"
+      - "81T15"
   - slug: burkholder
     title: Burkholder Martingale Transform Inequality
     summary: >-
@@ -3635,3 +3916,81 @@ projects:
       - "11R11"
       - "11R29"
       - "11A15"
+  - slug: agree-to-disagree
+    title: "Aumann's Agreement Theorem"
+    summary: >-
+      Formalizes Aumann's agreement theorem for information partitions and a
+      common-prior setting, together with a p-belief variant bounding posterior
+      disagreement by 2 * (1 - p).
+    branch: probability theory
+    entry_module: LeanPool.AgreeToDisagree
+    authors:
+      - Ruiz Chen
+      - Ben Eltschig
+      - Ken Ono
+      - Jujian Zhang
+    source:
+      title: "We Can't Agree to Disagree, Formally: Aumann's Theorem and Assumption Accounting in Lean"
+      url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6837298"
+      github_repo: AxiomMath/AgreeToDisagree
+    license: MIT
+    status: verified
+    main_declarations:
+      - AgreeToDisagree.agreeToDisagree
+      - AgreeToDisagree.agreeToDisagree_beliefs
+    main_results:
+      - declaration: AgreeToDisagree.agreeToDisagree
+        informal: >-
+          If it is common knowledge at a state that two agents assign fixed
+          posterior probabilities to an event, and the common-knowledge cell has
+          equal posterior under their priors, then the two posterior
+          probabilities are equal.
+      - declaration: AgreeToDisagree.agreeToDisagree'
+        informal: >-
+          Generalizes the agreement theorem to a family of agents indexed by an
+          arbitrary type.
+      - declaration: AgreeToDisagree.agreeToDisagree_beliefs
+        informal: >-
+          Proves that common p-belief of fixed posteriors bounds the difference
+          between any two agents' real-valued posteriors by 2 * (1 - p).
+    tags:
+      - probability
+      - game-theory
+      - epistemic-logic
+    msc:
+      - "60A10"
+      - "91A40"
+  - slug: kalton-roberts
+    title: Halving the Kalton-Roberts upper bound
+    summary: Formalizes the paper-style Boolean-algebra theorem that every approximately additive real-valued set function is uniformly close to a finitely additive signed measure, proving the certified Kalton-Roberts constant bound below 19.838.
+    branch: analysis
+    entry_module: LeanPool.KaltonRoberts
+    authors:
+      - Ho Boon Suan
+    source:
+      title: Halving the original Kalton-Roberts upper bound for nearly additive set functions
+      authors:
+        - Ho Boon Suan
+        - Tomasz Kania
+      arxiv: "2606.06807"
+      url: https://github.com/boonsuan/KaltonRoberts
+      github_repo: boonsuan/KaltonRoberts
+    license: MIT
+    status: verified
+    main_declarations:
+      - KaltonRoberts.KR_constant_lt
+    main_results:
+      - declaration: KaltonRoberts.KR_constant_lt
+        informal: Proves the headline certified bound that the Kalton-Roberts constant is strictly less than 9919/500, i.e. 19.838.
+      - declaration: KaltonRoberts.KR_constant_le_C₂
+        informal: Proves the exact rational upper bound C₂ = 694198146664396294486127753 / 34994834677886019996000000 for the Kalton-Roberts constant.
+      - declaration: KaltonRoberts.set_algebra_bound_C₂
+        informal: States the paper-style set-algebra formulation, where every approximately additive function on a Boolean subalgebra of sets is within C₂ times the error of a finitely additive signed measure.
+    tags:
+      - functional-analysis
+      - finitely-additive-measures
+      - kalton-roberts
+    msc:
+      - "46B20"
+      - "28A12"
+      - "05C35"
