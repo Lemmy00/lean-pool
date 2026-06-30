@@ -3315,6 +3315,46 @@ projects:
     msc:
       - "11A63"
       - "11B65"
+  - slug: pl-accelerated-nesterov-lean
+    title: Accelerated Nesterov convergence under local Polyak-Lojasiewicz conditions
+    summary: Formalizes accelerated Nesterov convergence near a smooth minimizer manifold under a local Polyak-Lojasiewicz condition, including embedded-manifold and C3 public theorem statements with explicit exponential rate and prefactor.
+    branch: optimization
+    entry_module: LeanPool.PLAcceleratedNesterovLean
+    authors:
+      - Max Obreiter
+      - Tobias Steinbrecher
+      - Robert Foerster
+    source:
+      title: Optimal local linear convergence of Nesterov's accelerated gradient method for C2 functions under the Polyak-Lojasiewicz inequality
+      authors:
+        - Zixu Feng
+        - Hao Yuan
+      arxiv: "2603.21516"
+      github_repo: M1ngXU/PL-Accelerated-Nesterov-Lean
+    license: MIT
+    status: verified
+    main_declarations:
+      - PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate
+    main_results:
+      - declaration: PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate
+        informal: Proves an accelerated Nesterov convergence rate for state positions near a C2 embedded minimizer manifold, with an existential momentum parameter, explicit exponential decay, and prefactor 2.
+        source_ref: "Z. Feng and H. Yuan, Optimal local linear convergence of Nesterov's accelerated gradient method for C2 functions under the Polyak-Lojasiewicz inequality, arXiv:2603.21516."
+      - declaration: PLAcceleratedNesterovLean.nesterov_pl_accelerated_rate_c3
+        informal: Proves the corresponding C3 public theorem, deriving the minimizer geometry internally from smoothness and the Polyak-Lojasiewicz condition.
+        source_ref: "Z. Feng and H. Yuan, Optimal local linear convergence of Nesterov's accelerated gradient method for C2 functions under the Polyak-Lojasiewicz inequality, arXiv:2603.21516."
+      - declaration: PLAcceleratedNesterovLean.nesterov_convergence_at_base_point_position_theta
+        informal: Provides the reusable local theta-retuned convergence theorem used by the public accelerated-rate statements.
+        source_ref: "Z. Feng and H. Yuan, Optimal local linear convergence of Nesterov's accelerated gradient method for C2 functions under the Polyak-Lojasiewicz inequality, arXiv:2603.21516."
+    tags:
+      - optimization
+      - numerical-analysis
+      - gradient-methods
+      - polyak-lojasiewicz
+      - differential-geometry
+    msc:
+      - "49M37"
+      - "65K05"
+      - "58C15"
   - slug: five-eighths-theorem
     title: The 5/8 theorem
     summary: Proves Gustafson's 5/8 theorem — the Mathlib commuting probability of a nonabelian group is at most 5/8, with the infinite case immediate from commProb being zero — via the finite-group index bounds for the center and centralizers of noncentral elements.
@@ -3390,6 +3430,59 @@ projects:
       - schauder-bases
     msc:
       - "46B15"
+  - slug: compact-spectral
+    title: Spectral theorem for compact self-adjoint operators
+    summary: >-
+      Formalizes the spectral theorem for compact self-adjoint operators on a Hilbert space: such
+      an operator admits a Hilbert basis of eigenvectors. The development passes from weak
+      compactness of Hilbert closed balls and Rayleigh-quotient extrema to an eigenvector at the
+      operator norm, finiteness of the point spectrum outside any neighbourhood of zero, finite-rank
+      cutoff approximation, and finally the orthogonal decomposition into eigenspaces.
+    branch: functional analysis
+    entry_module: LeanPool.CompactSpectral
+    authors:
+      - Adam Benenson
+    source:
+      title: Advanced Real Analysis
+      authors:
+        - Anthony W. Knapp
+      doi: "10.3792/euclid/9781429799911-2"
+      github_repo: abenenson/compact-spectral
+    license: Apache-2.0
+    status: verified
+    main_declarations:
+      - CompactSelfAdjoint.exists_hasEigenvector_iSup_or_iInf_of_isCompactOperator
+    main_results:
+      - declaration: CompactSelfAdjoint.exists_hilbertBasis_hasEigenvector_of_isCompactOperator_of_isSelfAdjoint
+        informal: >-
+          A compact self-adjoint operator on a Hilbert space admits a Hilbert basis of
+          eigenvectors.
+        source_ref: "A. W. Knapp, Advanced Real Analysis, Chapter II, Section 2, Theorem 2.3, doi:10.3792/euclid/9781429799911-2."
+      - declaration: CompactSelfAdjoint.iSup_eigenspace_orthogonal_eq_bot_of_isCompactOperator_of_isSelfAdjoint
+        informal: >-
+          The eigenspaces of a compact self-adjoint operator span a dense subspace: the orthogonal
+          complement of the supremum of all eigenspaces is trivial.
+        source_ref: "A. W. Knapp, Advanced Real Analysis, Chapter II, Section 2, Theorem 2.3, doi:10.3792/euclid/9781429799911-2."
+      - declaration: CompactSelfAdjoint.exists_hasEigenvector_iSup_or_iInf_of_isCompactOperator
+        informal: >-
+          A compact self-adjoint operator has an eigenvector whose eigenvalue realizes either the
+          supremum or the infimum of its Rayleigh quotient.
+        source_ref: "A. W. Knapp, Advanced Real Analysis, Chapter II, Section 2, Theorem 2.2, doi:10.3792/euclid/9781429799911-2."
+      - declaration: CompactSelfAdjoint.exists_unit_norm_eq_opNorm_of_isCompactOperator
+        informal: >-
+          A compact operator attains its operator norm on the unit sphere of the Hilbert space.
+        source_ref: "A. W. Knapp, Advanced Real Analysis, Chapter II, Section 1, compactness preliminaries for compact operators, doi:10.3792/euclid/9781429799911-2."
+      - declaration: CompactSelfAdjoint.countable_set_hasEigenvalue_ne_zero_of_isCompactOperator_of_isSelfAdjoint
+        informal: >-
+          The set of nonzero eigenvalues of a compact self-adjoint operator is countable.
+        source_ref: "A. W. Knapp, Advanced Real Analysis, Chapter II, Section 2, spectral theorem consequences, doi:10.3792/euclid/9781429799911-2."
+    tags:
+      - spectral-theory
+      - functional-analysis
+      - compact-operators
+    msc:
+      - "47A75"
+      - "47B07"
   - slug: hsd-interior-point-lp
     title: Homogeneous self-dual interior-point method for linear programming
     summary: Formalizes a homogeneous self-dual interior-point method for linear programming, including primal-dual data, Newton block solvability from full row rank, fixed Ye-Todd-Mizuno predictor/corrector local estimates, contraction bounds, and logarithmic stopping certificates for generated iterates.
@@ -3916,6 +4009,51 @@ projects:
     msc:
       - "11N05"
       - "11N35"
+  - slug: singular-moduli
+    title: Quadratic-order prime classification
+    summary: Formalizes foundational algebra for quadratic orders associated to discriminants, including their power basis, norm and discriminant identities, odd-prime splitting/ramification/inertness criteria via Legendre symbols, and root-counting results for quadratic congruences modulo odd prime powers.
+    branch: algebraic number theory
+    entry_module: LeanPool.SingularModuli
+    authors:
+      - Caleb L. Geiger
+    source:
+      title: Singular Moduli and the Ideal Class Group
+      authors:
+        - C. Geiger
+      github_repo: ElodinLaarz/lean-thesis
+      url: https://github.com/ElodinLaarz/lean-thesis
+    license: Apache-2.0
+    status: verified
+    main_declarations:
+      - QuadraticOrder.prime_inert_iff
+      - QuadraticOrder.prime_split_iff
+    main_results:
+      - declaration: QuadraticOrder.prime_inert_iff
+        informal: Proves that for an odd rational prime p and a valid discriminant d, the ideal (p) is maximal in the quadratic order O_d exactly when the Legendre symbol (d/p) is -1.
+        source_ref: "C. Geiger, Singular Moduli and the Ideal Class Group, Section 3.2, Proposition 3.2.1."
+      - declaration: QuadraticOrder.prime_ramified_iff
+        informal: Proves that for an odd rational prime p and a valid discriminant d, the ideal (p) is not radical in O_d exactly when p divides d.
+        source_ref: "C. Geiger, Singular Moduli and the Ideal Class Group, Section 3.2, Proposition 3.2.1."
+      - declaration: QuadraticOrder.prime_split_iff
+        informal: Proves that for an odd rational prime p and a valid discriminant d, the ideal (p) is radical but not maximal exactly when the Legendre symbol (d/p) is 1.
+        source_ref: "C. Geiger, Singular Moduli and the Ideal Class Group, Section 3.2, Proposition 3.2.1."
+      - declaration: QuadraticOrder.cardSqrts_prime_pow_coprime
+        informal: Counts roots of x^2 = c modulo p^n for odd prime p and p not dividing c, giving two roots when the Legendre symbol is 1 and none otherwise.
+        source_ref: "C. Geiger, Singular Moduli and the Ideal Class Group, Section 3.1."
+      - declaration: QuadraticOrder.cardSqrts_prime_pow_even_val
+        informal: Counts roots of x^2 = p^(2r) u modulo p^n for odd prime p, p not dividing u, and 2r < n, reducing to the coprime case and multiplying by p^r.
+        source_ref: "C. Geiger, Singular Moduli and the Ideal Class Group, Section 3.1."
+      - declaration: QuadraticOrder.tau_sub_tauConj_sq_of_valid_disc
+        informal: Proves the discriminant identity (tau - tauConj)^2 = d for valid quadratic-order discriminants d congruent to 0 or 1 modulo 4.
+        source_ref: "C. Geiger, Singular Moduli and the Ideal Class Group, Section 2."
+    tags:
+      - algebraic-number-theory
+      - quadratic-orders
+      - legendre-symbol
+    msc:
+      - "11R11"
+      - "11R29"
+      - "11A15"
   - slug: agree-to-disagree
     title: "Aumann's Agreement Theorem"
     summary: >-
