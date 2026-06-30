@@ -3015,10 +3015,11 @@ projects:
     authors:
       - Daniel Smania
     source:
-      title: "Unconditional Schauder bases and a finite sign criterion"
+      title: Classical Banach Spaces I and II
       authors:
-        - Daniel Smania
-      url: "https://github.com/SmaniaD/UnconditionalSchauderBasis"
+        - Joram Lindenstrauss
+        - Lior Tzafriri
+      doi: "10.1007/978-3-662-53294-2"
       github_repo: SmaniaD/UnconditionalSchauderBasis
     status: verified
     main_declarations:
@@ -3030,12 +3031,14 @@ projects:
           linear span, every `x n` is nonzero, and finite sign changes are
           uniformly bounded by `C`, then `x` is the basis sequence of an
           unconditional Schauder basis.
+        source_ref: "J. Lindenstrauss and L. Tzafriri, Classical Banach Spaces I and II, Chapter 1, Section c, unconditional bases, doi:10.1007/978-3-662-53294-2."
       - declaration: UnconditionalCriterion.exists_unconditionalSchauderBasisAbstractIndex_of_finiteSignBound
         informal: >-
           Abstract-index form of the finite sign criterion: under the same dense
           span, nonzero, and uniform finite sign bound hypotheses for an
           arbitrarily indexed family, there is an abstractly indexed
           unconditional Schauder basis whose basis family is exactly `x`.
+        source_ref: "J. Lindenstrauss and L. Tzafriri, Classical Banach Spaces I and II, Chapter 1, Section c, unconditional bases, doi:10.1007/978-3-662-53294-2."
     tags:
       - functional-analysis
       - banach-spaces

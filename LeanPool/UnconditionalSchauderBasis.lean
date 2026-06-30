@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 /-!
 # Unconditional Schauder Bases
 
-Source: url:https://github.com/SmaniaD/UnconditionalSchauderBasis
+Source: doi:10.1007/978-3-662-53294-2
 Authors: Daniel Smania
 Status: verified
 Main declarations: `UnconditionalCriterion.exists_unconditionalSchauderBasis_of_finiteSignBound`
