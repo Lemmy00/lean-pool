@@ -660,7 +660,7 @@ own-LOC + real-`sorry` count + domain fit, with an adversarial pass for the
 large 2026 AI-slop tail); 556 new `include`/exclude decisions are recorded in
 [`decisions.jsonl`](decisions.jsonl).
 
-For shortlist purposes, this pass now keeps the original staleness discipline:
+For shortlist purposes, this pass now uses the stricter staleness discipline:
 a project must have no GitHub activity after 2026-05-04, at least two months
 before the 2026-07-04 review date. Every import-worthy project surfaced so far
 by the July pushed-window sweep was active after that cutoff, so this refresh
