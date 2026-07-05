@@ -144,6 +144,44 @@ github:
       verdict: skip
       reason: Obsidian LLM wiki starter; minimal Lean content and no formal mathematics.
       model: gpt-5.4-nano
+  allenpd728/maith:
+    url: https://github.com/allenpd728/Maith
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: allenpd728/Maith
+    description: Lean 4 transformer-centric IR project
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 35 Lean files
+    - about 2026 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: graph, proof, verification'
+    - 'tool terms: automation, tactic'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T11:05:22Z'
+    updated_at: '2026-07-05T14:37:20Z'
+    pushed_at: '2026-07-05T14:37:16Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: false
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 35
+    estimated_lean_loc: 2026
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Lean 4 transformer-centric IR project; nontrivial file count and plausible formal-CS
+        focus.
+      model: gpt-5.4-nano
   anirudhg07/verso-snippets:
     url: https://github.com/AnirudhG07/verso-snippets
     first_seen_at: '2026-06-28T15:40:54+00:00'
@@ -660,6 +698,43 @@ github:
       verdict: keep
       reason: Nontrivial Lean formalization of abstract interpretation for equivalence checking;
         math/CS focused.
+      model: gpt-5.4-nano
+  beras-integers/lean4_practise:
+    url: https://github.com/beras-integers/Lean4_Practise
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: beras-integers/Lean4_Practise
+    description: Learning LEAN4 as well as preparing the library for problems on number theory.
+    signal: medium
+    score: 4
+    reasons:
+    - Lake/Lean project files
+    - 3 Lean files
+    - about 174 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: number theory'
+    - 'personal terms: learning lean'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T10:34:25Z'
+    updated_at: '2026-07-05T10:36:03Z'
+    pushed_at: '2026-07-05T10:35:59Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 3
+    estimated_lean_loc: 174
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: Learning/practice repository scaffold for number theory; minimal code.
       model: gpt-5.4-nano
   beyondthelibrary/formal_arxiv:
     url: https://github.com/BeyondTheLibrary/formal_arxiv
@@ -1319,6 +1394,39 @@ github:
       verdict: skip
       reason: Empty description, few files; likely placeholder/template repo despite small
         LOC.
+      model: gpt-5.4-nano
+  christopherchorkey/agape:
+    url: https://github.com/Christopherchorkey/Agape
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: Christopherchorkey/Agape
+    description: ''
+    signal: medium
+    score: 3
+    reasons:
+    - 1 Lean files
+    - about 1053 Lean LOC
+    - license unknown
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T14:52:10Z'
+    updated_at: '2026-07-05T14:53:59Z'
+    pushed_at: '2026-07-05T14:53:56Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 1
+    estimated_lean_loc: 1053
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: Empty description, zero stars, likely off-topic/template despite moderate Lean
+        code.
       model: gpt-5.4-nano
   cjerzak/electoral-rules-and-representation-book:
     url: https://github.com/cjerzak/electoral-rules-and-representation-book
@@ -2849,6 +2957,42 @@ github:
       reason: Non-empty Lean project with substantial code; likely mathematical/logic content
         despite minimal metadata.
       model: gpt-5.4-nano
+  eric-vergo/oeis-a362583-irrationality:
+    url: https://github.com/eric-vergo/OEIS-A362583-Irrationality
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: eric-vergo/OEIS-A362583-Irrationality
+    description: ''
+    signal: high
+    score: 7
+    reasons:
+    - Lake/Lean project files
+    - 31 Lean files
+    - about 5241 Lean LOC
+    - Lake manifest
+    - license CC0-1.0
+    - 'domain terms: formalization, mathlib, theorem'
+    stars: 0
+    license: CC0-1.0
+    topics: []
+    language: Lean
+    created_at: '2026-07-04T16:06:46Z'
+    updated_at: '2026-07-05T15:06:19Z'
+    pushed_at: '2026-07-05T15:06:16Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 31
+    estimated_lean_loc: 5241
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Lean formalization likely substantial; despite empty description, size and files
+        suggest real math content.
+      model: gpt-5.4-nano
   eunsung-ji/lean4:
     url: https://github.com/Eunsung-Ji/Lean4
     first_seen_at: '2026-06-30T16:32:57+00:00'
@@ -2962,6 +3106,41 @@ github:
       verdict: keep
       reason: IEEE 754 bit-exact verification substrate in Lean 4; math/verification content,
         not template.
+      model: gpt-5.4-nano
+  findeton/walsh-delta:
+    url: https://github.com/Findeton/walsh-delta
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: Findeton/walsh-delta
+    description: "The delta orientation is the unique entropy minimizer for self-calibrated\
+      \ \xB11 Walsh tilts on the Boolean cube."
+    signal: high
+    score: 6
+    reasons:
+    - 9 Lean files
+    - about 8326 Lean LOC
+    - MIT
+    - 'domain terms: formalization, mathlib, proof'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T02:02:01Z'
+    updated_at: '2026-07-05T02:39:14Z'
+    pushed_at: '2026-07-05T02:36:51Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 9
+    estimated_lean_loc: 8326
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Serious math statement about Walsh tilts/entropy minimization; substantial Lean
+        code.
       model: gpt-5.4-nano
   fit-alessandro-berti/pm4lean:
     url: https://github.com/fit-alessandro-berti/pm4lean
@@ -4514,6 +4693,38 @@ github:
       reason: Large, curated Lean library on structural persistence theory; substantive mathematical
         content.
       model: gpt-5.4-nano
+  keewillidevnet/proofrunner:
+    url: https://github.com/keewillidevnet/proofrunner
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: keewillidevnet/proofrunner
+    description: 'Gated agentic brick-runner for Lean 4: LLM proposes, kernel verifies, humans
+      gate design.'
+    signal: low
+    score: 2
+    reasons:
+    - license unknown
+    - 'domain terms: proof'
+    stars: 0
+    license: null
+    topics: []
+    language: null
+    created_at: '2026-07-05T15:16:30Z'
+    updated_at: '2026-07-05T15:16:31Z'
+    pushed_at: '2026-07-05T15:16:31Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    triage:
+      verdict: skip
+      reason: No Lean code/files, zero stars, unclear mathematical content.
+      model: gpt-5.4-nano
   kidist-c/lean_practice:
     url: https://github.com/Kidist-c/lean_practice
     first_seen_at: '2026-06-28T15:40:54+00:00'
@@ -5027,6 +5238,44 @@ github:
       verdict: keep
       reason: Substantial Lean 4 formalization; nontrivial LOC and description, not boilerplate.
       model: gpt-5.4-nano
+  ldct/lean-eval-chudnovsky:
+    url: https://github.com/ldct/lean-eval-chudnovsky
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: ldct/lean-eval-chudnovsky
+    description: "Axiom-clean Lean 4 / Mathlib proof of the Chudnovsky formula chudnovskySum\
+      \ = \u03C0\u207B\xB9 (lean-eval submission)"
+    signal: high
+    score: 7
+    reasons:
+    - Lake/Lean project files
+    - 35 Lean files
+    - about 31074 Lean LOC
+    - license unknown
+    - 'domain terms: mathlib, modular, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T14:10:14Z'
+    updated_at: '2026-07-05T14:10:21Z'
+    pushed_at: '2026-07-05T14:10:17Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 35
+    estimated_lean_loc: 31074
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    - mathlib created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Large Lean/MATHLIB proof of Chudnovsky formula; serious formal math despite
+        zero stars.
+      model: gpt-5.4-nano
   ldct/nng4-ios:
     url: https://github.com/ldct/NNG4-ios
     first_seen_at: '2026-07-04T15:32:28+00:00'
@@ -5197,6 +5446,45 @@ github:
     triage:
       verdict: keep
       reason: Imports SAT LRAT proofs into Lean 4; serious formal-math/logical infrastructure.
+      model: gpt-5.4-nano
+  lechmazur/terras_density_one:
+    url: https://github.com/lechmazur/terras_density_one
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: lechmazur/terras_density_one
+    description: A Lean Formalization of Terras's Finite-Stopping-Time Density-One Theorem
+      (Collatz)
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 17 Lean files
+    - about 2169 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, mathlib, probability'
+    stars: 0
+    license: null
+    topics:
+    - collatz
+    - collatz-conjecture
+    language: Lean
+    created_at: '2026-07-05T05:46:04Z'
+    updated_at: '2026-07-05T05:46:56Z'
+    pushed_at: '2026-07-05T05:46:07Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 17
+    estimated_lean_loc: 2169
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Formalizes Terras finite-stopping-time density-one theorem about Collatz; substantial
+        Lean content.
       model: gpt-5.4-nano
   lecopivo/numleanmanual:
     url: https://github.com/lecopivo/NumLeanManual
@@ -5887,6 +6175,42 @@ github:
       reason: Personal learning exercises/tutorial scaffolding; explicitly not useful for
         others.
       model: gpt-5.4-nano
+  makabaka1880/zfc-pumac25:
+    url: https://github.com/makabaka1880/zfc-pumac25
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: makabaka1880/zfc-pumac25
+    description: Lean formalization of PUMAC25 Power Round Problem Set "The Continuum Hypothesis"
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 9 Lean files
+    - about 1304 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: formalization'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T08:02:22Z'
+    updated_at: '2026-07-05T12:07:50Z'
+    pushed_at: '2026-07-05T12:07:46Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 9
+    estimated_lean_loc: 1304
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Lean formalization of a specific PUMAC25 set on Continuum Hypothesis; substantial
+        LOC.
+      model: gpt-5.4-nano
   manifoldcontrol/lean-introspect:
     url: https://github.com/manifoldcontrol/lean-introspect
     first_seen_at: '2026-07-04T15:32:28+00:00'
@@ -6095,6 +6419,39 @@ github:
       reason: Small Lean repo; likely contains real fixed-point formalization despite empty
         metadata.
       model: gpt-5.4-nano
+  matthew-scherf/self:
+    url: https://github.com/matthew-scherf/self
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: matthew-scherf/self
+    description: The Ontological No-Go Argument - a coalgebra of the self.
+    signal: medium
+    score: 5
+    reasons:
+    - 7 Lean files
+    - about 4707 Lean LOC
+    - license unknown
+    - 'domain terms: algebra, logic, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T01:46:03Z'
+    updated_at: '2026-07-05T11:09:29Z'
+    pushed_at: '2026-07-05T11:10:31Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 7
+    estimated_lean_loc: 4707
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Nontrivial math/CS topic; sizable Lean code despite zero stars.
+      model: gpt-5.4-nano
   matthew-scherf/who_am_i:
     url: https://github.com/matthew-scherf/who_am_I
     first_seen_at: '2026-07-03T16:01:21+00:00'
@@ -6271,6 +6628,39 @@ github:
       reason: No description/topics; tiny Lean footprint and likely non-mathematical or template
         project.
       model: gpt-5.4-nano
+  miaai-lab/leanstral-1.5-119b-a6b_review:
+    url: https://github.com/MiaAI-Lab/Leanstral-1.5-119B-A6B_Review
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: MiaAI-Lab/Leanstral-1.5-119B-A6B_Review
+    description: Independent evaluation of Mistral Leanstral-1.5 for Lean 4 formal proof engineering
+    signal: medium
+    score: 4
+    reasons:
+    - 14 Lean files
+    - about 185 Lean LOC
+    - license unknown
+    - 'domain terms: proof'
+    stars: 4
+    license: null
+    topics: []
+    language: HTML
+    created_at: '2026-07-04T18:01:56Z'
+    updated_at: '2026-07-04T23:19:52Z'
+    pushed_at: '2026-07-04T18:09:16Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 14
+    estimated_lean_loc: 185
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    triage:
+      verdict: skip
+      reason: Model evaluation repo; not a real Lean 4 formal-math codebase.
+      model: gpt-5.4-nano
   mimoo/succinct-ipa:
     url: https://github.com/mimoo/succinct-ipa
     first_seen_at: '2026-07-03T16:01:21+00:00'
@@ -6415,6 +6805,40 @@ github:
     triage:
       verdict: skip
       reason: Empty description, zero stars, tiny repo; likely test scaffolding, no math content.
+      model: gpt-5.4-nano
+  mrc-smn/lean_wordlewidget:
+    url: https://github.com/Mrc-Smn/Lean_wordleWidget
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: Mrc-Smn/Lean_wordleWidget
+    description: Wordle written in lean (CLI but also works in the infoview widget)
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 3 Lean files
+    - about 238 Lean LOC
+    - Lake manifest
+    - license unknown
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T08:27:37Z'
+    updated_at: '2026-07-05T15:35:02Z'
+    pushed_at: '2026-07-05T15:34:58Z'
+    default_branch: master
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 3
+    estimated_lean_loc: 238
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Small Lean game/widget project; includes real Lean code and not mere filler.
       model: gpt-5.4-nano
   mrphilo420/formal-chain-synthesis:
     url: https://github.com/mrphilo420/Formal-Chain-Synthesis
@@ -7332,6 +7756,38 @@ github:
       reason: "Contains substantive math title (Connes\u2013Weil RH proof); non-empty Lean\
         \ repo."
       model: gpt-5.4-nano
+  phasemirror/primordial:
+    url: https://github.com/PhaseMirror/Primordial
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: PhaseMirror/Primordial
+    description: ''
+    signal: low
+    score: 2
+    reasons:
+    - 1 Lean files
+    - about 164 Lean LOC
+    - license unknown
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-04T18:05:23Z'
+    updated_at: '2026-07-04T22:22:46Z'
+    pushed_at: '2026-07-04T22:22:43Z'
+    default_branch: master
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 1
+    estimated_lean_loc: 164
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Small Lean repo; description empty but not clearly filler/off-topic or empty.
+      model: gpt-5.4-nano
   pietropende/lean-proof-notes:
     url: https://github.com/pietropende/lean-proof-notes
     first_seen_at: '2026-07-03T16:01:21+00:00'
@@ -7869,6 +8325,40 @@ github:
     triage:
       verdict: skip
       reason: Empty description, tiny Lean project; likely trivial/personal code with no math.
+      model: gpt-5.4-nano
+  rkirov/agda-lean:
+    url: https://github.com/rkirov/agda-lean
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: rkirov/agda-lean
+    description: ''
+    signal: high
+    score: 7
+    reasons:
+    - Lake/Lean project files
+    - 6 Lean files
+    - about 395 Lean LOC
+    - Lake manifest
+    - MIT
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T00:49:16Z'
+    updated_at: '2026-07-05T00:51:46Z'
+    pushed_at: '2026-07-05T00:51:43Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: false
+    lean_file_count: 6
+    estimated_lean_loc: 395
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Small Lean repo (~400 LOC) likely translation experiment; not clearly off-topic.
       model: gpt-5.4-nano
   rkirov/jordan_pick:
     url: https://github.com/rkirov/jordan_pick
@@ -8899,6 +9389,43 @@ github:
       verdict: skip
       reason: Empty/near-empty repo with no Lean files or meaningful description.
       model: gpt-5.4-nano
+  squawai/hyperseq-lean:
+    url: https://github.com/squawai/hyperseq-lean
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: squawai/hyperseq-lean
+    description: Lean 4 formalizations of hypersequent calculi for various logics
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 4 Lean files
+    - about 577 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: analysis, formalization, logic'
+    - 'personal terms: playground'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-07-04T17:14:54Z'
+    updated_at: '2026-07-04T17:21:58Z'
+    pushed_at: '2026-07-04T17:21:54Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 4
+    estimated_lean_loc: 577
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Formal Lean 4 hypersequent calculi for logics; real mathematics, modest size.
+      model: gpt-5.4-nano
   sueszli/autograd:
     url: https://github.com/sueszli/autograd.lean
     first_seen_at: '2026-06-26T16:29:15+00:00'
@@ -9421,6 +9948,41 @@ github:
       reason: Large Lean proof pack with substantial content; formal-math oriented despite
         zero stars.
       model: gpt-5.4-nano
+  tryggth/delta-2-boundary:
+    url: https://github.com/tryggth/delta-2-boundary
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: tryggth/delta-2-boundary
+    description: ''
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 9 Lean files
+    - about 5298 Lean LOC
+    - Lake manifest
+    - license unknown
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-04T17:37:38Z'
+    updated_at: '2026-07-05T14:09:45Z'
+    pushed_at: '2026-07-05T14:09:42Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 9
+    estimated_lean_loc: 5298
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Substantial Lean LOC and formal focus; description missing but repository not
+        clearly filler.
+      model: gpt-5.4-nano
   twigglits/collatz-conjecture--expansion:
     url: https://github.com/twigglits/collatz-conjecture--expansion
     first_seen_at: '2026-07-03T16:01:21+00:00'
@@ -9489,6 +10051,77 @@ github:
       verdict: keep
       reason: Nonempty Lean repo; despite empty description, appears mathematical/computational
         with 1.6k LOC.
+      model: gpt-5.4-nano
+  uncc-fortress/dl-formalization-lean:
+    url: https://github.com/UNCC-FORTRESS/dL-formalization-Lean
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: UNCC-FORTRESS/dL-formalization-Lean
+    description: ''
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 10 Lean files
+    - about 1720 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, logic, mathlib'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T10:16:40Z'
+    updated_at: '2026-07-05T14:43:40Z'
+    pushed_at: '2026-07-05T14:43:37Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 10
+    estimated_lean_loc: 1720
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: Empty description, low stars; likely repository skeleton despite some Lean code.
+      model: gpt-5.4-nano
+  uncc-fortress/hscc23-qsafety-lean:
+    url: https://github.com/UNCC-FORTRESS/HSCC23-Qsafety-Lean
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: UNCC-FORTRESS/HSCC23-Qsafety-Lean
+    description: ''
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 10 Lean files
+    - about 1192 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: analysis, formalization, mathlib'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T14:47:37Z'
+    updated_at: '2026-07-05T14:59:16Z'
+    pushed_at: '2026-07-05T14:49:51Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 10
+    estimated_lean_loc: 1192
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: Course/problem-set style repo; empty description, zero stars, no clear math
+        content.
       model: gpt-5.4-nano
   upbqdn/zebrafm:
     url: https://github.com/upbqdn/zebrafm
@@ -9856,6 +10489,40 @@ github:
       verdict: skip
       reason: Empty description, zero stars, and unclear purpose despite moderate size.
       model: gpt-5.4-nano
+  wenda302/icml26_demo:
+    url: https://github.com/Wenda302/ICML26_demo
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: Wenda302/ICML26_demo
+    description: ''
+    signal: medium
+    score: 4
+    reasons:
+    - 2 Lean files
+    - about 200 Lean LOC
+    - license unknown
+    - 'domain terms: mathlib, proof, verification'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T14:00:54Z'
+    updated_at: '2026-07-05T15:14:29Z'
+    pushed_at: '2026-07-05T15:14:25Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 200
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: Empty description, zero stars, minimal Lean files; likely demo/filler without
+        content.
+      model: gpt-5.4-nano
   willblair0708/lean-proofs:
     url: https://github.com/willblair0708/lean-proofs
     first_seen_at: '2026-06-28T15:40:54+00:00'
@@ -9893,6 +10560,38 @@ github:
     triage:
       verdict: skip
       reason: Index/CI scaffolding with no clear math content; low signals, zero stars.
+      model: gpt-5.4-nano
+  williamjblair/fc-review-board:
+    url: https://github.com/williamjblair/fc-review-board
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: williamjblair/fc-review-board
+    description: A review-queue dashboard for open formal-conjectures PRs, with a fidelity
+      audit column. In the spirit of mathlib's queueboard.
+    signal: low
+    score: 2
+    reasons:
+    - license unknown
+    - 'domain terms: mathlib, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Python
+    created_at: '2026-07-04T21:36:02Z'
+    updated_at: '2026-07-05T00:19:16Z'
+    pushed_at: '2026-07-05T00:19:13Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - mathlib created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: No Lean files, no stars, and it's a generic tooling queue dashboard.
       model: gpt-5.4-nano
   xaviercallens/socrateai-scientific-agora-k3-darkmatter:
     url: https://github.com/xaviercallens/SocrateAI-Scientific-Agora-K3-DarkMatter
@@ -10185,6 +10884,47 @@ github:
       reason: Enormous AI/engineering project; no evidence of substantive Lean formal math
         content.
       model: gpt-5.4-nano
+  ysmouhib/brigade:
+    url: https://github.com/ysmouhib/brigade
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: ysmouhib/brigade
+    description: "Multi-agent math prover \u2014 agents propose, Lean 4 disposes"
+    signal: low
+    score: 0
+    reasons:
+    - MIT
+    - 'domain terms: mathlib, proof, theorem'
+    - 'tool terms: tactic'
+    stars: 0
+    license: MIT
+    topics:
+    - claude
+    - formal-verification
+    - lean4
+    - mathlib
+    - multi-agent
+    - theorem-proving
+    - webllm
+    language: Python
+    created_at: '2026-07-04T22:42:12Z'
+    updated_at: '2026-07-04T23:42:21Z'
+    pushed_at: '2026-07-04T23:47:35Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    - mathlib created:>=2026-07-04 fork:false archived:false
+    - topic:lean4 created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: skip
+      reason: No Lean files/LOC and zero stars; likely empty or unverified project scaffold.
+      model: gpt-5.4-nano
   yuaiccc/formal-verification:
     url: https://github.com/yuaiccc/formal-verification
     first_seen_at: '2026-06-26T16:29:15+00:00'
@@ -10325,6 +11065,43 @@ github:
     triage:
       verdict: keep
       reason: Not clearly off-topic; small Lean formalization despite empty description.
+      model: gpt-5.4-nano
+  zkpixels/kakeya-multiplicativity-lean:
+    url: https://github.com/zkpixels/kakeya-multiplicativity-lean
+    first_seen_at: '2026-07-05T15:39:11+00:00'
+    full_name: zkpixels/kakeya-multiplicativity-lean
+    description: 'Kernel-checked Lean 4 proofs: exact minimum Kakeya set sizes and multiplicativity
+      over Z/N'
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 67 Lean files
+    - about 10417 Lean LOC
+    - license NOASSERTION
+    - 'domain terms: mathlib, proof, theorem'
+    stars: 0
+    license: NOASSERTION
+    topics: []
+    language: Lean
+    created_at: '2026-07-05T13:48:53Z'
+    updated_at: '2026-07-05T14:42:05Z'
+    pushed_at: '2026-07-05T14:42:00Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 67
+    estimated_lean_loc: 10417
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-07-04 fork:false archived:false'
+    - language:Lean created:>=2026-07-04 fork:false archived:false
+    triage:
+      verdict: keep
+      reason: Kernel-checked Lean proofs in additive combinatorics (Kakeya, multiplicativity);
+        substantial content.
       model: gpt-5.4-nano
 arxiv:
   2606.29687v1:
