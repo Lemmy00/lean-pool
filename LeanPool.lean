@@ -2284,6 +2284,15 @@ import LeanPool.SpecialNumbers
 import LeanPool.SpecialNumbers.Euclidian
 import LeanPool.SpecialNumbers.Eulerian
 import LeanPool.SpecialNumbers.Sylvester
+import LeanPool.SpectralPositivity
+import LeanPool.SpectralPositivity.Matrix.MMatrixInverse
+import LeanPool.SpectralPositivity.Matrix.MetzlerExp
+import LeanPool.SpectralPositivity.Matrix.NonnegPower
+import LeanPool.SpectralPositivity.Matrix.PerronFrobenius
+import LeanPool.SpectralPositivity.Operator.Jentzsch
+import LeanPool.SpectralPositivity.Operator.JentzschProof
+import LeanPool.SpectralPositivity.Operator.KernelPositivity
+import LeanPool.SpectralPositivity.Operator.SpectralRadius
 import LeanPool.SumsThreeSquares
 import LeanPool.SumsThreeSquares.MinkowskiConvex
 import LeanPool.SumsThreeSquares.SumThreeSquares
