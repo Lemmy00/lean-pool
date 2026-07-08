@@ -187,8 +187,7 @@ lemma Multiset.sum_eq_EF_top {s : Multiset F∞} (htop : ⊤ ∈ s) (hbot : ⊥ 
         apply hbot
         rw [Multiset.mem_cons]
         right
-        rw [←Multiset.sum_eq_EF_bot_iff]
-        exact hm
+        rwa [←Multiset.sum_eq_EF_bot_iff]
     | inr hm =>
       rw [ih hm ((hbot ∘ Multiset.mem_cons_of_mem) ·)]
       match a with
@@ -581,7 +580,7 @@ private lemma extendedFarkas.bwd_witness {A : Matrix I J F∞} {b : I → F∞}
           rw [mul_comm]
           simp only [extendedFarkas.b']
           split <;> rename_i hbi
-          · simp_rw [hbi]; exact rfl
+          · exact hbi ▸ rfl
           · exact (hbot ⟨i, hbi⟩).elim
           · exact (hi.left hbi).elim
     · simp [EF.coe_zero]

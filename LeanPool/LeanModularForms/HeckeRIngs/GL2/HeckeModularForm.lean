@@ -32,9 +32,7 @@ namespace HeckeRing.GL2
 /-- `𝒮ℒ` has determinant 1: all elements come from SL₂(ℤ). -/
 instance : Subgroup.HasDetOne 𝒮ℒ where
   det_eq {γ} hγ := by
-    simp only [MonoidHom.mem_range] at hγ
-    obtain ⟨s, rfl⟩ := hγ
-    exact det_mapGL s
+    obtain ⟨s, rfl⟩ := MonoidHom.mem_range.mp hγ; exact det_mapGL s
 
 section Holomorphicity
 
@@ -50,21 +48,18 @@ section ModularFormConstructor
 /-- `GL₂(ℚ)` maps cusps of `𝒮ℒ` to cusps: the Möbius action preserves `ℙ¹(ℚ)`. -/
 lemma glMap_smul_isCusp (A : GL (Fin 2) ℚ) {c : OnePoint ℝ} (hc : IsCusp c 𝒮ℒ) :
     IsCusp (glMap A • c) 𝒮ℒ := by
-  rw [isCusp_SL2Z_iff] at hc ⊢
-  obtain ⟨q, rfl⟩ := hc
+  rw [isCusp_SL2Z_iff] at hc ⊢; obtain ⟨q, rfl⟩ := hc
   rw [show glMap A • OnePoint.map (Rat.cast : ℚ → ℝ) q =
       OnePoint.map (Rat.cast : ℚ → ℝ) (A • q)
-      from (OnePoint.map_smul (algebraMap ℚ ℝ) A q).symm]
-  exact ⟨_, rfl⟩
+      from (OnePoint.map_smul (algebraMap ℚ ℝ) A q).symm]; exact ⟨_, rfl⟩
 
 /-- The Hecke slash action preserves boundedness at cusps. -/
 lemma heckeSlash_bdd_at_cusps (k : ℤ) (D : HeckeCoset (GLPair 2)) (f : ModularForm 𝒮ℒ k)
     {c : OnePoint ℝ} (hc : IsCusp c 𝒮ℒ) : c.IsBoundedAt (heckeSlash k D f) k := by
   simp only [heckeSlash]
   apply Finset.sum_induction _ (fun g => c.IsBoundedAt g k) (fun _ _ ha hb => ha.add hb)
-    ((0 : ModularForm 𝒮ℒ k).bdd_at_cusps' hc)
-  intro i _
-  exact OnePoint.IsBoundedAt.smul_iff.mp (f.bdd_at_cusps' (glMap_smul_isCusp _ hc))
+    ((0 : ModularForm 𝒮ℒ k).bdd_at_cusps' hc) fun i _ =>
+    OnePoint.IsBoundedAt.smul_iff.mp (f.bdd_at_cusps' (glMap_smul_isCusp _ hc))
 
 /-- The Hecke operator `T(D)` on modular forms, preserving slash invariance and holomorphicity. -/
 noncomputable def heckeOperator (k : ℤ) (D : HeckeCoset (GLPair 2)) (f : ModularForm 𝒮ℒ k) :
@@ -87,16 +82,11 @@ noncomputable def heckeOperatorLinear (k : ℤ) (D : HeckeCoset (GLPair 2)) :
     ModularForm 𝒮ℒ k →ₗ[ℂ] ModularForm 𝒮ℒ k where
   toFun := heckeOperator k D
   map_add' f g := by
-    ext z
-    change heckeSlash k D (↑(f + g)) z =
-      (heckeOperator k D f + heckeOperator k D g) z
-    simp only [ModularForm.add_apply]
-    change heckeSlash k D (↑f + ↑g) z =
-      heckeSlash k D (↑f) z + heckeSlash k D (↑g) z
+    ext z; simp only [ModularForm.add_apply]
+    change heckeSlash k D (↑f + ↑g) z = heckeSlash k D (↑f) z + heckeSlash k D (↑g) z
     rw [heckeSlash_add]; rfl
   map_smul' c f := by
     ext z
-    change heckeSlash k D (↑(c • f)) z = (c • heckeOperator k D f) z
     change heckeSlash k D (c • ↑f) z = c • heckeSlash k D (↑f) z
     rw [heckeSlash_smul]; rfl
 
@@ -137,8 +127,7 @@ private lemma slash_and_coset_of_mulMap_eq (k : ℤ) (D₁ D₂ D : HeckeCoset (
     set κ := (HeckeCoset.rep D : GL _ ℚ)⁻¹ * ((q.out : GL _ ℚ)⁻¹ * h₁) *
         (HeckeCoset.rep D : GL _ ℚ)
     rw [Set.singleton_mul_singleton, heq]; apply leftCoset_eq_of_not_disjoint
-    rw [Set.not_disjoint_iff]
-    exact ⟨h₁ * (HeckeCoset.rep D : GL _ ℚ) * h₂,
+    exact Set.not_disjoint_iff.mpr ⟨h₁ * (HeckeCoset.rep D : GL _ ℚ) * h₂,
       ⟨1, (GLPair 2).H.one_mem, by simp [smul_eq_mul]⟩,
       ⟨κ * h₂, (GLPair 2).H.mul_mem h_K hh₂, by simp only [smul_eq_mul, κ]; group⟩⟩
 
@@ -147,9 +136,9 @@ private lemma prod_mem_D_of_rightCoset (D : HeckeCoset (GLPair 2)) (g : GL (Fin 
     (q : decompQuot (GLPair 2) (HeckeCoset.rep D)) (h : GL (Fin 2) ℚ)
     (hh : h ∈ ((GLPair 2).H : Set (GL (Fin 2) ℚ)))
     (hprod : g = (q.out : GL _ ℚ) * (HeckeCoset.rep D : GL _ ℚ) * h) :
-    g ∈ HeckeCoset.toSet D := by
-  rw [HeckeCoset.toSet_eq_rep, DoubleCoset.mem_doubleCoset]
-  exact ⟨(q.out : GL (Fin 2) ℚ), SetLike.coe_mem q.out, h, hh, hprod⟩
+    g ∈ HeckeCoset.toSet D :=
+  (HeckeCoset.toSet_eq_rep D ▸ DoubleCoset.mem_doubleCoset.mpr
+    ⟨(q.out : GL (Fin 2) ℚ), SetLike.coe_mem q.out, h, hh, hprod⟩)
 
 /-- The product `σᵢδ₁ · σⱼδ₂` lies in `toSet (mulMap p)`. -/
 private lemma prod_mem_mulMap (D₁ D₂ : HeckeCoset (GLPair 2))
@@ -183,15 +172,12 @@ private lemma mulMap_eq_of_rightCoset (D₁ D₂ D : HeckeCoset (GLPair 2))
   obtain ⟨_, hd_eq, h, hh, hprod⟩ := h_in_rc
   rw [Set.mem_singleton_iff] at hd_eq; subst hd_eq
   set M := mulMap (GLPair 2) (HeckeCoset.rep D₁) (HeckeCoset.rep D₂) (p.1, p.2)
-  exact HeckeCoset_ext_toSet (GLPair 2) (by
-    rw [HeckeCoset.toSet_eq_rep, HeckeCoset.toSet_eq_rep]
-    exact DoubleCoset.eq_of_not_disjoint (by
-      rw [Set.not_disjoint_iff]
-      have hm := prod_mem_mulMap D₁ D₂ p
-      rw [HeckeCoset.toSet_eq_rep] at hm
-      have hd := prod_mem_D_of_rightCoset D _ q h hh hprod.symm
-      rw [HeckeCoset.toSet_eq_rep] at hd
-      exact ⟨_, hm, hd⟩))
+  apply HeckeCoset_ext_toSet (GLPair 2)
+  rw [HeckeCoset.toSet_eq_rep, HeckeCoset.toSet_eq_rep]
+  apply DoubleCoset.eq_of_not_disjoint
+  have hm := prod_mem_mulMap D₁ D₂ p; rw [HeckeCoset.toSet_eq_rep] at hm
+  have hd := prod_mem_D_of_rightCoset D _ q h hh hprod.symm; rw [HeckeCoset.toSet_eq_rep] at hd
+  exact Set.not_disjoint_iff.mpr ⟨_, hm, hd⟩
 
 private lemma heckeSlash_fiber_sum [DecidableEq (HeckeCoset (GLPair 2))] (k : ℤ)
     (D₁ D₂ D : HeckeCoset (GLPair 2))
@@ -233,8 +219,7 @@ private lemma heckeSlash_fiber_sum [DecidableEq (HeckeCoset (GLPair 2))] (k : �
   rw [← Finset.sum_fiberwise (s := S) (g := q_of)]
   conv_lhs =>
     arg 2; ext q
-    rw [Finset.sum_congr rfl (fun p hp => by
-      simp only [Finset.mem_filter] at hp; rw [hp.2])]
+    rw [Finset.sum_congr rfl (fun p hp => by simp only [Finset.mem_filter] at hp; rw [hp.2])]
     rw [Finset.sum_const]
   have h_fiber_eq : ∀ q : decompQuot (GLPair 2) (HeckeCoset.rep D),
       (S.filter (fun p => q_of p = q)).card = Nat.card
@@ -301,9 +286,8 @@ private theorem heckeSlash_comp (k : ℤ) (D₁ D₂ : HeckeCoset (GLPair 2)) (f
     unfold heckeSlashExt; rw [mul_singleton_𝕋]; simp]
   have h_comm : m (GLPair 2) (HeckeCoset.rep D₂) (HeckeCoset.rep D₁) =
       m (GLPair 2) (HeckeCoset.rep D₁) (HeckeCoset.rep D₂) := by
-    have h1 := @T_single_one_mul_T_single_one _ _ (GLPair 2) D₂ D₁
-    have h2 := @T_single_one_mul_T_single_one _ _ (GLPair 2) D₁ D₂
-    rw [← h1, ← h2]
+    rw [← @T_single_one_mul_T_single_one _ _ (GLPair 2) D₂ D₁,
+      ← @T_single_one_mul_T_single_one _ _ (GLPair 2) D₁ D₂]
     exact (instCommRingHeckeAlgebra (n := 2)).mul_comm _ _
   rw [h_comm]; simp_rw [heckeSlash]
   rw [show (∑ i : decompQuot (GLPair 2) (HeckeCoset.rep D₁),
@@ -318,8 +302,7 @@ private theorem heckeSlash_comp (k : ℤ) (D₁ D₂ : HeckeCoset (GLPair 2)) (f
   have h_slash_mul :
       ∀ (i : decompQuot (GLPair 2) (HeckeCoset.rep D₁))
         (j : decompQuot (GLPair 2) (HeckeCoset.rep D₂)),
-      (f ∣[k] tRep D₂ j) ∣[k] tRep D₁ i = f ∣[k] (tRep D₂ j * tRep D₁ i) := by
-    intro i j
+      (f ∣[k] tRep D₂ j) ∣[k] tRep D₁ i = f ∣[k] (tRep D₂ j * tRep D₁ i) := fun i j => by
     change (f ∣[k] glMap (tRep D₂ j)) ∣[k] glMap (tRep D₁ i) =
       f ∣[k] glMap (tRep D₂ j * tRep D₁ i)
     rw [map_mul, ← SlashAction.slash_mul]

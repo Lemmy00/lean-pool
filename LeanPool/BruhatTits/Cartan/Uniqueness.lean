@@ -76,12 +76,10 @@ lemma cartan_decomposition_unique'_aux (x a : GL (Fin k) R) (f f' : Fin k → �
   rw [← map_mul, ← Finset.prod_inv_distrib, ← Finset.prod_mul_distrib] at this
   simp_rw [← zpow_neg] at this
   have hϖnezero : ϖ.val ≠ 0 := by
-    simp only [ne_eq, ZeroMemClass.coe_eq_zero]
-    exact hϖ.ne_zero
+    simpa only [ne_eq, ZeroMemClass.coe_eq_zero] using hϖ.ne_zero
   have hsumzero' : Finset.univ.sum (fun i ↦ f i - f' i) = 0 := by
-    rw [← valuation_irreducible_zpow_eq_one_iff (hϖ := hϖ)]
-    rw [← Finset.prod_zpow_eq_zpow_sum (ha := hϖnezero)]
-    rw [← this]
+    rw [← valuation_irreducible_zpow_eq_one_iff (hϖ := hϖ),
+      ← Finset.prod_zpow_eq_zpow_sum (ha := hϖnezero), ← this]
     congr
     ext i
     rw [← zpow_add₀ hϖnezero]
@@ -123,8 +121,7 @@ lemma cartan_decomposition_unique'_aux (x a : GL (Fin k) R) (f f' : Fin k → �
   have hzero : ∀ i ∈ Finset.univ, f (σ i) - f' i = 0 := by
     rw [← Finset.sum_eq_zero_iff_of_nonneg]
     · exact hsumzero
-    · intro i _
-      exact hgezero i
+    · exact fun i _ ↦ hgezero i
   use σ
   ext i
   simpa using Int.eq_of_sub_eq_zero (hzero i (Finset.mem_univ i))

@@ -211,12 +211,7 @@ lemma axL_defined : Sg0-Function₂ (axL : V → V → V) via axLDef := by
   suffices h : v 0 = axL (v 1) (v 2) ↔
       ⟪v 1, ⟪0, v 2⟫⟫ < v 0 ∧ v 0 = ⟪v 1, ⟪0, v 2⟫⟫ + 1 by
     simpa [axLDef] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [axL], by simp [axL]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, axL], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_axLDef (v) :
     Semiformula.Evalbm V v axLDef.val ↔ v 0 = axL (v 1) (v 2) := axL_defined.df.iff v
@@ -230,12 +225,7 @@ lemma verumIntro_defined : Sg0-Function₁ (verumIntro : V → V) via verumIntro
   suffices h : v 0 = verumIntro (v 1) ↔
       ⟪v 1, 1, 0⟫ < v 0 ∧ v 0 = ⟪v 1, 1, 0⟫ + 1 by
     simpa [verumIntroDef] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [verumIntro], by simp [verumIntro]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, verumIntro], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_verumIntroDef (v) :
     Semiformula.Evalbm V v verumIntroDef.val ↔ v 0 = verumIntro (v 1) := verumIntro_defined.df.iff v
@@ -250,12 +240,7 @@ lemma andIntro_defined : Sg0-Function₅ (andIntro : V → V → V → V → V �
       ⟪v 1, 2, v 2, v 3, v 4, v 5⟫ < v 0 ∧
         v 0 = ⟪v 1, 2, v 2, v 3, v 4, v 5⟫ + 1 by
     simpa [andIntroDef] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [andIntro], by simp [andIntro]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, andIntro], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_andIntroDef (v) :
     Semiformula.Evalbm V v andIntroDef.val ↔ v 0 = andIntro (v 1) (v 2) (v 3) (v 4) (v 5) :=
@@ -271,12 +256,7 @@ lemma orIntro_defined : Sg0-Function₄ (orIntro : V → V → V → V → V) vi
       ⟪v 1, 3, v 2, v 3, v 4⟫ < v 0 ∧
         v 0 = ⟪v 1, 3, v 2, v 3, v 4⟫ + 1 by
     simpa [orIntroDef] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [orIntro], by simp [orIntro]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, orIntro], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_orIntroDef (v) :
     Semiformula.Evalbm V v orIntroDef.val ↔ v 0 = orIntro (v 1) (v 2) (v 3) (v 4) :=
@@ -291,12 +271,7 @@ lemma allIntro_defined : Sg0-Function₃ (allIntro : V → V → V → V) via al
   suffices h : v 0 = allIntro (v 1) (v 2) (v 3) ↔
       ⟪v 1, 4, v 2, v 3⟫ < v 0 ∧ v 0 = ⟪v 1, 4, v 2, v 3⟫ + 1 by
     simpa [allIntroDef] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [allIntro], by simp [allIntro]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, allIntro], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_allIntroDef (v) :
     Semiformula.Evalbm V v allIntroDef.val ↔ v 0 = allIntro (v 1) (v 2) (v 3) :=
@@ -312,12 +287,7 @@ lemma exIntro_defined : Sg0-Function₄ (exIntro : V → V → V → V → V) vi
       ⟪v 1, 5, v 2, v 3, v 4⟫ < v 0 ∧
         v 0 = ⟪v 1, 5, v 2, v 3, v 4⟫ + 1 by
     simpa [exIntroDef, numeral_eq_natCast] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [exIntro], by simp [exIntro]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, exIntro], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_exIntroDef (v) :
     Semiformula.Evalbm V v exIntroDef.val ↔ v 0 = exIntro (v 1) (v 2) (v 3) (v 4) :=
@@ -332,12 +302,7 @@ lemma wkRule_defined : Sg0-Function₂ (wkRule : V → V → V) via wkRuleDef :=
   suffices h : v 0 = wkRule (v 1) (v 2) ↔
       ⟪v 1, 6, v 2⟫ < v 0 ∧ v 0 = ⟪v 1, 6, v 2⟫ + 1 by
     simpa [wkRuleDef, numeral_eq_natCast] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [wkRule], by simp [wkRule]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, wkRule], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_wkRuleDef (v) :
     Semiformula.Evalbm V v wkRuleDef.val ↔ v 0 = wkRule (v 1) (v 2) := wkRule_defined.df.iff v
@@ -351,12 +316,7 @@ lemma shiftRule_defined : Sg0-Function₂ (shiftRule : V → V → V) via shiftR
   suffices h : v 0 = shiftRule (v 1) (v 2) ↔
       ⟪v 1, 7, v 2⟫ < v 0 ∧ v 0 = ⟪v 1, 7, v 2⟫ + 1 by
     simpa [shiftRuleDef, numeral_eq_natCast] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [shiftRule], by simp [shiftRule]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, shiftRule], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_shiftRuleDef (v) :
     Semiformula.Evalbm V v shiftRuleDef.val ↔ v 0 = shiftRule (v 1) (v 2) :=
@@ -372,12 +332,7 @@ lemma cutRule_defined : Sg0-Function₄ (cutRule : V → V → V → V → V) vi
       ⟪v 1, 8, v 2, v 3, v 4⟫ < v 0 ∧
         v 0 = ⟪v 1, 8, v 2, v 3, v 4⟫ + 1 by
     simpa [cutRuleDef, numeral_eq_natCast] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [cutRule], by simp [cutRule]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, cutRule], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_cutRuleDef (v) :
     Semiformula.Evalbm V v cutRuleDef.val ↔ v 0 = cutRule (v 1) (v 2) (v 3) (v 4) :=
@@ -392,12 +347,7 @@ lemma root_defined : Sg0-Function₂ (root : V → V → V) via rootDef := by
   suffices h : v 0 = root (v 1) (v 2) ↔
       ⟪v 1, 9, v 2⟫ < v 0 ∧ v 0 = ⟪v 1, 9, v 2⟫ + 1 by
     simpa [rootDef, numeral_eq_natCast] using h
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [root], by simp [root]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, root], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_rootDef (v) :
     Semiformula.Evalbm V v rootDef.val ↔ v 0 = root (v 1) (v 2) := root_defined.df.iff v
@@ -1187,8 +1137,7 @@ lemma disjDistr (ps s : V) (d : T.Derivable (vecToSet ps ∪ s)) :
       have : T.Derivable (insert (^⋁ takeLast ps k) (s'' ∪ s)) := by
         refine ih (le_trans (by simp) hk) s'' (le_of_subset hs'') hs'' ?_
         intro i hi
-        have : i ≤ len ps - (k + 1) := by
-          simpa [sub_sub] using le_sub_one_of_lt hi
+        have : i ≤ len ps - (k + 1) := by simpa [sub_sub] using le_sub_one_of_lt hi
         rcases lt_or_eq_of_le this with (hi | rfl)
         · simp [s'', hs' i hi]
         · simp [s'']

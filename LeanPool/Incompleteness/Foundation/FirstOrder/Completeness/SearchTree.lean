@@ -47,8 +47,7 @@ inductive Redux (T : Theory L) : Code L → Sequent L → Sequent L → Prop
 local notation:25 Δ₁" ≺[" c:25 "] " Δ₂:80 => Redux T c Δ₁ Δ₂
 
 lemma _root_.LO.FirstOrder.Completeness.Redux.antimonotone {c : Code L} {Δ₂ Δ₁ : Sequent L} (h :
-    Δ₂ ≺[c] Δ₁) :
-    Δ₁ ⊆ Δ₂ := by
+    Δ₂ ≺[c] Δ₁) : Δ₁ ⊆ Δ₂ := by
   cases h <;> simp[List.subset_cons_of_subset _ (List.subset_cons_self _ _)]
 
 variable [∀ k, DecidableEq (L.Func k)] [∀ k, DecidableEq (L.Rel k)] [∀ k,
@@ -64,14 +63,12 @@ local notation:25 Δ₁" ≺⟨" s:25 "⟩ " Δ₂:80 => ReduxNat T s Δ₁ Δ�
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma _root_.LO.FirstOrder.Completeness.ReduxNat.antimonotone {s : ℕ} {Δ₂ Δ₁ : Sequent L} (h :
-    Δ₂ ≺⟨s⟩ Δ₁) :
-    Δ₁ ⊆ Δ₂ := by
+    Δ₂ ≺⟨s⟩ Δ₁) : Δ₁ ⊆ Δ₂ := by
   cases h; { exact Redux.antimonotone (by assumption) }; { exact List.Subset.refl Δ₂ }
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma _root_.LO.FirstOrder.Completeness.ReduxNat.toRedux {c : Code L} {i} {Δ₂ Δ₁ : Sequent L} (h :
-    Δ₂ ≺⟨(encode c).pair i⟩ Δ₁) :
-    Δ₂ ≺[c] Δ₁ := by
+    Δ₂ ≺⟨(encode c).pair i⟩ Δ₁) : Δ₂ ≺[c] Δ₁ := by
   rcases h with (⟨h, r⟩ | ⟨h⟩); { simp at h; simpa[h] using r }; { simp at h }
 
 /-- Imported declaration from the Incompleteness formalization. -/
@@ -122,8 +119,7 @@ variable (wf : WellFounded (SearchTree.Lt T Γ))
 /-- Imported declaration from the Incompleteness formalization. -/
 noncomputable def _root_.LO.FirstOrder.Completeness.SearchTree.recursion {C :
     SearchTree T Γ → Sort v}
-  (τ) (h : ∀ τ₁, (∀ τ₂, SearchTree.Lt T Γ τ₂ τ₁ → C τ₂) → C τ₁) : C τ :=
-  WellFounded.fix wf h τ
+  (τ) (h : ∀ τ₁, (∀ τ₂, SearchTree.Lt T Γ τ₂ τ₁ → C τ₂) → C τ₁) : C τ := WellFounded.fix wf h τ
 
 /-- Imported declaration from the Incompleteness formalization. -/
 noncomputable def syntacticMainLemma (φ : SearchTree T Γ) : T ⟹ φ.seq := by
@@ -185,8 +181,7 @@ section «lp_section_2»
 
 /-- Imported declaration from the Incompleteness formalization. -/
 noncomputable def chainU (T : Theory L) (Γ : Sequent L) :
-    ℕ → SearchTree T Γ :=
-  descendingChain (SearchTree.Lt T Γ) ⊤
+    ℕ → SearchTree T Γ := descendingChain (SearchTree.Lt T Γ) ⊤
 
 /-- Imported declaration from the Incompleteness formalization. -/
 noncomputable def chain (T : Theory L) (Γ : Sequent L) (s : ℕ) : Sequent L := (chainU T Γ s).seq
@@ -259,8 +254,7 @@ lemma chainSet_verum (nwf : ¬WellFounded (SearchTree.Lt T Γ)) : ⊤ ∉ chainA
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma chainSet_axL (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {k} (r : L.Rel k) (v :
-    Fin k → SyntacticTerm L) :
-    rel r v ∉ chainAll ∨ nrel r v ∉ chainAll := by
+    Fin k → SyntacticTerm L) : rel r v ∉ chainAll ∨ nrel r v ∉ chainAll := by
   by_contra h
   have : (∃ s₁, rel r v ∈ chainAt[s₁]) ∧ (∃ s₂, nrel r v ∈ chainAt[s₂]) := by
     have h : rel r v ∈ chainAll ∧ nrel r v ∈ chainAll := by simpa[not_or] using h
@@ -273,8 +267,7 @@ lemma chainSet_axL (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {k} (r : L.Rel k) 
   have : ¬(rel r v ∈ chainAt[(encode <| Code.axL r v).pair (max s₁ s₂)] ∧
       nrel r v ∈ chainAt[(encode <| Code.axL r v).pair (max s₁ s₂)]) := by
     rw[not_and_or]
-    have :
-        chainAt[(encode <| Code.axL r v).pair (max s₁ s₂) + 1] ≺[Code.axL r v] chainAt[(encode <|
+    have : chainAt[(encode <| Code.axL r v).pair (max s₁ s₂) + 1] ≺[Code.axL r v] chainAt[(encode <|
             Code.axL r v).pair (max s₁ s₂)] :=
       chain_spec' nwf _ _
     generalize chainAt[(encode <| Code.axL r v).pair (max s₁ s₂) + 1] = Δ' at this
@@ -283,12 +276,10 @@ lemma chainSet_axL (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {k} (r : L.Rel k) 
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma chainSet_and (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ ψ : SyntacticFormula L} (h :
-    φ ⋏ ψ ∈ chainAll) :
-    φ ∈ chainAll ∨ ψ ∈ chainAll := by
+    φ ⋏ ψ ∈ chainAll) : φ ∈ chainAll ∨ ψ ∈ chainAll := by
   have : ∃ s, φ ⋏ ψ ∈ chainAt[s] := by simpa[chainSet] using h
   rcases this with ⟨s, hs⟩
-  have :
-      chainAt[(encode <| Code.and φ ψ).pair s + 1] ≺[Code.and φ ψ] chainAt[(encode <|
+  have : chainAt[(encode <| Code.and φ ψ).pair s + 1] ≺[Code.and φ ψ] chainAt[(encode <|
           Code.and φ ψ).pair s] :=
     chain_spec' nwf _ _
   generalize hΔ : chainAt[(encode <| Code.and φ ψ).pair s + 1] = Δ at this
@@ -304,12 +295,10 @@ lemma chainSet_and (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ ψ : Syntactic
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma chainSet_or (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ ψ : SyntacticFormula L} (h :
-    φ ⋎ ψ ∈ chainAll) :
-    φ ∈ chainAll ∧ ψ ∈ chainAll := by
+    φ ⋎ ψ ∈ chainAll) : φ ∈ chainAll ∧ ψ ∈ chainAll := by
   have : ∃ s, φ ⋎ ψ ∈ chainAt[s] := by simpa[chainSet] using h
   rcases this with ⟨s, hs⟩
-  have :
-      chainAt[(encode <| Code.or φ ψ).pair s + 1] ≺[Code.or φ ψ] chainAt[(encode <|
+  have : chainAt[(encode <| Code.or φ ψ).pair s + 1] ≺[Code.or φ ψ] chainAt[(encode <|
           Code.or φ ψ).pair s] :=
     chain_spec' nwf _ _
   generalize hΔ : chainAt[(encode <| Code.or φ ψ).pair s + 1] = Δ at this
@@ -322,12 +311,10 @@ lemma chainSet_or (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ ψ : SyntacticF
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma chainSet_all (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ : SyntacticSemiformula L 1} (h :
-    ∀' φ ∈ chainAll) :
-    ∃ t, φ/[t] ∈ chainAll := by
+    ∀' φ ∈ chainAll) : ∃ t, φ/[t] ∈ chainAll := by
   have : ∃ s, ∀' φ ∈ chainAt[s] := by simpa[chainSet] using h
   rcases this with ⟨s, hs⟩
-  have :
-      chainAt[(encode <| Code.all φ).pair s + 1] ≺[Code.all φ] chainAt[(encode <|
+  have : chainAt[(encode <| Code.all φ).pair s + 1] ≺[Code.all φ] chainAt[(encode <|
           Code.all φ).pair s] :=
     chain_spec' nwf _ _
   generalize hΔ : chainAt[(encode <| Code.all φ).pair s + 1] = Δ at this
@@ -340,12 +327,10 @@ lemma chainSet_all (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ : SyntacticSem
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma chainSet_ex (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ : SyntacticSemiformula L 1} (h :
-    ∃' φ ∈ chainAll) :
-    ∀ t, φ/[t] ∈ chainAll := fun t => by
+    ∃' φ ∈ chainAll) : ∀ t, φ/[t] ∈ chainAll := fun t => by
   have : ∃ s, ∃' φ ∈ chainAt[s] := by simpa[chainSet] using h
   rcases this with ⟨s, hs⟩
-  have :
-      chainAt[(encode <| Code.ex φ t).pair s + 1] ≺[Code.ex φ t] chainAt[(encode <|
+  have : chainAt[(encode <| Code.ex φ t).pair s + 1] ≺[Code.ex φ t] chainAt[(encode <|
           Code.ex φ t).pair s] :=
     chain_spec' nwf _ _
   generalize hΔ : chainAt[(encode <| Code.ex φ t).pair s + 1] = Δ at this
@@ -358,8 +343,7 @@ lemma chainSet_ex (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ : SyntacticSemi
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma chainSet_id (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ : SyntacticFormula L} (h : φ ∈ T) :
     ∼∀∀φ ∈ chainAll := by
-  have :
-      chainAt[(encode <| Code.id φ).pair 0 + 1] ≺[Code.id φ] chainAt[(encode <|
+  have : chainAt[(encode <| Code.id φ).pair 0 + 1] ≺[Code.id φ] chainAt[(encode <|
           Code.id φ).pair 0] :=
     chain_spec' nwf _ _
   generalize hΔ : chainAt[(encode <| Code.id φ).pair 0 + 1] = Δ
@@ -385,14 +369,12 @@ instance _root_.LO.FirstOrder.Completeness.Model.structure (T : Theory L) (Γ : 
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 @[simp] lemma _root_.LO.FirstOrder.Completeness.Model.val {e : Fin n → SyntacticTerm L} {ε} (t :
-    SyntacticSemiterm L n) :
-    Semiterm.val (Model.structure T Γ) e ε t = Rew.bind e ε t := by
+    SyntacticSemiterm L n) : Semiterm.val (Model.structure T Γ) e ε t = Rew.bind e ε t := by
   induction t <;> simp[*, Semiterm.val_func, Rew.func]; rfl
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 @[simp] lemma _root_.LO.FirstOrder.Completeness.Model.rel {k} (r : L.Rel k) (v :
-    Fin k → SyntacticTerm L) :
-    (Model.structure T Γ).rel r v ↔ nrel r v ∈ chainAll := of_eq rfl
+    Fin k → SyntacticTerm L) : (Model.structure T Γ).rel r v ↔ nrel r v ∈ chainAll := of_eq rfl
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma semanticMainLemma_val (nwf : ¬WellFounded (SearchTree.Lt T Γ)) :
@@ -422,8 +404,7 @@ lemma semanticMainLemma_val (nwf : ¬WellFounded (SearchTree.Lt T Γ)) :
       rcases this with ⟨u, hu⟩
       have : ¬Eval (Model.structure T Γ) ![u] Semiterm.fvar φ := by
         simpa[eval_substs, Matrix.constant_eq_singleton] using semanticMainLemma_val nwf (φ/[u]) hu
-      simp only [eval_all, Nat.succ_eq_add_one, Nat.reduceAdd, not_forall]
-      exact ⟨u, this⟩
+      simpa only [eval_all, Nat.succ_eq_add_one, Nat.reduceAdd, not_forall] using ⟨u, this⟩
   | ∃' φ,     h => by
       simp only [eval_ex, Nat.succ_eq_add_one, Nat.reduceAdd, not_exists]
       intro u
@@ -444,8 +425,7 @@ lemma _root_.LO.FirstOrder.Completeness.Model.models (nwf : ¬WellFounded (Searc
 
 omit [(k : ℕ) → DecidableEq (L.Func k)] [(k : ℕ) → DecidableEq (L.Rel k)] in
 lemma semanticMainLemmaTop (nwf : ¬WellFounded (SearchTree.Lt T Γ)) {φ : SyntacticFormula L} (h :
-    φ ∈ Γ) :
-    ¬Evalf (Model.structure T Γ) Semiterm.fvar φ :=
+    φ ∈ Γ) : ¬Evalf (Model.structure T Γ) Semiterm.fvar φ :=
   semanticMainLemma_val nwf φ (Set.mem_iUnion.mpr ⟨0, by simp[chain, chainU, h]⟩)
 
 end «lp_section_2»

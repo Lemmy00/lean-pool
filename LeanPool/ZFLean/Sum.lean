@@ -252,9 +252,6 @@ theorem casesOn {S : ZFSet} (x : Option S) : x = none ∨ (∃ y, x = some y) :=
       unfold some Sum.inr
       exists ⟨val, hx.right⟩
 
--- theorem ZFInt.into.injective : Function.Injective into := into_inj
--- theorem ZFInt.outof.injective : Function.Injective outof := outof_inj
-
 open Classical in
 /-- Imported ZFLean declaration. -/
 noncomputable abbrev the {S : ZFSet} (S_nemp : S ≠ ∅) (x : Option S) : {x // x ∈ S} :=
@@ -521,8 +518,7 @@ theorem flift_bijective {f A B : ZFSet} (hf : IsFunc A B f) :
             have hpair := fapply.def (is_func_is_pfunc hf) hdom
             dsimp [ZFSet.Option.some, Sum.inr] at eq
             rw [pair_inj] at eq
-            rw [eq.2]
-            exact hpair
+            rwa [eq.2]
           have chosen_eq : (Classical.choose issome).val = x :=
             x_unq _ ⟨(Classical.choose issome).property, chosen_pair⟩
           trans (ZFSet.Option.some (Classical.choose issome)).val

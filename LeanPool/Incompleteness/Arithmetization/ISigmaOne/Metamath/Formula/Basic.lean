@@ -113,12 +113,7 @@ lemma qqRel_defined : Sg0-Function₃ (qqRel : V → V → V → V) via qqRelDef
     Matrix.constant_eq_singleton, eval_pair₄Def, Matrix.cons_val_one,
     Semiformula.eval_operator₂, Semiterm.val_operator₂, ORingStruc.one_eq_one,
     Structure.Add.add, Structure.Eq.eq, LogicalConnective.Prop.and_eq, ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqRel], by simp [qqRel]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqRel], h⟩, fun h ↦ h.2⟩
 
 lemma qqNRel_defined : Sg0-Function₃ (qqNRel : V → V → V → V) via qqNRelDef := by
   intro v
@@ -131,12 +126,7 @@ lemma qqNRel_defined : Sg0-Function₃ (qqNRel : V → V → V → V) via qqNRel
     Matrix.constant_eq_singleton, eval_pair₄Def, Matrix.cons_val_one,
     Semiformula.eval_operator₂, Semiterm.val_operator₂, Structure.Add.add, Structure.Eq.eq,
     LogicalConnective.Prop.and_eq, ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqNRel], by simp [qqNRel]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqNRel], h⟩, fun h ↦ h.2⟩
 
 lemma qqVerum_defined : Sg0-Function₀ (qqVerum : V) via qqVerumDef := by
   intro v
@@ -148,12 +138,7 @@ lemma qqVerum_defined : Sg0-Function₀ (qqVerum : V) via qqVerumDef := by
     pair_defined_iff, Matrix.cons_val_one, Matrix.cons_app_two, Semiformula.eval_operator₂,
     Semiterm.val_operator₂, ORingStruc.one_eq_one, Structure.Add.add, Structure.Eq.eq,
     LogicalConnective.Prop.and_eq, ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqVerum], by simp [qqVerum]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqVerum], h⟩, fun h ↦ h.2⟩
 
 lemma qqFalsum_defined : Sg0-Function₀ (qqFalsum : V) via qqFalsumDef := by
   intro v
@@ -165,12 +150,7 @@ lemma qqFalsum_defined : Sg0-Function₀ (qqFalsum : V) via qqFalsumDef := by
     pair_defined_iff, Matrix.cons_val_one, Matrix.cons_app_two, Semiformula.eval_operator₂,
     Semiterm.val_operator₂, ORingStruc.one_eq_one, Structure.Add.add, Structure.Eq.eq,
     LogicalConnective.Prop.and_eq, ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqFalsum], by simp [qqFalsum]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqFalsum], h⟩, fun h ↦ h.2⟩
 
 lemma qqAnd_defined : Sg0-Function₂ (qqAnd : V → V → V) via qqAndDef := by
   intro v
@@ -183,12 +163,7 @@ lemma qqAnd_defined : Sg0-Function₂ (qqAnd : V → V → V) via qqAndDef := by
     eval_pair₃Def, Matrix.cons_val_one, Semiformula.eval_operator₂, Semiterm.val_operator₂,
     ORingStruc.one_eq_one, Structure.Add.add, Structure.Eq.eq, LogicalConnective.Prop.and_eq,
     ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqAnd], by simp [qqAnd]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqAnd], h⟩, fun h ↦ h.2⟩
 
 lemma qqOr_defined : Sg0-Function₂ (qqOr : V → V → V) via qqOrDef := by
   intro v
@@ -201,12 +176,7 @@ lemma qqOr_defined : Sg0-Function₂ (qqOr : V → V → V) via qqOrDef := by
     eval_pair₃Def, Matrix.cons_val_one, Semiformula.eval_operator₂, Semiterm.val_operator₂,
     Nat.cast_one, Structure.Add.add, Structure.Eq.eq, LogicalConnective.Prop.and_eq,
     ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqOr], by simp [qqOr]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqOr], h⟩, fun h ↦ h.2⟩
 
 lemma qqForall_defined : Sg0-Function₁ (qqAll : V → V) via qqAllDef := by
   intro v
@@ -218,12 +188,7 @@ lemma qqForall_defined : Sg0-Function₁ (qqAll : V → V) via qqAllDef := by
     Matrix.constant_eq_singleton, pair_defined_iff, Matrix.cons_val_one,
     Semiformula.eval_operator₂, Semiterm.val_operator₂, Nat.cast_one, Structure.Add.add,
     Structure.Eq.eq, LogicalConnective.Prop.and_eq, ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqAll], by simp [qqAll]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqAll], h⟩, fun h ↦ h.2⟩
 
 lemma qqExists_defined : Sg0-Function₁ (qqEx : V → V) via qqExDef := by
   intro v
@@ -235,12 +200,7 @@ lemma qqExists_defined : Sg0-Function₁ (qqEx : V → V) via qqExDef := by
     Matrix.constant_eq_singleton, pair_defined_iff, Matrix.cons_val_one,
     Semiformula.eval_operator₂, Semiterm.val_operator₂, Nat.cast_one, Structure.Add.add,
     Structure.Eq.eq, LogicalConnective.Prop.and_eq, ↓existsAndEq, true_and]
-  constructor
-  · intro h
-    rw [h]
-    exact ⟨by simp [qqEx], by simp [qqEx]⟩
-  · rintro ⟨_, h⟩
-    exact h
+  exact ⟨fun h ↦ ⟨by simp [h, qqEx], h⟩, fun h ↦ h.2⟩
 
 @[simp] lemma eval_qqRelDef (v) :
     Semiformula.Evalbm V v qqRelDef.val ↔ v 0 = ^rel (v 1) (v 2) (v 3) := qqRel_defined.df.iff v
@@ -440,7 +400,6 @@ def construction : Fixpoint.Construction V (blueprint pL) where
   Φ := fun _ ↦ Phi L
   defined := ⟨
     by  intro v
-        -- simp [blueprint, HierarchySymbol.Semiformula.val_sigma, L.isUTermVec_defined.proper.iff']
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, blueprint, Fin.isValue,
           HierarchySymbol.Semiformula.val_sigma, HierarchySymbol.Semiformula.sigma_mkDelta,
           HierarchySymbol.Semiformula.val_mkSigma, LogicalConnective.HomClass.map_or,
@@ -453,8 +412,6 @@ def construction : Fixpoint.Construction V (blueprint pL) where
           HierarchySymbol.Semiformula.val_mkPi, L.isUTermVec_defined.proper.iff']
         ,
     by  intro v
-        -- simpa [blueprint, Language.Defined.eval_rel_iff (L := L), L.isUTermVec_defined.df.iff,
-        --  HierarchySymbol.Semiformula.val_sigma, formulaAux] using phi_iff L _ _
         simpa only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, blueprint,
           HierarchySymbol.Semiformula.val_sigma, formulaAux,
           HierarchySymbol.Semiformula.val_mkSigma, LogicalConnective.HomClass.map_or,
@@ -629,40 +586,10 @@ lemma _root_.LO.Arith.Language.IsUFormula.pos {p : V} (h : L.IsUFormula p) : 0 <
     ⟨_, _, _, _, _, rfl⟩ | ⟨_, _, _, _, _, rfl⟩ | ⟨_, _, _, rfl⟩ | ⟨_, _, _, rfl⟩) <;>
     simp [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
 
---lemma Language.IsSemiformula.pos {n p : V} (h : L.Semiformula n p) : 0 < p := h.1.pos
-
 @[simp] lemma _root_.LO.Arith.Language.IsUFormula.not_zero : ¬L.IsUFormula (0 :
     V) := by
   intro h; simpa using h.pos
 
--- @[simp] lemma Language.IsSemiformula.not_zero (m : V) : ¬L.Semiformula m (0 : V) := by
---   intro h; simpa using h.pos
-
-/-
-@[simp] lemma Language.IsSemiformula.rel {k r v : V} :
-    L.IsUFormula (^rel k r v) ↔ L.Rel k r ∧ L.IsUTermVec k v := by simp
-@[simp] lemma Language.IsSemiformula.nrel {n k r v : V} :
-    L.Semiformula n (^nrel n k r v) ↔ L.Rel k r ∧ L.SemitermVec k n v := by
-      simp [Language.IsSemiformula]
-@[simp] lemma Language.IsSemiformula.verum (n : V) :
-    L.Semiformula n ^⊤[n] := by
-  simp [Language.IsSemiformula]
-@[simp] lemma Language.IsSemiformula.falsum (n : V) :
-    L.Semiformula n ^⊥[n] := by
-  simp [Language.IsSemiformula]
-@[simp] lemma Language.IsSemiformula.and {n p q : V} :
-    L.Semiformula n (p ^⋏ q) ↔ L.Semiformula n p ∧ L.Semiformula n q := by
-      simp [Language.IsSemiformula]
-@[simp] lemma Language.IsSemiformula.or {n p q : V} :
-    L.Semiformula n (p ^⋎ q) ↔ L.Semiformula n p ∧ L.Semiformula n q := by
-      simp [Language.IsSemiformula]
-@[simp] lemma Language.IsSemiformula.all {n p : V} :
-    L.Semiformula n (^∀ p) ↔ L.Semiformula (n + 1) p := by
-  simp [Language.IsSemiformula]
-@[simp] lemma Language.IsSemiformula.ex {n p : V} :
-    L.Semiformula n (^∃ p) ↔ L.Semiformula (n + 1) p := by
-  simp [Language.IsSemiformula]
--/
 
 lemma _root_.LO.Arith.Language.IsUFormula.induction1 (Γ) {P : V → Prop} (hP : Γ-[1]-Predicate P)
     (hrel : ∀ k r v, L.Rel k r → L.IsUTermVec k v → P (^rel k r v))
@@ -710,64 +637,6 @@ lemma _root_.LO.Arith.Language.IsUFormula.induction_pi1 {P : V → Prop} (hP : P
     ∀ p, L.IsUFormula p → P p :=
   Language.IsUFormula.induction1 Pg hP hrel hnrel hverum hfalsum hand hor hall hex
 
-/-
-lemma Language.IsSemiformula.induction (Γ) {P : V → V → Prop} (hP : Γ-[1]-Relation P)
-    (hrel : ∀ n k r v, L.Rel k r → L.SemitermVec k n v → P n (^rel n k r v))
-    (hnrel : ∀ n k r v, L.Rel k r → L.SemitermVec k n v → P n (^nrel n k r v))
-    (hverum : ∀ n, P n ^⊤[n])
-    (hfalsum : ∀ n, P n ^⊥[n])
-    (hand : ∀ n p q, L.Semiformula n p → L.Semiformula n q → P n p → P n q → P n (p ^⋏ q))
-    (hor : ∀ n p q, L.Semiformula n p → L.Semiformula n q → P n p → P n q → P n (p ^⋎ q))
-    (hall : ∀ n p, L.Semiformula (n + 1) p → P (n + 1) p → P n (^∀ p))
-    (hex : ∀ n p, L.Semiformula (n + 1) p → P (n + 1) p → P n (^∃ p)) :
-    ∀ n p, L.Semiformula n p → P n p := by
-  suffices ∀ p, L.IsUFormula p → ∀ n ≤ p, fstIdx p = n → P n p
-  by rintro n p ⟨h, rfl⟩; exact this p h (fstIdx p) (by simp) rfl
-  apply Language.IsUFormula.induction (P := fun p ↦ ∀ n ≤ p, fstIdx p = n → P n p) Γ
-  · apply HierarchySymbol.Boldface.ball_le (by definability)
-    apply HierarchySymbol.Boldface.imp (by definability)
-    simp; exact hP
-  · rintro n k r v hr hv _ _ rfl; simpa using hrel n k r v hr hv
-  · rintro n k r v hr hv _ _ rfl; simpa using hnrel n k r v hr hv
-  · rintro n _ _ rfl; simpa using hverum n
-  · rintro n _ _ rfl; simpa using hfalsum n
-  · rintro n p q hp hq ihp ihq _ _ rfl
-    simpa using hand n p q hp hq
-      (by simpa [hp.2] using ihp (fstIdx p) (by simp) rfl) (by simpa [hq.2] using ihq (fstIdx q) (by
-      simp) rfl)
-  · rintro n p q hp hq ihp ihq _ _ rfl
-    simpa using hor n p q hp hq
-      (by simpa [hp.2] using ihp (fstIdx p) (by simp) rfl) (by simpa [hq.2] using ihq (fstIdx q) (by
-      simp) rfl)
-  · rintro n p hp ih _ _ rfl
-    simpa using hall n p hp (by simpa [hp.2] using ih (fstIdx p) (by simp) rfl)
-  · rintro n p hp ih _ _ rfl
-    simpa using hex n p hp (by simpa [hp.2] using ih (fstIdx p) (by simp) rfl)
-
-lemma Language.IsSemiformula.induction_sigma₁ {P : V → V → Prop} (hP : Sg1-Relation P)
-    (hrel : ∀ n k r v, L.Rel k r → L.SemitermVec k n v → P n (^rel n k r v))
-    (hnrel : ∀ n k r v, L.Rel k r → L.SemitermVec k n v → P n (^nrel n k r v))
-    (hverum : ∀ n, P n ^⊤[n])
-    (hfalsum : ∀ n, P n ^⊥[n])
-    (hand : ∀ n p q, L.Semiformula n p → L.Semiformula n q → P n p → P n q → P n (p ^⋏ q))
-    (hor : ∀ n p q, L.Semiformula n p → L.Semiformula n q → P n p → P n q → P n (p ^⋎ q))
-    (hall : ∀ n p, L.Semiformula (n + 1) p → P (n + 1) p → P n (^∀ p))
-    (hex : ∀ n p, L.Semiformula (n + 1) p → P (n + 1) p → P n (^∃ p)) :
-    ∀ n p, L.Semiformula n p → P n p :=
-  Language.IsSemiformula.induction Sg hP hrel hnrel hverum hfalsum hand hor hall hex
-
-lemma Language.IsSemiformula.induction_pi1 {P : V → V → Prop} (hP : Pg1-Relation P)
-    (hrel : ∀ n k r v, L.Rel k r → L.SemitermVec k n v → P n (^rel n k r v))
-    (hnrel : ∀ n k r v, L.Rel k r → L.SemitermVec k n v → P n (^nrel n k r v))
-    (hverum : ∀ n, P n ^⊤[n])
-    (hfalsum : ∀ n, P n ^⊥[n])
-    (hand : ∀ n p q, L.Semiformula n p → L.Semiformula n q → P n p → P n q → P n (p ^⋏ q))
-    (hor : ∀ n p q, L.Semiformula n p → L.Semiformula n q → P n p → P n q → P n (p ^⋎ q))
-    (hall : ∀ n p, L.Semiformula (n + 1) p → P (n + 1) p → P n (^∀ p))
-    (hex : ∀ n p, L.Semiformula (n + 1) p → P (n + 1) p → P n (^∃ p)) :
-    ∀ n p, L.Semiformula n p → P n p :=
-  Language.IsSemiformula.induction Pg hP hrel hnrel hverum hfalsum hand hor hall hex
--/
 
 end «lp_section_2»
 
@@ -973,20 +842,6 @@ def construction : Fixpoint.Construction V (β.blueprint) where
   Φ := fun _ ↦ c.Phi
   defined :=
   ⟨by intro v
-      /-
-      simp? [HierarchySymbol.Semiformula.val_sigma, Blueprint.blueprint,
-        L.isUFormula_defined.df.iff, L.isUFormula_defined.proper.iff',
-        c.rel_defined.iff, c.rel_defined.graph_delta.proper.iff',
-        c.nrel_defined.iff, c.nrel_defined.graph_delta.proper.iff',
-        c.verum_defined.iff, c.verum_defined.graph_delta.proper.iff',
-        c.falsum_defined.iff, c.falsum_defined.graph_delta.proper.iff',
-        c.and_defined.iff, c.and_defined.graph_delta.proper.iff',
-        c.or_defined.iff, c.or_defined.graph_delta.proper.iff',
-        c.all_defined.iff, c.all_defined.graph_delta.proper.iff',
-        c.ex_defined.iff, c.ex_defined.graph_delta.proper.iff',
-        c.allChanges_defined.iff, c.allChanges_defined.graph_delta.proper.iff',
-        c.exChanges_defined.iff, c.exChanges_defined.graph_delta.proper.iff']
-      -/
       simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Blueprint.blueprint, Fin.isValue,
         HierarchySymbol.Semiformula.val_sigma, HierarchySymbol.Semiformula.sigma_mkDelta,
         HierarchySymbol.Semiformula.val_mkSigma, Semiformula.eval_bexLTSucc', Semiterm.val_bvar,
@@ -1011,20 +866,6 @@ def construction : Fixpoint.Construction V (β.blueprint) where
         LogicalConnective.HomClass.map_imply, LogicalConnective.Prop.arrow_eq, forall_eq,
         c.all_defined.graph_delta.proper.iff', c.ex_defined.graph_delta.proper.iff'],
     by  intro v
-        /-
-        simpa? [HierarchySymbol.Semiformula.val_sigma, Blueprint.blueprint,
-          L.isUFormula_defined.df.iff,
-          c.rel_defined.iff,
-          c.nrel_defined.iff,
-          c.verum_defined.iff,
-          c.falsum_defined.iff,
-          c.and_defined.iff,
-          c.or_defined.iff,
-          c.all_defined.iff,
-          c.ex_defined.iff,
-          c.allChanges_defined.iff,
-          c.exChanges_defined.iff] using c.phi_iff _ _
-        -/
         simpa only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Blueprint.blueprint,
           HierarchySymbol.Semiformula.val_sigma, HierarchySymbol.Semiformula.val_mkDelta,
           HierarchySymbol.Semiformula.val_mkSigma, Semiformula.eval_bexLTSucc', Semiterm.val_bvar,
@@ -1131,15 +972,8 @@ lemma graph_rel_iff {k r v y} (hkr : L.Rel k r) (hv : L.IsUTermVec k v) :
   constructor
   · intro h
     rcases Graph.case_iff.mp h with ⟨_, (⟨k, r, v, H, rfl⟩ | ⟨_, _, _, H, _⟩ | ⟨H, _⟩ | ⟨H, _⟩ |
-      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩
-    · simp only [qqRel_inj] at H; rcases H with ⟨rfl, rfl, rfl⟩; rfl
-    · simp [qqRel, qqNRel] at H
-    · simp [qqRel, qqVerum] at H
-    · simp [qqRel, qqFalsum] at H
-    · simp [qqRel, qqAnd] at H
-    · simp [qqRel, qqOr] at H
-    · simp [qqRel, qqAll] at H
-    · simp [qqRel, qqEx] at H
+      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+      simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
   · rintro rfl; exact (Graph.case_iff).mpr ⟨by simp [hkr, hv], Or.inl ⟨k, r, v, rfl, rfl⟩⟩
 
 lemma graph_nrel_iff {k r v y} (hkr : L.Rel k r) (hv : L.IsUTermVec k v) :
@@ -1147,15 +981,8 @@ lemma graph_nrel_iff {k r v y} (hkr : L.Rel k r) (hv : L.IsUTermVec k v) :
   constructor
   · intro h
     rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, rfl⟩ | ⟨H, _⟩ | ⟨H, _⟩ |
-      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩
-    · simp [qqNRel, qqRel] at H
-    · simp only [qqNRel_inj] at H; rcases H with ⟨rfl, rfl, rfl⟩; rfl
-    · simp [qqNRel, qqVerum] at H
-    · simp [qqNRel, qqFalsum] at H
-    · simp [qqNRel, qqAnd] at H
-    · simp [qqNRel, qqOr] at H
-    · simp [qqNRel, qqAll] at H
-    · simp [qqNRel, qqEx] at H
+      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+      simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
   · rintro rfl; exact (Graph.case_iff).mpr ⟨by simp [hkr, hv], Or.inr <| Or.inl ⟨k, r, v, rfl, rfl⟩⟩
 
 lemma graph_verum_iff {y} :
@@ -1163,15 +990,8 @@ lemma graph_verum_iff {y} :
   constructor
   · intro h
     rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨H, rfl⟩ | ⟨H, _⟩ |
-      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩
-    · simp [qqVerum, qqRel] at H
-    · simp [qqVerum, qqNRel] at H
-    · simp only at H; rcases H; rfl
-    · simp [qqVerum, qqFalsum] at H
-    · simp [qqVerum, qqAnd] at H
-    · simp [qqVerum, qqOr] at H
-    · simp [qqVerum, qqAll] at H
-    · simp [qqVerum, qqEx] at H
+      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+      simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
   · rintro rfl; exact (Graph.case_iff).mpr ⟨by simp, Or.inr <| Or.inr <| Or.inl ⟨rfl, rfl⟩⟩
 
 lemma graph_falsum_iff {y} :
@@ -1179,15 +999,8 @@ lemma graph_falsum_iff {y} :
   constructor
   · intro h
     rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨H, _⟩ | ⟨H, rfl⟩ |
-      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩
-    · simp [qqFalsum, qqRel] at H
-    · simp [qqFalsum, qqNRel] at H
-    · simp [qqFalsum, qqVerum] at H
-    · simp only at H; rcases H; rfl
-    · simp [qqFalsum, qqAnd] at H
-    · simp [qqFalsum, qqOr] at H
-    · simp [qqFalsum, qqAll] at H
-    · simp [qqFalsum, qqEx] at H
+      ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+      simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
   · rintro rfl; exact (Graph.case_iff).mpr ⟨by simp, Or.inr <| Or.inr <| Or.inr <| Or.inl ⟨rfl,
     rfl⟩⟩
 
@@ -1218,16 +1031,11 @@ lemma graph_and_inv {p₁ p₂ r : V} :
         c.and param p₁ p₂ r₁ r₂ := by
   intro h
   rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨H, _⟩ | ⟨H, _⟩ |
-    ⟨_, _, _, _, _, _, H, rfl⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩
-  · simp [qqAnd, qqRel] at H
-  · simp [qqAnd, qqNRel] at H
-  · simp [qqAnd, qqVerum] at H
-  · simp [qqAnd, qqFalsum] at H
-  · simp only [qqAnd_inj] at H; rcases H with ⟨rfl, rfl⟩
-    exact ⟨_, _, by assumption, by assumption, rfl⟩
-  · simp [qqAnd, qqOr] at H
-  · simp [qqAnd, qqAll] at H
-  · simp [qqAnd, qqEx] at H
+    ⟨_, _, _, _, _, _, H, rfl⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+    first
+    | (simp only [qqAnd_inj] at H; rcases H with ⟨rfl, rfl⟩
+       exact ⟨_, _, by assumption, by assumption, rfl⟩)
+    | simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
 
 lemma graph_or {p₁ p₂ r₁ r₂ : V} (hp₁ : L.IsUFormula p₁) (hp₂ : L.IsUFormula p₂)
     (h₁ : c.Graph param p₁ r₁) (h₂ : c.Graph param p₂ r₂) :
@@ -1240,16 +1048,11 @@ lemma graph_or_inv {p₁ p₂ r : V} :
         c.or param p₁ p₂ r₁ r₂ := by
   intro h
   rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨H, _⟩ | ⟨H, _⟩ |
-    ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, rfl⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩
-  · simp [qqOr, qqRel] at H
-  · simp [qqOr, qqNRel] at H
-  · simp [qqOr, qqVerum] at H
-  · simp [qqOr, qqFalsum] at H
-  · simp [qqOr, qqAnd] at H
-  · simp only [qqOr_inj] at H; rcases H with ⟨rfl, rfl⟩
-    exact ⟨_, _, by assumption, by assumption, rfl⟩
-  · simp [qqOr, qqAll] at H
-  · simp [qqOr, qqEx] at H
+    ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, rfl⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+    first
+    | (simp only [qqOr_inj] at H; rcases H with ⟨rfl, rfl⟩
+       exact ⟨_, _, by assumption, by assumption, rfl⟩)
+    | simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
 
 lemma graph_all {p₁ r₁ : V} (hp₁ : L.IsUFormula p₁) (h₁ : c.Graph (c.allChanges param) p₁ r₁) :
     c.Graph param (^∀ p₁) (c.all param p₁ r₁) :=
@@ -1260,16 +1063,11 @@ lemma graph_all_inv {p₁ r : V} :
     c.Graph param (^∀ p₁) r → ∃ r₁, c.Graph (c.allChanges param) p₁ r₁ ∧ r = c.all param p₁ r₁ := by
   intro h
   rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨H, _⟩ | ⟨H, _⟩ |
-    ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, rfl⟩ | ⟨_, _, _, H, _⟩)⟩
-  · simp [qqAll, qqRel] at H
-  · simp [qqAll, qqNRel] at H
-  · simp [qqAll, qqVerum] at H
-  · simp [qqAll, qqFalsum] at H
-  · simp [qqAll, qqAnd] at H
-  · simp [qqAll, qqOr] at H
-  · simp only [qqAll_inj] at H; rcases H with rfl
-    exact ⟨_, by assumption, rfl⟩
-  · simp [qqAll, qqEx] at H
+    ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, rfl⟩ | ⟨_, _, _, H, _⟩)⟩ <;>
+    first
+    | (simp only [qqAll_inj] at H; rcases H with rfl
+       exact ⟨_, by assumption, rfl⟩)
+    | simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
 
 lemma graph_ex {p₁ r₁ : V} (hp₁ : L.IsUFormula p₁) (h₁ : c.Graph (c.exChanges param) p₁ r₁) :
     c.Graph param (^∃ p₁) (c.ex param p₁ r₁) :=
@@ -1280,16 +1078,11 @@ lemma graph_ex_inv {p₁ r : V} :
     c.Graph param (^∃ p₁) r → ∃ r₁, c.Graph (c.exChanges param) p₁ r₁ ∧ r = c.ex param p₁ r₁ := by
   intro h
   rcases Graph.case_iff.mp h with ⟨_, (⟨_, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨H, _⟩ | ⟨H, _⟩ |
-    ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, rfl⟩)⟩
-  · simp [qqEx, qqRel] at H
-  · simp [qqEx, qqNRel] at H
-  · simp [qqEx, qqVerum] at H
-  · simp [qqEx, qqFalsum] at H
-  · simp [qqEx, qqAnd] at H
-  · simp [qqEx, qqOr] at H
-  · simp [qqEx, qqAll] at H
-  · simp only [qqEx_inj] at H; rcases H with rfl
-    exact ⟨_, by assumption, rfl⟩
+    ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, _, _, _, H, _⟩ | ⟨_, _, _, H, _⟩ | ⟨_, _, _, H, rfl⟩)⟩ <;>
+    first
+    | (simp only [qqEx_inj] at H; rcases H with rfl
+       exact ⟨_, by assumption, rfl⟩)
+    | simp_all [qqRel, qqNRel, qqVerum, qqFalsum, qqAnd, qqOr, qqAll, qqEx]
 
 variable (param)
 
@@ -1491,70 +1284,6 @@ lemma uformula_result_induction {P : V → V → V → Prop} (hP : Sg1-Relation�
   · simpa [c.result_ex hp₁] using
       hex param p₁ hp₁ (ih p₁ (by simp) (c.exChanges param) (by simp [f]) hp₁)
 
-/-
-lemma semiformula_result_induction {P : V → V → V → V → Prop} (hP : Sg1-Relation₄ P)
-    (hRel : ∀ param k R v, L.Rel k R → L.SemitermVec k n v →
-      P param (^rel n k R v) (c.rel param k R v))
-    (hNRel : ∀ param k R v, L.Rel k R → L.SemitermVec k n v →
-      P param (^nrel n k R v) (c.nrel param k R v))
-    (hverum : ∀ param, P param (^⊤[n]) (c.verum param))
-    (hfalsum : ∀ param, P param (^⊥[n]) (c.falsum param))
-    (hand : ∀ param p q, L.Semiformula n p → L.Semiformula n q →
-      P param p (c.result param p) → P param q (c.result param q) →
-        P param (p ^⋏ q) (c.and param p q (c.result param p) (c.result param q)))
-    (hor : ∀ param p q, L.Semiformula n p → L.Semiformula n q →
-      P param p (c.result param p) → P param q (c.result param q) →
-        P param (p ^⋎ q) (c.or param p q (c.result param p) (c.result param q)))
-    (hall : ∀ param p, L.Semiformula (n + 1) p →
-      P (c.allChanges param) (n + 1) p (c.result (c.allChanges param) p) →
-      P param (^∀ p) (c.all param p (c.result (c.allChanges param) p)))
-    (hex : ∀ param p, L.Semiformula (n + 1) p →
-      P (c.exChanges param) (n + 1) p (c.result (c.exChanges param) p) →
-      P param (^∃ p) (c.ex param p (c.result (c.exChanges param) p))) :
-    ∀ {param p : V}, L.Semiformula n p → P param p (c.result param p) := by
-  suffices ∀ {param p : V}, L.IsUFormula p → ∀ n ≤ p, n = fstIdx p → P param p (c.result param p)
-  by intro param p hp; exact @this param p hp.1 n (by simp [hp.2]) hp.2
-  intro param p hp
-  apply c.uformula_result_induction (P := fun param p y ↦ ∀ n ≤ p, n = fstIdx p → P param p y)
-    ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ hp
-  · apply HierarchySymbol.Boldface.ball_le (HierarchySymbol.BoldfaceFunction.var _)
-    simp_all only [zero_add, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Fin.succ_one_eq_two,
-      Fin.succ_zero_eq_one]
-    apply LO.FirstOrder.Arith.HierarchySymbol.Boldface.imp
-    · simp_all only [SigmaPiDelta.alt_sigma, Fin.isValue]
-      apply LO.FirstOrder.Arith.HierarchySymbol.Boldface.comp₂
-      · simp_all only [zero_add, Fin.isValue, HierarchySymbol.BoldfaceFunction.var]
-      · simp_all only [zero_add, Fin.isValue]
-        apply LO.FirstOrder.Arith.HierarchySymbol.BoldfaceFunction.comp₁
-        simp_all only [zero_add, Fin.isValue, HierarchySymbol.BoldfaceFunction.var]
-    · apply LO.FirstOrder.Arith.HierarchySymbol.Boldface.comp₄
-      · simp_all only [zero_add, Fin.isValue, HierarchySymbol.BoldfaceFunction.var]
-      · simp_all only [zero_add, Fin.isValue]
-        apply LO.FirstOrder.Arith.HierarchySymbol.BoldfaceFunction.comp₁
-        simp_all only [zero_add, Fin.isValue, HierarchySymbol.BoldfaceFunction.var]
-      · simp_all only [zero_add, Fin.isValue, HierarchySymbol.BoldfaceFunction.var]
-      · simp_all only [zero_add, Fin.isValue, HierarchySymbol.BoldfaceFunction.var]
-  · rintro param k R v hkR hv _ _ rfl; simpa using hRel param k R v hkR hv
-  · rintro param k R v hkR hv _ _ rfl; simpa using hNRel param k R v hkR hv
-  · rintro param _ _ rfl; simpa using hverum param
-  · rintro param _ _ rfl; simpa using hfalsum param
-  · rintro param p q hp hq ihp ihq _ _ rfl
-    have ihp : P param p (c.result param p) := ihp n (by simp [hp.2]) hp.2
-    have ihq : P param q (c.result param q) := ihq n (by simp [hq.2]) hq.2
-    simpa using hand param p q hp hq ihp ihq
-  · rintro param p q hp hq ihp ihq _ _ rfl
-    have ihp : P param p (c.result param p) := ihp n (by simp [hp.2]) hp.2
-    have ihq : P param q (c.result param q) := ihq n (by simp [hq.2]) hq.2
-    simpa using hor param p q hp hq ihp ihq
-  · rintro param p hp ihp _ _ rfl
-    have ihp : P (c.allChanges param) (n + 1) p (c.result (c.allChanges param) p) :=
-      ihp (n + 1) (by simp [hp.2]) hp.2
-    simpa using hall param p hp ihp
-  · rintro param p hp ihp _ _ rfl
-    have ihp : P (c.exChanges param) (n + 1) p (c.result (c.exChanges param) p) :=
-      ihp (n + 1) (by simp [hp.2]) hp.2
-    simpa using hex param p hp ihp
--/
 
 end Construction
 

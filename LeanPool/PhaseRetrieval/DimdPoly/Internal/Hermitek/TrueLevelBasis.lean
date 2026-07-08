@@ -181,8 +181,7 @@ private lemma filter_natCast_eq_singleton {D : ℕ} (k : Fin D) :
   constructor
   · simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_singleton]
     intro h
-    have h' : j.val = k.val := by
-      omega
+    have h' : j.val = k.val := by omega
     exact Fin.ext h'
   · simp only [Finset.mem_singleton, Finset.mem_filter, Finset.mem_univ, true_and]
     intro h
@@ -193,8 +192,7 @@ private lemma circleL2Sq_finFourierPoly {D : ℕ} (c : Fin D → ℂ) :
       ∑ k : Fin D, ‖c k‖ ^ 2 := by
   let E' := (Finset.univ : Finset (Fin D)).map
     ⟨fun k => (k.val : ℤ), fun k₁ k₂ h => by
-      have h' : (k₁ : ℕ) = k₂ := by
-        exact Nat.cast_injective (R := ℤ) h
+      have h' : (k₁ : ℕ) = k₂ := by exact Nat.cast_injective (R := ℤ) h
       exact Fin.ext h'⟩
   let b : ℤ → ℂ := fun n => ∑ k ∈ (Finset.univ : Finset (Fin D)).filter
     (fun k => ((k.val : ℕ) : ℤ) = n), c k
@@ -220,8 +218,7 @@ private lemma circleL2Sq_finFourierPoly {D : ℕ} (c : Fin D → ℂ) :
     rw [hPLp', orthonormal_fourier.inner_sum b b E']
     rw [show E' = (Finset.univ : Finset (Fin D)).map
       ⟨fun k => (k.val : ℤ), fun k₁ k₂ h => by
-        have h' : (k₁ : ℕ) = k₂ := by
-          exact Nat.cast_injective (R := ℤ) h
+        have h' : (k₁ : ℕ) = k₂ := by exact Nat.cast_injective (R := ℤ) h
         exact Fin.ext h'⟩ from rfl]
     rw [Finset.sum_map, Complex.ofReal_sum]
     congr 1
@@ -272,8 +269,8 @@ private lemma gaussian_monomial_moments_off_diag {a b : ℕ} (hab : a ≠ b) :
   set ω : _root_.Circle := _root_.Circle.exp (Real.pi / (d : ℝ))
   -- Key: ω^a * conj(ω)^b = -1
   have hω_factor : ((ω : ℂ) ^ a * star (ω : ℂ) ^ b) = -1 := by
-    rw [star_def, ← _root_.Circle.coe_inv_eq_conj]
-    rw [← _root_.Circle.coe_pow, ← _root_.Circle.coe_pow, ← _root_.Circle.coe_mul]
+    rw [star_def, ← _root_.Circle.coe_inv_eq_conj,
+      ← _root_.Circle.coe_pow, ← _root_.Circle.coe_pow, ← _root_.Circle.coe_mul]
     -- Goal: ↑(ω^a * ω⁻¹^b) = -1. Reduce ω^a * ω⁻¹^b to ω^d.
     have hprod : ω ^ a * ω⁻¹ ^ b = ω ^ d := by
       rw [hd_def]
@@ -281,9 +278,9 @@ private lemma gaussian_monomial_moments_off_diag {a b : ℕ} (hab : a ≠ b) :
       rw [← zpow_natCast ω a, ← zpow_natCast ω b, ← zpow_sub]
     rw [hprod]
     -- ω^d = Circle.exp(π/d)^d = Circle.exp(d * (π/d)) = Circle.exp(π) = -1
-    rw [show ω = _root_.Circle.exp (Real.pi / (d : ℝ)) from rfl]
-    rw [← _root_.Circle.exp_intCast_mul (Real.pi / (d : ℝ)) d]
-    rw [show (d : ℝ) * (Real.pi / (d : ℝ)) = Real.pi from by field_simp]
+    rw [show ω = _root_.Circle.exp (Real.pi / (d : ℝ)) from rfl,
+      ← _root_.Circle.exp_intCast_mul (Real.pi / (d : ℝ)) d,
+      show (d : ℝ) * (Real.pi / (d : ℝ)) = Real.pi from by field_simp]
     simp [_root_.Circle.coe_exp, Complex.exp_pi_mul_I]
   -- The rotation ω preserves the measure
   set rot : ℂ ≃ₗᵢ[ℝ] ℂ := rotation ω
@@ -325,17 +322,15 @@ private lemma integral_norm_pow_exp_gaussian (a : ℕ) :
     ∫ z : ℂ, ‖z‖ ^ (2 * a) * Real.exp (-‖z‖ ^ 2) = π * (Nat.factorial a : ℝ) := by
   have h_rpow : ∀ z : ℂ, (‖z‖ : ℝ) ^ (2 * a) = ‖z‖ ^ ((2 * a : ℕ) : ℝ) := by
     intro z; exact (rpow_natCast ‖z‖ (2 * a)).symm
-  have h_exp : ∀ z : ℂ, Real.exp (-‖z‖ ^ 2) = Real.exp (-‖z‖ ^ (2 : ℝ)) := by
-    intro z; norm_num
+  have h_exp : ∀ z : ℂ, Real.exp (-‖z‖ ^ 2) = Real.exp (-‖z‖ ^ (2 : ℝ)) := by intro z; norm_num
   simp_rw [h_rpow, h_exp]
-  rw [show ((2 * a : ℕ) : ℝ) = ((2 * a : ℕ) : ℝ) from rfl]
   rw [Complex.integral_rpow_mul_exp_neg_rpow (show (1 : ℝ) ≤ 2 from by linarith)
     (show (-2 : ℝ) < ((2 * a : ℕ) : ℝ) from by
       have : (0 : ℝ) ≤ ((2 * a : ℕ) : ℝ) := Nat.cast_nonneg _; linarith)]
-  rw [show ((2 * a : ℕ) : ℝ) + 2 = 2 * ((a : ℝ) + 1) from by push_cast; ring]
-  rw [show 2 * ((a : ℝ) + 1) / 2 = (a : ℝ) + 1 from by ring]
-  rw [show 2 * π / 2 = π from by ring]
-  rw [Real.Gamma_nat_eq_factorial]
+  rw [show ((2 * a : ℕ) : ℝ) + 2 = 2 * ((a : ℝ) + 1) from by push_cast; ring,
+    show 2 * ((a : ℝ) + 1) / 2 = (a : ℝ) + 1 from by ring,
+    show 2 * π / 2 = π from by ring,
+    Real.Gamma_nat_eq_factorial]
 
 /-- Gaussian monomial moments in the weighted plane. -/
 theorem gaussian_monomial_moments :
@@ -352,8 +347,7 @@ theorem gaussian_monomial_moments :
         ‖z‖ ^ (2 * a) * Real.exp (-‖z‖ ^ 2) := by
       intro z; rw [show star z = (starRingEnd ℂ) z from rfl, zpow_conj_diag_re]
     simp_rw [hre]; rw [integral_norm_pow_exp_gaussian]
-    rw [show (1 : ℝ) / π * (π * ↑(Nat.factorial a)) = ↑(Nat.factorial a) from by
-      field_simp]
+    rw [show (1 : ℝ) / π * (π * ↑(Nat.factorial a)) = ↑(Nat.factorial a) from by field_simp]
   · -- Off-diagonal case: a ≠ b
     rw [if_neg hab, gaussian_monomial_moments_off_diag hab, mul_zero]
 
@@ -486,30 +480,16 @@ theorem qkn_structure :
   intro k n r
   simp [qkn]
 
-/-- Compatibility form of the leading-term asymptotic for `qkn`. -/
--- Helper: for r ≥ 1 and j ≥ 1, r ^ (-2 * (j : ℤ)) ≤ r ^ (-2 : ℤ)
-private lemma zpow_neg_two_mul_le {r : ℝ} (hr : 1 ≤ r) {j : ℕ} (hj : 1 ≤ j) :
-    r ^ (-2 * (j : ℤ)) ≤ r ^ (-2 : ℤ) := by
-  apply zpow_le_zpow_right₀ hr
-  omega
-
 -- Helper: r ^ (-2 : ℤ) = 1 / r ^ 2
 private lemma zpow_neg_two_eq (r : ℝ) :
     r ^ (-2 : ℤ) = 1 / r ^ 2 := by
-  have : r ^ (-2 : ℤ) = (r ^ (2 : ℕ))⁻¹ := by
-    rw [zpow_neg]; rfl
+  have : r ^ (-2 : ℤ) = (r ^ (2 : ℕ))⁻¹ := by rw [zpow_neg]; rfl
   rw [this, inv_eq_one_div]
 
 -- Helper: zpow subtraction for positive reals
 private lemma zpow_sub_mul {r : ℝ} (hr : r ≠ 0) (a b : ℤ) :
     r ^ a = r ^ b * r ^ (a - b) := by
   rw [← zpow_add₀ hr b (a - b), show b + (a - b) = a from by omega]
-
--- Helper: the j=0 term of the qkn expansion equals the leading constant times r^n
-private lemma qkn_j0_term (k n : ℕ) :
-    ((-1 : ℝ) ^ 0) * (Nat.choose k 0 : ℝ) *
-      ((Nat.factorial n : ℝ) / (Nat.factorial (n - 0) : ℝ)) = 1 := by
-  simp [Nat.factorial_ne_zero]
 
 -- Core bound: for r ≥ 1, ‖qkn(k,n,r)/r^n - 1/√n!‖ ≤ M / r^2
 private lemma qkn_div_rn_bound (k n : ℕ) :
@@ -546,16 +526,14 @@ private lemma qkn_div_rn_bound (k n : ℕ) :
     intro j _
     have : r ^ ((n : ℤ) - 2 * (j : ℤ)) / r ^ n =
         r ^ (((n : ℤ) - 2 * (j : ℤ)) - (n : ℤ)) := by
-      rw [zpow_sub_mul (ne_of_gt hr_pos) ((n : ℤ) - 2 * (j : ℤ)) (n : ℤ)]
-      rw [zpow_natCast]
+      rw [zpow_sub_mul (ne_of_gt hr_pos) ((n : ℤ) - 2 * (j : ℤ)) (n : ℤ), zpow_natCast]
       exact mul_div_cancel_left₀ _ (pow_ne_zero n (ne_of_gt hr_pos))
     rw [mul_div_assoc, this]
   set S := fun j => ((-1 : ℝ) ^ j) * (Nat.choose k j : ℝ) *
       ((Nat.factorial n : ℝ) / (Nat.factorial (n - j) : ℝ)) *
       r ^ (((n : ℤ) - 2 * (j : ℤ)) - (n : ℤ)) with hS_def
   have h0_in : 0 ∈ Finset.range (min k n + 1) := Finset.mem_range.mpr (by omega)
-  have hS0 : S 0 = 1 := by
-    simp [hS_def, Nat.factorial_ne_zero]
+  have hS0 : S 0 = 1 := by simp [hS_def, Nat.factorial_ne_zero]
   have hdiff : qkn k n r / r ^ n - c = c *
       (∑ j ∈ (Finset.range (min k n + 1)).erase 0, S j) := by
     rw [hqkn]
@@ -587,10 +565,10 @@ private lemma qkn_div_rn_bound (k n : ℕ) :
                 |r ^ (((n : ℤ) - 2 * (j : ℤ)) - (n : ℤ))|
               = (Nat.choose k j : ℝ) * ((Nat.factorial n : ℝ) / (Nat.factorial (n - j) : ℝ)) *
                 |r ^ ((-2 : ℤ) * (j : ℤ))| := by
-                rw [show ((n : ℤ) - 2 * (j : ℤ)) - (n : ℤ) = (-2 : ℤ) * (j : ℤ) from by omega]
-                rw [abs_pow, abs_neg, abs_one, one_pow, one_mul]
-                rw [abs_of_nonneg (Nat.cast_nonneg _)]
-                rw [abs_of_nonneg (div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))]
+                rw [show ((n : ℤ) - 2 * (j : ℤ)) - (n : ℤ) = (-2 : ℤ) * (j : ℤ) from by omega,
+                  abs_pow, abs_neg, abs_one, one_pow, one_mul,
+                  abs_of_nonneg (Nat.cast_nonneg _),
+                  abs_of_nonneg (div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))]
             _ ≤ (Nat.choose k j : ℝ) * ((Nat.factorial n : ℝ) / (Nat.factorial (n - j) : ℝ)) *
                 |r ^ ((-2 : ℤ))| := by
                 apply mul_le_mul_of_nonneg_left
@@ -690,8 +668,7 @@ theorem qkn_eventual_lower_bound :
   have hspec := hR₀ r hrR₀
   -- We have ‖qkn/r^n - c₀‖ ≤ ε = ‖c₀‖/2
   -- So ‖qkn/r^n‖ ≥ ‖c₀‖ - ε = ε
-  have hrnne : (r ^ n : ℂ) ≠ 0 := by
-    exact_mod_cast pow_ne_zero n (ne_of_gt hr_pos)
+  have hrnne : (r ^ n : ℂ) ≠ 0 := by exact_mod_cast pow_ne_zero n (ne_of_gt hr_pos)
   have hrn_pos : (0 : ℝ) < r ^ n := pow_pos hr_pos n
   have h_tri : ε ≤ ‖(qkn k n r : ℂ) / (r ^ n : ℂ)‖ := by
     have h1 := norm_sub_norm_le (c₀ : ℂ) ((qkn k n r : ℂ) / (r ^ n : ℂ))
@@ -701,8 +678,8 @@ theorem qkn_eventual_lower_bound :
     linarith
   rw [norm_div] at h_tri
   have hrn_norm : ‖(r ^ n : ℂ)‖ = r ^ n := by
-    rw [show (r : ℂ) ^ n = ((r ^ n : ℝ) : ℂ) from by push_cast; ring]
-    rw [Complex.norm_real, Real.norm_of_nonneg (le_of_lt hrn_pos)]
+    rw [show (r : ℂ) ^ n = ((r ^ n : ℝ) : ℂ) from by push_cast; ring,
+      Complex.norm_real, Real.norm_of_nonneg (le_of_lt hrn_pos)]
   rw [hrn_norm] at h_tri
   rw [le_div_iff₀ hrn_pos] at h_tri
   linarith [Complex.norm_real (qkn k n r)]
@@ -766,8 +743,7 @@ theorem qkn_ratio_control :
     rw [h, norm_zero] at hden_lower
     linarith [mul_pos hcd (pow_pos hr_pos d)]
   -- The ratio bound
-  rw [norm_div]
-  rw [div_le_div_iff₀ (norm_pos_iff.mpr hden_ne) hr_pos]
+  rw [norm_div, div_le_div_iff₀ (norm_pos_iff.mpr hden_ne) hr_pos]
   -- ‖qkn n‖ * r ≤ (cn+1)*r^(n+1) ≤ (cn+1)*r^d = C*cd*r^d ≤ C*‖qkn d‖
   calc ‖(qkn k n r : ℂ)‖ * r
       ≤ (cn + 1) * r ^ n * r := by
@@ -840,19 +816,6 @@ private lemma Phi_rotation_equivariant (ω : _root_.Circle) (z : ℂ) (k p : ℕ
 
 /-! ## Helpers for the diagonal case of phi_orthonormal -/
 
--- Helper: (-1)^(k-j) = (-1)^k * (-1)^j for j ≤ k
-private lemma neg_one_pow_sub {j k : ℕ} (hj : j ≤ k) :
-    (-1 : ℤ) ^ (k - j) = (-1 : ℤ) ^ k * (-1 : ℤ) ^ j := by
-  have key : (-1 : ℤ) ^ (k - j) * (-1 : ℤ) ^ j = (-1 : ℤ) ^ k := by
-    rw [← pow_add, Nat.sub_add_cancel hj]
-  have hsq : (-1 : ℤ) ^ j * (-1 : ℤ) ^ j = 1 := by
-    rw [← pow_add]
-    exact_mod_cast (neg_one_pow_eq_one_iff_even (R := ℤ) (by omega)).mpr ⟨j, rfl⟩
-  calc (-1 : ℤ) ^ (k - j)
-      = (-1) ^ (k - j) * ((-1) ^ j * (-1) ^ j) := by rw [hsq, mul_one]
-    _ = (-1) ^ (k - j) * (-1) ^ j * (-1) ^ j := by rw [mul_assoc]
-    _ = (-1) ^ k * (-1) ^ j := by rw [key]
-
 private lemma alternating_vandermonde_coeff_poly (k s N : ℕ) :
     ∑ j ∈ Finset.range (k + 1), (-1 : ℤ) ^ j * ↑(k.choose j) * ↑((k + s - j).choose N) =
       ((((Polynomial.C (1 : ℤ)) + Polynomial.X) ^ s * Polynomial.X ^ k).coeff N) := by
@@ -875,8 +838,7 @@ private lemma alternating_vandermonde_coeff_poly (k s N : ℕ) :
             symm
             simpa [f, smul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
               (add_pow A (-1 : Polynomial ℤ) k)
-      _ = Polynomial.X ^ k := by
-            simp [A, add_left_comm, add_comm]
+      _ = Polynomial.X ^ k := by simp [A, add_left_comm, add_comm]
   have hpoly :
       ∑ j ∈ Finset.range (k + 1), (((-1 : ℤ) ^ j * ↑(k.choose j)) • (A ^ (k + s - j))) =
         A ^ s * Polynomial.X ^ k := by
@@ -890,8 +852,7 @@ private lemma alternating_vandermonde_coeff_poly (k s N : ℕ) :
               have hsub : k + s - j = s + (k - j) := by omega
               calc
                 ((((-1 : ℤ) ^ j * ↑(k.choose j)) : ℤ) • (A ^ (k + s - j))) =
-                    ((((-1 : ℤ) ^ j * ↑(k.choose j)) : ℤ) • (A ^ (s + (k - j)))) := by
-                      simp [hsub]
+                    ((((-1 : ℤ) ^ j * ↑(k.choose j)) : ℤ) • (A ^ (s + (k - j)))) := by simp [hsub]
                 _ = ((((-1 : ℤ) ^ j * ↑(k.choose j)) : ℤ) • (A ^ s * A ^ (k - j))) := by
                       simp [pow_add]
                 _ = A ^ s * ((((-1 : ℤ) ^ j * ↑(k.choose j)) : ℤ) • (A ^ (k - j))) := by
@@ -929,12 +890,6 @@ private lemma alternating_vandermonde_coeff (k s N : ℕ) :
             (Polynomial.coeff_mul_X_pow' (((Polynomial.C (1 : ℤ)) + Polynomial.X) ^ s) k N)
     _ = if k ≤ N then ↑(s.choose (N - k)) else 0 := by
           by_cases h : k ≤ N <;> simp [h, Polynomial.coeff_one_add_X_pow]
-
-private theorem alternating_vandermonde (k s t : ℕ) (_ht : 1 ≤ t) :
-    ∑ j ∈ Finset.range (k + 1), (-1 : ℤ) ^ j * ↑(k.choose j) *
-      ↑((k + s - j).choose (k + t)) = ↑(s.choose t) := by
-  simpa [if_pos (by omega), Nat.add_sub_cancel_left k t] using
-    alternating_vandermonde_coeff k s (k + t)
 
 private theorem alternating_vandermonde_zero (k s : ℕ) :
     ∑ j ∈ Finset.range (k + 1), (-1 : ℤ) ^ j * ↑(k.choose j) *
@@ -1021,13 +976,11 @@ private lemma inner_sum_at_zero (k m : ℕ) :
     ∑ j ∈ Finset.range (k + 1), (-1 : ℤ) ^ j * ↑(k.choose j) *
       ↑(Nat.descFactorial m j) * ↑(Nat.factorial (m + k - j)) =
     ↑(Nat.factorial m) * ↑(Nat.factorial k) := by
-  have hrw : ∀ j, Nat.factorial (m + k - j) = Nat.factorial (m + k - 0 - j) := by
-    intro j; simp
+  have hrw : ∀ j, Nat.factorial (m + k - j) = Nat.factorial (m + k - 0 - j) := by intro j; simp
   simp_rw [hrw]
   rw [inner_sum_factor k m 0 (Nat.zero_le k) (Nat.zero_le m)]
   simp only [Nat.sub_zero]
-  have hrw2 : ∀ j, Nat.choose (m + k - j) k = Nat.choose (k + m - j) k := by
-    intro j; congr 1; omega
+  have hrw2 : ∀ j, Nat.choose (m + k - j) k = Nat.choose (k + m - j) k := by intro j; congr 1; omega
   simp_rw [hrw2]
   rw [alternating_vandermonde_zero k m]; ring
 
@@ -1062,8 +1015,7 @@ private theorem double_sum_vandermonde (k m : ℕ) :
           ↑(Nat.descFactorial m j) * ↑(Nat.factorial (m + k - i - j))) := by
     intro i _; rw [Finset.mul_sum]
     apply Finset.sum_congr rfl; intro j _; rw [pow_add]; ring
-  rw [Finset.sum_congr rfl hfactor]
-  rw [Finset.sum_eq_single 0]
+  rw [Finset.sum_congr rfl hfactor, Finset.sum_eq_single 0]
   · simp only [pow_zero, one_mul, Nat.choose_zero_right, Nat.cast_one,
       Nat.descFactorial_zero, Nat.sub_zero, mul_one]
     rw [inner_sum_at_zero k m]; ring
@@ -1111,8 +1063,8 @@ private theorem norm_sq_phi_integral (k m : ℕ) :
     rw [norm_mul, mul_pow]
     have hpre : ‖(1 : ℂ) / ↑√(↑k.factorial * ↑m.factorial)‖ ^ 2 =
         1 / ((↑k.factorial : ℝ) * ↑m.factorial) := by
-      rw [norm_div, norm_one, Complex.norm_of_nonneg (Real.sqrt_nonneg _)]
-      rw [one_div, inv_pow, Real.sq_sqrt (by positivity : (0 : ℝ) ≤ _), one_div]
+      rw [norm_div, norm_one, Complex.norm_of_nonneg (Real.sqrt_nonneg _),
+        one_div, inv_pow, Real.sq_sqrt (by positivity : (0 : ℝ) ≤ _), one_div]
     rw [hpre]; congr 1
     set S := Finset.range (min k m + 1)
     set g : ℕ → ℂ := fun j =>
@@ -1141,8 +1093,7 @@ private theorem norm_sq_phi_integral (k m : ℕ) :
     -- Step 2: Rearrange z-power product
     have hzpow : z ^ (m - i) * star z ^ (k - i) * (star z ^ (m - j) * z ^ (k - j)) =
         ↑(‖z‖ ^ (2 * (m + k - i - j)) : ℝ) := by
-      have h1 : z ^ (m - i) * z ^ (k - j) = z ^ (m + k - i - j) := by
-        rw [← pow_add]; congr 1; omega
+      have h1 : z ^ (m - i) * z ^ (k - j) = z ^ (m + k - i - j) := by rw [← pow_add]; congr 1; omega
       have h2 : star z ^ (k - i) * star z ^ (m - j) = star z ^ (m + k - i - j) := by
         rw [← pow_add]; congr 1; omega
       calc z ^ (m - i) * star z ^ (k - i) * (star z ^ (m - j) * z ^ (k - j))
@@ -1160,18 +1111,17 @@ private theorem norm_sq_phi_integral (k m : ℕ) :
         star z ^ (m - j) * z ^ (k - j)) =
         ((-1 : ℂ) ^ (i + j) * ↑(k.choose i) * ↑(k.choose j) *
         (↑m.factorial / ↑(m - i).factorial) * (↑m.factorial / ↑(m - j).factorial)) *
-        ↑(‖z‖ ^ (2 * (m + k - i - j)) : ℝ) := by
-      rw [← hzpow, pow_add]; ring
+        ↑(‖z‖ ^ (2 * (m + k - i - j)) : ℝ) := by rw [← hzpow, pow_add]; ring
     rw [hprod]
     -- Step 4: Replace m!/(m-j)! with descFactorial
     have hfact_desc_i : (↑m.factorial : ℂ) / ↑(m - i).factorial = ↑(m.descFactorial i : ℕ) := by
       have hdvd : (m - i).factorial ∣ m.factorial := Nat.factorial_dvd_factorial (Nat.sub_le m i)
-      rw [Nat.descFactorial_eq_div him]
-      rw [Nat.cast_div hdvd (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _))]
+      rw [Nat.descFactorial_eq_div him,
+        Nat.cast_div hdvd (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _))]
     have hfact_desc_j : (↑m.factorial : ℂ) / ↑(m - j).factorial = ↑(m.descFactorial j : ℕ) := by
       have hdvd : (m - j).factorial ∣ m.factorial := Nat.factorial_dvd_factorial (Nat.sub_le m j)
-      rw [Nat.descFactorial_eq_div hjm]
-      rw [Nat.cast_div hdvd (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _))]
+      rw [Nat.descFactorial_eq_div hjm,
+        Nat.cast_div hdvd (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _))]
     rw [hfact_desc_i, hfact_desc_j]
     -- Step 5: Everything is now ↑(real), so .re = the real value
     rw [show (-1 : ℂ) ^ (i + j) * ↑↑(k.choose i) * ↑↑(k.choose j) *
@@ -1228,8 +1178,7 @@ private theorem norm_sq_phi_integral (k m : ℕ) :
       (π * (Nat.factorial (m + k - i - j) : ℝ)) =
       π * ((-1 : ℝ) ^ (i + j) * (Nat.choose k i : ℝ) * (Nat.choose k j : ℝ) *
       (Nat.descFactorial m i : ℝ) * (Nat.descFactorial m j : ℝ) *
-      (Nat.factorial (m + k - i - j) : ℝ)) := by
-    intro i j; ring
+      (Nat.factorial (m + k - i - j) : ℝ)) := by intro i j; ring
   simp_rw [hfold]
   -- Pull π out of sums: Σ (π * g(i,j)) = π * Σ g(i,j)
   simp_rw [← Finset.mul_sum]
@@ -1327,8 +1276,8 @@ theorem phi_orthonormal :
     -- so Phi k p (ωz) = ω^{p-k} Phi k p z, and the inner product factor is ω^{m-n} = -1.
     -- ω^m * star(ω)^n = -1 (same proof as gaussian_monomial_moments_off_diag)
     have hωmn : (ω : ℂ) ^ m * star (ω : ℂ) ^ n = -1 := by
-      rw [star_def, ← _root_.Circle.coe_inv_eq_conj]
-      rw [← _root_.Circle.coe_pow, ← _root_.Circle.coe_pow, ← _root_.Circle.coe_mul]
+      rw [star_def, ← _root_.Circle.coe_inv_eq_conj,
+        ← _root_.Circle.coe_pow, ← _root_.Circle.coe_pow, ← _root_.Circle.coe_mul]
       rw [show ω ^ m * ω⁻¹ ^ n = ω ^ d from by
         rw [show ω ^ m * ω⁻¹ ^ n = ω ^ m * (ω ^ n)⁻¹ from by rw [inv_pow],
           ← zpow_natCast ω m, ← zpow_natCast ω n, ← zpow_sub]]
@@ -1356,8 +1305,7 @@ theorem phi_orthonormal :
             ↑(rexp (-‖z‖ ^ 2))
           = ((ω : ℂ) ^ m * star (ω : ℂ) ^ n) * ((ω : ℂ) ^ k * star (ω : ℂ) ^ k) *
             (Phi k m z * star (Phi k n z) * ↑(rexp (-‖z‖ ^ 2))) := by ring
-        _ = -1 * 1 * (Phi k m z * star (Phi k n z) * ↑(rexp (-‖z‖ ^ 2))) := by
-            rw [hωmn, hωmod]
+        _ = -1 * 1 * (Phi k m z * star (Phi k n z) * ↑(rexp (-‖z‖ ^ 2))) := by rw [hωmn, hωmod]
         _ = _ := by ring
     -- From ∫ f(rot z) = ∫ f(z) and f(rot z) = -f(z), get ∫ f = 0
     have hmp := rot.measurePreserving
@@ -1384,14 +1332,19 @@ theorem continuous_Phi (k n : ℕ) : Continuous (Phi k n) := by
   refine continuous_const.mul ?_
   refine continuous_finsetSum _ ?_
   intro j hj
-  have hpow : Continuous (fun z : ℂ => z ^ (n - j) * (star z) ^ (k - j)) := by
-    exact (continuous_id.pow (n - j)).mul (continuous_star.pow (k - j))
+  have hpow : Continuous (fun z : ℂ => z ^ (n - j) * (star z) ^ (k - j)) :=
+    (continuous_id.pow (n - j)).mul (continuous_star.pow (k - j))
   have hterm : Continuous (fun z : ℂ =>
       (((-1 : ℂ) ^ j) * (Nat.choose k j : ℂ) *
           ((Nat.factorial n : ℂ) / (Nat.factorial (n - j) : ℂ))) *
-        (z ^ (n - j) * (star z) ^ (k - j))) := by
-    exact continuous_const.mul hpow
+        (z ^ (n - j) * (star z) ^ (k - j))) := continuous_const.mul hpow
   simpa [mul_assoc] using hterm
+
+/-- Finite Hermite sums are continuous. -/
+private theorem continuous_finiteHermiteSum (k : ℕ) {D : ℕ} (a : Fin D → ℂ) :
+    Continuous (finiteHermiteSum k a) := by
+  unfold finiteHermiteSum
+  exact continuous_finsetSum _ (fun m _ => continuous_const.mul (continuous_Phi k m.1))
 
 theorem integrable_weightedDiag (k n : ℕ) :
     Integrable (fun z : ℂ => ‖Phi k n z‖ ^ 2 * Real.exp (-‖z‖ ^ 2)) := by
@@ -1414,8 +1367,7 @@ theorem integrable_weightedDiag (k n : ℕ) :
             filter_upwards with z
             rw [mul_conj]
             simp [f, Complex.normSq_eq_norm_sq]
-      _ = (1 / Real.pi : ℂ) * 0 := by
-            rw [MeasureTheory.integral_undef hfC]
+      _ = (1 / Real.pi : ℂ) * 0 := by rw [MeasureTheory.integral_undef hfC]
       _ = 0 := by ring
   have hone : weightedInner (Phi k n) (Phi k n) = 1 := by
     simpa using (phi_orthonormal (k := k) (m := n) (n := n))
@@ -1458,11 +1410,9 @@ theorem integrable_weightedCross (k m n : ℕ) :
         calc
           ‖Phi k m z * (starRingEnd ℂ) (Phi k n z) * (Real.exp (-‖z‖ ^ 2) : ℂ)‖
             = ‖Phi k m z * (starRingEnd ℂ) (Phi k n z)‖ *
-                ‖((Real.exp (-‖z‖ ^ 2) : ℝ) : ℂ)‖ := by
-                  rw [norm_mul]
+                ‖((Real.exp (-‖z‖ ^ 2) : ℝ) : ℂ)‖ := by rw [norm_mul]
           _ = (‖Phi k m z‖ * ‖Phi k n z‖) * ‖((Real.exp (-‖z‖ ^ 2) : ℝ) : ℂ)‖ := by
-                rw [norm_mul]
-                rw [show ‖(starRingEnd ℂ) (Phi k n z)‖ = ‖Phi k n z‖ by simp]
+                rw [norm_mul, show ‖(starRingEnd ℂ) (Phi k n z)‖ = ‖Phi k n z‖ by simp]
           _ = (‖Phi k m z‖ * ‖Phi k n z‖) * Real.exp (-‖z‖ ^ 2) := by
                 rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hexp_nonneg]
       _ ≤ (((‖Phi k m z‖ ^ 2 + ‖Phi k n z‖ ^ 2) / 2) * Real.exp (-‖z‖ ^ 2)) := by
@@ -1582,8 +1532,8 @@ private theorem weightedInner_finset_sum_left
         exact hf b (Finset.mem_insert_of_mem hb)
       have hfa :
           Integrable
-            (fun z : ℂ => f a z * (starRingEnd ℂ) (g z) * (Real.exp (-‖z‖ ^ 2) : ℂ)) := by
-        exact hf a (Finset.mem_insert_self a s)
+            (fun z : ℂ => f a z * (starRingEnd ℂ) (g z) * (Real.exp (-‖z‖ ^ 2) : ℂ)) :=
+        hf a (Finset.mem_insert_self a s)
       simp_rw [Finset.sum_insert ha]
       have hsumInt :
           Integrable
@@ -1594,8 +1544,8 @@ private theorem weightedInner_finset_sum_left
             Integrable
               (fun z : ℂ =>
                 Finset.sum s
-                  (fun b => f b z * (starRingEnd ℂ) (g z) * (Real.exp (-‖z‖ ^ 2) : ℂ))) := by
-          exact MeasureTheory.integrable_finsetSum s (fun b hb => hf' b hb)
+                  (fun b => f b z * (starRingEnd ℂ) (g z) * (Real.exp (-‖z‖ ^ 2) : ℂ))) :=
+          MeasureTheory.integrable_finsetSum s (fun b hb => hf' b hb)
         have hEq :
             (fun z : ℂ =>
               (Finset.sum s (fun b => f b z)) * (starRingEnd ℂ) (g z) *
@@ -1604,8 +1554,7 @@ private theorem weightedInner_finset_sum_left
                 Finset.sum s
                   (fun b => f b z * (starRingEnd ℂ) (g z) * (Real.exp (-‖z‖ ^ 2) : ℂ)) := by
           funext z
-          rw [mul_assoc]
-          rw [Finset.sum_mul]
+          rw [mul_assoc, Finset.sum_mul]
           simp [mul_left_comm, mul_comm]
         exact hEq.symm ▸ hsumInt'
       change weightedInner ((fun z : ℂ => f a z) + fun z => Finset.sum s (fun b => f b z)) g =
@@ -1842,11 +1791,9 @@ theorem weightedNorm_smul (c : ℂ) (G : ℂ → ℂ) :
   have hsq : weightedNormSq (c • G) = ‖c‖ ^ 2 * weightedNormSq G := by
     change (1 / Real.pi) * ∫ z : ℂ, ‖(c • G) z‖ ^ 2 * Real.exp (-‖z‖ ^ 2)
       = ‖c‖ ^ 2 * ((1 / Real.pi) * ∫ z : ℂ, ‖G z‖ ^ 2 * Real.exp (-‖z‖ ^ 2))
-    rw [hInt]
-    rw [MeasureTheory.integral_const_mul]
+    rw [hInt, MeasureTheory.integral_const_mul]
     ring
-  have hcsq : √(‖c‖ ^ 2) = ‖c‖ := by
-    rw [Real.sqrt_sq_eq_abs, abs_of_nonneg (norm_nonneg c)]
+  have hcsq : √(‖c‖ ^ 2) = ‖c‖ := by rw [Real.sqrt_sq_eq_abs, abs_of_nonneg (norm_nonneg c)]
   change √(weightedNormSq (c • G)) = ‖c‖ * √(weightedNormSq G)
   rw [hsq, Real.sqrt_mul (by positivity), hcsq]
 
@@ -1859,27 +1806,21 @@ theorem weightedDefectNorm_smul (c : ℂ) (F0 G : ℂ → ℂ) :
     congr with z
     have hpt : modulusDefect (c • F0) (c • G) z = ‖c‖ * modulusDefect F0 G z := by
       change |‖(c • F0) z + (c • G) z‖ - ‖(c • F0) z‖| = ‖c‖ * |‖F0 z + G z‖ - ‖F0 z‖|
-      have hsum : (c • F0) z + (c • G) z = c * (F0 z + G z) := by
-        simp [Pi.smul_apply, mul_add]
-      have hleft : ‖(c • F0) z + (c • G) z‖ = ‖c‖ * ‖F0 z + G z‖ := by
-        rw [hsum, norm_mul]
-      have hright : ‖(c • F0) z‖ = ‖c‖ * ‖F0 z‖ := by
-        simp
+      have hsum : (c • F0) z + (c • G) z = c * (F0 z + G z) := by simp [Pi.smul_apply, mul_add]
+      have hleft : ‖(c • F0) z + (c • G) z‖ = ‖c‖ * ‖F0 z + G z‖ := by rw [hsum, norm_mul]
+      have hright : ‖(c • F0) z‖ = ‖c‖ * ‖F0 z‖ := by simp
       rw [hleft, hright]
       have hfact : ‖c‖ * ‖F0 z + G z‖ - ‖c‖ * ‖F0 z‖ =
-          ‖c‖ * (‖F0 z + G z‖ - ‖F0 z‖) := by
-        ring
+          ‖c‖ * (‖F0 z + G z‖ - ‖F0 z‖) := by ring
       rw [hfact, abs_mul, abs_of_nonneg (norm_nonneg c)]
     rw [hpt]
     ring
   have hsq : weightedDefectNormSq (c • F0) (c • G) = ‖c‖ ^ 2 * weightedDefectNormSq F0 G := by
     change (1 / Real.pi) * ∫ z : ℂ, (modulusDefect (c • F0) (c • G) z) ^ 2 * Real.exp (-‖z‖ ^ 2)
       = ‖c‖ ^ 2 * ((1 / Real.pi) * ∫ z : ℂ, (modulusDefect F0 G z) ^ 2 * Real.exp (-‖z‖ ^ 2))
-    rw [hInt]
-    rw [MeasureTheory.integral_const_mul]
+    rw [hInt, MeasureTheory.integral_const_mul]
     ring
-  have hcsq : √(‖c‖ ^ 2) = ‖c‖ := by
-    rw [Real.sqrt_sq_eq_abs, abs_of_nonneg (norm_nonneg c)]
+  have hcsq : √(‖c‖ ^ 2) = ‖c‖ := by rw [Real.sqrt_sq_eq_abs, abs_of_nonneg (norm_nonneg c)]
   change √(weightedDefectNormSq (c • F0) (c • G)) = ‖c‖ * √(weightedDefectNormSq F0 G)
   rw [hsq, Real.sqrt_mul (by positivity), hcsq]
 
@@ -2000,8 +1941,7 @@ theorem hermiteCoeff_finiteHermiteSum :
 /-- Orthogonality to `Phi k 0` is equivalent to vanishing zeroth Hermite coefficient. -/
 theorem orthogonal_phi0_iff_hermiteCoeff_zero :
     ∀ {k : ℕ} {G : ℂ → ℂ},
-      weightedInner G (phi0 k) = 0 ↔ hermiteCoeff k G 0 = 0 := by
-  simp [hermiteCoeff_phi0]
+      weightedInner G (phi0 k) = 0 ↔ hermiteCoeff k G 0 = 0 := by simp [hermiteCoeff_phi0]
 
 /-- The truncation operator is the explicit finite Hermite sum of the first coefficients. -/
 theorem truncate_eq_finiteHermiteSum :
@@ -2123,8 +2063,7 @@ theorem finiteHermiteSum_circle :
       ∑ n : Fin D, a n * ((qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t) = finiteCirclePoly k r a t := by
     by_cases hD : D = 0
     · subst hD
-      have hband0 : frequencyBand 0 0 = Finset.range 1 := by
-        simp [HermiteLEAN.frequencyBand]
+      have hband0 : frequencyBand 0 0 = Finset.range 1 := by simp [HermiteLEAN.frequencyBand]
       have hzero : finiteCirclePoly k r a t = 0 := by
         rw [finiteCirclePoly, positiveTrigonometricPolynomial, hband0]
         change Finset.sum (Finset.range 1) (fun n => finiteCircleCoeff k r a n * fourier (n : ℤ)
@@ -2153,8 +2092,7 @@ theorem finiteHermiteSum_circle :
             rw [phi_polar (k := k) (n := n.1) (r := r) hr t]
             ring
     _ = circleLeadingFactor k r * (fourier (-(k : ℤ)) t : ℂ) *
-        ∑ n : Fin D, a n * ((qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t) := by
-        rw [← Finset.mul_sum]
+        ∑ n : Fin D, a n * ((qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t) := by rw [← Finset.mul_sum]
     _ = circleLeadingFactor k r * (fourier (-(k : ℤ)) t : ℂ) * finiteCirclePoly k r a t := by
         rw [hpoly]
 
@@ -2254,8 +2192,7 @@ theorem truncCirclePoly_support_pos :
             (frequencyBand 1 J)
             (finiteCircleCoeff k r (fun n : Fin (J + 1) => hermiteCoeff k G n.1)) := by
   intro k J r G h
-  have h0 : hermiteCoeff k G 0 = 0 := by
-    simpa [hermiteCoeff_phi0] using h
+  have h0 : hermiteCoeff k G 0 = 0 := by simpa [hermiteCoeff_phi0] using h
   simpa [truncCirclePoly, h0] using
     (finiteCirclePoly_support_pos (k := k) (D := J) (r := r)
       (a := fun n : Fin (J + 1) => hermiteCoeff k G n.1) h0)
@@ -2293,8 +2230,7 @@ private lemma summable_nat_pow_mul_pow_div_factorial_nonneg (m : ℕ) {x : ℝ} 
           gcongr
           nlinarith
         _ = (m + 1 : ℝ) ^ m * (n + 1 : ℝ) ^ m := by rw [mul_pow]
-        _ ≤ (m + 1 : ℝ) ^ m * (((n + m).descFactorial m : ℕ) : ℝ) := by
-          gcongr
+        _ ≤ (m + 1 : ℝ) ^ m * (((n + m).descFactorial m : ℕ) : ℝ) := by gcongr
     have hfact :
         (Nat.factorial n : ℝ) * (((n + m).descFactorial m : ℕ) : ℝ) =
           (Nat.factorial (n + m) : ℝ) := by
@@ -2308,22 +2244,19 @@ private lemma summable_nat_pow_mul_pow_div_factorial_nonneg (m : ℕ) {x : ℝ} 
           = ((m + 1 : ℝ) ^ m * x ^ m) * (x ^ n / (Nat.factorial n : ℝ)) := by
       rw [pow_add, ← hfact]
       have hnfact : (Nat.factorial n : ℝ) ≠ 0 := by positivity
-      have hndesc_nat : (n + m).descFactorial m ≠ 0 := by
-        exact Nat.ne_of_gt (Nat.descFactorial_pos.mpr (show m ≤ n + m by omega))
-      have hndesc : (((n + m).descFactorial m : ℕ) : ℝ) ≠ 0 := by
-        exact_mod_cast hndesc_nat
+      have hndesc_nat : (n + m).descFactorial m ≠ 0 :=
+        Nat.ne_of_gt (Nat.descFactorial_pos.mpr (show m ≤ n + m by omega))
+      have hndesc : (((n + m).descFactorial m : ℕ) : ℝ) ≠ 0 := by exact_mod_cast hndesc_nat
       field_simp [hnfact, hndesc]
     calc
       f (n + m)
-          = ((n + m + 1 : ℝ) ^ m) * x ^ (n + m) / (Nat.factorial (n + m) : ℝ) := by
-              simp [f]
+          = ((n + m + 1 : ℝ) ^ m) * x ^ (n + m) / (Nat.factorial (n + m) : ℝ) := by simp [f]
       _ ≤ (((m + 1 : ℝ) ^ m) * (((n + m).descFactorial m : ℕ) : ℝ) * x ^ (n + m)) /
             (Nat.factorial (n + m) : ℝ) := by
               have hpowx :
                   ((n + m + 1 : ℝ) ^ m) * x ^ (n + m) ≤
                     ((m + 1 : ℝ) ^ m * (((n + m).descFactorial m : ℕ) : ℝ)) *
-                      x ^ (n + m) := by
-                exact mul_le_mul_of_nonneg_right hpow_real (pow_nonneg hx _)
+                      x ^ (n + m) := mul_le_mul_of_nonneg_right hpow_real (pow_nonneg hx _)
               have hfacpos : 0 < (Nat.factorial (n + m) : ℝ) := by positivity
               rw [div_le_iff₀ hfacpos]
               calc
@@ -2368,8 +2301,7 @@ private lemma choose_partial_sum_le_pow_two (k n : ℕ) :
             omega
           · intro j _ _
             positivity
-    _ = (2 : ℝ) ^ k := by
-          exact_mod_cast Nat.sum_range_choose k
+    _ = (2 : ℝ) ^ k := by exact_mod_cast Nat.sum_range_choose k
 
 /-- Uniform disk majorant for the explicit basis vector `Phi k n`. -/
 private lemma phi_norm_le_majorant {k n : ℕ} {R : ℝ} (hR : 1 ≤ R) {z : ℂ} (hz : ‖z‖ ≤ R) :
@@ -2393,34 +2325,28 @@ private lemma phi_norm_le_majorant {k n : ℕ} {R : ℝ} (hR : 1 ≤ R) {z : ℂ
     have hratio := factorial_ratio_le_pow_succ hjn hjk
     have hz1 : ‖z‖ ^ (n - j) ≤ R ^ n := by
       calc
-        ‖z‖ ^ (n - j) ≤ R ^ (n - j) := by
-          exact pow_le_pow_left₀ (norm_nonneg _) hz _
-        _ ≤ R ^ n := by
-          exact pow_le_pow_right₀ hR (Nat.sub_le _ _)
+        ‖z‖ ^ (n - j) ≤ R ^ (n - j) := by exact pow_le_pow_left₀ (norm_nonneg _) hz _
+        _ ≤ R ^ n := by exact pow_le_pow_right₀ hR (Nat.sub_le _ _)
     have hz2 : ‖z‖ ^ (k - j) ≤ R ^ k := by
       calc
-        ‖z‖ ^ (k - j) ≤ R ^ (k - j) := by
-          exact pow_le_pow_left₀ (norm_nonneg _) hz _
-        _ ≤ R ^ k := by
-          exact pow_le_pow_right₀ hR (Nat.sub_le _ _)
+        ‖z‖ ^ (k - j) ≤ R ^ (k - j) := by exact pow_le_pow_left₀ (norm_nonneg _) hz _
+        _ ≤ R ^ k := by exact pow_le_pow_right₀ hR (Nat.sub_le _ _)
     calc
       ‖term j‖
         = (Nat.choose k j : ℝ) * ((Nat.factorial n : ℝ) / (Nat.factorial (n - j) : ℝ)) *
             ‖z‖ ^ (n - j) * ‖z‖ ^ (k - j) := by
             dsimp [term]
             simp [norm_pow]
-      _ ≤ (Nat.choose k j : ℝ) * ((n + 1 : ℝ) ^ k) * R ^ n * R ^ k := by
-            gcongr
+      _ ≤ (Nat.choose k j : ℝ) * ((n + 1 : ℝ) ^ k) * R ^ n * R ^ k := by gcongr
       _ = (Nat.choose k j : ℝ) * common := by
             dsimp [common]
             ring
   have hsum_bound :
-      Finset.sum S (fun j => ‖term j‖) ≤ Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) := by
-    exact Finset.sum_le_sum (fun j hj => hterm_bound j hj)
+      Finset.sum S (fun j => ‖term j‖) ≤ Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) :=
+    Finset.sum_le_sum (fun j hj => hterm_bound j hj)
   have hsum_factor :
       Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) =
-        (Finset.sum S (fun j => (Nat.choose k j : ℝ))) * common := by
-    rw [Finset.sum_mul]
+        (Finset.sum S (fun j => (Nat.choose k j : ℝ))) * common := by rw [Finset.sum_mul]
   have hfront_nonneg :
       0 ≤ ‖((1 / Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) : ℂ)‖ := norm_nonneg _
   have hfront :
@@ -2435,14 +2361,12 @@ private lemma phi_norm_le_majorant {k n : ℕ} {R : ℝ} (hR : 1 ≤ R) {z : ℂ
             exact le_trans (norm_mul_le _ _) <|
               mul_le_mul_of_nonneg_left hsum_norm (norm_nonneg _)
     _ ≤ ‖((1 / Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) : ℂ)‖ *
-          Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) := by
-            exact mul_le_mul_of_nonneg_left hsum_bound hfront_nonneg
+          Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) :=
+            mul_le_mul_of_nonneg_left hsum_bound hfront_nonneg
     _ = ((1 / Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) : ℝ) *
-          Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) := by
-            rw [hfront]
+          Finset.sum S (fun j => (Nat.choose k j : ℝ) * common) := by rw [hfront]
     _ = ((1 / Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) : ℝ) *
-          ((Finset.sum S (fun j => (Nat.choose k j : ℝ))) * common) := by
-            rw [hsum_factor]
+          ((Finset.sum S (fun j => (Nat.choose k j : ℝ))) * common) := by rw [hsum_factor]
     _ ≤ ((1 / Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) : ℝ) *
           (((2 : ℝ) ^ k) * common) := by
             gcongr
@@ -2515,6 +2439,13 @@ private lemma truncate_tendsto_pointwise {k : ℕ} {G : ℂ → ℂ} (hG : G ∈
   rw [hrw]
   exact hseq.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
 
+/-- Every element of `H_k` is a.e. strongly measurable (limit of continuous truncations). -/
+private theorem aestronglyMeasurable_of_mem_Hk {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k) :
+    AEStronglyMeasurable G volume := by
+  apply aestronglyMeasurable_of_tendsto_ae (u := Filter.atTop) (f := fun J => truncate k J G)
+  · exact fun J => (continuous_finiteHermiteSum k _).aestronglyMeasurable
+  · exact Filter.Eventually.of_forall (fun z => truncate_tendsto_pointwise hG z)
+
 /-- Integrability of truncation norm squared with Gaussian weight. -/
 theorem integrable_truncate_normSq_exp (k J : ℕ) (G : ℂ → ℂ) :
     Integrable (fun z : ℂ => ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
@@ -2533,18 +2464,10 @@ private lemma integrable_Phi_conj_G_exp {k : ℕ} {G : ℂ → ℂ} (n : ℕ)
   have hBound : Integrable (fun z : ℂ =>
       (‖Phi k n z‖ ^ 2 + ‖G z‖ ^ 2) * rexp (-‖z‖ ^ 2)) := by
     have : (fun z : ℂ => (‖Phi k n z‖ ^ 2 + ‖G z‖ ^ 2) * rexp (-‖z‖ ^ 2)) =
-        (fun z => ‖Phi k n z‖ ^ 2 * rexp (-‖z‖ ^ 2) + ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      ext z; ring
+        (fun z => ‖Phi k n z‖ ^ 2 * rexp (-‖z‖ ^ 2) + ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by ext z; ring
     rw [this]; exact hDiag.add hInt
   apply MeasureTheory.Integrable.mono' hBound
-  · -- G is AEStronglyMeasurable: truncate_J G → G pointwise, each truncation
-    -- is continuous (hence AEStronglyMeasurable).
-    have hG_aesm : AEStronglyMeasurable G volume := by
-      apply aestronglyMeasurable_of_tendsto_ae (u := Filter.atTop) (f := fun J => truncate k J G)
-      · intro J; unfold truncate finiteHermiteSum
-        exact (continuous_finsetSum _ (fun m _ =>
-          continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
-      · exact Filter.Eventually.of_forall (fun z => truncate_tendsto_pointwise hG z)
+  · have hG_aesm : AEStronglyMeasurable G volume := aestronglyMeasurable_of_mem_Hk hG
     exact (((continuous_Phi k n).aestronglyMeasurable.mul
       (hG_aesm.star)).mul
       (Complex.continuous_ofReal.comp (Real.continuous_exp.comp
@@ -2617,8 +2540,7 @@ private lemma bessel_truncate_le {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k)
       simpa using Complex.mul_conj' (a n)]; push_cast; ring
   -- From the equalities: ⟨trunc, G⟩ = ⟨trunc, trunc⟩ (= ∑ ‖a_n‖²)
   have hCrossZero : weightedInner (truncate k J G) G =
-      weightedInner (truncate k J G) (truncate k J G) := by
-    rw [hInnerTG', hInnerTT]
+      weightedInner (truncate k J G) (truncate k J G) := by rw [hInnerTG', hInnerTT]
   -- weightedNormSq T = Re⟨T, T⟩ = Re⟨T, G⟩
   rw [weightedNormSq_eq_re_weightedInner, ← hCrossZero]
   let Tfun : ℂ → ℂ := truncate k J G
@@ -2648,9 +2570,9 @@ private lemma bessel_truncate_le {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k)
       calc
         ‖Tfun z * (starRingEnd ℂ) (G z) * (Real.exp (-‖z‖ ^ 2) : ℂ)‖
             = (‖Tfun z‖ * ‖G z‖) * rexp (-‖z‖ ^ 2) := by
-                rw [norm_mul, norm_mul]
-                rw [show ‖(starRingEnd ℂ) (G z)‖ = ‖G z‖ by simp]
-                rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (exp_nonneg _)]
+                rw [norm_mul, norm_mul,
+                  show ‖(starRingEnd ℂ) (G z)‖ = ‖G z‖ by simp,
+                  Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (exp_nonneg _)]
         _ ≤ ((‖Tfun z‖ ^ 2 + ‖G z‖ ^ 2) / 2) * rexp (-‖z‖ ^ 2) := by
               nlinarith [sq_nonneg (‖Tfun z‖ - ‖G z‖), exp_nonneg (-‖z‖ ^ 2 : ℝ)]
     have hIntLe :
@@ -2677,14 +2599,13 @@ private lemma bessel_truncate_le {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k)
     calc
       ‖weightedInner Tfun G‖
           = ‖(1 / Real.pi : ℂ) *
-              ∫ z : ℂ, Tfun z * (starRingEnd ℂ) (G z) * (Real.exp (-‖z‖ ^ 2) : ℂ)‖ := by
-                rfl
+              ∫ z : ℂ, Tfun z * (starRingEnd ℂ) (G z) * (Real.exp (-‖z‖ ^ 2) : ℂ)‖ := by rfl
       _ = (1 / Real.pi : ℝ) *
           ‖∫ z : ℂ, Tfun z * (starRingEnd ℂ) (G z) * (Real.exp (-‖z‖ ^ 2) : ℂ)‖ := by
             rw [norm_mul, hpi_norm]
       _ ≤ (1 / Real.pi : ℝ) *
-          ∫ z : ℂ, ((‖Tfun z‖ ^ 2 + ‖G z‖ ^ 2) / 2) * rexp (-‖z‖ ^ 2) := by
-            exact mul_le_mul_of_nonneg_left hIntLe hpi_nonneg
+          ∫ z : ℂ, ((‖Tfun z‖ ^ 2 + ‖G z‖ ^ 2) / 2) * rexp (-‖z‖ ^ 2) :=
+            mul_le_mul_of_nonneg_left hIntLe hpi_nonneg
       _ = (weightedNormSq Tfun + weightedNormSq G) / 2 := hAvgEq
   have hReEq : (weightedInner Tfun G).re = weightedNormSq Tfun := by
     calc
@@ -2700,6 +2621,109 @@ private lemma bessel_truncate_le {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k)
     linarith
   simpa [Tfun, hReEq] using hTle
 
+/-- The Gaussian-weighted lintegral of `‖F J‖²` equals `π` times its weighted
+norm square. -/
+private lemma lintegral_ofReal_normSq_eq (F : ℂ → ℂ)
+    (hF : Integrable (fun z : ℂ => ‖F z‖ ^ 2 * rexp (-‖z‖ ^ 2))) :
+    ∫⁻ z : ℂ, ENNReal.ofReal (‖F z‖ ^ 2 * rexp (-‖z‖ ^ 2)) =
+      ENNReal.ofReal (Real.pi * weightedNormSq F) := by
+  have hIntEq :
+      ∫ z : ℂ, ‖F z‖ ^ 2 * rexp (-‖z‖ ^ 2) = Real.pi * weightedNormSq F := by
+    unfold weightedNormSq HermiteLEAN.weightedNormSq
+    field_simp [Real.pi_ne_zero]
+  rw [(MeasureTheory.ofReal_integral_eq_lintegral_ofReal hF
+    (Filter.Eventually.of_forall (fun z => by positivity))).symm, hIntEq]
+
+/-- Fatou step: if `F J → G` pointwise with each `F J` having integrable
+Gaussian-weighted squared norm, the lintegral of `‖G‖²` is bounded by the
+`liminf` of the truncation lintegrals. -/
+private lemma lintegral_normSq_le_liminf_of_tendsto {G : ℂ → ℂ} {F : ℕ → ℂ → ℂ}
+    (hFint : ∀ J, Integrable (fun z : ℂ => ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
+    (hFpt : ∀ z, Filter.Tendsto (fun J => F J z) Filter.atTop (nhds (G z))) :
+    ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
+      Filter.liminf
+          (fun J => ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
+          Filter.atTop := by
+  have hmeas :
+      ∀ J : ℕ,
+        AEMeasurable (fun z : ℂ => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2))) volume :=
+    fun J => (hFint J).aestronglyMeasurable.aemeasurable.ennreal_ofReal
+  have hLiminfPt :
+      ∀ z : ℂ,
+        Filter.liminf (fun J => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2))) Filter.atTop =
+          ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := fun z =>
+    ((ENNReal.continuous_ofReal.tendsto _).comp
+      (((hFpt z).norm.pow 2).mul_const (rexp (-‖z‖ ^ 2)))).liminf_eq
+  have hcongr :
+      (∫⁻ z : ℂ,
+          Filter.liminf (fun J => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2))) Filter.atTop) =
+        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) :=
+    MeasureTheory.lintegral_congr_ae (Filter.Eventually.of_forall hLiminfPt)
+  exact hcongr.symm ▸ MeasureTheory.lintegral_liminf_le' (u := Filter.atTop) hmeas
+
+/-- Fatou bound: if `F J → G` pointwise with each `F J` having integrable
+Gaussian-weighted squared norm and `weightedNormSq (F J) → S`, then the
+Gaussian-weighted lintegral of `‖G‖²` is dominated by `π * S`.  This is the
+shared core of every Fatou estimate in the file. -/
+private lemma lintegral_normSq_le_pi_mul_of_tendsto {G : ℂ → ℂ} {F : ℕ → ℂ → ℂ} {S : ℝ}
+    (hFint : ∀ J, Integrable (fun z : ℂ => ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
+    (hFnorm : Filter.Tendsto (fun J => weightedNormSq (F J)) Filter.atTop (nhds S))
+    (hFpt : ∀ z, Filter.Tendsto (fun J => F J z) Filter.atTop (nhds (G z))) :
+    ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤ ENNReal.ofReal (Real.pi * S) := by
+  have hLiminfENNR :
+      Filter.liminf (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (F J))) Filter.atTop =
+        ENNReal.ofReal (Real.pi * S) :=
+    ((ENNReal.continuous_ofReal.tendsto _).comp
+      (Filter.Tendsto.const_mul Real.pi hFnorm)).liminf_eq
+  calc
+    ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
+        ≤ Filter.liminf
+            (fun J => ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
+            Filter.atTop := lintegral_normSq_le_liminf_of_tendsto hFint hFpt
+    _ = Filter.liminf (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (F J))) Filter.atTop := by
+          congr 1
+          funext J
+          exact lintegral_ofReal_normSq_eq (F J) (hFint J)
+    _ = ENNReal.ofReal (Real.pi * S) := hLiminfENNR
+
+/-- The partial Hermite-norm-squared sums of `G ∈ H_k` converge to the squared
+coefficient sum. -/
+private lemma weightedNormSq_truncate_tendsto {k : ℕ} {G : ℂ → ℂ}
+    (hsum : Summable (fun n : ℕ => ‖hermiteCoeff k G n‖ ^ 2)) :
+    Filter.Tendsto (fun J => weightedNormSq (truncate k J G))
+      Filter.atTop (nhds (∑' n : ℕ, ‖hermiteCoeff k G n‖ ^ 2)) := by
+  set t : ℕ → ℝ := fun n => ‖hermiteCoeff k G n‖ ^ 2 with ht
+  have hnat :
+      Filter.Tendsto (fun J => ∑ n ∈ Finset.range J, t n)
+        Filter.atTop (nhds (∑' n : ℕ, t n)) :=
+    (hsum.hasSum_iff_tendsto_nat).1 hsum.hasSum
+  have hshift :
+      Filter.Tendsto (fun J => ∑ n ∈ Finset.range (J + 1), t n)
+        Filter.atTop (nhds (∑' n : ℕ, t n)) :=
+    hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
+  have hEqFun :
+      (fun J => weightedNormSq (truncate k J G)) =
+        (fun J => ∑ n ∈ Finset.range (J + 1), t n) := by
+    funext J
+    rw [show ∑ n ∈ Finset.range (J + 1), t n =
+        ∑ n : Fin (J + 1), ‖hermiteCoeff k G n.1‖ ^ 2 from by rw [Finset.sum_range]]
+    exact truncate_normSq k J G
+  rw [hEqFun]
+  exact hshift
+
+/-- Fatou bound: the Gaussian-weighted lintegral of `‖G‖²` is dominated by `π`
+times the sum of squared Hermite coefficients, for any `G ∈ H_k` whose
+coefficient squares are summable.  Shared by the integrable and non-integrable
+branches of the Parseval argument. -/
+private lemma weightedNormSq_lintegral_le_pi_tsum {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k)
+    (hsum : Summable (fun n : ℕ => ‖hermiteCoeff k G n‖ ^ 2)) :
+    ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
+      ENNReal.ofReal (Real.pi * ∑' n : ℕ, ‖hermiteCoeff k G n‖ ^ 2) :=
+  lintegral_normSq_le_pi_mul_of_tendsto
+    (fun J => integrable_truncate_normSq_exp k J G)
+    (weightedNormSq_truncate_tendsto hsum)
+    (fun z => truncate_tendsto_pointwise hG z)
+
 /-- The non-integrable branch of `hermiteCoeff_parseval`: when `‖G‖²·exp` is not
 integrable, both the weighted norm and the Hermite coefficient sum vanish.
 Extracted to respect the proof size limit. -/
@@ -2712,151 +2736,11 @@ private lemma hermiteCoeff_parseval_not_integrable {k : ℕ} {G : ℂ → ℂ} (
   rw [hLHS]
   have hnotSummable : ¬ Summable (fun n : ℕ => ‖hermiteCoeff k G n‖ ^ 2) := by
     intro hsum
-    let t : ℕ → ℝ := fun n => ‖hermiteCoeff k G n‖ ^ 2
-    have htrunc_tendsto :
-        Filter.Tendsto (fun J => weightedNormSq (truncate k J G))
-          Filter.atTop (nhds (∑' n : ℕ, t n)) := by
-      have hnat :
-          Filter.Tendsto (fun J => ∑ n ∈ Finset.range J, t n)
-            Filter.atTop (nhds (∑' n : ℕ, t n)) :=
-        (hsum.hasSum_iff_tendsto_nat).1 hsum.hasSum
-      have hshift :
-          Filter.Tendsto (fun J => ∑ n ∈ Finset.range (J + 1), t n)
-            Filter.atTop (nhds (∑' n : ℕ, t n)) := by
-        exact hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
-      have hEqFun :
-          (fun J => weightedNormSq (truncate k J G)) =
-            (fun J => ∑ n ∈ Finset.range (J + 1), t n) := by
-        funext J
-        change weightedNormSq (truncate k J G) =
-          ∑ n ∈ Finset.range (J + 1), ‖hermiteCoeff k G n‖ ^ 2
-        rw [show ∑ n ∈ Finset.range (J + 1), ‖hermiteCoeff k G n‖ ^ 2 =
-            ∑ n : Fin (J + 1), ‖hermiteCoeff k G n.1‖ ^ 2 from by
-          rw [Finset.sum_range]]
-        exact truncate_normSq k J G
-      rw [hEqFun]
-      exact hshift
-    have hpi_trunc_tendsto :
-        Filter.Tendsto (fun J => Real.pi * weightedNormSq (truncate k J G))
-          Filter.atTop (nhds (Real.pi * ∑' n : ℕ, t n)) :=
-      Filter.Tendsto.const_mul Real.pi htrunc_tendsto
-    have hLiminfENNR :
-        Filter.liminf
-            (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-            Filter.atTop =
-          ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := by
-      have hto :
-          Filter.Tendsto
-              (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-              Filter.atTop
-              (nhds (ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n))) :=
-        (ENNReal.continuous_ofReal.tendsto _).comp hpi_trunc_tendsto
-      exact hto.liminf_eq
-    have hLiminfPt :
-        ∀ z : ℂ,
-          Filter.liminf
-              (fun J =>
-                ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop =
-            ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      intro z
-      have htruncz : Filter.Tendsto (fun J => truncate k J G z) Filter.atTop (nhds (G z)) :=
-        truncate_tendsto_pointwise hG z
-      have hreal :
-          Filter.Tendsto (fun J => ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-            Filter.atTop (nhds (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))) := by
-        have hsq :
-            Filter.Tendsto (fun J => ‖truncate k J G z‖ ^ 2)
-              Filter.atTop (nhds (‖G z‖ ^ 2)) := by
-          exact (htruncz.norm.pow 2)
-        exact hsq.mul_const (rexp (-‖z‖ ^ 2))
-      have hto :
-          Filter.Tendsto
-              (fun J => ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop
-              (nhds (ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))) ) :=
-        (ENNReal.continuous_ofReal.tendsto _).comp hreal
-      exact hto.liminf_eq
-    have hFatou :
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
-          Filter.liminf
-              (fun J =>
-                ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop := by
-      have hmeas :
-          ∀ J : ℕ,
-            AEMeasurable
-              (fun z : ℂ =>
-                ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ) volume := by
-        intro J
-        exact (integrable_truncate_normSq_exp k J
-            G).aestronglyMeasurable.aemeasurable.ennreal_ofReal
-      have hfatou_raw := MeasureTheory.lintegral_liminf_le' (u := Filter.atTop) hmeas
-      have hcongr :
-          (∫⁻ z : ℂ,
-              Filter.liminf
-                (fun J => ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-                Filter.atTop) =
-            ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-        apply MeasureTheory.lintegral_congr_ae
-        exact Filter.Eventually.of_forall hLiminfPt
-      calc
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-            = ∫⁻ z : ℂ,
-                Filter.liminf
-                  (fun J => ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-                  Filter.atTop := hcongr.symm
-        _ ≤ Filter.liminf
-              (fun J =>
-                ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop := hfatou_raw
-    have hLinEqTrunc :
-        ∀ J : ℕ,
-          ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) =
-            ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)) := by
-      intro J
-      have hIntJ : Integrable (fun z : ℂ => ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-        exact integrable_truncate_normSq_exp k J G
-      have hNonnegJ :
-          ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-        exact Filter.Eventually.of_forall (fun z => by positivity)
-      have hIntEq :
-          ∫ z : ℂ, ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) =
-            Real.pi * weightedNormSq (truncate k J G) := by
-        unfold weightedNormSq HermiteLEAN.weightedNormSq
-        field_simp [Real.pi_ne_zero]
-      calc
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-            = ENNReal.ofReal (∫ z : ℂ, ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-                symm
-                exact MeasureTheory.ofReal_integral_eq_lintegral_ofReal hIntJ hNonnegJ
-        _ = ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)) := by rw [hIntEq]
-    have hBound :
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
-          ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := by
-      calc
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-            ≤ Filter.liminf
-                (fun J =>
-                  ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-                Filter.atTop := hFatou
-        _ = Filter.liminf
-              (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-              Filter.atTop := by
-              congr 1
-              funext J
-              exact hLinEqTrunc J
-        _ = ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := hLiminfENNR
+    have hBound := weightedNormSq_lintegral_le_pi_tsum hG hsum
     have hlin_lt_top :
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) < ⊤ := by
-      exact lt_of_le_of_lt hBound ENNReal.ofReal_lt_top
-    have hG_aesm : AEStronglyMeasurable G volume := by
-      apply aestronglyMeasurable_of_tendsto_ae (u := Filter.atTop) (f := fun J => truncate k J G)
-      · intro J
-        unfold truncate finiteHermiteSum
-        exact (continuous_finsetSum _ (fun m _ =>
-          continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
-      · exact Filter.Eventually.of_forall (fun z => truncate_tendsto_pointwise hG z)
+        ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) < ⊤ :=
+      lt_of_le_of_lt hBound ENNReal.ofReal_lt_top
+    have hG_aesm : AEStronglyMeasurable G volume := aestronglyMeasurable_of_mem_Hk hG
     have hExp_aesm : AEStronglyMeasurable (fun z : ℂ => rexp (-‖z‖ ^ 2)) volume :=
       (continuous_neg.comp ((continuous_pow 2).comp continuous_norm)).rexp.aestronglyMeasurable
     have hf_aesm :
@@ -2894,163 +2778,22 @@ private lemma hermiteCoeff_parseval_le {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ H
       exact bessel_truncate_le hG hInt J'
   have hsum : Summable t := summable_of_sum_range_le (fun n => sq_nonneg ‖hermiteCoeff k G n‖)
     hsumRange
-  have htrunc_tendsto :
-      Filter.Tendsto (fun J => weightedNormSq (truncate k J G))
-        Filter.atTop (nhds (∑' n : ℕ, t n)) := by
-    have hnat :
-        Filter.Tendsto (fun J => ∑ n ∈ Finset.range J, t n)
-          Filter.atTop (nhds (∑' n : ℕ, t n)) :=
-      (hsum.hasSum_iff_tendsto_nat).1 hsum.hasSum
-    have hshift :
-        Filter.Tendsto (fun J => ∑ n ∈ Finset.range (J + 1), t n)
-          Filter.atTop (nhds (∑' n : ℕ, t n)) := by
-      exact hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
-    have hEqFun :
-        (fun J => weightedNormSq (truncate k J G)) =
-          (fun J => ∑ n ∈ Finset.range (J + 1), t n) := by
-      funext J
-      change weightedNormSq (truncate k J G) =
-        ∑ n ∈ Finset.range (J + 1), ‖hermiteCoeff k G n‖ ^ 2
-      rw [show ∑ n ∈ Finset.range (J + 1), ‖hermiteCoeff k G n‖ ^ 2 =
-          ∑ n : Fin (J + 1), ‖hermiteCoeff k G n.1‖ ^ 2 from by
-        rw [Finset.sum_range]]
-      exact truncate_normSq k J G
-    rw [hEqFun]
-    exact hshift
-  have hpi_trunc_tendsto :
-      Filter.Tendsto (fun J => Real.pi * weightedNormSq (truncate k J G))
-        Filter.atTop (nhds (Real.pi * ∑' n : ℕ, t n)) :=
-    Filter.Tendsto.const_mul Real.pi htrunc_tendsto
-  have hLiminfENNR :
-      Filter.liminf
-          (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-          Filter.atTop =
-        ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := by
-    have hto :
-        Filter.Tendsto
-            (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-            Filter.atTop
-            (nhds (ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n))) :=
-      (ENNReal.continuous_ofReal.tendsto _).comp hpi_trunc_tendsto
-    exact hto.liminf_eq
-  have hNonnegG : ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-    exact Filter.Eventually.of_forall (fun z => by positivity)
-  have hLiminfPt :
-      ∀ z : ℂ,
-        Filter.liminf
-            (fun J =>
-              ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop =
-          ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-    intro z
-    have htruncz : Filter.Tendsto (fun J => truncate k J G z) Filter.atTop (nhds (G z)) :=
-      truncate_tendsto_pointwise hG z
-    have hreal :
-        Filter.Tendsto (fun J => ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          Filter.atTop (nhds (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))) := by
-      have hsq :
-          Filter.Tendsto (fun J => ‖truncate k J G z‖ ^ 2)
-            Filter.atTop (nhds (‖G z‖ ^ 2)) := by
-        exact (htruncz.norm.pow 2)
-      exact hsq.mul_const (rexp (-‖z‖ ^ 2))
-    have hto :
-        Filter.Tendsto
-            (fun J => ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop
-            (nhds (ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))) ) :=
-      (ENNReal.continuous_ofReal.tendsto _).comp hreal
-    exact hto.liminf_eq
-  have hFatou :
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
-        Filter.liminf
-            (fun J =>
-              ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop := by
-    have hmeas :
-        ∀ J : ℕ,
-          AEMeasurable
-            (fun z : ℂ =>
-              ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ) volume := by
-      intro J
-      exact (integrable_truncate_normSq_exp k J
-          G).aestronglyMeasurable.aemeasurable.ennreal_ofReal
-    have hfatou_raw := MeasureTheory.lintegral_liminf_le' (u := Filter.atTop) hmeas
-    have hcongr :
-        (∫⁻ z : ℂ,
-            Filter.liminf
-              (fun J => ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop) =
-          ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      apply MeasureTheory.lintegral_congr_ae
-      exact Filter.Eventually.of_forall hLiminfPt
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          = ∫⁻ z : ℂ,
-              Filter.liminf
-                (fun J => ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-                Filter.atTop := hcongr.symm
-      _ ≤ Filter.liminf
-            (fun J =>
-              ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop := hfatou_raw
+  have hNonnegG : ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) :=
+    Filter.Eventually.of_forall (fun z => by positivity)
   have hLinEqG :
       ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) =
         ENNReal.ofReal (Real.pi * weightedNormSq G) := by
     have hIntEq : ∫ z : ℂ, ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) = Real.pi * weightedNormSq G := by
       unfold weightedNormSq HermiteLEAN.weightedNormSq
       field_simp [Real.pi_ne_zero]
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          = ENNReal.ofReal (∫ z : ℂ, ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-              symm
-              exact MeasureTheory.ofReal_integral_eq_lintegral_ofReal hInt hNonnegG
-      _ = ENNReal.ofReal (Real.pi * weightedNormSq G) := by rw [hIntEq]
-  have hLinEqTrunc :
-      ∀ J : ℕ,
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) =
-          ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)) := by
-    intro J
-    have hIntJ : Integrable (fun z : ℂ => ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      exact integrable_truncate_normSq_exp k J G
-    have hNonnegJ :
-        ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-      exact Filter.Eventually.of_forall (fun z => by positivity)
-    have hIntEq :
-        ∫ z : ℂ, ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) =
-          Real.pi * weightedNormSq (truncate k J G) := by
-      unfold weightedNormSq HermiteLEAN.weightedNormSq
-      field_simp [Real.pi_ne_zero]
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          = ENNReal.ofReal (∫ z : ℂ, ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-              symm
-              exact MeasureTheory.ofReal_integral_eq_lintegral_ofReal hIntJ hNonnegJ
-      _ = ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)) := by rw [hIntEq]
-  have hFatou' :
-      ENNReal.ofReal (Real.pi * weightedNormSq G) ≤
-        Filter.liminf
-            (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-            Filter.atTop := by
-    calc
-      ENNReal.ofReal (Real.pi * weightedNormSq G)
-          = ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := hLinEqG.symm
-      _ ≤ Filter.liminf
-            (fun J =>
-              ∫⁻ z : ℂ, ENNReal.ofReal (‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop := hFatou
-      _ = Filter.liminf
-            (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-            Filter.atTop := by
-            congr 1
-            funext J
-            exact hLinEqTrunc J
+    rw [(MeasureTheory.ofReal_integral_eq_lintegral_ofReal hInt hNonnegG).symm, hIntEq]
+  -- The Fatou bound, rewritten via `hLinEqG`, gives the ℝ≥0∞ inequality.
+  have hBound := hLinEqG ▸ weightedNormSq_lintegral_le_pi_tsum hG hsum
   have hpi_nonneg : 0 ≤ Real.pi * weightedNormSq G := by
     have hnorm_nonneg : 0 ≤ weightedNormSq G := by
       unfold weightedNormSq HermiteLEAN.weightedNormSq
-      have hpiinv_nonneg : 0 ≤ (1 / Real.pi : ℝ) := by positivity
-      have hint_nonneg : 0 ≤ ∫ z : ℂ, ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-        exact MeasureTheory.integral_nonneg (fun z => by positivity)
-      exact mul_nonneg hpiinv_nonneg hint_nonneg
+      exact mul_nonneg (by positivity)
+        (MeasureTheory.integral_nonneg (fun z => by positivity))
     exact mul_nonneg (le_of_lt Real.pi_pos) hnorm_nonneg
   have htsum_nonneg : 0 ≤ ∑' n : ℕ, t n := tsum_nonneg (fun n => sq_nonneg ‖hermiteCoeff k G n‖)
   have hpi_tsum_nonneg : 0 ≤ Real.pi * ∑' n : ℕ, t n :=
@@ -3059,22 +2802,11 @@ private lemma hermiteCoeff_parseval_le {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ H
       Real.pi * weightedNormSq G ≤ Real.pi * ∑' n : ℕ, t n := by
     have hfatou_toReal :
         (ENNReal.ofReal (Real.pi * weightedNormSq G)).toReal ≤
-          (ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n)).toReal := by
-      have hfatou_eq :
-          ENNReal.ofReal (Real.pi * weightedNormSq G) ≤
-            ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := by
-        calc
-          ENNReal.ofReal (Real.pi * weightedNormSq G)
-              ≤ Filter.liminf
-                  (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (truncate k J G)))
-                  Filter.atTop := hFatou'
-          _ = ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := hLiminfENNR
-      exact (ENNReal.toReal_le_toReal (by simp) (by simp)).2 hfatou_eq
+          (ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n)).toReal :=
+      (ENNReal.toReal_le_toReal (by simp) (by simp)).2 hBound
     simpa [ENNReal.toReal_ofReal hpi_nonneg, ENNReal.toReal_ofReal hpi_tsum_nonneg]
       using hfatou_toReal
-  have hpi_pos : 0 < Real.pi := Real.pi_pos
-  have hfinal : weightedNormSq G ≤ ∑' n : ℕ, t n := by
-    nlinarith [hpi_pos, hpi_mul_le]
+  have hfinal : weightedNormSq G ≤ ∑' n : ℕ, t n := by nlinarith [Real.pi_pos, hpi_mul_le]
   simpa [t] using hfinal
 
 /-- Parseval identity for the canonical Hermite coefficients. -/
@@ -3204,22 +2936,19 @@ private lemma summable_sq_Phi_eval (k : ℕ) (z : ℂ) :
     simp [pow_mul, Nat.mul_comm]
   have hmajorant :
       Summable (fun n : ℕ => C * ((((n + 1 : ℝ) ^ k) ^ 2 * (R ^ n) ^ 2) / (Nat.factorial n : ℝ)))
-          := by
-    exact hbase.mul_left C
+          := hbase.mul_left C
   refine Summable.of_nonneg_of_le (fun n => sq_nonneg _) ?_ hmajorant
   intro n
   have hphi := phi_norm_le_majorant (k := k) (n := n) (R := R) hR hzR
   have hrhs_nonneg :
       0 ≤ ((2 : ℝ) ^ k * (n + 1 : ℝ) ^ k * R ^ k * R ^ n) /
-        Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ)) := by
-    positivity
+        Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ)) := by positivity
   have hphi_sq :
       ‖Phi k n z‖ ^ 2 ≤
         (((2 : ℝ) ^ k * (n + 1 : ℝ) ^ k * R ^ k * R ^ n) /
-          Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) ^ 2 := by
-    exact pow_le_pow_left₀ (norm_nonneg _) hphi 2
-  have hsqrt_ne : Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ)) ≠ 0 := by
-    positivity
+          Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))) ^ 2 :=
+    pow_le_pow_left₀ (norm_nonneg _) hphi 2
+  have hsqrt_ne : Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ)) ≠ 0 := by positivity
   calc
     ‖Phi k n z‖ ^ 2
       ≤ (((2 : ℝ) ^ k * (n + 1 : ℝ) ^ k * R ^ k * R ^ n) /
@@ -3243,18 +2972,15 @@ private lemma summable_sq_qkn (k : ℕ) {r : ℝ} (hr : 0 < r) :
         ‖Phi k n (circlePoint r t0)‖ ^ 2 = c * |qkn k n r| ^ 2 := by
     intro n
     have hphi := phi_polar (k := k) (n := n) (r := r) hr t0
-    have hfourk : ‖(fourier (-(k : ℤ)) t0 : ℂ)‖ ^ 2 = 1 := by
-      simp [t0]
-    have hfourn : ‖(fourier (n : ℤ) t0 : ℂ)‖ ^ 2 = 1 := by
-      simp [t0]
-    rw [hphi, norm_mul, norm_mul, mul_pow, mul_pow, hfourk]
-    rw [norm_mul, mul_pow, hfourn]
-    rw [Complex.norm_real, Real.norm_eq_abs]
-    rw [show ‖circleLeadingFactor k r‖ ^ 2 = c by rfl]
+    have hfourk : ‖(fourier (-(k : ℤ)) t0 : ℂ)‖ ^ 2 = 1 := by simp [t0]
+    have hfourn : ‖(fourier (n : ℤ) t0 : ℂ)‖ ^ 2 = 1 := by simp [t0]
+    rw [hphi, norm_mul, norm_mul, mul_pow, mul_pow, hfourk,
+      norm_mul, mul_pow, hfourn,
+      Complex.norm_real, Real.norm_eq_abs,
+      show ‖circleLeadingFactor k r‖ ^ 2 = c by rfl]
     ring_nf
   have hsPhi := summable_sq_Phi_eval k (circlePoint r t0)
-  have hsScaled : Summable (fun n => c⁻¹ * (‖Phi k n (circlePoint r t0)‖ ^ 2)) := by
-    exact hsPhi.mul_left c⁻¹
+  have hsScaled : Summable (fun n => c⁻¹ * (‖Phi k n (circlePoint r t0)‖ ^ 2)) := hsPhi.mul_left c⁻¹
   refine hsScaled.congr ?_
   intro n
   calc
@@ -3274,14 +3000,13 @@ private lemma sum_range_sq_hermiteCoeff_le {k : ℕ} {G : ℂ → ℂ} (hG : G �
     positivity
   · obtain ⟨J', rfl⟩ : ∃ J', J = J' + 1 := ⟨J - 1, by omega⟩
     rw [show ∑ n ∈ Finset.range (J' + 1), ‖hermiteCoeff k G n‖ ^ 2 =
-        ∑ n : Fin (J' + 1), ‖hermiteCoeff k G n.1‖ ^ 2 by
-          rw [Finset.sum_range]]
+        ∑ n : Fin (J' + 1), ‖hermiteCoeff k G n.1‖ ^ 2 by rw [Finset.sum_range]]
     rw [← truncate_normSq k J' G]
     exact bessel_truncate_le hG hG.1 J'
 
 private lemma summable_sq_hermiteCoeff {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k) :
-    Summable (fun n => ‖hermiteCoeff k G n‖ ^ 2) := by
-  exact summable_of_sum_range_le (fun n => sq_nonneg _) (sum_range_sq_hermiteCoeff_le hG)
+    Summable (fun n => ‖hermiteCoeff k G n‖ ^ 2) :=
+  summable_of_sum_range_le (fun _ => sq_nonneg _) (sum_range_sq_hermiteCoeff_le hG)
 
 /-- Point evaluations are bounded on `H_k`. -/
 theorem point_eval_bounded :
@@ -3299,8 +3024,8 @@ theorem point_eval_bounded :
     intro J
     have hcoeffJ := sum_range_sq_hermiteCoeff_le hG J
     have hphiJ :
-        ∑ n ∈ Finset.range J, ‖Phi k n z‖ ^ 2 ≤ ∑' n : ℕ, ‖Phi k n z‖ ^ 2 := by
-      exact hsPhi.sum_le_tsum (Finset.range J) (fun _ _ => sq_nonneg _)
+        ∑ n ∈ Finset.range J, ‖Phi k n z‖ ^ 2 ≤ ∑' n : ℕ, ‖Phi k n z‖ ^ 2 :=
+      hsPhi.sum_le_tsum (Finset.range J) (fun _ _ => sq_nonneg _)
     have hnormsq_nonneg : 0 ≤ weightedNormSq G := by
       unfold weightedNormSq HermiteLEAN.weightedNormSq
       positivity
@@ -3323,22 +3048,19 @@ theorem point_eval_bounded :
             dsimp [C]
             unfold weightedNorm HermiteLEAN.weightedNorm
             rw [mul_comm]
-  have hu_summable : Summable u := by
-    exact summable_of_sum_range_le (fun n => norm_nonneg _) hu_range
+  have hu_summable : Summable u := summable_of_sum_range_le (fun n => norm_nonneg _) hu_range
   have hnorm_series : Summable (fun n : ℕ => ‖hermiteCoeff k G n * Phi k n z‖) := by
     simpa [u] using hu_summable
   have htsum : (∑' n : ℕ, hermiteCoeff k G n * Phi k n z) = G z := by
     simpa [hermiteCoeff] using (hG.2 z).tsum_eq
   calc
-    ‖G z‖ = ‖∑' n : ℕ, hermiteCoeff k G n * Phi k n z‖ := by
-      rw [← htsum]
+    ‖G z‖ = ‖∑' n : ℕ, hermiteCoeff k G n * Phi k n z‖ := by rw [← htsum]
     _ ≤ ∑' n : ℕ, u n := by
       calc
         ‖∑' n : ℕ, hermiteCoeff k G n * Phi k n z‖
             ≤ ∑' n : ℕ, ‖hermiteCoeff k G n * Phi k n z‖ := norm_tsum_le_tsum_norm hnorm_series
         _ = ∑' n : ℕ, u n := by simp [u]
-    _ ≤ C * weightedNorm G := by
-      exact Real.tsum_le_of_sum_range_le (fun n => norm_nonneg _) hu_range
+    _ ≤ C * weightedNorm G := Real.tsum_le_of_sum_range_le (fun n => norm_nonneg _) hu_range
 
 private lemma summable_circleCoeff_norm {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k) {r : ℝ}
     (hr : 0 < r) :
@@ -3349,8 +3071,7 @@ private lemma summable_circleCoeff_norm {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ 
   intro n
   have hmul :
       ‖hermiteCoeff k G n * (qkn k n r : ℂ)‖ ≤
-        ‖hermiteCoeff k G n‖ * |qkn k n r| := by
-    simp [Complex.norm_real, Real.norm_eq_abs]
+        ‖hermiteCoeff k G n‖ * |qkn k n r| := by simp [Complex.norm_real, Real.norm_eq_abs]
   have hAMGM :
       ‖hermiteCoeff k G n‖ * |qkn k n r| ≤
         (‖hermiteCoeff k G n‖ ^ 2 + |qkn k n r| ^ 2) / 2 := by
@@ -3421,11 +3142,9 @@ private lemma summable_circleSeries_terms {k : ℕ} {G : ℂ → ℂ} (hG : G �
         ‖hermiteCoeff k G n‖ * |qkn k n r| := by
     calc
       ‖hermiteCoeff k G n * (qkn k n r : ℂ) * fourier (n : ℤ) t‖
-          ≤ ‖hermiteCoeff k G n * (qkn k n r : ℂ)‖ * ‖fourier (n : ℤ) t‖ := by
-            simp [mul_assoc]
+          ≤ ‖hermiteCoeff k G n * (qkn k n r : ℂ)‖ * ‖fourier (n : ℤ) t‖ := by simp [mul_assoc]
       _ ≤ ‖hermiteCoeff k G n‖ * |qkn k n r| := by
-            rw [show ‖fourier (n : ℤ) t‖ = 1 by
-              simp]
+            rw [show ‖fourier (n : ℤ) t‖ = 1 by simp]
             simp [Complex.norm_real, Real.norm_eq_abs]
   have hAMGM :
       ‖hermiteCoeff k G n‖ * |qkn k n r| ≤
@@ -3480,22 +3199,18 @@ private theorem circleSeries_l2_identity_canonical :
       calc
         ‖∑ n : Fin (J + 1), hermiteCoeff k G n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖
             ≤ ∑ n : Fin (J + 1), ‖hermiteCoeff k G n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖
-                := by
-              exact norm_sum_le _ _
+                := norm_sum_le _ _
         _ = ∑ n : Fin (J + 1), ‖c n.1‖ := by
               refine Finset.sum_congr rfl ?_
               intro n hn
               calc
                 ‖hermiteCoeff k G n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖
-                    = ‖c n.1‖ * ‖fourier (n.1 : ℤ) t‖ := by
-                        simp [c, mul_assoc]
+                    = ‖c n.1‖ * ‖fourier (n.1 : ℤ) t‖ := by simp [c, mul_assoc]
                 _ = ‖c n.1‖ := by
-                      rw [show ‖fourier (n.1 : ℤ) t‖ = 1 by
-                        simp]
+                      rw [show ‖fourier (n.1 : ℤ) t‖ = 1 by simp]
                       ring
         _ = ∑ n ∈ Finset.range (J + 1), ‖c n‖ := by rw [Finset.sum_range]
-        _ ≤ M := by
-              exact hc_norm.sum_le_tsum _ (fun n hn => norm_nonneg _)
+        _ ≤ M := by exact hc_norm.sum_le_tsum _ (fun n hn => norm_nonneg _)
     have hnonneg : 0 ≤ ‖truncCirclePoly k r J G t‖ ^ 2 := sq_nonneg _
     have habs :
         ‖‖truncCirclePoly k r J G t‖ ^ 2‖ = ‖truncCirclePoly k r J G t‖ ^ 2 := by
@@ -3548,8 +3263,8 @@ private theorem circleSeries_l2_identity_canonical :
       (hd.hasSum_iff_tendsto_nat).1 hd.hasSum
     have hshift :
         Filter.Tendsto (fun J => ∑ n ∈ Finset.range (J + 1), d n)
-          Filter.atTop (nhds (∑' n : ℕ, d n)) := by
-      exact hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
+          Filter.atTop (nhds (∑' n : ℕ, d n)) :=
+      hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
     simpa [d, Finset.sum_range] using hshift
   have hsum_tendsto' :
       Filter.Tendsto
@@ -3644,22 +3359,19 @@ theorem circleSeries_l2_identity :
       rw [hpoly_eq J]
       calc
         ‖∑ n : Fin (J + 1), g n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖
-            ≤ ∑ n : Fin (J + 1), ‖g n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖ := by
-              exact norm_sum_le _ _
+            ≤ ∑ n : Fin (J + 1), ‖g n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖ :=
+              norm_sum_le _ _
         _ = ∑ n : Fin (J + 1), ‖c n.1‖ := by
               refine Finset.sum_congr rfl ?_
               intro n hn
               calc
                 ‖g n.1 * (qkn k n.1 r : ℂ) * fourier (n.1 : ℤ) t‖ = ‖c n.1‖ * ‖fourier (n.1 : ℤ)
-                    t‖ := by
-                  simp [c, mul_assoc]
+                    t‖ := by simp [c, mul_assoc]
                 _ = ‖c n.1‖ := by
-                  rw [show ‖fourier (n.1 : ℤ) t‖ = 1 by
-                    simp]
+                  rw [show ‖fourier (n.1 : ℤ) t‖ = 1 by simp]
                   ring
         _ = ∑ n ∈ Finset.range (J + 1), ‖c n‖ := by rw [Finset.sum_range]
-        _ ≤ M := by
-              exact hc_norm.sum_le_tsum _ (fun n hn => norm_nonneg _)
+        _ ≤ M := by exact hc_norm.sum_le_tsum _ (fun n hn => norm_nonneg _)
     have hnonneg : 0 ≤ ‖finiteCirclePoly k r (fun n : Fin (J + 1) => g n.1) t‖ ^ 2 := sq_nonneg _
     have habs :
         ‖‖finiteCirclePoly k r (fun n : Fin (J + 1) => g n.1) t‖ ^ 2‖ =
@@ -3684,17 +3396,14 @@ theorem circleSeries_l2_identity :
       intro n
       have haeq : ‖a n‖ = ‖c n‖ := by
         calc
-          ‖a n‖ = ‖c n‖ * ‖fourier (n : ℤ) t‖ := by
-            simp [a, c, mul_assoc]
+          ‖a n‖ = ‖c n‖ * ‖fourier (n : ℤ) t‖ := by simp [a, c, mul_assoc]
           _ = ‖c n‖ := by
-            rw [show ‖fourier (n : ℤ) t‖ = 1 by
-              simp]
+            rw [show ‖fourier (n : ℤ) t‖ = 1 by simp]
             ring
       exact haeq.le
     have hconv :
         Filter.Tendsto (fun J => ∑ n ∈ Finset.range J, a n) Filter.atTop (nhds (circleSeries k g r
-            t)) := by
-      simpa [circleSeries, a] using hs.hasSum.tendsto_sum_nat
+            t)) := by simpa [circleSeries, a] using hs.hasSum.tendsto_sum_nat
     have hEqFun :
         (fun J => finiteCirclePoly k r (fun n : Fin (J + 1) => g n.1) t) =
           (fun J => ∑ n ∈ Finset.range (J + 1), a n) := by
@@ -3739,15 +3448,14 @@ theorem circleSeries_l2_identity :
       (hd.hasSum_iff_tendsto_nat).1 hd.hasSum
     have hshift :
         Filter.Tendsto (fun J => ∑ n ∈ Finset.range (J + 1), d n) Filter.atTop
-          (nhds (∑' n : ℕ, d n)) := by
-      exact hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
+          (nhds (∑' n : ℕ, d n)) :=
+      hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
     simpa [d, Finset.sum_range] using hshift
   have hsum_tendsto' :
       Filter.Tendsto
         (fun J => ∑ n : Fin (J + 1), |qkn k n.1 r| ^ 2 * ‖g n.1‖ ^ 2)
         Filter.atTop
-        (nhds (∑' n : ℕ, |qkn k n r| ^ 2 * ‖g n‖ ^ 2)) := by
-    simpa [d] using hsum_tendsto
+        (nhds (∑' n : ℕ, |qkn k n r| ^ 2 * ‖g n‖ ^ 2)) := by simpa [d] using hsum_tendsto
   have hEqSeq :
       (fun J => circleL2Sq (finiteCirclePoly k r (fun n : Fin (J + 1) => g n.1))) =
         (fun J => ∑ n : Fin (J + 1), |qkn k n.1 r| ^ 2 * ‖g n.1‖ ^ 2) := by
@@ -3820,8 +3528,7 @@ theorem circleSeries_fourierCoeff_hermiteCoeff :
     intro t
     refine Summable.of_norm_bounded (g := fun m => ‖c m‖) hc_norm ?_
     intro m
-    rw [norm_mul, show ‖fourier (m : ℤ) t‖ = 1 by
-      simp, mul_one]
+    rw [norm_mul, show ‖fourier (m : ℤ) t‖ = 1 by simp, mul_one]
   calc
     fourierCoeff (circleSeries k (hermiteCoeff k G) r) (n : ℤ)
       = ∑' m : ℕ,
@@ -3839,17 +3546,14 @@ theorem circleSeries_fourierCoeff_hermiteCoeff :
               funext t
               unfold circleSeries
               rw [← tsum_mul_left]
-            rw [hfun]
-            rw [MeasureTheory.integral_tsum_of_summable_integral_norm hInt hIntNorm]
+            rw [hfun, MeasureTheory.integral_tsum_of_summable_integral_norm hInt hIntNorm]
     _ = ∑' m : ℕ, if m = n then c m else 0 := by
           apply tsum_congr
           intro m
           calc
             ∫ t : Circle, fourier (-(n : ℤ)) t * (c m * fourier (m : ℤ) t) ∂AddCircle.haarAddCircle
-              = fourierCoeff (fun t : Circle => c m * fourier (m : ℤ) t) (n : ℤ) := by
-                  rfl
-            _ = c m * fourierCoeff (fourier (m : ℤ)) (n : ℤ) := by
-                  rw [fourierCoeff.const_mul]
+              = fourierCoeff (fun t : Circle => c m * fourier (m : ℤ) t) (n : ℤ) := by rfl
+            _ = c m * fourierCoeff (fourier (m : ℤ)) (n : ℤ) := by rw [fourierCoeff.const_mul]
             _ = if m = n then c m else 0 := by
                   by_cases hm : m = n
                   · subst m
@@ -3863,10 +3567,8 @@ theorem circleSeries_fourierCoeff_hermiteCoeff :
                       simpa [Pi.single_apply, hm] using
                         congrFun (fourierCoeff_fourier (T := T) (m : ℤ)) (n : ℤ)
                     simp [hm, hfour]
-    _ = c n := by
-          simp
-    _ = hermiteCoeff k G n * (qkn k n r : ℂ) := by
-          simp [c]
+    _ = c n := by simp
+    _ = hermiteCoeff k G n * (qkn k n r : ℂ) := by simp [c]
 
 /-- Orthogonality to `Phi k 0` yields an expansion with vanishing zero mode. -/
 theorem h_k_expansion_perp_phi0 :
@@ -3883,19 +3585,9 @@ theorem h_k_expansion_perp_phi0 :
 private lemma sub_truncate_mem_Hk {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k) (J : ℕ) :
     (fun z => G z - truncate k J G z) ∈ Hk k := by
   refine ⟨?_, ?_⟩
-  · have hG_aesm : AEStronglyMeasurable G volume := by
-      apply aestronglyMeasurable_of_tendsto_ae (u := Filter.atTop) (f := fun J => truncate k J G)
-      · intro J
-        unfold truncate finiteHermiteSum
-        exact
-          (continuous_finsetSum _ (fun m _ =>
-            continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
-      · exact Filter.Eventually.of_forall (fun z => truncate_tendsto_pointwise hG z)
-    have hT_aesm : AEStronglyMeasurable (truncate k J G) volume := by
-      unfold truncate finiteHermiteSum
-      exact
-        (continuous_finsetSum _ (fun m _ =>
-          continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
+  · have hG_aesm : AEStronglyMeasurable G volume := aestronglyMeasurable_of_mem_Hk hG
+    have hT_aesm : AEStronglyMeasurable (truncate k J G) volume :=
+      (continuous_finiteHermiteSum k _).aestronglyMeasurable
     have hbound :
         Integrable
           (fun z : ℂ =>
@@ -3908,8 +3600,8 @@ private lemma sub_truncate_mem_Hk {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k) 
       (continuous_neg.comp ((continuous_pow 2).comp continuous_norm)).rexp.aestronglyMeasurable
     have hmeas :
         AEStronglyMeasurable
-          (fun z : ℂ => ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) volume := by
-      exact ((hG_aesm.sub hT_aesm).norm.pow 2).mul hExp_aesm
+          (fun z : ℂ => ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) volume :=
+      ((hG_aesm.sub hT_aesm).norm.pow 2).mul hExp_aesm
     refine MeasureTheory.Integrable.mono' hbound hmeas ?_
     filter_upwards with z
     have hsub : ‖G z - truncate k J G z‖ ≤ ‖G z‖ + ‖truncate k J G z‖ := norm_sub_le _ _
@@ -3917,19 +3609,18 @@ private lemma sub_truncate_mem_Hk {k : ℕ} {G : ℂ → ℂ} (hG : G ∈ Hk k) 
     have hsq :
         ‖G z - truncate k J G z‖ ^ 2 ≤ 2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2) := by
       have hsubsq :
-          ‖G z - truncate k J G z‖ ^ 2 ≤ (‖G z‖ + ‖truncate k J G z‖) ^ 2 := by
-        exact pow_le_pow_left₀ (norm_nonneg _) hsub 2
+          ‖G z - truncate k J G z‖ ^ 2 ≤ (‖G z‖ + ‖truncate k J G z‖) ^ 2 :=
+        pow_le_pow_left₀ (norm_nonneg _) hsub 2
       have hab :
           (‖G z‖ + ‖truncate k J G z‖) ^ 2 ≤ 2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2) := by
         nlinarith [sq_nonneg (‖G z‖ - ‖truncate k J G z‖)]
       exact le_trans hsubsq hab
     have hmul :
         ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) ≤
-          (2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2)) * rexp (-‖z‖ ^ 2) := by
-      exact mul_le_mul_of_nonneg_right hsq hexp
+          (2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2)) * rexp (-‖z‖ ^ 2) :=
+      mul_le_mul_of_nonneg_right hsq hexp
     have hnonneg :
-        0 ≤ ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-      positivity
+        0 ≤ ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by positivity
     rw [Real.norm_of_nonneg hnonneg]
     calc
       ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)
@@ -3968,84 +3659,8 @@ theorem truncate_tendsto :
             ∃ J0 : ℕ, ∀ J ≥ J0, weightedNorm (truncate k J G - G) ≤ ε := by
   intro k G hG ε hε
   -- Step 1: G - truncate k J G ∈ Hk k
-  have hDiff_mem : ∀ J, (fun z => G z - truncate k J G z) ∈ Hk k := by
-    intro J
-    refine ⟨?_, ?_⟩
-    · have hG_aesm : AEStronglyMeasurable G volume := by
-        apply aestronglyMeasurable_of_tendsto_ae (u := Filter.atTop) (f := fun J => truncate k J G)
-        · intro J
-          unfold truncate finiteHermiteSum
-          exact
-            (continuous_finsetSum _ (fun m _ =>
-              continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
-        · exact Filter.Eventually.of_forall (fun z => truncate_tendsto_pointwise hG z)
-      have hT_aesm : AEStronglyMeasurable (truncate k J G) volume := by
-        unfold truncate finiteHermiteSum
-        exact
-          (continuous_finsetSum _ (fun m _ =>
-            continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
-      have hbound :
-          Integrable
-            (fun z : ℂ =>
-              (2 : ℝ) *
-                (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) +
-                  ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2))) := by
-        simpa [two_mul, mul_add, add_comm, add_left_comm, add_assoc, mul_comm, mul_left_comm,
-          mul_assoc] using (hG.1.add (integrable_truncate_normSq_exp k J G)).const_mul (2 : ℝ)
-      have hExp_aesm : AEStronglyMeasurable (fun z : ℂ => rexp (-‖z‖ ^ 2)) volume :=
-        (continuous_neg.comp ((continuous_pow 2).comp continuous_norm)).rexp.aestronglyMeasurable
-      have hmeas :
-          AEStronglyMeasurable
-            (fun z : ℂ => ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) volume := by
-        exact ((hG_aesm.sub hT_aesm).norm.pow 2).mul hExp_aesm
-      refine MeasureTheory.Integrable.mono' hbound hmeas ?_
-      filter_upwards with z
-      have hsub : ‖G z - truncate k J G z‖ ≤ ‖G z‖ + ‖truncate k J G z‖ := norm_sub_le _ _
-      have hexp : 0 ≤ rexp (-‖z‖ ^ 2) := exp_nonneg _
-      have hsq :
-          ‖G z - truncate k J G z‖ ^ 2 ≤ 2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2) := by
-        have hsubsq :
-            ‖G z - truncate k J G z‖ ^ 2 ≤ (‖G z‖ + ‖truncate k J G z‖) ^ 2 := by
-          exact pow_le_pow_left₀ (norm_nonneg _) hsub 2
-        have hab :
-            (‖G z‖ + ‖truncate k J G z‖) ^ 2 ≤ 2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2) := by
-          nlinarith [sq_nonneg (‖G z‖ - ‖truncate k J G z‖)]
-        exact le_trans hsubsq hab
-      have hmul :
-          ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) ≤
-            (2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2)) * rexp (-‖z‖ ^ 2) := by
-        exact mul_le_mul_of_nonneg_right hsq hexp
-      have hnonneg :
-          0 ≤ ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-        positivity
-      rw [Real.norm_of_nonneg hnonneg]
-      calc
-        ‖G z - truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)
-            ≤ (2 * (‖G z‖ ^ 2 + ‖truncate k J G z‖ ^ 2)) * rexp (-‖z‖ ^ 2) := hmul
-        _ = (2 : ℝ) *
-              (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) +
-                ‖truncate k J G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by ring
-    · intro z
-      have hGz := hG.2 z
-      have hTzH := (truncate_mem_Hk k J G).2 z
-      have hcoeff_decomp : ∀ n,
-          weightedInner (fun z' => G z' - truncate k J G z') (Phi k n) =
-            weightedInner G (Phi k n) - weightedInner (truncate k J G) (Phi k n) := by
-        intro n
-        have h1 := hermiteCoeff_sub_truncate k J G n
-        have h2 := hermiteCoeff_truncate (k := k) (J := J) (G := G) n
-        simp only [hermiteCoeff] at h1 h2
-        rw [h1]
-        by_cases hn : n < J + 1 <;> simp [hn, h2]
-      have hterm : ∀ n,
-          weightedInner (fun z' => G z' - truncate k J G z') (Phi k n) * Phi k n z =
-            weightedInner G (Phi k n) * Phi k n z -
-              weightedInner (truncate k J G) (Phi k n) * Phi k n z := by
-        intro n
-        rw [hcoeff_decomp]
-        ring
-      simp_rw [hterm]
-      exact hGz.sub hTzH
+  have hDiff_mem : ∀ J, (fun z => G z - truncate k J G z) ∈ Hk k := fun J =>
+    sub_truncate_mem_Hk hG J
   -- Step 2: Norm symmetry
   have hNormSym : ∀ J, weightedNorm (truncate k J G - G) =
       weightedNorm (fun z => G z - truncate k J G z) := by
@@ -4136,10 +3751,8 @@ theorem truncate_locally_uniform :
                   ∀ z : ℂ, ‖z‖ ≤ R → ‖truncate k J G z - G z‖ ≤ ε := by
   intro k G hG R ε _hR hε
   let R' : ℝ := max 1 R
-  have hR' : 1 ≤ R' := by
-    exact le_max_left _ _
-  have hRR' : R ≤ R' := by
-    exact le_max_right _ _
+  have hR' : 1 ≤ R' := by exact le_max_left _ _
+  have hRR' : R ≤ R' := by exact le_max_right _ _
   let B : ℕ → ℝ := fun n =>
     ((2 : ℝ) ^ k * (n + 1 : ℝ) ^ k * R' ^ k * R' ^ n) /
       Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ))
@@ -4160,12 +3773,11 @@ theorem truncate_locally_uniform :
     have hmajorant :
         Summable
           (fun n : ℕ =>
-            C * ((((n + 1 : ℝ) ^ k) ^ 2 * (R' ^ n) ^ 2) / (Nat.factorial n : ℝ))) := by
-      exact hbase.mul_left C
+            C * ((((n + 1 : ℝ) ^ k) ^ 2 * (R' ^ n) ^ 2) / (Nat.factorial n : ℝ))) :=
+      hbase.mul_left C
     refine Summable.of_nonneg_of_le (fun n => sq_nonneg (B n)) ?_ hmajorant
     intro n
-    have hsqrt_ne : Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ)) ≠ 0 := by
-      positivity
+    have hsqrt_ne : Real.sqrt ((Nat.factorial k : ℝ) * (Nat.factorial n : ℝ)) ≠ 0 := by positivity
     calc
       B n ^ 2 ≤ B n ^ 2 := le_rfl
       _ = C * ((((n + 1 : ℝ) ^ k) ^ 2 * (R' ^ n) ^ 2) / (Nat.factorial n : ℝ)) := by
@@ -4188,8 +3800,7 @@ theorem truncate_locally_uniform :
     intro n
     dsimp [a]
     calc
-      ‖hermiteCoeff k G n * Phi k n z‖ = ‖hermiteCoeff k G n‖ * ‖Phi k n z‖ := by
-        simp []
+      ‖hermiteCoeff k G n * Phi k n z‖ = ‖hermiteCoeff k G n‖ * ‖Phi k n z‖ := by simp []
       _ ≤ ‖hermiteCoeff k G n‖ * B n := by
         refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
         exact phi_norm_le_majorant (k := k) (n := n) (R := R') hR' hzR'
@@ -4205,8 +3816,7 @@ theorem truncate_locally_uniform :
     dsimp [a]
     calc
       ‖hermiteCoeff k G (n + (J + 1)) * Phi k (n + (J + 1)) z‖
-          = ‖hermiteCoeff k G (n + (J + 1))‖ * ‖Phi k (n + (J + 1)) z‖ := by
-            simp []
+          = ‖hermiteCoeff k G (n + (J + 1))‖ * ‖Phi k (n + (J + 1)) z‖ := by simp []
       _ ≤ ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) := by
             refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
             exact
@@ -4218,8 +3828,7 @@ theorem truncate_locally_uniform :
     dsimp [a]
     calc
       ‖hermiteCoeff k G (n + (J + 1)) * Phi k (n + (J + 1)) z‖
-          = ‖hermiteCoeff k G (n + (J + 1))‖ * ‖Phi k (n + (J + 1)) z‖ := by
-            simp []
+          = ‖hermiteCoeff k G (n + (J + 1))‖ * ‖Phi k (n + (J + 1)) z‖ := by simp []
       _ ≤ ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) := by
             refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
             exact
@@ -4229,15 +3838,14 @@ theorem truncate_locally_uniform :
     have hJtail := hJ0 (J + 1) (by omega)
     rw [dist_zero_right] at hJtail
     have hnonneg :
-        0 ≤ ∑' n : ℕ, ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) := by
-      exact tsum_nonneg fun n => by positivity
+        0 ≤ ∑' n : ℕ, ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) :=
+      tsum_nonneg fun n => by positivity
     simpa [Real.norm_eq_abs, abs_of_nonneg hnonneg] using hJtail
   have htrunc :
       truncate k J G z = ∑ n ∈ Finset.range (J + 1), a n := by
     change ∑ n : Fin (J + 1), hermiteCoeff k G n.1 * Phi k n.1 z = _
     rw [Finset.sum_range]
-  have htsum : (∑' n : ℕ, a n) = G z := by
-    simpa [a, hermiteCoeff] using (hG.2 z).tsum_eq
+  have htsum : (∑' n : ℕ, a n) = G z := by simpa [a, hermiteCoeff] using (hG.2 z).tsum_eq
   have hsplit :
       ∑ n ∈ Finset.range (J + 1), a n + ∑' n : ℕ, a (n + (J + 1)) = G z := by
     simpa [htsum] using hs.sum_add_tsum_nat_add (J + 1)
@@ -4262,14 +3870,13 @@ theorem truncate_locally_uniform :
             dsimp [a]
             calc
               ‖hermiteCoeff k G (n + (J + 1)) * Phi k (n + (J + 1)) z‖
-                  = ‖hermiteCoeff k G (n + (J + 1))‖ * ‖Phi k (n + (J + 1)) z‖ := by
-                    simp []
+                  = ‖hermiteCoeff k G (n + (J + 1))‖ * ‖Phi k (n + (J + 1)) z‖ := by simp []
               _ ≤ ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) := by
                     refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
                     exact
                       phi_norm_le_majorant (k := k) (n := n + (J + 1)) (R := R') hR' hzR'
-      _ ≤ ∑' n : ℕ, ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) := by
-            exact hprod_tail.sum_le_tsum _ (fun n hn => by positivity)
+      _ ≤ ∑' n : ℕ, ‖hermiteCoeff k G (n + (J + 1))‖ * B (n + (J + 1)) :=
+            hprod_tail.sum_le_tsum _ (fun n hn => by positivity)
   calc
     ‖truncate k J G z - G z‖ = ‖∑' n : ℕ, a (n + (J + 1))‖ := by rw [htail_eq, norm_neg]
     _ ≤ ∑' n : ℕ, ‖a (n + (J + 1))‖ := norm_tsum_le_tsum_norm hnorm_tail
@@ -4316,8 +3923,7 @@ theorem truncCirclePoly_tendsto_circleSeries :
             (by positivity : Real.sqrt ((Nat.factorial k : ℕ) : ℝ) ≠ 0)
       · change ((fourier (-(k : ℤ)) t : ℂ)) ≠ 0
         intro h0
-        have hnorm : ‖(fourier (-(k : ℤ)) t : ℂ)‖ = 1 := by
-          simp
+        have hnorm : ‖(fourier (-(k : ℤ)) t : ℂ)‖ = 1 := by simp
         have : (0 : ℝ) = 1 := by
           rw [h0, norm_zero] at hnorm
           exact hnorm
@@ -4330,8 +3936,7 @@ theorem truncCirclePoly_tendsto_circleSeries :
           c * circleSeries k (hermiteCoeff k HJ) r t := by
       calc
         c * (circleSeries k (hermiteCoeff k G) r t - truncCirclePoly k r J G t)
-            = c * circleSeries k (hermiteCoeff k G) r t - c * truncCirclePoly k r J G t := by
-                ring
+            = c * circleSeries k (hermiteCoeff k G) r t - c * truncCirclePoly k r J G t := by ring
         _ = circleSeries k (hermiteCoeff k G) r t * circleLeadingFactor k r *
               ↑(-↑k • t).toCircle -
               truncCirclePoly k r J G t * circleLeadingFactor k r * ↑(-↑k • t).toCircle := by
@@ -4342,12 +3947,10 @@ theorem truncCirclePoly_tendsto_circleSeries :
               rw [hGcircle, hTcircle]
               ring
         _ = HJ (circlePoint r t) := by rfl
-        _ = c * circleSeries k (hermiteCoeff k HJ) r t := by
-              simpa [HJ, c] using hHcircle
+        _ = c * circleSeries k (hermiteCoeff k HJ) r t := by simpa [HJ, c] using hHcircle
     have hcancel :
         circleSeries k (hermiteCoeff k G) r t - truncCirclePoly k r J G t =
-          circleSeries k (hermiteCoeff k HJ) r t := by
-      exact mul_left_cancel₀ hc_ne hmain
+          circleSeries k (hermiteCoeff k HJ) r t := mul_left_cancel₀ hc_ne hmain
     calc
       truncCirclePoly k r J G t - circleSeries k (hermiteCoeff k G) r t
           = -(circleSeries k (hermiteCoeff k G) r t - truncCirclePoly k r J G t) := by ring
@@ -4387,8 +3990,7 @@ theorem truncCirclePoly_tendsto_circleSeries :
       apply tsum_congr
       intro c
       dsimp [f]
-      have hnot : ¬ (c + (J + 1) < J + 1) := by
-        exact Nat.not_lt_of_ge (Nat.le_add_left (J + 1) c)
+      have hnot : ¬ (c + (J + 1) < J + 1) := by exact Nat.not_lt_of_ge (Nat.le_add_left (J + 1) c)
       rw [if_neg hnot]
     rw [← hkey]
     have hinj : Function.Injective (fun n : ℕ => n + (J + 1)) := by
@@ -4407,8 +4009,7 @@ theorem truncCirclePoly_tendsto_circleSeries :
     have hJ1 : J0 ≤ J + 1 := le_trans hJ (Nat.le_succ J)
     have hJtail := hJ0 (J + 1) hJ1
     rw [dist_zero_right] at hJtail
-    have hnonneg : 0 ≤ ∑' n : ℕ, d (n + (J + 1)) := by
-      exact tsum_nonneg fun n => by positivity
+    have hnonneg : 0 ≤ ∑' n : ℕ, d (n + (J + 1)) := by exact tsum_nonneg fun n => by positivity
     simpa [Real.norm_eq_abs, abs_of_nonneg hnonneg] using hJtail
   calc
     circleL2Sq (truncCirclePoly k r J G - circleSeries k (hermiteCoeff k G) r)
@@ -4436,10 +4037,7 @@ theorem hermite_series_locally_uniform :
   have hε3 : (0 : ℝ) < ε / 3 := by linarith
   obtain ⟨J0, hJ0⟩ := truncate_locally_uniform hG R (ε / 3) hRpos hε3
   -- truncate k J0 G is continuous
-  have hcont_trunc : Continuous (truncate k J0 G) := by
-    unfold truncate finiteHermiteSum
-    refine continuous_finsetSum _ (fun n _ => ?_)
-    exact continuous_const.mul (continuous_Phi k n.1)
+  have hcont_trunc : Continuous (truncate k J0 G) := continuous_finiteHermiteSum k _
   -- By continuity of truncate at z₀, find δ₁ such that dist < ε/3
   have hcontAt : ContinuousAt (truncate k J0 G) z₀ := hcont_trunc.continuousAt
   rw [Metric.continuousAt_iff] at hcontAt
@@ -4469,8 +4067,7 @@ theorem hermite_series_locally_uniform :
           norm_add_le (G z - truncate k J0 G z) (truncate k J0 G z - truncate k J0 G z₀)]
     _ < ε / 3 + ε / 3 + ε / 3 := by
         have h1 : ‖G z - truncate k J0 G z‖ ≤ ε / 3 := by
-          rw [show G z - truncate k J0 G z = -(truncate k J0 G z - G z) by ring]
-          rw [norm_neg]
+          rw [show G z - truncate k J0 G z = -(truncate k J0 G z - G z) by ring, norm_neg]
           exact hclose_z
         linarith
     _ = ε := by ring
@@ -4546,8 +4143,7 @@ private theorem circleSeries_fourierCoeff_of_summable :
     intro t
     refine Summable.of_norm_bounded (g := fun m => ‖c m‖) hc_norm ?_
     intro m
-    rw [norm_mul, show ‖fourier (m : ℤ) t‖ = 1 by
-      simp, mul_one]
+    rw [norm_mul, show ‖fourier (m : ℤ) t‖ = 1 by simp, mul_one]
   calc
     fourierCoeff (circleSeries k h r) (n : ℤ)
       = ∑' m : ℕ,
@@ -4564,18 +4160,15 @@ private theorem circleSeries_fourierCoeff_of_summable :
               funext t
               unfold circleSeries
               rw [← tsum_mul_left]
-            rw [hfun]
-            rw [MeasureTheory.integral_tsum_of_summable_integral_norm hInt hIntNorm]
+            rw [hfun, MeasureTheory.integral_tsum_of_summable_integral_norm hInt hIntNorm]
     _ = ∑' m : ℕ, if m = n then c m else 0 := by
           apply tsum_congr
           intro m
           calc
             ∫ t : Circle, fourier (-(n : ℤ)) t * (c m * fourier (m : ℤ) t)
                 ∂AddCircle.haarAddCircle
-              = fourierCoeff (fun t : Circle => c m * fourier (m : ℤ) t) (n : ℤ) := by
-                  rfl
-            _ = c m * fourierCoeff (fourier (m : ℤ)) (n : ℤ) := by
-                  rw [fourierCoeff.const_mul]
+              = fourierCoeff (fun t : Circle => c m * fourier (m : ℤ) t) (n : ℤ) := by rfl
+            _ = c m * fourierCoeff (fourier (m : ℤ)) (n : ℤ) := by rw [fourierCoeff.const_mul]
             _ = if m = n then c m else 0 := by
                   by_cases hm : m = n
                   · subst m
@@ -4587,10 +4180,8 @@ private theorem circleSeries_fourierCoeff_of_summable :
                       simpa [Pi.single_apply, hm] using
                         congrFun (fourierCoeff_fourier (T := T) (m : ℤ)) (n : ℤ)
                     simp [hm, hfour]
-    _ = c n := by
-          simp
-    _ = h n * (qkn k n r : ℂ) := by
-          simp [c]
+    _ = c n := by simp
+    _ = h n * (qkn k n r : ℂ) := by simp [c]
 
 /-- The explicit Hermite series of a square-summable coefficient sequence has the expected polar
     representation on circles. -/
@@ -4613,11 +4204,9 @@ private theorem hermiteSeries_circle_representation_of_summable :
         ‖h n * (qkn k n r : ℂ) * fourier (n : ℤ) t‖ ≤ ‖h n‖ * |qkn k n r| := by
       calc
         ‖h n * (qkn k n r : ℂ) * fourier (n : ℤ) t‖
-            ≤ ‖h n * (qkn k n r : ℂ)‖ * ‖fourier (n : ℤ) t‖ := by
-              simp [mul_assoc]
+            ≤ ‖h n * (qkn k n r : ℂ)‖ * ‖fourier (n : ℤ) t‖ := by simp [mul_assoc]
         _ ≤ ‖h n‖ * |qkn k n r| := by
-              rw [show ‖fourier (n : ℤ) t‖ = 1 by
-                simp]
+              rw [show ‖fourier (n : ℤ) t‖ = 1 by simp]
               simp [Complex.norm_real, Real.norm_eq_abs]
     have hAMGM : ‖h n‖ * |qkn k n r| ≤ (‖h n‖ ^ 2 + |qkn k n r| ^ 2) / 2 := by
       nlinarith [sq_nonneg (‖h n‖ - |qkn k n r|)]
@@ -4651,8 +4240,7 @@ private lemma circleLeadingFactor_fourier_ne_zero {k : ℕ} {r : ℝ} (hr : 0 < 
         (by positivity : Real.sqrt ((Nat.factorial k : ℕ) : ℝ) ≠ 0)
   · change ((fourier (-(k : ℤ)) t : ℂ)) ≠ 0
     intro h0
-    have hnorm : ‖(fourier (-(k : ℤ)) t : ℂ)‖ = 1 := by
-      simp
+    have hnorm : ‖(fourier (-(k : ℤ)) t : ℂ)‖ = 1 := by simp
     rw [h0, norm_zero] at hnorm
     norm_num at hnorm
 
@@ -4670,8 +4258,7 @@ private theorem hermiteSeries_unique_of_summable :
   have hcircle : circleSeries k a r = circleSeries k b r := by
     ext t
     let c : ℂ := circleLeadingFactor k r * (fourier (-(k : ℤ)) t : ℂ)
-    have hc_ne : c ≠ 0 := by
-      simpa [c] using circleLeadingFactor_fourier_ne_zero (k := k) hr t
+    have hc_ne : c ≠ 0 := by simpa [c] using circleLeadingFactor_fourier_ne_zero (k := k) hr t
     have ha_repr := hermiteSeries_circle_representation_of_summable (k := k) (h := a) ha r hr t
     have hb_repr := hermiteSeries_circle_representation_of_summable (k := k) (h := b) hb r hr t
     have hz := congrFun hEq (circlePoint r t)
@@ -4680,8 +4267,7 @@ private theorem hermiteSeries_unique_of_summable :
         c * circleSeries k a r t = hermiteSeries k a (circlePoint r t) := by
           simpa [c] using ha_repr.symm
         _ = hermiteSeries k b (circlePoint r t) := by simpa using hz
-        _ = c * circleSeries k b r t := by
-          simpa [c] using hb_repr
+        _ = c * circleSeries k b r t := by simpa [c] using hb_repr
     exact mul_left_cancel₀ hc_ne hmain
   have hfour := congrArg (fun f : Circle → ℂ => fourierCoeff f (n : ℤ)) hcircle
   have ha_coeff := circleSeries_fourierCoeff_of_summable (k := k) (h := a) ha hr n
@@ -4754,8 +4340,7 @@ private lemma summable_hermite_eval_mul
     · have hSpos : 0 < S := lt_of_le_of_ne hS_nn (Ne.symm hS0)
       have hsqrt_pos : 0 < Real.sqrt S := Real.sqrt_pos.2 hSpos
       have hsqrt_le : Real.sqrt S ≤ Cz := by
-        have hsqS : Real.sqrt S * Real.sqrt S = S := by
-          nlinarith [Real.sq_sqrt hS_nn]
+        have hsqS : Real.sqrt S * Real.sqrt S = S := by nlinarith [Real.sq_sqrt hS_nn]
         nlinarith [hSqLe, hsqS, hsqrt_pos]
       have hCz_nn : 0 ≤ Cz := le_trans (by simp [hS_def]) hsqrt_le
       nlinarith [hsqrt_le, hCz_nn]
@@ -4780,8 +4365,7 @@ private lemma summable_hermite_eval_mul
     ((hl2.add hPhi_sq_summable).div_const 2) ?_
   intro n
   have hmul :
-      ‖h n * Phi k n z‖ ≤ ‖h n‖ * ‖Phi k n z‖ := by
-    simp
+      ‖h n * Phi k n z‖ ≤ ‖h n‖ * ‖Phi k n z‖ := by simp
   have hAMGM : ‖h n‖ * ‖Phi k n z‖ ≤ (‖h n‖ ^ 2 + ‖Phi k n z‖ ^ 2) / 2 := by
     nlinarith [sq_nonneg (‖h n‖ - ‖Phi k n z‖)]
   exact hmul.trans hAMGM
@@ -4797,8 +4381,7 @@ private lemma finiteHermiteSum_tendsto_hermiteSeries
   have hsumm := summable_hermite_eval_mul k h hbdd hl2 z
   have hconv :
       Filter.Tendsto (fun J : ℕ => ∑ n ∈ Finset.range J, h n * Phi k n z) Filter.atTop
-        (𝓝 (hermiteSeries k h z)) := by
-    simpa [hermiteSeries] using hsumm.hasSum.tendsto_sum_nat
+        (𝓝 (hermiteSeries k h z)) := by simpa [hermiteSeries] using hsumm.hasSum.tendsto_sum_nat
   have hshift : Filter.Tendsto (fun J : ℕ => J + 1) Filter.atTop Filter.atTop := by
     simpa using (Filter.tendsto_add_atTop_nat 1)
   have hconv' := hconv.comp hshift
@@ -4827,11 +4410,7 @@ private theorem hermiteSeries_aestronglyMeasurable
     AEStronglyMeasurable (hermiteSeries k h) volume := by
   apply aestronglyMeasurable_of_tendsto_ae (u := Filter.atTop)
     (f := fun J => finiteHermiteSum k (fun n : Fin (J + 1) => h n.1))
-  · intro J
-    unfold finiteHermiteSum
-    exact
-      (continuous_finsetSum _ (fun m _ =>
-        continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
+  · exact fun J => (continuous_finiteHermiteSum k _).aestronglyMeasurable
   · exact Filter.Eventually.of_forall
       (finiteHermiteSum_tendsto_hermiteSeries k h hbdd hl2)
 
@@ -4851,8 +4430,7 @@ private theorem gaussianWeight_sq (z : ℂ) :
     gaussianWeight z ^ 2 = (1 / Real.pi) * Real.exp (-‖z‖ ^ 2) := by
   unfold gaussianWeight
   have hpi : 0 ≤ Real.pi := le_of_lt Real.pi_pos
-  have hsqrt : Real.sqrt Real.pi ^ 2 = Real.pi := by
-    rw [Real.sq_sqrt hpi]
+  have hsqrt : Real.sqrt Real.pi ^ 2 = Real.pi := by rw [Real.sq_sqrt hpi]
   have hexp :
       Real.exp (-(‖z‖ ^ 2) / 2) ^ 2 = Real.exp (-‖z‖ ^ 2) := by
     calc
@@ -4872,8 +4450,8 @@ private theorem continuous_gaussianWeight : Continuous gaussianWeight := by
 private theorem aestronglyMeasurable_gaussianScale
     {F : ℂ → ℂ}
     (hF : AEStronglyMeasurable F volume) :
-    AEStronglyMeasurable (gaussianScale F) volume := by
-  exact (Complex.continuous_ofReal.comp continuous_gaussianWeight).aestronglyMeasurable.mul hF
+    AEStronglyMeasurable (gaussianScale F) volume :=
+  (Complex.continuous_ofReal.comp continuous_gaussianWeight).aestronglyMeasurable.mul hF
 
 private theorem weightedNormSq_eq_integral_sq_norm_gaussianScale
     (G : ℂ → ℂ) :
@@ -4954,8 +4532,7 @@ private theorem integrable_weightedCross_of_memLp
       filter_upwards [hG.coeFn_toLp, hF.coeFn_toLp] with z hzG hzF
       rw [hzG, hzF]
     have hint' :
-        Integrable (fun z : ℂ => inner ℂ (gaussianScale G z) (gaussianScale F z)) := by
-      exact hint.congr hEq
+        Integrable (fun z : ℂ => inner ℂ (gaussianScale G z) (gaussianScale F z)) := hint.congr hEq
     convert hint' using 1
     ext z
     rw [RCLike.inner_apply']
@@ -4972,8 +4549,7 @@ private theorem integrable_weightedCross_of_memLp
         ring, hgw]
     push_cast
     ring
-  have hpi_ne : (Real.pi : ℂ) ≠ 0 := by
-    exact_mod_cast Real.pi_ne_zero
+  have hpi_ne : (Real.pi : ℂ) ≠ 0 := by exact_mod_cast Real.pi_ne_zero
   simpa [hpi_ne, mul_assoc, mul_left_comm, mul_comm] using hscaled.const_mul (Real.pi : ℂ)
 
 private theorem weightedInner_eq_l2Inner
@@ -5052,6 +4628,8 @@ private lemma hermiteSeries_integrable_sq {k : ℕ} (h : ℕ → ℂ)
   set G : ℂ → ℂ := hermiteSeries k h with hGdef
   set F : ℕ → ℂ → ℂ := fun J => finiteHermiteSum k (fun n : Fin (J + 1) => h n.1) with hFdef
   let t : ℕ → ℝ := fun n => ‖h n‖ ^ 2
+  have hFint : ∀ J, Integrable (fun z : ℂ => ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)) :=
+    fun J => (finiteHermiteSum_mem_Hk k (a := fun n : Fin (J + 1) => h n.1)).1
   have hF_tendsto :
       Filter.Tendsto (fun J => weightedNormSq (F J))
         Filter.atTop (nhds (∑' n : ℕ, t n)) := by
@@ -5061,8 +4639,8 @@ private lemma hermiteSeries_integrable_sq {k : ℕ} (h : ℕ → ℂ)
       (hh.hasSum_iff_tendsto_nat).1 hh.hasSum
     have hshift :
         Filter.Tendsto (fun J => ∑ n ∈ Finset.range (J + 1), t n)
-          Filter.atTop (nhds (∑' n : ℕ, t n)) := by
-      exact hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
+          Filter.atTop (nhds (∑' n : ℕ, t n)) :=
+      hnat.comp (Filter.tendsto_atTop_atTop.mpr (fun b => ⟨b, fun n hn => by omega⟩))
     have hEqFun :
         (fun J => weightedNormSq (F J)) =
           (fun J => ∑ n ∈ Finset.range (J + 1), t n) := by
@@ -5074,122 +4652,16 @@ private lemma hermiteSeries_integrable_sq {k : ℕ} (h : ℕ → ℂ)
       exact finiteHermiteSum_normSq (k := k) (a := fun n : Fin (J + 1) => h n.1)
     rw [hEqFun]
     exact hshift
-  have hpi_F_tendsto :
-      Filter.Tendsto (fun J => Real.pi * weightedNormSq (F J))
-        Filter.atTop (nhds (Real.pi * ∑' n : ℕ, t n)) :=
-    Filter.Tendsto.const_mul Real.pi hF_tendsto
-  have hLiminfENNR :
-      Filter.liminf
-          (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (F J)))
-          Filter.atTop =
-        ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := by
-    have hto :
-        Filter.Tendsto
-            (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (F J)))
-            Filter.atTop
-            (nhds (ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n))) :=
-      (ENNReal.continuous_ofReal.tendsto _).comp hpi_F_tendsto
-    exact hto.liminf_eq
-  have hNonnegG : ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-    exact Filter.Eventually.of_forall (fun z => by positivity)
-  have hLiminfPt :
-      ∀ z : ℂ,
-        Filter.liminf
-            (fun J => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop =
-          ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-    intro z
-    have hFz :
-        Filter.Tendsto (fun J => F J z) Filter.atTop (nhds (G z)) := by
-      simpa [F, G] using finiteHermiteSum_tendsto_hermiteSeries k h hbdd hh z
-    have hreal :
-        Filter.Tendsto (fun J => ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          Filter.atTop (nhds (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))) := by
-      have hsq :
-          Filter.Tendsto (fun J => ‖F J z‖ ^ 2)
-            Filter.atTop (nhds (‖G z‖ ^ 2)) := by
-        exact (hFz.norm.pow 2)
-      exact hsq.mul_const (rexp (-‖z‖ ^ 2))
-    have hto :
-        Filter.Tendsto
-            (fun J => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop
-            (nhds (ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)))) :=
-      (ENNReal.continuous_ofReal.tendsto _).comp hreal
-    exact hto.liminf_eq
-  have hFatou :
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
-        Filter.liminf
-            (fun J =>
-              ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop := by
-    have hmeas :
-        ∀ J : ℕ,
-          AEMeasurable
-            (fun z : ℂ =>
-              ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2))) volume := by
-      intro J
-      exact ((finiteHermiteSum_mem_Hk k (a := fun n : Fin (J + 1) => h
-          n.1)).1).aestronglyMeasurable.aemeasurable.ennreal_ofReal
-    have hfatou_raw := MeasureTheory.lintegral_liminf_le' (u := Filter.atTop) hmeas
-    have hcongr :
-        (∫⁻ z : ℂ,
-            Filter.liminf
-              (fun J => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop) =
-          ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      apply MeasureTheory.lintegral_congr_ae
-      exact Filter.Eventually.of_forall hLiminfPt
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          = ∫⁻ z : ℂ,
-              Filter.liminf
-                (fun J => ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-                Filter.atTop := hcongr.symm
-      _ ≤ Filter.liminf
-            (fun J =>
-              ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop := hfatou_raw
-  have hLinEqF :
-      ∀ J : ℕ,
-        ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)) =
-          ENNReal.ofReal (Real.pi * weightedNormSq (F J)) := by
-    intro J
-    have hIntJ :
-        Integrable (fun z : ℂ => ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)) :=
-      (finiteHermiteSum_mem_Hk k (a := fun n : Fin (J + 1) => h n.1)).1
-    have hNonnegJ :
-        ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-      exact Filter.Eventually.of_forall (fun z => by positivity)
-    have hIntEq :
-        ∫ z : ℂ, ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2) = Real.pi * weightedNormSq (F J) := by
-      unfold F weightedNormSq HermiteLEAN.weightedNormSq
-      field_simp [Real.pi_ne_zero]
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          = ENNReal.ofReal (∫ z : ℂ, ‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-              symm
-              exact MeasureTheory.ofReal_integral_eq_lintegral_ofReal hIntJ hNonnegJ
-      _ = ENNReal.ofReal (Real.pi * weightedNormSq (F J)) := by rw [hIntEq]
+  have hNonnegG : ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2) :=
+    Filter.Eventually.of_forall (fun z => by positivity)
   have hBound :
       ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
-        ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := by
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          ≤ Filter.liminf
-              (fun J =>
-                ∫⁻ z : ℂ, ENNReal.ofReal (‖F J z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop := hFatou
-      _ = Filter.liminf
-            (fun J => ENNReal.ofReal (Real.pi * weightedNormSq (F J)))
-            Filter.atTop := by
-              congr 1
-              funext J
-              exact hLinEqF J
-      _ = ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) := hLiminfENNR
+        ENNReal.ofReal (Real.pi * ∑' n : ℕ, t n) :=
+    lintegral_normSq_le_pi_mul_of_tendsto hFint hF_tendsto
+      (fun z => by simpa [F, G] using finiteHermiteSum_tendsto_hermiteSeries k h hbdd hh z)
   have hlin_lt_top :
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) < ⊤ := by
-    exact lt_of_le_of_lt hBound ENNReal.ofReal_lt_top
+      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z‖ ^ 2 * rexp (-‖z‖ ^ 2)) < ⊤ :=
+    lt_of_le_of_lt hBound ENNReal.ofReal_lt_top
   have hExp_aesm : AEStronglyMeasurable (fun z : ℂ => rexp (-‖z‖ ^ 2)) volume :=
     (continuous_neg.comp ((continuous_pow 2).comp continuous_norm)).rexp.aestronglyMeasurable
   have hf_aesm :
@@ -5235,8 +4707,8 @@ private lemma hermiteSeries_truncation_lintegral_bound {k : ℕ} (h : ℕ → �
     simpa [hSJ'] using sub_truncate_mem_Hk hGN_mem J
   have hParseval :
       weightedNormSq (fun z : ℂ => GN N z - SJ z) =
-        ∑' m : ℕ, ‖hermiteCoeff k (fun z : ℂ => GN N z - SJ z) m‖ ^ 2 := by
-    exact hermiteCoeff_parseval hDiff_mem
+        ∑' m : ℕ, ‖hermiteCoeff k (fun z : ℂ => GN N z - SJ z) m‖ ^ 2 :=
+    hermiteCoeff_parseval hDiff_mem
   have hCoeff_bound :
       ∀ m : ℕ,
         ‖hermiteCoeff k (fun z : ℂ => GN N z - SJ z) m‖ ^ 2 ≤ s m := by
@@ -5277,23 +4749,8 @@ private lemma hermiteSeries_truncation_lintegral_bound {k : ℕ} (h : ℕ → �
       simp [s, hm']
   have hsum_le :
       ∑' m : ℕ, ‖hermiteCoeff k (fun z : ℂ => GN N z - SJ z) m‖ ^ 2 ≤
-        ∑' m : ℕ, s m := by
-    exact Summable.tsum_le_tsum hCoeff_bound (summable_sq_hermiteCoeff hDiff_mem) hs_summ
-  have hNonnegN :
-      0 ≤ Real.pi * weightedNormSq (fun z : ℂ => GN N z - SJ z) := by
-    have hnorm_nonneg : 0 ≤ weightedNormSq (fun z : ℂ => GN N z - SJ z) := by
-      rw [hParseval]
-      exact tsum_nonneg fun m => sq_nonneg _
-    exact mul_nonneg (le_of_lt Real.pi_pos) hnorm_nonneg
-  have hs_nonneg : 0 ≤ Real.pi * ∑' m : ℕ, s m := by
-    have hs_nonneg_term' : ∀ m : ℕ, 0 ≤ s m := by
-      intro m
-      by_cases hm : m < J + 1
-      · have hm' : m ≤ J := by omega
-        simp [s, hm']
-      · simp only [s, if_neg hm]
-        positivity
-    exact mul_nonneg (le_of_lt Real.pi_pos) (tsum_nonneg hs_nonneg_term')
+        ∑' m : ℕ, s m :=
+    Summable.tsum_le_tsum hCoeff_bound (summable_sq_hermiteCoeff hDiff_mem) hs_summ
   have hmul_le :
       Real.pi * weightedNormSq (fun z : ℂ => GN N z - SJ z) ≤ Real.pi * ∑' m : ℕ, s m := by
     rw [hParseval]
@@ -5301,23 +4758,8 @@ private lemma hermiteSeries_truncation_lintegral_bound {k : ℕ} (h : ℕ → �
   have hIntN :
       Integrable (fun z : ℂ => ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
     simpa [hSJ'] using (sub_truncate_mem_Hk hGN_mem J).1
-  have hNonnegIntN :
-      ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-    exact Filter.Eventually.of_forall (fun z => by positivity)
-  have hIntEq :
-      ∫ z : ℂ, ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) =
-        Real.pi * weightedNormSq (fun z : ℂ => GN N z - SJ z) := by
-    unfold weightedNormSq HermiteLEAN.weightedNormSq
-    field_simp [Real.pi_ne_zero]
-  calc
-    ∫⁻ z : ℂ, ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-        = ENNReal.ofReal (∫ z : ℂ, ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-            symm
-            exact MeasureTheory.ofReal_integral_eq_lintegral_ofReal hIntN hNonnegIntN
-    _ = ENNReal.ofReal (Real.pi * weightedNormSq (fun z : ℂ => GN N z - SJ z)) := by rw
-        [hIntEq]
-    _ ≤ ENNReal.ofReal (Real.pi * ∑' m : ℕ, s m) := by
-        exact ENNReal.ofReal_le_ofReal hmul_le
+  rw [lintegral_ofReal_normSq_eq (fun z => GN N z - SJ z) hIntN]
+  exact ENNReal.ofReal_le_ofReal hmul_le
 
 /-- The tail bound for the truncation difference in the Hermite-coefficient
 recovery argument: `‖G − S_J‖²_w ≤ ∑_{m≥J+1} ‖hₘ‖²`.  Extracted from
@@ -5349,77 +4791,29 @@ private lemma hermiteSeries_truncation_tail_bound {k : ℕ} (h : ℕ → ℂ)
         Filter.Tendsto (fun N => GN N z) Filter.atTop (nhds (G z)) :=
       (finiteHermiteSum_tendsto_hermiteSeries k h hbdd hh z).comp hshift
     exact hGN.sub tendsto_const_nhds
+  have hGN_int :
+      ∀ N : ℕ, Integrable (fun z : ℂ => ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
+    intro N
+    have hGN_mem : GN N ∈ Hk k := finiteHermiteSum_mem_Hk k (a := fun m : Fin ((N + (J + 1))
+        + 1) => h m.1)
+    have hSJ' : truncate k J (GN N) = SJ := by
+      ext z
+      change ∑ m : Fin (J + 1), hermiteCoeff k (GN N) m.1 * Phi k m.1 z =
+        ∑ m : Fin (J + 1), h m.1 * Phi k m.1 z
+      refine Finset.sum_congr rfl ?_
+      intro m hm
+      have hm' : (m : ℕ) < (N + (J + 1)) + 1 := by omega
+      rw [hermiteCoeff_finiteHermiteSum
+        (k := k) (a := fun q : Fin ((N + (J + 1)) + 1) => h q.1) m.1, dif_pos hm']
+    simpa [hSJ'] using (sub_truncate_mem_Hk hGN_mem J).1
   have hFatou :
       ∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
         Filter.liminf
           (fun N =>
             ∫⁻ z : ℂ, ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-          Filter.atTop := by
-    have hmeas :
-        ∀ N : ℕ,
-          AEMeasurable
-            (fun z : ℂ =>
-              ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))) volume := by
-      intro N
-      have hGN_mem : GN N ∈ Hk k := finiteHermiteSum_mem_Hk k (a := fun m : Fin ((N + (J + 1))
-          + 1) => h m.1)
-      have hGN_int : Integrable (fun z : ℂ => ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-        have hSJ' :
-            truncate k J (GN N) = SJ := by
-          ext z
-          change ∑ m : Fin (J + 1), hermiteCoeff k (GN N) m.1 * Phi k m.1 z =
-            ∑ m : Fin (J + 1), h m.1 * Phi k m.1 z
-          refine Finset.sum_congr rfl ?_
-          intro m hm
-          have hm' : (m : ℕ) < (N + (J + 1)) + 1 := by omega
-          rw [hermiteCoeff_finiteHermiteSum
-            (k := k) (a := fun q : Fin ((N + (J + 1)) + 1) => h q.1) m.1, dif_pos hm']
-        have hsub := (sub_truncate_mem_Hk hGN_mem J).1
-        simpa [hSJ'] using hsub
-      exact hGN_int.aestronglyMeasurable.aemeasurable.ennreal_ofReal
-    have hfatou_raw := MeasureTheory.lintegral_liminf_le' (u := Filter.atTop) hmeas
-    have hLiminfPt :
-        ∀ z : ℂ,
-          Filter.liminf
-              (fun N => ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop =
-            ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      intro z
-      have hreal :
-          Filter.Tendsto (fun N => ‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-            Filter.atTop
-            (nhds (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))) := by
-        have hsq :
-            Filter.Tendsto (fun N => ‖GN N z - SJ z‖ ^ 2)
-              Filter.atTop
-              (nhds (‖G z - SJ z‖ ^ 2)) := by
-          exact ((hPoint z).norm.pow 2)
-        exact hsq.mul_const (rexp (-‖z‖ ^ 2))
-      have hto :
-          Filter.Tendsto
-              (fun N => ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop
-              (nhds (ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))) :=
-        (ENNReal.continuous_ofReal.tendsto _).comp hreal
-      exact hto.liminf_eq
-    have hcongr :
-        (∫⁻ z : ℂ,
-            Filter.liminf
-              (fun N => ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-              Filter.atTop) =
-          ∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
-      apply MeasureTheory.lintegral_congr_ae
-      exact Filter.Eventually.of_forall hLiminfPt
-    calc
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))
-          = ∫⁻ z : ℂ,
-              Filter.liminf
-                (fun N => ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-                Filter.atTop := hcongr.symm
-      _ ≤ Filter.liminf
-            (fun N =>
-              ∫⁻ z : ℂ, ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)))
-            Filter.atTop := hfatou_raw
+          Filter.atTop :=
+    lintegral_normSq_le_liminf_of_tendsto
+      (G := fun z => G z - SJ z) (F := fun N z => GN N z - SJ z) hGN_int hPoint
   have hLinEq :
       ∀ N : ℕ,
         ∫⁻ z : ℂ, ENNReal.ofReal (‖GN N z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) ≤
@@ -5477,49 +4871,14 @@ private lemma hermiteSeries_truncation_tail_bound {k : ℕ} (h : ℕ → ℂ)
       · push Not at hlt
         exact ⟨b - (J + 1), show b - (J + 1) + (J + 1) = b from Nat.sub_add_cancel hlt⟩
     exact (Function.Injective.tsum_eq hinj hsupp).symm
-  have hNonnegDiff :
-      ∀ᵐ z : ℂ ∂volume, 0 ≤ ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-    exact Filter.Eventually.of_forall (fun z => by positivity)
-  have hIntEq' :
-      ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) =
-        Real.pi * weightedNormSq (fun z : ℂ => G z - SJ z) := by
-    unfold weightedNormSq HermiteLEAN.weightedNormSq
-    field_simp [Real.pi_ne_zero]
-  have hlin_lt_top_diff :
-      ∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) < ⊤ := by
-    exact lt_of_le_of_lt hBound ENNReal.ofReal_lt_top
-  have hInt_le :
-      ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) ≤
-        Real.pi * ∑' m : ℕ, s m := by
-    have hto :
-        (∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))).toReal ≤
-          (ENNReal.ofReal (Real.pi * ∑' m : ℕ, s m)).toReal :=
-      (ENNReal.toReal_le_toReal hlin_lt_top_diff.ne (by simp)).2 hBound
-    have hleft :
-        (∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))).toReal =
-          ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-      have hint_nonneg :
-          0 ≤ ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-        exact MeasureTheory.integral_nonneg (fun z => by positivity)
-      have hlin :=
-        congrArg ENNReal.toReal
-          (MeasureTheory.ofReal_integral_eq_lintegral_ofReal hDiff_int hNonnegDiff).symm
-      simpa [ENNReal.toReal_ofReal hint_nonneg] using hlin
-    calc
-      ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)
-          = (∫⁻ z : ℂ, ENNReal.ofReal (‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2))).toReal := by
-              rw [hleft]
-      _ ≤ (ENNReal.ofReal (Real.pi * ∑' m : ℕ, s m)).toReal := hto
-      _ = Real.pi * ∑' m : ℕ, s m := by
-            rw [ENNReal.toReal_ofReal (mul_nonneg (le_of_lt Real.pi_pos) htail_nonneg)]
+  -- Rewrite the lintegral as `π * weightedNormSq` to extract the real inequality.
+  have hBound' := lintegral_ofReal_normSq_eq (fun z => G z - SJ z) hDiff_int ▸ hBound
   have hmul_le :
-      Real.pi * weightedNormSq (fun z : ℂ => G z - SJ z) ≤
-        Real.pi * ∑' m : ℕ, s m := by
-    rwa [hIntEq'] at hInt_le
-  have hpi_pos : 0 < Real.pi := Real.pi_pos
+      Real.pi * weightedNormSq (fun z : ℂ => G z - SJ z) ≤ Real.pi * ∑' m : ℕ, s m :=
+    (ENNReal.ofReal_le_ofReal_iff (mul_nonneg (le_of_lt Real.pi_pos) htail_nonneg)).1 hBound'
   have hfinal :
       weightedNormSq (fun z : ℂ => G z - SJ z) ≤ ∑' m : ℕ, s m := by
-    nlinarith [hpi_pos, hmul_le]
+    nlinarith [Real.pi_pos, hmul_le]
   simpa [hShift] using hfinal
 
 /-- The Hermite coefficients of the series `G = hermiteSeries k h` recover the
@@ -5547,8 +4906,7 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
   have htail := tendsto_sum_nat_add (fun m => ‖h m‖ ^ 2)
   rw [Metric.tendsto_atTop] at htail
   by_contra hneq
-  have hdist_pos : 0 < ‖weightedInner G (Phi k n) - h n‖ := by
-    exact norm_pos_iff.mpr (sub_ne_zero.mpr hneq)
+  have hdist_pos : 0 < ‖weightedInner G (Phi k n) - h n‖ := norm_pos_iff.mpr (sub_ne_zero.mpr hneq)
   obtain ⟨J0, hJ0⟩ := htail ((‖weightedInner G (Phi k n) - h n‖ / 2) ^ 2) (by positivity)
   let J := max J0 n
   have hJ_ge : J0 ≤ J := le_max_left _ _
@@ -5560,17 +4918,13 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
         (‖weightedInner G (Phi k n) - h n‖ / 2) ^ 2 := by
     have hJtail := hJ0 (J + 1) (by omega)
     rw [dist_zero_right] at hJtail
-    have hnonneg : 0 ≤ ∑' m : ℕ, ‖h (m + J + 1)‖ ^ 2 := by
-      exact tsum_nonneg fun m => sq_nonneg _
+    have hnonneg : 0 ≤ ∑' m : ℕ, ‖h (m + J + 1)‖ ^ 2 := by exact tsum_nonneg fun m => sq_nonneg _
     simpa [Real.norm_eq_abs, abs_of_nonneg hnonneg] using (abs_lt.mp hJtail).2
   let SJ : ℂ → ℂ := F J
   have hSJ_mem : SJ ∈ Hk k := finiteHermiteSum_mem_Hk k (a := fun m : Fin (J + 1) => h m.1)
   have hSJ_int : Integrable (fun z : ℂ => ‖SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := hSJ_mem.1
-  have hSJ_aesm : AEStronglyMeasurable SJ volume := by
-    unfold SJ F finiteHermiteSum
-    exact
-      (continuous_finsetSum _ (fun m _ =>
-        continuous_const.mul (continuous_Phi k m.1))).aestronglyMeasurable
+  have hSJ_aesm : AEStronglyMeasurable SJ volume :=
+    (continuous_finiteHermiteSum k _).aestronglyMeasurable
   have hDiff_int :
       Integrable (fun z : ℂ => ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) := by
     have hbound :
@@ -5585,8 +4939,8 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
       (continuous_neg.comp ((continuous_pow 2).comp continuous_norm)).rexp.aestronglyMeasurable
     have hmeas :
         AEStronglyMeasurable
-          (fun z : ℂ => ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) volume := by
-      exact ((hG_aesm.sub hSJ_aesm).norm.pow 2).mul hExp_aesm
+          (fun z : ℂ => ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2)) volume :=
+      ((hG_aesm.sub hSJ_aesm).norm.pow 2).mul hExp_aesm
     refine MeasureTheory.Integrable.mono' hbound hmeas ?_
     filter_upwards with z
     have hsub : ‖G z - SJ z‖ ≤ ‖G z‖ + ‖SJ z‖ := norm_sub_le _ _
@@ -5594,16 +4948,14 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
     have hsq :
         ‖G z - SJ z‖ ^ 2 ≤ 2 * (‖G z‖ ^ 2 + ‖SJ z‖ ^ 2) := by
       have hsubsq :
-          ‖G z - SJ z‖ ^ 2 ≤ (‖G z‖ + ‖SJ z‖) ^ 2 := by
-        exact pow_le_pow_left₀ (norm_nonneg _) hsub 2
+          ‖G z - SJ z‖ ^ 2 ≤ (‖G z‖ + ‖SJ z‖) ^ 2 := pow_le_pow_left₀ (norm_nonneg _) hsub 2
       have hab :
           (‖G z‖ + ‖SJ z‖) ^ 2 ≤ 2 * (‖G z‖ ^ 2 + ‖SJ z‖ ^ 2) := by
         nlinarith [sq_nonneg (‖G z‖ - ‖SJ z‖)]
       exact le_trans hsubsq hab
     have hmul :
         ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) ≤
-          (2 * (‖G z‖ ^ 2 + ‖SJ z‖ ^ 2)) * rexp (-‖z‖ ^ 2) := by
-      exact mul_le_mul_of_nonneg_right hsq hexp
+          (2 * (‖G z‖ ^ 2 + ‖SJ z‖ ^ 2)) * rexp (-‖z‖ ^ 2) := mul_le_mul_of_nonneg_right hsq hexp
     have hnonneg :
         0 ≤ ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by positivity
     rw [Real.norm_of_nonneg hnonneg]
@@ -5659,8 +5011,8 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
         ‖weightedInner G (Phi k n) - h n‖ := by
     have hDiff_nonneg : 0 ≤ weightedNormSq (fun z : ℂ => G z - SJ z) := by
       have hpiinv_nonneg : 0 ≤ (1 / Real.pi : ℝ) := by positivity
-      have hint_nonneg : 0 ≤ ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) := by
-        exact MeasureTheory.integral_nonneg (fun z => by positivity)
+      have hint_nonneg : 0 ≤ ∫ z : ℂ, ‖G z - SJ z‖ ^ 2 * rexp (-‖z‖ ^ 2) :=
+        MeasureTheory.integral_nonneg (fun z => by positivity)
       unfold weightedNormSq HermiteLEAN.weightedNormSq
       exact mul_nonneg hpiinv_nonneg hint_nonneg
     have hnorm_le :
@@ -5673,8 +5025,7 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
         (hGint := hPhi_int)
     have hDiff_small_sq :
         weightedNormSq (fun z : ℂ => G z - SJ z) <
-          (‖weightedInner G (Phi k n) - h n‖ / 2) ^ 2 := by
-      exact lt_of_le_of_lt hDiff_sq_le htail_small
+          (‖weightedInner G (Phi k n) - h n‖ / 2) ^ 2 := lt_of_le_of_lt hDiff_sq_le htail_small
     have hDiff_small :
         weightedNorm (fun z : ℂ => G z - SJ z) <
           ‖weightedInner G (Phi k n) - h n‖ / 2 := by
@@ -5686,8 +5037,7 @@ private lemma hermiteSeries_weightedInner_eq {k : ℕ} (h : ℕ → ℂ)
         ‖weightedInner G (Phi k n) - h n‖ / 2 := by
       have hnorm_le' :
           ‖weightedInner (fun z : ℂ => G z - SJ z) (Phi k n)‖ ≤
-            weightedNorm (fun z : ℂ => G z - SJ z) := by
-        simpa [hPhi_norm] using hnorm_le
+            weightedNorm (fun z : ℂ => G z - SJ z) := by simpa [hPhi_norm] using hnorm_le
       exact lt_of_le_of_lt hnorm_le' hDiff_small
     linarith
   have hdiff_eq :
@@ -5721,8 +5071,7 @@ theorem hermiteSeries_mem_Hk :
   refine ⟨hIntG, ?_⟩
   intro z
   have hs : Summable (fun n => h n * Phi k n z) := summable_hermite_eval_mul k h hbdd hh z
-  have hsum : HasSum (fun n => h n * Phi k n z) (G z) := by
-    simpa [G, hermiteSeries] using hs.hasSum
+  have hsum : HasSum (fun n => h n * Phi k n z) (G z) := by simpa [G, hermiteSeries] using hs.hasSum
   have hterm :
       (fun n => weightedInner G (Phi k n) * Phi k n z) =
         (fun n => h n * Phi k n z) := by
