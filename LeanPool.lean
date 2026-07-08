@@ -2279,6 +2279,14 @@ import LeanPool.SelbergSieve4.Tactic.AesopDiv
 import LeanPool.SelbergSieve4.Tactic.AesopInit
 import LeanPool.SelbergSieve4.Tactic.Multiplicativity
 import LeanPool.SelbergSieve4.UpperBoundSieve
+import LeanPool.SemicircleCheck
+import LeanPool.SemicircleCheck.CatalanRecurrence
+import LeanPool.SemicircleCheck.Census
+import LeanPool.SemicircleCheck.EvenCard
+import LeanPool.SemicircleCheck.FinRotateLemmas
+import LeanPool.SemicircleCheck.GenusNoncrossing
+import LeanPool.SemicircleCheck.RotationArithmetic
+import LeanPool.SemicircleCheck.ShiftTwoEquiv
 import LeanPool.SemicircleLaw
 import LeanPool.SemicircleLaw.SemicircleDistribution
 import LeanPool.Sensitivity
