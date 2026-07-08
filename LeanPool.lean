@@ -1150,6 +1150,15 @@ import LeanPool.KrafftSieve.OptimalWeights
 import LeanPool.KrafftSieve.SelbergWeights
 import LeanPool.KrafftSieve.ThirdHarmonic
 import LeanPool.KrafftSieve.Variance
+import LeanPool.Kuramoto
+import LeanPool.Kuramoto.Connections
+import LeanPool.Kuramoto.Contraction
+import LeanPool.Kuramoto.Frontier
+import LeanPool.Kuramoto.GradientFlow
+import LeanPool.Kuramoto.Hebbian
+import LeanPool.Kuramoto.OrderParameter
+import LeanPool.Kuramoto.Weighted
+import LeanPool.Kuramoto.WitnessGeometry
 import LeanPool.LatticeTriangle
 import LeanPool.LatticeTriangle.Solution
 import LeanPool.Lean4GlCoalgebras
