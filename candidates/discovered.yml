@@ -257,6 +257,39 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-08-31 fork:false archived:false'
+  0xmaath/weave-complexity:
+    url: https://github.com/0xmaath/weave-complexity
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: 0xmaath/weave-complexity
+    description: ''
+    signal: low
+    score: 2
+    reasons:
+    - Lake/Lean project files
+    - 458 Lean files
+    - about 60455 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: proof, theorem'
+    - 'tool terms: repl'
+    - 'educational terms: book, game'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T05:02:00Z'
+    updated_at: '2026-09-29T09:47:00Z'
+    pushed_at: '2026-09-29T09:46:54Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 458
+    estimated_lean_loc: 60455
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   100apps/lean-flt-course:
     url: https://github.com/100apps/lean-flt-course
     first_seen_at: '2026-09-05T16:52:10+00:00'
@@ -4612,6 +4645,33 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-08-06 fork:false archived:false'
+  ahanaf-kidcoder/mathlib-:
+    url: https://github.com/ahanaf-kidcoder/Mathlib-
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: ahanaf-kidcoder/Mathlib-
+    description: ''
+    signal: medium
+    score: 3
+    reasons:
+    - MIT
+    - 'domain terms: mathlib'
+    stars: 0
+    license: MIT
+    topics: []
+    language: null
+    created_at: '2026-09-29T03:15:08Z'
+    updated_at: '2026-09-29T03:15:13Z'
+    pushed_at: '2026-09-29T03:15:09Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - mathlib created:>=2026-09-28 fork:false archived:false
   ahixon/jslean:
     url: https://github.com/ahixon/jslean
     first_seen_at: '2026-08-01T15:31:42+00:00'
@@ -8533,6 +8593,43 @@ github:
       reason: Personal collection of thought exercises/philosophy snippets; minimal formal
         math content.
       model: gpt-5.4-nano
+  amadeus-22/tickguard:
+    url: https://github.com/Amadeus-22/tickguard
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Amadeus-22/tickguard
+    description: Validates crypto exchange trade feeds in real time, tells known gaps from
+      silent ones, and writes clean QuantConnect LEAN data. Go.
+    signal: low
+    score: 0
+    reasons:
+    - MIT
+    - 'domain terms: crypto'
+    - 'tool terms: search'
+    stars: 0
+    license: MIT
+    topics:
+    - crypto
+    - data-quality
+    - go
+    - lean
+    - market-data
+    - prometheus
+    - quantconnect
+    - websocket
+    language: Go
+    created_at: '2026-09-29T16:24:19Z'
+    updated_at: '2026-09-29T16:25:51Z'
+    pushed_at: '2026-09-29T16:24:27Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - topic:lean created:>=2026-09-28 fork:false archived:false
   aman2772fisiha-droid/formal-verification-in-lean-vs-python-testing:
     url: https://github.com/aman2772fisiha-droid/Formal-verification-in-lean-vs-python-testing
     first_seen_at: '2026-07-08T16:12:14+00:00'
@@ -9599,6 +9696,40 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-12 fork:false archived:false
+  andrewzshen/cs292c:
+    url: https://github.com/andrewzshen/cs292c
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: andrewzshen/cs292c
+    description: My repo for the coursework of UCSB's CMPSC 292C
+    signal: low
+    score: 0
+    reasons:
+    - Lake/Lean project files
+    - 46 Lean files
+    - about 15327 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: logic, mathlib, proof'
+    - 'tool terms: search'
+    - 'educational terms: course'
+    - 'personal terms: scratch'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:41:29Z'
+    updated_at: '2026-09-29T00:42:13Z'
+    pushed_at: '2026-09-29T00:42:08Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 46
+    estimated_lean_loc: 15327
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   andyprevalsky/auto-math:
     url: https://github.com/andyprevalsky/auto-math
     first_seen_at: '2026-07-26T15:33:43+00:00'
@@ -9865,6 +9996,35 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-08-25 fork:false archived:false
+  anshm123/gyni-causal-problem:
+    url: https://github.com/anshM123/GYNI-Causal-Problem
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: anshM123/GYNI-Causal-Problem
+    description: IQOQI solve
+    signal: high
+    score: 6
+    reasons:
+    - 279 Lean files
+    - about 1152686 Lean LOC
+    - MIT
+    - 'domain terms: mathlib, probability, proof'
+    stars: 1
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T16:18:26Z'
+    updated_at: '2026-09-29T12:34:12Z'
+    pushed_at: '2026-09-29T12:34:02Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 279
+    estimated_lean_loc: 1152686
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   anshm123/iqoqi-conjecture:
     url: https://github.com/anshM123/IQOQI-Conjecture
     first_seen_at: '2026-09-28T20:36:09+00:00'
@@ -10267,6 +10427,32 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-09-20 fork:false archived:false'
+  aoa141/leansharp:
+    url: https://github.com/aoa141/leansharp
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: aoa141/leansharp
+    description: Dotnet implementation of Lean 4
+    signal: low
+    score: 1
+    reasons:
+    - Apache-2.0
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: null
+    created_at: '2026-09-29T07:41:56Z'
+    updated_at: '2026-09-29T07:42:01Z'
+    pushed_at: '2026-09-29T07:41:58Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
   aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoa/math:
     url: https://github.com/aoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoaoa/math
     first_seen_at: '2026-07-22T15:54:55+00:00'
@@ -16458,6 +16644,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-27 fork:false archived:false
+  balancedscorpion/countably-infinite-dimension-meyer-spaces:
+    url: https://github.com/balancedscorpion/countably-infinite-dimension-meyer-spaces
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: balancedscorpion/countably-infinite-dimension-meyer-spaces
+    description: ''
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 411 Lean files
+    - about 122183 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: algebra, theorem'
+    - 'tool terms: search'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T18:42:58Z'
+    updated_at: '2026-09-29T17:35:31Z'
+    pushed_at: '2026-09-29T17:35:13Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 411
+    estimated_lean_loc: 122183
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   balancedscorpion/shifted-square-root-fourier-classification:
     url: https://github.com/balancedscorpion/shifted-square-root-fourier-classification
     first_seen_at: '2026-08-25T15:09:19+00:00'
@@ -17897,6 +18115,74 @@ github:
     - language:Lean created:>=2026-08-24 fork:false archived:false
     - topic:lean created:>=2026-08-24 fork:false archived:false
     - topic:lean4 created:>=2026-08-24 fork:false archived:false
+  basisresearch/ship-your-lua:
+    url: https://github.com/BasisResearch/ship-your-lua
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: BasisResearch/ship-your-lua
+    description: Verifying Lua 5.4 on bare-metal RV64 against a formal semantics, on the Sail
+      RISC-V model, in Lean 4 + iris-lean
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 995 Lean files
+    - about 1833743 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: compiler, parser, proof'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T15:48:27Z'
+    updated_at: '2026-09-29T15:52:33Z'
+    pushed_at: '2026-09-29T15:48:33Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 995
+    estimated_lean_loc: 1833743
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  basisresearch/ship-your-ocaml:
+    url: https://github.com/BasisResearch/ship-your-ocaml
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: BasisResearch/ship-your-ocaml
+    description: 'Verifying OCaml''s bootstrap compiler: bare-metal ocamlrun on the Sail RISC-V
+      model, ZINC bytecode semantics, Lean 4 + iris-lean (plan, validation, scaffold)'
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 993 Lean files
+    - about 1815818 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: compiler, logic, semantics'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:18:32Z'
+    updated_at: '2026-09-29T19:14:39Z'
+    pushed_at: '2026-09-29T19:14:34Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 993
+    estimated_lean_loc: 1815818
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   bastrad/tyonek-training:
     url: https://github.com/bastrad/Tyonek-Training
     first_seen_at: '2026-07-03T16:01:21+00:00'
@@ -19621,6 +19907,69 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-08-17 fork:false archived:false
+  bevisera-as/open-lean-agent:
+    url: https://github.com/Bevisera-AS/open-lean-agent
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Bevisera-AS/open-lean-agent
+    description: ''
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 35 Lean files
+    - about 5511 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: category, protocol'
+    - 'tool terms: repl, search'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T12:53:29Z'
+    updated_at: '2026-09-29T18:51:29Z'
+    pushed_at: '2026-09-29T18:51:22Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 35
+    estimated_lean_loc: 5511
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  bevisera-as/open-lean-spec:
+    url: https://github.com/Bevisera-AS/open-lean-spec
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Bevisera-AS/open-lean-spec
+    description: ''
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 66 Lean files
+    - about 12309 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: proof'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T12:53:01Z'
+    updated_at: '2026-09-29T18:52:48Z'
+    pushed_at: '2026-09-29T18:52:41Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 66
+    estimated_lean_loc: 12309
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   beyondthelibrary/formal_archive:
     url: https://github.com/BeyondTheLibrary/formal_archive
     first_seen_at: '2026-09-14T19:28:34+00:00'
@@ -25386,6 +25735,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-13 fork:false archived:false
+  castor639/four-deletion-code-length-twelve:
+    url: https://github.com/castor639/four-deletion-code-length-twelve
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: castor639/four-deletion-code-length-twelve
+    description: Certified proof that the largest binary four-deletion-correcting code of
+      length 12 has six codewords
+    signal: low
+    score: 2
+    reasons:
+    - 6 Lean files
+    - about 1235 Lean LOC
+    - license unknown
+    - 'domain terms: formalization, proof'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T04:11:03Z'
+    updated_at: '2026-09-29T04:11:15Z'
+    pushed_at: '2026-09-29T04:11:11Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 6
+    estimated_lean_loc: 1235
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   cat-stack-boop/erdos-130-lean:
     url: https://github.com/cat-stack-boop/erdos-130-lean
     first_seen_at: '2026-07-17T15:48:42+00:00'
@@ -28252,6 +28632,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-08-03 fork:false archived:false
+  chris-dem/grouptheorymilnelean:
+    url: https://github.com/chris-dem/GroupTheoryMilneLean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: chris-dem/GroupTheoryMilneLean
+    description: ''
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 6 Lean files
+    - about 288 Lean LOC
+    - Lake manifest
+    - license unknown
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T11:14:03Z'
+    updated_at: '2026-09-29T11:47:53Z'
+    pushed_at: '2026-09-29T11:47:48Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 6
+    estimated_lean_loc: 288
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   chris-fr-c/physics-playground:
     url: https://github.com/Chris-Fr-C/physics-playground
     first_seen_at: '2026-08-22T14:42:22+00:00'
@@ -28635,6 +29045,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-07-16 fork:false archived:false
+  christianobraga/ll1-lean:
+    url: https://github.com/ChristianoBraga/ll1-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: ChristianoBraga/ll1-lean
+    description: 'LL(1) grammars in Lean 4: EBNF files, FIRST and FOLLOW, predictive parsing
+      table, table driven parser'
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 7 Lean files
+    - about 1101 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: compiler, parser'
+    stars: 0
+    license: null
+    topics: []
+    language: Python
+    created_at: '2026-09-28T22:25:13Z'
+    updated_at: '2026-09-28T22:25:24Z'
+    pushed_at: '2026-09-28T22:25:18Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 7
+    estimated_lean_loc: 1101
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
   christopherchorkey/agape:
     url: https://github.com/Christopherchorkey/Agape
     first_seen_at: '2026-07-05T15:39:11+00:00'
@@ -32766,6 +33208,37 @@ github:
       reason: Large autogenerated Lean library; likely contains real formal content despite
         minimal metadata.
       model: gpt-5.4-nano
+  cthalhammer/registry-problems:
+    url: https://github.com/cthalhammer/registry-problems
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: cthalhammer/registry-problems
+    description: Canonical Lean statements of the open problems on clopen.solutions, one module
+      per problem.
+    signal: low
+    score: 2
+    reasons:
+    - Lake/Lean project files
+    - 20 Lean files
+    - about 880 Lean LOC
+    - license unknown
+    - 'educational terms: solutions'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T18:49:00Z'
+    updated_at: '2026-09-29T18:49:12Z'
+    pushed_at: '2026-09-29T18:49:05Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 20
+    estimated_lean_loc: 880
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   ctiller/gasm:
     url: https://github.com/ctiller/gasm
     first_seen_at: '2026-08-27T23:49:21+00:00'
@@ -33003,6 +33476,35 @@ github:
     - mathlib created:>=2026-09-03 fork:false archived:false
     - topic:lean created:>=2026-09-03 fork:false archived:false
     - topic:lean4 created:>=2026-09-03 fork:false archived:false
+  cutedonkeyhhh/rmf_repo:
+    url: https://github.com/cutedonkeyhhh/RMF_repo
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: cutedonkeyhhh/RMF_repo
+    description: Paper and Lean formalization for moments of random multiplicative functions
+    signal: medium
+    score: 5
+    reasons:
+    - 42 Lean files
+    - about 26227 Lean LOC
+    - license unknown
+    - 'domain terms: formalization, mathlib, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T07:18:41Z'
+    updated_at: '2026-09-29T06:07:41Z'
+    pushed_at: '2026-09-29T06:07:37Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 42
+    estimated_lean_loc: 26227
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   cwkiz/hyperdoctripos:
     url: https://github.com/cwkiz/hyperdoctripos
     first_seen_at: '2026-09-27T18:30:10+00:00'
@@ -33687,6 +34189,35 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-09-06 fork:false archived:false'
+  daizisheng/erdos-306:
+    url: https://github.com/daizisheng/erdos-306
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: daizisheng/erdos-306
+    description: ''
+    signal: medium
+    score: 5
+    reasons:
+    - 14 Lean files
+    - about 4243 Lean LOC
+    - license unknown
+    - 'domain terms: formalisation, mathlib, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:48:03Z'
+    updated_at: '2026-09-29T01:14:56Z'
+    pushed_at: '2026-09-29T01:14:53Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 14
+    estimated_lean_loc: 4243
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   daizisheng/erdos-786:
     url: https://github.com/daizisheng/erdos-786
     first_seen_at: '2026-09-28T20:36:09+00:00'
@@ -35579,6 +36110,36 @@ github:
       verdict: skip
       reason: Empty/near-empty Lean repo with no description or mathematical content.
       model: gpt-5.4-nano
+  davidnet/prove2me-sandbox-kits:
+    url: https://github.com/Davidnet/prove2me-sandbox-kits
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Davidnet/prove2me-sandbox-kits
+    description: Lean 4 and Mathlib Docker Sandbox kits for Prove2Me agents
+    signal: low
+    score: -4
+    reasons:
+    - license unknown
+    - 'domain terms: mathlib, theorem'
+    - 'educational terms: solutions'
+    - 'personal terms: sandbox'
+    stars: 0
+    license: null
+    topics: []
+    language: Shell
+    created_at: '2026-09-28T22:50:14Z'
+    updated_at: '2026-09-29T16:44:39Z'
+    pushed_at: '2026-09-29T16:44:35Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - mathlib created:>=2026-09-28 fork:false archived:false
   davidolano03/ai-03-quispe:
     url: https://github.com/davidolano03/ai-03-quispe
     first_seen_at: '2026-09-04T17:39:34+00:00'
@@ -39754,6 +40315,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-07-11 fork:false archived:false
+  devinokeefe/ambidextrous-sofa-bounds:
+    url: https://github.com/devinokeefe/ambidextrous-sofa-bounds
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: devinokeefe/ambidextrous-sofa-bounds
+    description: 'Upper bounds for the ambidextrous moving sofa problem: certificates, verified
+      checkers, Lean formalisation and paper'
+    signal: low
+    score: 2
+    reasons:
+    - 34 Lean files
+    - about 6329 Lean LOC
+    - license unknown
+    - 'domain terms: formalisation, proof, theorem'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T05:53:49Z'
+    updated_at: '2026-09-29T05:54:10Z'
+    pushed_at: '2026-09-29T05:55:03Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 34
+    estimated_lean_loc: 6329
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   devinokeefe/schreier-multiset-recurrences:
     url: https://github.com/devinokeefe/schreier-multiset-recurrences
     first_seen_at: '2026-09-14T19:28:34+00:00'
@@ -42512,6 +43104,34 @@ github:
     - '"Lean 4" created:>=2026-09-18 fork:false archived:false'
     - language:Lean created:>=2026-09-18 fork:false archived:false
     - mathlib created:>=2026-09-18 fork:false archived:false
+  dogmin142/3:
+    url: https://github.com/dogmin142/3
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: dogmin142/3
+    description: ''
+    signal: medium
+    score: 3
+    reasons:
+    - 1 Lean files
+    - license unknown
+    - 'domain terms: proof, semantics, verification'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T16:19:54Z'
+    updated_at: '2026-09-29T18:01:02Z'
+    pushed_at: '2026-09-29T18:00:36Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 1
+    estimated_lean_loc: 34
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   dolev765/formalized-in-lean-every-affine-scheme-as-an-affine-linear-section-of-a-smooth-nilpotent-orbit-:
     url: https://github.com/dolev765/Formalized-in-Lean-Every-Affine-Scheme-as-an-Affine-Linear-Section-of-a-Smooth-Nilpotent-Orbit-
     first_seen_at: '2026-09-13T17:27:14+00:00'
@@ -45698,6 +46318,68 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-07-29 fork:false archived:false
+  dzackgarza/lean-cas-dsl-leaf-contracts:
+    url: https://github.com/dzackgarza/lean-cas-dsl-leaf-contracts
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: dzackgarza/lean-cas-dsl-leaf-contracts
+    description: ''
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 14 Lean files
+    - about 3285 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: category, mathlib, protocol'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:39:39Z'
+    updated_at: '2026-09-29T19:19:38Z'
+    pushed_at: '2026-09-29T19:19:33Z'
+    default_branch: claude/gallant-mccarthy-oglg4j
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 14
+    estimated_lean_loc: 3285
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  dzackgarza/lean-cas-dsl-leaves:
+    url: https://github.com/dzackgarza/lean-cas-dsl-leaves
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: dzackgarza/lean-cas-dsl-leaves
+    description: ''
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 30 Lean files
+    - about 3262 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: category, mathlib, protocol'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:34:17Z'
+    updated_at: '2026-09-29T19:19:40Z'
+    pushed_at: '2026-09-29T19:19:38Z'
+    default_branch: claude/gallant-mccarthy-oglg4j
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 30
+    estimated_lean_loc: 3262
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   dzackgarza/lean-jupyter-kernel:
     url: https://github.com/dzackgarza/lean-jupyter-kernel
     first_seen_at: '2026-07-29T15:58:51+00:00'
@@ -47366,6 +48048,40 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-09-05 fork:false archived:false'
     - language:Lean created:>=2026-09-05 fork:false archived:false
+  egofakefantasy/ppac-formalization:
+    url: https://github.com/EgoFakeFantasy/PPAC-Formalization
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: EgoFakeFantasy/PPAC-Formalization
+    description: Lean 4 proof components and explicit interface prototypes for partition-principle
+      research; not a solution to PP versus AC.
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 15 Lean files
+    - about 3022 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, proof, semantics'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T01:34:02Z'
+    updated_at: '2026-09-29T01:40:24Z'
+    pushed_at: '2026-09-29T01:40:20Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 15
+    estimated_lean_loc: 3022
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   egofakefantasy/rankelementarity:
     url: https://github.com/EgoFakeFantasy/RankElementarity
     first_seen_at: '2026-09-11T17:46:50+00:00'
@@ -50132,6 +50848,36 @@ github:
     - '"Lean 4" created:>=2026-07-20 fork:false archived:false'
     - language:Lean created:>=2026-07-20 fork:false archived:false
     - mathlib created:>=2026-07-20 fork:false archived:false
+  epirecipes/networkepicore.jl:
+    url: https://github.com/epirecipes/NetworkEpiCore.jl
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: epirecipes/NetworkEpiCore.jl
+    description: 'Shared core for EdgeBasedModels, NodeBasedModels and NetworkOutbreaks: contact-model
+      IR, network descriptors, composition, morphisms and canonical scenarios'
+    signal: high
+    score: 6
+    reasons:
+    - 67 Lean files
+    - about 38511 Lean LOC
+    - MIT
+    - 'domain terms: graph'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T01:58:50Z'
+    updated_at: '2026-09-29T06:07:22Z'
+    pushed_at: '2026-09-29T06:07:18Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 67
+    estimated_lean_loc: 38511
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   eppie/oeis-proofs:
     url: https://github.com/Eppie/oeis-proofs
     first_seen_at: '2026-08-02T15:31:38+00:00'
@@ -52492,6 +53238,38 @@ github:
     tree_truncated: false
     query_matches:
     - topic:lean created:>=2026-09-01 fork:false archived:false
+  fabianp/policy-gradient-lean:
+    url: https://github.com/fabianp/policy-gradient-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: fabianp/policy-gradient-lean
+    description: Lean 4 formalizations for the Policy Gradients blog series (https://fa.bianp.net/blog/2026/policy-gradient/)
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 1 Lean files
+    - about 326 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T09:23:30Z'
+    updated_at: '2026-09-29T14:38:04Z'
+    pushed_at: '2026-09-29T14:38:00Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 1
+    estimated_lean_loc: 326
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   fabianx-ai/s6-proof:
     url: https://github.com/fabianx-ai/s6-proof
     first_seen_at: '2026-08-28T23:34:47+00:00'
@@ -57025,6 +57803,39 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-07-13 fork:false archived:false'
     - language:Lean created:>=2026-07-13 fork:false archived:false
+  frenzymath/poincareconjecture:
+    url: https://github.com/frenzymath/PoincareConjecture
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: frenzymath/PoincareConjecture
+    description: Lean formalization of the smooth and topological Poincare conjectures following
+      Morgan and Tian.
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 27203 Lean files
+    - about 4325430 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, logic, mathlib'
+    - 'personal terms: sandbox'
+    stars: 12
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T03:11:35Z'
+    updated_at: '2026-09-29T06:03:47Z'
+    pushed_at: '2026-09-29T05:35:04Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 27203
+    estimated_lean_loc: 4325430
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   frintroper/academic-lobotomy-and-the-illusion-of-two:
     url: https://github.com/frintroper/academic-lobotomy-and-the-illusion-of-two
     first_seen_at: '2026-08-24T15:04:52+00:00'
@@ -58624,6 +59435,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-07-16 fork:false archived:false
+  gerdleefcode/gerard_lean4_mathlib4_applied_analysis_260929:
+    url: https://github.com/gerdleefcode/Gerard_Lean4_Mathlib4_Applied_Analysis_260929
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: gerdleefcode/Gerard_Lean4_Mathlib4_Applied_Analysis_260929
+    description: ''
+    signal: medium
+    score: 4
+    reasons:
+    - 1 Lean files
+    - about 142 Lean LOC
+    - license unknown
+    - 'domain terms: analysis, mathlib'
+    stars: 1
+    license: null
+    topics: []
+    language: TeX
+    created_at: '2026-09-29T02:46:12Z'
+    updated_at: '2026-09-29T06:51:48Z'
+    pushed_at: '2026-09-29T06:51:44Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 1
+    estimated_lean_loc: 142
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - mathlib created:>=2026-09-28 fork:false archived:false
   gerdleefcode/gerard_lean4_testing:
     url: https://github.com/gerdleefcode/Gerard_Lean4_Testing
     first_seen_at: '2026-09-28T20:36:09+00:00'
@@ -59544,6 +60385,38 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-07-30 fork:false archived:false'
+  gitferry/kriterion-bn254:
+    url: https://github.com/gitferry/kriterion-bn254
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: gitferry/kriterion-bn254
+    description: 'Lean-proved BN254 scalar-multiplication garbling: pruned CRT chunks and
+      seeded extraction'
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 445 Lean files
+    - about 184736 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: proof, verification, verified'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T14:16:35Z'
+    updated_at: '2026-09-29T14:20:27Z'
+    pushed_at: '2026-09-29T14:18:55Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 445
+    estimated_lean_loc: 184736
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   giulioruffini/ktait:
     url: https://github.com/giulioruffini/KTAIT
     first_seen_at: '2026-06-28T15:40:54+00:00'
@@ -59641,6 +60514,35 @@ github:
       verdict: skip
       reason: Empty Lean repo with no description, files, or stars.
       model: gpt-5.4-nano
+  gj3447/chu:
+    url: https://github.com/gj3447/CHU
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: gj3447/CHU
+    description: ''
+    signal: medium
+    score: 4
+    reasons:
+    - 11 Lean files
+    - about 3633 Lean LOC
+    - license AGPL-3.0
+    - 'domain terms: formalization, graph, logic'
+    stars: 0
+    license: AGPL-3.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T01:09:54Z'
+    updated_at: '2026-09-29T03:45:09Z'
+    pushed_at: '2026-09-29T03:45:05Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 11
+    estimated_lean_loc: 3633
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   gjq-q/iris-lean-project2:
     url: https://github.com/GJQ-Q/iris-lean-project2
     first_seen_at: '2026-08-08T14:53:41+00:00'
@@ -60092,6 +60994,39 @@ github:
     - '"Lean 4" created:>=2026-09-25 fork:false archived:false'
     - language:Lean created:>=2026-09-25 fork:false archived:false
     - mathlib created:>=2026-09-25 fork:false archived:false
+  gmdevi/zeta2-7-lean:
+    url: https://github.com/gmDevi/zeta2-7-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: gmDevi/zeta2-7-lean
+    description: Lean 4 + Mathlib proof that the 2-adic zeta value zeta_2(7) is irrational
+      (AI-produced, unrefereed; see README)
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 73 Lean files
+    - about 54428 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalisation, mathlib, number theory'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T21:50:04Z'
+    updated_at: '2026-09-28T21:50:16Z'
+    pushed_at: '2026-09-28T23:52:52Z'
+    default_branch: master
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 73
+    estimated_lean_loc: 54428
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - mathlib created:>=2026-09-28 fork:false archived:false
   gnostrich/beauville-laszlo:
     url: https://github.com/gnostrich/Beauville-Laszlo
     first_seen_at: '2026-07-31T16:14:12+00:00'
@@ -61521,6 +62456,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-23 fork:false archived:false
+  gtoyos/cof:
+    url: https://github.com/Gtoyos/COF
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Gtoyos/COF
+    description: Lean formalization of "Pending conflicts make progress impossible".
+    signal: high
+    score: 7
+    reasons:
+    - Lake/Lean project files
+    - 24 Lean files
+    - about 5849 Lean LOC
+    - Lake manifest
+    - license NOASSERTION
+    - 'domain terms: formalization, mathlib, proof'
+    stars: 0
+    license: NOASSERTION
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T09:48:41Z'
+    updated_at: '2026-09-29T09:52:48Z'
+    pushed_at: '2026-09-29T09:51:39Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 24
+    estimated_lean_loc: 5849
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   guanyangwang/ktv-swap-lean-comparator:
     url: https://github.com/guanyangwang/ktv-swap-lean-comparator
     first_seen_at: '2026-07-01T16:40:49+00:00'
@@ -62580,6 +63546,38 @@ github:
       verdict: skip
       reason: No Lean content (0 files/LOC) and description is generic C++ math library.
       model: gpt-5.4-nano
+  handsomesteven666/rota-basis-conjecture-lean:
+    url: https://github.com/HandsomeSteven666/rota-basis-conjecture-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: HandsomeSteven666/rota-basis-conjecture-lean
+    description: "Rota \u57FA\u731C\u60F3 (Rota Basis Conjecture) \u7684 Lean \u5F62\u5F0F\
+      \u5316\u6846\u67B6\u4E0E\u8C03\u7814\uFF1An=2 \u5411\u91CF\u7A7A\u95F4\u7248\u673A\u5668\
+      \u8BC1\u660E + \u591A\u8DEF\u7EBF\u653B\u51FB\u8BBE\u8BA1 + \u5C0F\u53C2\u6570\u7A77\
+      \u4E3E\u8BC1\u636E\u3002\u4E00\u822C n \u4ECD\u5F00\u653E(OPEN)\u3002"
+    signal: medium
+    score: 5
+    reasons:
+    - 3 Lean files
+    - about 512 Lean LOC
+    - license unknown
+    - 'domain terms: mathlib, proof, theorem'
+    stars: 1
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T12:12:34Z'
+    updated_at: '2026-09-29T14:23:22Z'
+    pushed_at: '2026-09-29T14:22:37Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 3
+    estimated_lean_loc: 512
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   hangjin13/lean-4-math:
     url: https://github.com/HangJin13/Lean-4-math
     first_seen_at: '2026-09-10T17:44:07+00:00'
@@ -110851,6 +111849,36 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-09-05 fork:false archived:false'
+  huwngtran/thomson-n7-lean:
+    url: https://github.com/huwngtran/thomson-n7-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: huwngtran/thomson-n7-lean
+    description: Lean 4 proof that the pentagonal bipyramid uniquely minimises Coulomb energy
+      for 7 points on S2. Statement not human-certified. Not peer reviewed.
+    signal: medium
+    score: 5
+    reasons:
+    - 5 Lean files
+    - about 224927 Lean LOC
+    - license unknown
+    - 'domain terms: mathlib, proof, theorem'
+    stars: 1
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T19:52:06Z'
+    updated_at: '2026-09-29T18:56:58Z'
+    pushed_at: '2026-09-28T21:24:27Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 5
+    estimated_lean_loc: 224927
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
   hwzw/leanscribe:
     url: https://github.com/Hwzw/leanscribe
     first_seen_at: '2026-07-02T16:16:46+00:00'
@@ -118991,6 +120019,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-13 fork:false archived:false
+  jaypantone/superperm-upper-43-80:
+    url: https://github.com/jaypantone/superperm-upper-43-80
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: jaypantone/superperm-upper-43-80
+    description: Lean proofs of the 43/80 upper bound for superpermutations, with explicit
+      words on 8-13 symbols
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 335 Lean files
+    - about 195629 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: proof, theorem'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T02:51:19Z'
+    updated_at: '2026-09-29T15:19:50Z'
+    pushed_at: '2026-09-29T15:17:19Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 335
+    estimated_lean_loc: 195629
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jayyswan/hasse-minkowski:
     url: https://github.com/jayyswan/hasse-minkowski
     first_seen_at: '2026-09-22T18:09:11+00:00'
@@ -120383,6 +121443,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-18 fork:false archived:false
+  jfairfaxball-348/greedy-uniformity-on-trees:
+    url: https://github.com/jfairfaxball-348/Greedy-Uniformity-on-Trees
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: jfairfaxball-348/Greedy-Uniformity-on-Trees
+    description: ''
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 14 Lean files
+    - about 2705 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalisation, mathlib, proof'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T09:12:53Z'
+    updated_at: '2026-09-29T19:14:43Z'
+    pushed_at: '2026-09-29T19:28:00Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 14
+    estimated_lean_loc: 2705
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jfairfaxball-348/lean-non-trivial-collatz-cycles:
     url: https://github.com/jfairfaxball-348/LEAN-non-trivial-collatz-cycles
     first_seen_at: '2026-09-06T17:08:33+00:00'
@@ -120890,6 +121982,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-02 fork:false archived:false
+  jiggloo/public_proofs:
+    url: https://github.com/jiggloo/public_proofs
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: jiggloo/public_proofs
+    description: Public mathematical proofs with Lean 4 machine checks
+    signal: high
+    score: 6
+    reasons:
+    - 17 Lean files
+    - about 56294 Lean LOC
+    - Apache-2.0
+    - 'domain terms: mathlib, proof, theorem'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:04:18Z'
+    updated_at: '2026-09-29T17:05:06Z'
+    pushed_at: '2026-09-29T17:04:23Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 17
+    estimated_lean_loc: 56294
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jihadalaasmi-svg/-qlri-pqc-substrate:
     url: https://github.com/jihadalaasmi-svg/-qlri-pqc-substrate
     first_seen_at: '2026-08-05T16:13:07+00:00'
@@ -121161,6 +122283,38 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-07-29 fork:false archived:false'
     - language:Lean created:>=2026-07-29 fork:false archived:false
+  jiji7879/magic-squares-fields-lean:
+    url: https://github.com/jiji7879/magic-squares-fields-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: jiji7879/magic-squares-fields-lean
+    description: ''
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 333 Lean files
+    - about 114735 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: formalization, mathlib, proof'
+    - 'tool terms: editor'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T22:25:46Z'
+    updated_at: '2026-09-29T04:44:16Z'
+    pushed_at: '2026-09-29T04:44:12Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 333
+    estimated_lean_loc: 114735
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jimpeebles/emd-coupling-identifiability:
     url: https://github.com/jimpeebles/emd-coupling-identifiability
     first_seen_at: '2026-08-15T14:42:49+00:00'
@@ -121638,6 +122792,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-14 fork:false archived:false
+  jmgimeno/natural-numbers-game:
+    url: https://github.com/jmgimeno/natural-numbers-game
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: jmgimeno/natural-numbers-game
+    description: ''
+    signal: low
+    score: 1
+    reasons:
+    - Lake/Lean project files
+    - 5 Lean files
+    - Lake manifest
+    - license unknown
+    - 'educational terms: game'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T15:56:16Z'
+    updated_at: '2026-09-29T16:05:25Z'
+    pushed_at: '2026-09-29T16:02:38Z'
+    default_branch: master
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 5
+    estimated_lean_loc: 61
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jmsbpp/cfmm-gams:
     url: https://github.com/JMSBPP/cfmm-gams
     first_seen_at: '2026-07-28T16:16:56+00:00'
@@ -121825,6 +123009,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-07-20 fork:false archived:false
+  joaovitordourado1/douradoproof:
+    url: https://github.com/joaovitordourado1/douradoproof
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: joaovitordourado1/douradoproof
+    description: 'tava sem nada para fazer e criei um verificador de provas axiomaticas, deducao
+      natural e 1 ordem em lean lang. '
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 44 Lean files
+    - about 4642 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: parser, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T14:31:49Z'
+    updated_at: '2026-09-29T14:45:04Z'
+    pushed_at: '2026-09-29T14:44:50Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 44
+    estimated_lean_loc: 4642
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   joaquimortega/phaseless:
     url: https://github.com/joaquimortega/Phaseless
     first_seen_at: '2026-09-02T17:56:20+00:00'
@@ -123590,6 +124806,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-09 fork:false archived:false
+  jrbecart-uo/erdos-1110-72:
+    url: https://github.com/Jrbecart-uo/erdos-1110-72
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Jrbecart-uo/erdos-1110-72
+    description: "Erd\u0151s #1110 (7,2): computer-assisted proof of positive lower density\
+      \ of representable integers (Lean-verified reduction + certificate)"
+    signal: medium
+    score: 5
+    reasons:
+    - 2 Lean files
+    - about 3440 Lean LOC
+    - license unknown
+    - 'domain terms: mathlib, proof, theorem'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T14:30:23Z'
+    updated_at: '2026-09-29T17:16:06Z'
+    pushed_at: '2026-09-29T17:15:54Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 3440
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jreber/ai-math-droppings:
     url: https://github.com/jreber/ai-math-droppings
     first_seen_at: '2026-07-23T16:04:36+00:00'
@@ -124689,6 +125935,39 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-07-19 fork:false archived:false'
     - language:Lean created:>=2026-07-19 fork:false archived:false
+  jwang226/continuity-of-regularized-channel-renyi-divergence:
+    url: https://github.com/JWang226/continuity-of-regularized-channel-renyi-divergence
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: JWang226/continuity-of-regularized-channel-renyi-divergence
+    description: " Lean formalization of continuity of regularized channel R\xE9nyi divergence,\
+      \ with Comparator and independent kernel verification."
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 87 Lean files
+    - about 14981 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, proof, quantum'
+    - 'tool terms: repl'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:20:19Z'
+    updated_at: '2026-09-29T19:25:27Z'
+    pushed_at: '2026-09-29T19:25:23Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 87
+    estimated_lean_loc: 14981
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   jwhan-stats/lean-proof-graphs:
     url: https://github.com/jwhan-stats/lean-proof-graphs
     first_seen_at: '2026-09-01T17:52:10+00:00'
@@ -125928,6 +127207,39 @@ github:
       verdict: skip
       reason: No Lean code/files, zero stars, unclear mathematical content.
       model: gpt-5.4-nano
+  keithadler/cantor-diagonal:
+    url: https://github.com/keithadler/cantor-diagonal
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: keithadler/cantor-diagonal
+    description: 'Cantor''s diagonal argument in Lean 4: no list contains every binary sequence.
+      No Mathlib, no axioms.'
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 2 Lean files
+    - Lake manifest
+    - license unknown
+    - 'domain terms: mathlib, theorem'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T06:54:56Z'
+    updated_at: '2026-09-29T06:55:04Z'
+    pushed_at: '2026-09-29T06:55:01Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 94
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - mathlib created:>=2026-09-28 fork:false archived:false
   keithadler/homebrew-tap:
     url: https://github.com/keithadler/homebrew-tap
     first_seen_at: '2026-09-24T18:27:43+00:00'
@@ -125999,6 +127311,95 @@ github:
     - '"Lean 4" created:>=2026-09-25 fork:false archived:false'
     - language:Lean created:>=2026-09-25 fork:false archived:false
     - topic:lean4 created:>=2026-09-25 fork:false archived:false
+  keithadler/lean-http1:
+    url: https://github.com/keithadler/lean-http1
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: keithadler/lean-http1
+    description: "HTTP/1.1 message framing (RFC 9112 \xA76.1) proved unambiguous in Lean 4:\
+      \ no_desync shows the Content-Length- and Transfer-Encoding-trusting readers agree on\
+      \ every accepted message. Plus a differential harness that finds where h11, Node/llhttp\
+      \ and Lean's Std.Http diverge. MIT."
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 11 Lean files
+    - about 1459 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: crypto, graph, parser'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T22:58:49Z'
+    updated_at: '2026-09-29T00:21:58Z'
+    pushed_at: '2026-09-29T00:21:54Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 11
+    estimated_lean_loc: 1459
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  keithadler/lean-pkcs7cms:
+    url: https://github.com/keithadler/lean-pkcs7cms
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: keithadler/lean-pkcs7cms
+    description: 'PKCS #7 / CMS signatures (RFC 5652) in core Lean: a checker proved equal
+      to the signing rules, Lean''s kernel verifying real signatures, and seven verifiers
+      compared. MIT.'
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 10 Lean files
+    - about 2221 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: crypto, graph, parser'
+    - 'tool terms: search'
+    stars: 0
+    license: MIT
+    topics:
+    - asn1
+    - cms
+    - cryptography
+    - der
+    - differential-testing
+    - digital-signatures
+    - formal-verification
+    - lean-studio
+    - lean4
+    - pkcs7
+    - rfc3161
+    - rfc5652
+    - rsa
+    - security
+    - sha256
+    - smime
+    - tenet
+    - theorem-proving
+    - timestamping
+    - x509
+    language: Lean
+    created_at: '2026-09-28T21:54:21Z'
+    updated_at: '2026-09-28T23:13:18Z'
+    pushed_at: '2026-09-28T22:17:08Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 10
+    estimated_lean_loc: 2221
+    tree_truncated: false
+    query_matches:
+    - topic:lean4 created:>=2026-09-28 fork:false archived:false
   keithadler/lean-to-dot-net:
     url: https://github.com/keithadler/lean-to-dot-net
     first_seen_at: '2026-09-27T18:30:10+00:00'
@@ -126191,6 +127592,46 @@ github:
     - '"Lean 4" created:>=2026-09-18 fork:false archived:false'
     - mathlib created:>=2026-09-18 fork:false archived:false
     - topic:lean4 created:>=2026-09-18 fork:false archived:false
+  keithadler/nash-lean:
+    url: https://github.com/keithadler/nash-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: keithadler/nash-lean
+    description: John Nash's handwritten field equation for gravity, checked in core Lean
+      for every dimension and every metric, with a Lean Studio widget
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 2 Lean files
+    - about 860 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: geometry, logic, proof'
+    - 'educational terms: game'
+    stars: 0
+    license: MIT
+    topics:
+    - de-sitter
+    - formal-verification
+    - general-relativity
+    - john-nash
+    - lean4
+    - theorem-proving
+    language: Lean
+    created_at: '2026-09-29T03:15:10Z'
+    updated_at: '2026-09-29T03:15:23Z'
+    pushed_at: '2026-09-29T03:15:15Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 860
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - topic:lean4 created:>=2026-09-28 fork:false archived:false
   keithadler/penrose-lean:
     url: https://github.com/keithadler/penrose-lean
     first_seen_at: '2026-09-28T20:36:09+00:00'
@@ -126233,6 +127674,39 @@ github:
     query_matches:
     - language:Lean created:>=2026-09-27 fork:false archived:false
     - topic:lean4 created:>=2026-09-27 fork:false archived:false
+  keithadler/prism-fourier-proof:
+    url: https://github.com/keithadler/prism-fourier-proof
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: keithadler/prism-fourier-proof
+    description: Dark Side of the Moon as a Fourier transform, machine-checked in Lean 4 +
+      Mathlib (Tenet-verified)
+    signal: high
+    score: 7
+    reasons:
+    - Lake/Lean project files
+    - 2 Lean files
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, mathlib, physics'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:28:13Z'
+    updated_at: '2026-09-29T00:28:24Z'
+    pushed_at: '2026-09-29T00:28:22Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 76
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - mathlib created:>=2026-09-28 fork:false archived:false
   keithadler/square-game-lean:
     url: https://github.com/keithadler/square-game-lean
     first_seen_at: '2026-09-20T17:30:53+00:00'
@@ -132886,6 +134360,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-25 fork:false archived:false
+  kunalrelia/vccbg-secc-legacy:
+    url: https://github.com/KunalRelia/VCCBG-SecC-Legacy
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: KunalRelia/VCCBG-SecC-Legacy
+    description: ''
+    signal: medium
+    score: 3
+    reasons:
+    - 12 Lean files
+    - about 5228 Lean LOC
+    - Apache-2.0
+    - 'domain terms: formalization, graph, logic'
+    - 'tool terms: search'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T16:17:34Z'
+    updated_at: '2026-09-29T16:21:47Z'
+    pushed_at: '2026-09-29T16:19:42Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 12
+    estimated_lean_loc: 5228
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   kunhcz/erdos-481-nonlinear-lean:
     url: https://github.com/KunHcz/erdos-481-nonlinear-lean
     first_seen_at: '2026-09-17T18:20:38+00:00'
@@ -133209,6 +134713,39 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-21 fork:false archived:false
+  kylevpratt/nontrivial-rational-points-on-erdos-selfridge-curves:
+    url: https://github.com/kylevpratt/nontrivial-rational-points-on-erdos-selfridge-curves
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: kylevpratt/nontrivial-rational-points-on-erdos-selfridge-curves
+    description: "Lean 4 formalization accompanying the paper Nontrivial rational points on\
+      \ Erd\u0151s\u2013Selfridge curves"
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 25 Lean files
+    - about 6319 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: elliptic, formalization, mathlib'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T06:27:57Z'
+    updated_at: '2026-09-29T16:53:48Z'
+    pushed_at: '2026-09-29T16:53:42Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 25
+    estimated_lean_loc: 6319
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   kyo-oo/hc-proof:
     url: https://github.com/kyo-oo/HC-PROOF
     first_seen_at: '2026-09-20T17:30:53+00:00'
@@ -133335,6 +134872,38 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-09-10 fork:false archived:false'
+  l-oksanen/autoip:
+    url: https://github.com/l-oksanen/autoip
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: l-oksanen/autoip
+    description: ''
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 675 Lean files
+    - about 52959 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: algebra, analysis, formalization'
+    - 'educational terms: course'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:04:52Z'
+    updated_at: '2026-09-29T17:05:11Z'
+    pushed_at: '2026-09-29T17:04:57Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 675
+    estimated_lean_loc: 52959
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   l-oksanen/bp-tag:
     url: https://github.com/l-oksanen/bp-tag
     first_seen_at: '2026-09-05T16:52:10+00:00'
@@ -134920,6 +136489,34 @@ github:
     tree_truncated: false
     query_matches:
     - topic:lean4 created:>=2026-09-14 fork:false archived:false
+  lean-explore/lean-explore-bench:
+    url: https://github.com/lean-explore/lean-explore-bench
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: lean-explore/lean-explore-bench
+    description: Benchmarks for Lean 4 search engines
+    signal: low
+    score: -1
+    reasons:
+    - license unknown
+    - 'domain terms: concurrency'
+    - 'tool terms: repl, search'
+    stars: 1
+    license: null
+    topics: []
+    language: Python
+    created_at: '2026-09-29T01:08:23Z'
+    updated_at: '2026-09-29T17:53:19Z'
+    pushed_at: '2026-09-29T17:55:06Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 0
+    estimated_lean_loc: 0
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
   lean-mods/statsmllib:
     url: https://github.com/Lean-MoDS/StatsMLlib
     first_seen_at: '2026-07-29T15:58:51+00:00'
@@ -137460,6 +139057,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-24 fork:false archived:false
+  leantrustbuilders/lml-catalogue:
+    url: https://github.com/LeanTrustBuilders/lml-catalogue
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: LeanTrustBuilders/lml-catalogue
+    description: 'What LeanMachineLearning''s definitions are meant to be, declared from outside
+      it: domains, relations, characterizations, specifications'
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 3 Lean files
+    - about 274 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: analysis, mathlib, theorem'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:27:17Z'
+    updated_at: '2026-09-29T17:32:42Z'
+    pushed_at: '2026-09-29T17:38:21Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 3
+    estimated_lean_loc: 274
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   leantrustbuilders/mathlib-catalogue:
     url: https://github.com/LeanTrustBuilders/mathlib-catalogue
     first_seen_at: '2026-09-27T18:30:10+00:00'
@@ -138152,6 +139781,40 @@ github:
     - '"Lean 4" created:>=2026-08-15 fork:false archived:false'
     - language:Lean created:>=2026-08-15 fork:false archived:false
     - topic:lean4 created:>=2026-08-15 fork:false archived:false
+  leobon12/lean-formalizations:
+    url: https://github.com/leobon12/lean-formalizations
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: leobon12/lean-formalizations
+    description: Selected Lean 4 formalizations of probability and geometry results, with
+      exact statements and reproducible verification.
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 1009 Lean files
+    - about 343965 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, geometry, mathlib'
+    - 'personal terms: scratch'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T01:12:12Z'
+    updated_at: '2026-09-29T01:23:47Z'
+    pushed_at: '2026-09-29T01:23:38Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 1009
+    estimated_lean_loc: 343965
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   leodemoura/commute:
     url: https://github.com/leodemoura/Commute
     first_seen_at: '2026-09-19T17:19:21+00:00'
@@ -140029,6 +141692,38 @@ github:
       reason: Large Lean project on algorithmic learning theory; likely substantial formal
         math content.
       model: gpt-5.4-nano
+  lixiang90/erdos953-lower-bound-lean:
+    url: https://github.com/lixiang90/erdos953-lower-bound-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: lixiang90/erdos953-lower-bound-lean
+    description: "Lean 4 formalization of lower bounds for Erd\u0151s Problem 953 / JSP-000793"
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 23 Lean files
+    - about 2749 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, theorem, verification'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T10:41:43Z'
+    updated_at: '2026-09-29T10:58:17Z'
+    pushed_at: '2026-09-29T10:58:13Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 23
+    estimated_lean_loc: 2749
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   lixiang90/math-challenge-millennium:
     url: https://github.com/lixiang90/math-challenge-millennium
     first_seen_at: '2026-08-08T14:53:41+00:00'
@@ -143379,6 +145074,44 @@ github:
     - language:Lean created:>=2026-08-10 fork:false archived:false
     - mathlib created:>=2026-08-10 fork:false archived:false
     - topic:lean4 created:>=2026-08-10 fork:false archived:false
+  ma4ypic4y/proof-of-life:
+    url: https://github.com/ma4ypic4y/proof-of-life
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: ma4ypic4y/proof-of-life
+    description: 'A formally verified origin of life in a digital primordial soup: Google''s
+      Computational Life, re-run in 88 worlds, with the exact collision where life began proved
+      in Lean 4.'
+    signal: medium
+    score: 3
+    reasons:
+    - 74 Lean files
+    - about 52290 Lean LOC
+    - MIT
+    - 'domain terms: proof, theorem, verification'
+    - 'tool terms: repl'
+    stars: 0
+    license: MIT
+    topics:
+    - artificial-life
+    - computational-life
+    - formal-verification
+    - lean4
+    - self-replication
+    language: Lean
+    created_at: '2026-09-28T22:18:45Z'
+    updated_at: '2026-09-28T22:20:27Z'
+    pushed_at: '2026-09-28T22:20:22Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 74
+    estimated_lean_loc: 52290
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - topic:lean4 created:>=2026-09-28 fork:false archived:false
   mabs3d/diehard99:
     url: https://github.com/MABS3D/diehard99
     first_seen_at: '2026-09-08T17:57:38+00:00'
@@ -143706,6 +145439,38 @@ github:
     query_matches:
     - language:Lean created:>=2026-09-13 fork:false archived:false
     - topic:lean4 created:>=2026-09-13 fork:false archived:false
+  maiquanghiep/kriterion-bn254:
+    url: https://github.com/maiquanghiep/kriterion-bn254
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: maiquanghiep/kriterion-bn254
+    description: Kriterion BN254 scalar-multiplication garbled circuit entry (3-bit exception
+      slots on the babyvitbot/bn254 lineage)
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 433 Lean files
+    - about 181912 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: mathlib, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T06:45:41Z'
+    updated_at: '2026-09-29T09:35:35Z'
+    pushed_at: '2026-09-29T09:35:31Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 433
+    estimated_lean_loc: 181912
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   maix00/branchingprocess:
     url: https://github.com/maix00/BranchingProcess
     first_seen_at: '2026-09-27T18:30:10+00:00'
@@ -148757,6 +150522,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-23 fork:false archived:false
+  mfarhaanmath/slir:
+    url: https://github.com/MFarhaanmath/SLIR
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: MFarhaanmath/SLIR
+    description: ''
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 31 Lean files
+    - about 5230 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: proof, quantum, theorem'
+    - 'personal terms: sandbox'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:51:38Z'
+    updated_at: '2026-09-29T17:58:36Z'
+    pushed_at: '2026-09-29T17:58:25Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 31
+    estimated_lean_loc: 5230
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   mg-ra/categorical-structural-irreversibility:
     url: https://github.com/MG-RA/categorical-structural-irreversibility
     first_seen_at: '2026-08-19T14:56:51+00:00'
@@ -149468,6 +151265,37 @@ github:
     - '"Lean 4" created:>=2026-09-25 fork:false archived:false'
     - language:Lean created:>=2026-09-25 fork:false archived:false
     - mathlib created:>=2026-09-25 fork:false archived:false
+  mikhaillevit1987/rectangle-in-n-box:
+    url: https://github.com/MikhailLevit1987/rectangle-in-n-box
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: MikhailLevit1987/rectangle-in-n-box
+    description: When does a rectangle fit into an n-dimensional box? An explicit criterion
+      with a formal proof in Lean 4
+    signal: high
+    score: 6
+    reasons:
+    - 10 Lean files
+    - about 2475 Lean LOC
+    - Apache-2.0
+    - 'domain terms: mathlib, proof, theorem'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T06:18:36Z'
+    updated_at: '2026-09-29T09:36:10Z'
+    pushed_at: '2026-09-29T09:36:11Z'
+    default_branch: master
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 10
+    estimated_lean_loc: 2475
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   mikhailszh/weighted-lift-galois:
     url: https://github.com/MikhailSzh/weighted-lift-galois
     first_seen_at: '2026-07-21T15:56:44+00:00'
@@ -151478,6 +153306,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-25 fork:false archived:false
+  mmislan/palomar-p026-nonnegative-degradation-unistationarity:
+    url: https://github.com/mmislan/palomar-p026-nonnegative-degradation-unistationarity
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: mmislan/palomar-p026-nonnegative-degradation-unistationarity
+    description: Unistationarity of autocatalytic normal forms with nonnegative degradation;
+      Lean formalization.
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 93 Lean files
+    - about 31168 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, mathlib, proof'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T16:03:44Z'
+    updated_at: '2026-09-29T16:18:14Z'
+    pushed_at: '2026-09-29T16:27:54Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 93
+    estimated_lean_loc: 31168
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   mmislan/palomar-p029-digraph-support-families:
     url: https://github.com/mmislan/palomar-p029-digraph-support-families
     first_seen_at: '2026-09-26T17:48:13+00:00'
@@ -151606,6 +153466,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-24 fork:false archived:false
+  mmislan/palomar-p081-productive-core-np-completeness:
+    url: https://github.com/mmislan/palomar-p081-productive-core-np-completeness
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: mmislan/palomar-p081-productive-core-np-completeness
+    description: NP-completeness of unconstrained productive autocatalytic core detection;
+      Lean formalization.
+    signal: high
+    score: 9
+    reasons:
+    - Lake/Lean project files
+    - 641 Lean files
+    - about 147674 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, proof, theorem'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:34:23Z'
+    updated_at: '2026-09-29T19:09:41Z'
+    pushed_at: '2026-09-29T19:09:35Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 641
+    estimated_lean_loc: 147674
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   mmislan/palomar-p082-acr-zero-divisors:
     url: https://github.com/mmislan/palomar-p082-acr-zero-divisors
     first_seen_at: '2026-09-28T20:36:09+00:00'
@@ -151637,6 +153529,72 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-27 fork:false archived:false
+  mmislan/palomar-p086-d-stability-conp-hard:
+    url: https://github.com/mmislan/palomar-p086-d-stability-conp-hard
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: mmislan/palomar-p086-d-stability-conp-hard
+    description: Deciding D-stability is coNP-hard; explicit integer PARTITION reduction in
+      Lean.
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 55 Lean files
+    - about 11596 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: proof'
+    - 'tool terms: search'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:09:38Z'
+    updated_at: '2026-09-29T00:09:51Z'
+    pushed_at: '2026-09-29T00:26:17Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 55
+    estimated_lean_loc: 11596
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  mmislan/palomar-p087-d-stability-critical-points:
+    url: https://github.com/mmislan/palomar-p087-d-stability-critical-points
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: mmislan/palomar-p087-d-stability-critical-points
+    description: A critical-point criterion for D-stability in every dimension, formalized
+      in Lean.
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 42 Lean files
+    - about 7618 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: proof'
+    - 'educational terms: solutions'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T01:04:29Z'
+    updated_at: '2026-09-29T01:04:40Z'
+    pushed_at: '2026-09-29T01:17:21Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 42
+    estimated_lean_loc: 7618
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   mnehmos/bhformalization:
     url: https://github.com/Mnehmos/BHFormalization
     first_seen_at: '2026-07-17T15:48:42+00:00'
@@ -155319,6 +157277,38 @@ github:
       reason: Protocol research with TLA+ model checking and Lean 4 proofs; serious formal
         verification topic.
       model: gpt-5.4-nano
+  navindutta/cusick-lean4:
+    url: https://github.com/navindutta/cusick-lean4
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: navindutta/cusick-lean4
+    description: Lean 4 formalization of Cheng's 2026 proof of Cusick's binary digit sum conjecture
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 5 Lean files
+    - about 448 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, mathlib, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T12:47:55Z'
+    updated_at: '2026-09-29T15:02:39Z'
+    pushed_at: '2026-09-29T15:01:14Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 5
+    estimated_lean_loc: 448
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   navindutta/navier-stokes-3d-bkm-lean4:
     url: https://github.com/navindutta/navier-stokes-3d-bkm-lean4
     first_seen_at: '2026-08-20T14:59:14+00:00'
@@ -156234,6 +158224,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-05 fork:false archived:false
+  newbraham/hawk-algebraic-correctness-lean:
+    url: https://github.com/newbraham/hawk-algebraic-correctness-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: newbraham/hawk-algebraic-correctness-lean
+    description: ''
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 6 Lean files
+    - about 1706 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: algebra, formalization, geometry'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T17:09:44Z'
+    updated_at: '2026-09-29T15:45:52Z'
+    pushed_at: '2026-09-29T14:11:34Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 6
+    estimated_lean_loc: 1706
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   newcalculusclip/newcalculuslean:
     url: https://github.com/newcalculusclip/NewCalculusLean
     first_seen_at: '2026-07-23T16:04:36+00:00'
@@ -156298,6 +158319,39 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-07-26 fork:false archived:false'
+  ngoisigma/metaharmonystate-millennium-theorem:
+    url: https://github.com/NgoiSigma/MetaHarmonyState-Millennium-Theorem
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: NgoiSigma/MetaHarmonyState-Millennium-Theorem
+    description: MetaHarmonyState Millennium Theorem
+    signal: low
+    score: 2
+    reasons:
+    - Lake/Lean project files
+    - 27 Lean files
+    - about 5023 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: compiler, logic, mathlib'
+    - 'tool terms: search'
+    - 'personal terms: scratch'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T09:15:24Z'
+    updated_at: '2026-09-29T09:52:33Z'
+    pushed_at: '2026-09-29T10:02:12Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 27
+    estimated_lean_loc: 5023
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   ngundotra/awesome-lean-plugins:
     url: https://github.com/ngundotra/awesome-lean-plugins
     first_seen_at: '2026-08-22T14:42:22+00:00'
@@ -157122,6 +159176,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-24 fork:false archived:false
+  nikhilvanjani/bn254-gc:
+    url: https://github.com/nikhilvanjani/bn254-gc
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: nikhilvanjani/bn254-gc
+    description: ''
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 441 Lean files
+    - about 184226 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: mathlib, proof'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T16:55:27Z'
+    updated_at: '2026-09-29T18:31:48Z'
+    pushed_at: '2026-09-29T18:31:31Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 441
+    estimated_lean_loc: 184226
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   nikicat/verified-ledger:
     url: https://github.com/nikicat/verified-ledger
     first_seen_at: '2026-08-05T16:13:07+00:00'
@@ -159031,6 +161116,44 @@ github:
       verdict: skip
       reason: 'Empty repo: no description, zero files, zero stars, no math content.'
       model: gpt-5.4-nano
+  nyxfoundation/verity-aeneas-proofs:
+    url: https://github.com/NyxFoundation/verity-aeneas-proofs
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: NyxFoundation/verity-aeneas-proofs
+    description: Aeneas-generated Lean semantics and correspondence proofs for Verity against
+      formal-leanSpec
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 31 Lean files
+    - about 2671 Lean LOC
+    - Lake manifest
+    - MIT
+    - 'domain terms: crypto, proof, protocol'
+    - 'tool terms: repl'
+    stars: 0
+    license: MIT
+    topics:
+    - aeneas
+    - ethereum
+    - formal-verification
+    - lean4
+    language: Lean
+    created_at: '2026-09-29T01:43:55Z'
+    updated_at: '2026-09-29T12:32:27Z'
+    pushed_at: '2026-09-29T12:32:21Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 31
+    estimated_lean_loc: 2671
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - topic:lean4 created:>=2026-09-28 fork:false archived:false
   nzsn/arborium:
     url: https://github.com/NzSN/Arborium
     first_seen_at: '2026-08-02T15:31:38+00:00'
@@ -160929,6 +163052,37 @@ github:
       verdict: skip
       reason: Empty description and near-empty repo; likely template or placeholder.
       model: gpt-5.4-nano
+  oxunjonuz/aiodam-time-flow-research:
+    url: https://github.com/oxunjonuz/aiodam-time-flow-research
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: oxunjonuz/aiodam-time-flow-research
+    description: 'AIODAM autonomous research: formal identifiability audit of a time-flow
+      prediction on GW150914. English/Russian papers, Lean 4 proofs, code and artifacts.'
+    signal: low
+    score: 1
+    reasons:
+    - 5 Lean files
+    - about 702 Lean LOC
+    - license NOASSERTION
+    - 'domain terms: formalization, proof'
+    - 'tool terms: repl, search'
+    stars: 0
+    license: NOASSERTION
+    topics: []
+    language: Python
+    created_at: '2026-09-29T05:24:31Z'
+    updated_at: '2026-09-29T05:33:24Z'
+    pushed_at: '2026-09-29T05:33:22Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 5
+    estimated_lean_loc: 702
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
   p-pavel/lean-hoas:
     url: https://github.com/p-pavel/lean-hoas
     first_seen_at: '2026-09-25T18:43:31+00:00'
@@ -163869,6 +166023,35 @@ github:
       reason: Large Lean codebase likely math formalization; description missing but not clearly
         filler.
       model: gpt-5.4-nano
+  penghongzhong/ym-closed:
+    url: https://github.com/penghongzhong/YM-closed
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: penghongzhong/YM-closed
+    description: ''
+    signal: medium
+    score: 5
+    reasons:
+    - Lake/Lean project files
+    - 57 Lean files
+    - about 4500 Lean LOC
+    - license unknown
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:09:20Z'
+    updated_at: '2026-09-29T05:18:04Z'
+    pushed_at: '2026-09-29T05:18:00Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 57
+    estimated_lean_loc: 4500
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   pengsafari/jsp-000391-lean:
     url: https://github.com/PengSafari/jsp-000391-lean
     first_seen_at: '2026-09-18T17:44:08+00:00'
@@ -166703,6 +168886,35 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-25 fork:false archived:false
+  praxisfoundry001/the_turbulence_identity_problem:
+    url: https://github.com/praxisfoundry001/The_Turbulence_Identity_Problem
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: praxisfoundry001/The_Turbulence_Identity_Problem
+    description: ''
+    signal: medium
+    score: 5
+    reasons:
+    - 2 Lean files
+    - about 18265 Lean LOC
+    - license unknown
+    - 'domain terms: distributed, protocol'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:01:17Z'
+    updated_at: '2026-09-29T00:03:17Z'
+    pushed_at: '2026-09-29T00:03:13Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 18265
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   praxisfoundry001/when-is-quantum-gravity-required:
     url: https://github.com/praxisfoundry001/when-is-quantum-gravity-required
     first_seen_at: '2026-09-18T17:44:08+00:00'
@@ -168142,6 +170354,38 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-08-21 fork:false archived:false
+  prove2me/formalpedia:
+    url: https://github.com/prove2me/formalpedia
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: prove2me/formalpedia
+    description: Daily export of https://prove2.me/formalpedia
+    signal: low
+    score: 0
+    reasons:
+    - 46186 Lean files
+    - about 49121049 Lean LOC
+    - large tree
+    - Apache-2.0
+    - 'domain terms: graph, mathlib, proof'
+    - 'tool terms: repl'
+    - 'educational terms: solutions'
+    stars: 3
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T03:36:20Z'
+    updated_at: '2026-09-29T17:46:41Z'
+    pushed_at: '2026-09-29T11:49:50Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 46186
+    estimated_lean_loc: 49121049
+    tree_truncated: true
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   prparadoxy/leanbrainfuck:
     url: https://github.com/PrParadoxy/LeanBrainFuck
     first_seen_at: '2026-09-23T18:26:22+00:00'
@@ -171093,6 +173337,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-07-16 fork:false archived:false
+  rainwangphy/aftd-platform:
+    url: https://github.com/rainwangphy/aftd-platform
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: rainwangphy/aftd-platform
+    description: ''
+    signal: low
+    score: 2
+    reasons:
+    - 117 Lean files
+    - about 3325 Lean LOC
+    - license unknown
+    - 'domain terms: logic, mathlib, physics'
+    - 'educational terms: game, template'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T06:09:42Z'
+    updated_at: '2026-09-29T06:25:05Z'
+    pushed_at: '2026-09-29T06:24:23Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 117
+    estimated_lean_loc: 3325
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   raivydassimenas/tpil4:
     url: https://github.com/raivydassimenas/tpil4
     first_seen_at: '2026-07-24T15:49:09+00:00'
@@ -173728,6 +176002,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-08-29 fork:false archived:false
+  richp0123/erdos993-floor38:
+    url: https://github.com/RichP0123/erdos993-floor38
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: RichP0123/erdos993-floor38
+    description: Lean kernel-checked forest unimodality through 37 (custom final loader);
+      reusable Lean/Mathlib library.
+    signal: high
+    score: 6
+    reasons:
+    - 123 Lean files
+    - about 17481 Lean LOC
+    - Apache-2.0
+    - 'domain terms: graph, mathlib, proof'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T15:32:58Z'
+    updated_at: '2026-09-29T18:41:30Z'
+    pushed_at: '2026-09-29T18:41:15Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 123
+    estimated_lean_loc: 17481
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - mathlib created:>=2026-09-28 fork:false archived:false
   riflonnade/randomsettheory:
     url: https://github.com/Riflonnade/RandomSetTheory
     first_seen_at: '2026-09-16T18:14:15+00:00'
@@ -177570,6 +179875,38 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-08-02 fork:false archived:false'
     - topic:lean4 created:>=2026-08-02 fork:false archived:false
+  ryotaro-kawata-wa/counterfactual-parallel-unmasking:
+    url: https://github.com/ryotaro-kawata-wa/counterfactual-parallel-unmasking
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: ryotaro-kawata-wa/counterfactual-parallel-unmasking
+    description: Lean 4 formalization and reproducible experiments for Counterfactual Probing
+      for Parallel Unmasking with Hidden Forest Structure
+    signal: medium
+    score: 3
+    reasons:
+    - 175 Lean files
+    - about 43795 Lean LOC
+    - MIT
+    - 'domain terms: formalization, mathlib, proof'
+    - 'tool terms: search'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T13:42:04Z'
+    updated_at: '2026-09-29T13:43:03Z'
+    pushed_at: '2026-09-29T13:42:49Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 175
+    estimated_lean_loc: 43795
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   rysh/pvsnp:
     url: https://github.com/rysh/pvsnp
     first_seen_at: '2026-09-13T17:27:14+00:00'
@@ -181331,6 +183668,40 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-09-21 fork:false archived:false'
     - language:Lean created:>=2026-09-21 fork:false archived:false
+  scottnarmstrong/escauriazasereginsverak:
+    url: https://github.com/scottnarmstrong/EscauriazaSereginSverak
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: scottnarmstrong/EscauriazaSereginSverak
+    description: "The Escauriaza\u2013Seregin\u2013\u0160ver\xE1k theorem, formalized in Lean\
+      \ 4"
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 1013 Lean files
+    - about 273863 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, mathlib, proof'
+    - 'educational terms: solutions'
+    stars: 1
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T07:28:49Z'
+    updated_at: '2026-09-29T19:06:03Z'
+    pushed_at: '2026-09-29T19:05:58Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 1013
+    estimated_lean_loc: 273863
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   scottnarmstrong/markovprocess:
     url: https://github.com/scottnarmstrong/MarkovProcess
     first_seen_at: '2026-09-03T17:53:54+00:00'
@@ -182088,6 +184459,40 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-03 fork:false archived:false
+  selfreferencing/erdos993-lean:
+    url: https://github.com/selfreferencing/erdos993-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: selfreferencing/erdos993-lean
+    description: "Lean 4 proof of Erd\u0151s Problem #993 (every forest has a unimodal independence\
+      \ sequence), built on the proof of Tong Zhang and Wei Li"
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 641 Lean files
+    - about 432162 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, graph, proof'
+    - 'tool terms: repl'
+    stars: 1
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T15:25:48Z'
+    updated_at: '2026-09-29T06:14:23Z'
+    pushed_at: '2026-09-29T18:03:03Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 641
+    estimated_lean_loc: 432162
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   selpog/lean-ftap-closedness:
     url: https://github.com/selpoG/lean-ftap-closedness
     first_seen_at: '2026-09-20T17:30:53+00:00'
@@ -185474,6 +187879,48 @@ github:
       reason: "Grand-unified cognition theory; nonstandard \u201Caxiomatic system\u201D with\
         \ zero evidence of math."
       model: gpt-5.4-nano
+  siqiliu-tsinghua/li2rational:
+    url: https://github.com/siqiliu-tsinghua/Li2Rational
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: siqiliu-tsinghua/Li2Rational
+    description: "Lean 4 proofs of the irrationality of Li\u2082(r) at certain rational points\
+      \ r"
+    signal: high
+    score: 6
+    reasons:
+    - 1394 Lean files
+    - about 1083206 Lean LOC
+    - Apache-2.0
+    - 'domain terms: formalization, mathlib, proof'
+    stars: 0
+    license: Apache-2.0
+    topics:
+    - dilogarithm
+    - formal-verification
+    - formalization
+    - irrationality
+    - lean4
+    - mathlib
+    - number-theory
+    - polylogarithm
+    - theorem-proving
+    language: Lean
+    created_at: '2026-09-29T14:25:45Z'
+    updated_at: '2026-09-29T14:49:11Z'
+    pushed_at: '2026-09-29T14:40:28Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 1394
+    estimated_lean_loc: 1083206
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - mathlib created:>=2026-09-28 fork:false archived:false
+    - topic:lean4 created:>=2026-09-28 fork:false archived:false
   siqiliu-tsinghua/tautology:
     url: https://github.com/siqiliu-tsinghua/tautology
     first_seen_at: '2026-08-19T14:56:51+00:00'
@@ -196755,6 +199202,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-25 fork:false archived:false
+  the-omega-institute/binary-subspace-orthogonality:
+    url: https://github.com/the-omega-institute/binary-subspace-orthogonality
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: the-omega-institute/binary-subspace-orthogonality
+    description: Joint research on clique and chromatic numbers of binary subspace orthogonality
+      graphs
+    signal: low
+    score: 2
+    reasons:
+    - 4 Lean files
+    - about 28160 Lean LOC
+    - license unknown
+    - 'domain terms: formalization, graph, proof'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T16:24:26Z'
+    updated_at: '2026-09-29T10:57:28Z'
+    pushed_at: '2026-09-29T18:07:54Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 4
+    estimated_lean_loc: 28160
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   thebookersmith/hodge-structures-lean4:
     url: https://github.com/thebookersmith/hodge-structures-lean4
     first_seen_at: '2026-07-19T15:27:17+00:00'
@@ -198401,6 +200879,37 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-12 fork:false archived:false
+  thinkthoughts/lean-mode-transition:
+    url: https://github.com/thinkthoughts/lean-mode-transition
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: thinkthoughts/lean-mode-transition
+    description: Lean formalization of compact algebraic results from mode transition and
+      Zhu algebras, beginning with unity-driven injectivity and splitting results for \(\mathbb
+      Z\)-graded vertex algebras.
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 5 Lean files
+    - MIT
+    - 'domain terms: algebra, formalization, theorem'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T17:49:07Z'
+    updated_at: '2026-09-29T18:16:02Z'
+    pushed_at: '2026-09-29T18:15:52Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 5
+    estimated_lean_loc: 62
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   thinkthoughts/lean-perovskite:
     url: https://github.com/thinkthoughts/lean-perovskite
     first_seen_at: '2026-09-12T17:16:16+00:00'
@@ -207314,6 +209823,37 @@ github:
     query_matches:
     - '"Lean 4" created:>=2026-09-02 fork:false archived:false'
     - language:Lean created:>=2026-09-02 fork:false archived:false
+  wand125/n11-optimality-lean:
+    url: https://github.com/wand125/n11-optimality-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: wand125/n11-optimality-lean
+    description: 'Lean 4 formalization toward s(11) = T (optimality of Trump''s packing of
+      11 unit squares): upper bound, field-00, case transfer'
+    signal: high
+    score: 6
+    reasons:
+    - 7 Lean files
+    - about 1727 Lean LOC
+    - MIT
+    - 'domain terms: formalization, proof, theorem'
+    stars: 0
+    license: MIT
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T07:57:12Z'
+    updated_at: '2026-09-29T07:57:24Z'
+    pushed_at: '2026-09-29T07:57:19Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 7
+    estimated_lean_loc: 1727
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   wang-yifan666/cean_cc:
     url: https://github.com/Wang-yifan666/Cean_cc
     first_seen_at: '2026-09-21T19:34:10+00:00'
@@ -208628,6 +211168,40 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-09-26 fork:false archived:false'
+  willmfeldman/bernoulli-rectifiability:
+    url: https://github.com/willmfeldman/bernoulli-rectifiability
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: willmfeldman/bernoulli-rectifiability
+    description: "Lean 4 formalization of Kriventsov\u2013Weiss: rectifiability, finite Hausdorff\
+      \ measure and compactness for non-minimizing Bernoulli free boundaries"
+    signal: high
+    score: 6
+    reasons:
+    - Lake/Lean project files
+    - 208 Lean files
+    - about 88491 Lean LOC
+    - Lake manifest
+    - Apache-2.0
+    - 'domain terms: formalization, mathlib, proof'
+    - 'educational terms: solutions'
+    stars: 0
+    license: Apache-2.0
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T00:22:21Z'
+    updated_at: '2026-09-29T13:46:55Z'
+    pushed_at: '2026-09-29T14:17:21Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 208
+    estimated_lean_loc: 88491
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   willmfeldman/elliptic-bernoulli-foundations:
     url: https://github.com/willmfeldman/elliptic-bernoulli-foundations
     first_seen_at: '2026-09-28T20:36:09+00:00'
@@ -211374,6 +213948,39 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-18 fork:false archived:false
+  xiaoba2/lean1000:
+    url: https://github.com/xiaoba2/lean1000
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: xiaoba2/lean1000
+    description: Lean 4 formalization problems built with Mathlib
+    signal: high
+    score: 8
+    reasons:
+    - Lake/Lean project files
+    - 2 Lean files
+    - about 390 Lean LOC
+    - Lake manifest
+    - license unknown
+    - 'domain terms: formalization, mathlib'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T09:34:31Z'
+    updated_at: '2026-09-29T09:34:47Z'
+    pushed_at: '2026-09-29T09:34:42Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: true
+    has_readme: true
+    lean_file_count: 2
+    estimated_lean_loc: 390
+    tree_truncated: false
+    query_matches:
+    - '"Lean 4" created:>=2026-09-28 fork:false archived:false'
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+    - mathlib created:>=2026-09-28 fork:false archived:false
   xiaocuicuii/lean4agent-research:
     url: https://github.com/XIAOCUICUII/Lean4Agent-research
     first_seen_at: '2026-07-25T15:32:37+00:00'
@@ -211955,6 +214562,38 @@ github:
     tree_truncated: false
     query_matches:
     - '"Lean 4" created:>=2026-09-27 fork:false archived:false'
+  xiongweilin/distinction-self-reference-lean:
+    url: https://github.com/xiongweilin/distinction-self-reference-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: xiongweilin/distinction-self-reference-lean
+    description: Exploring a Lean proof for a minimal sufficient framework of self-referential
+      elements.
+    signal: medium
+    score: 4
+    reasons:
+    - Lake/Lean project files
+    - 78 Lean files
+    - about 7165 Lean LOC
+    - license unknown
+    - 'domain terms: formalization, proof, semantics'
+    - 'tool terms: search'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T08:02:38Z'
+    updated_at: '2026-09-29T14:04:40Z'
+    pushed_at: '2026-09-29T14:03:02Z'
+    default_branch: main
+    has_lakefile: true
+    has_toolchain: true
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 78
+    estimated_lean_loc: 7165
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   xiongweilin/responsibility_topology:
     url: https://github.com/xiongweilin/responsibility_topology
     first_seen_at: '2026-08-23T14:44:09+00:00'
@@ -212913,6 +215552,36 @@ github:
     tree_truncated: false
     query_matches:
     - language:Lean created:>=2026-09-07 fork:false archived:false
+  yanenli2/frontier-math-agents:
+    url: https://github.com/yanenli2/frontier-math-agents
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: yanenli2/frontier-math-agents
+    description: AI Agent teams for solving frontier math problems
+    signal: low
+    score: 2
+    reasons:
+    - 75 Lean files
+    - about 9914 Lean LOC
+    - license unknown
+    - 'domain terms: proof, theorem'
+    - 'tool terms: search'
+    stars: 1
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T02:02:00Z'
+    updated_at: '2026-09-29T18:04:39Z'
+    pushed_at: '2026-09-29T07:21:44Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: true
+    lean_file_count: 75
+    estimated_lean_loc: 9914
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   yannpequignot/lean-infinite-ramsey:
     url: https://github.com/yannpequignot/lean-infinite-ramsey
     first_seen_at: '2026-07-20T16:04:16+00:00'
@@ -214440,6 +217109,295 @@ github:
     tree_truncated: false
     query_matches:
     - mathlib created:>=2026-09-27 fork:false archived:false
+  yi-111-a/jsp-000087-lean:
+    url: https://github.com/Yi-111-a/jsp-000087-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000087-lean
+    description: JSP-000087 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 15 Lean files
+    - about 6845 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T19:04:44Z'
+    updated_at: '2026-09-29T17:47:31Z'
+    pushed_at: '2026-09-29T17:47:21Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 15
+    estimated_lean_loc: 6845
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000089-lean:
+    url: https://github.com/Yi-111-a/jsp-000089-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000089-lean
+    description: JSP-000089 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 5 Lean files
+    - about 677 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T19:05:23Z'
+    updated_at: '2026-09-29T16:28:45Z'
+    pushed_at: '2026-09-29T16:25:51Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 5
+    estimated_lean_loc: 677
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000090-lean:
+    url: https://github.com/Yi-111-a/jsp-000090-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000090-lean
+    description: JSP-000090 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 18 Lean files
+    - about 13189 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T20:30:02Z'
+    updated_at: '2026-09-29T19:03:52Z'
+    pushed_at: '2026-09-29T19:03:48Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 18
+    estimated_lean_loc: 13189
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000093-lean:
+    url: https://github.com/Yi-111-a/jsp-000093-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000093-lean
+    description: JSP-000093 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 5 Lean files
+    - about 1052 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-28T20:30:55Z'
+    updated_at: '2026-09-29T16:27:41Z'
+    pushed_at: '2026-09-29T16:25:54Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 5
+    estimated_lean_loc: 1052
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000096-lean:
+    url: https://github.com/Yi-111-a/jsp-000096-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000096-lean
+    description: JSP-000096 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 4 Lean files
+    - about 643 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T08:40:01Z'
+    updated_at: '2026-09-29T16:27:53Z'
+    pushed_at: '2026-09-29T16:25:56Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 4
+    estimated_lean_loc: 643
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000104-lean:
+    url: https://github.com/Yi-111-a/jsp-000104-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000104-lean
+    description: JSP-000104 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 6 Lean files
+    - about 1134 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T08:40:05Z'
+    updated_at: '2026-09-29T16:27:19Z'
+    pushed_at: '2026-09-29T16:26:00Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 6
+    estimated_lean_loc: 1134
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000108-lean:
+    url: https://github.com/Yi-111-a/jsp-000108-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000108-lean
+    description: JSP-000108 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 7 Lean files
+    - about 1386 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T10:42:54Z'
+    updated_at: '2026-09-29T16:27:47Z'
+    pushed_at: '2026-09-29T16:26:03Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 7
+    estimated_lean_loc: 1386
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000121-lean:
+    url: https://github.com/Yi-111-a/jsp-000121-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000121-lean
+    description: JSP-000121 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 5 Lean files
+    - about 591 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T10:42:58Z'
+    updated_at: '2026-09-29T16:28:20Z'
+    pushed_at: '2026-09-29T16:26:05Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 5
+    estimated_lean_loc: 591
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000126-lean:
+    url: https://github.com/Yi-111-a/jsp-000126-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000126-lean
+    description: JSP-000126 Lean formalization WIP
+    signal: medium
+    score: 5
+    reasons:
+    - 6 Lean files
+    - about 855 Lean LOC
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T15:52:57Z'
+    updated_at: '2026-09-29T18:02:04Z'
+    pushed_at: '2026-09-29T18:01:41Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 6
+    estimated_lean_loc: 855
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
+  yi-111-a/jsp-000139-lean:
+    url: https://github.com/Yi-111-a/jsp-000139-lean
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    full_name: Yi-111-a/jsp-000139-lean
+    description: JSP-000139 Lean formalization WIP
+    signal: medium
+    score: 3
+    reasons:
+    - 3 Lean files
+    - license unknown
+    - 'domain terms: formalization'
+    stars: 0
+    license: null
+    topics: []
+    language: Lean
+    created_at: '2026-09-29T15:53:02Z'
+    updated_at: '2026-09-29T18:42:58Z'
+    pushed_at: '2026-09-29T18:42:52Z'
+    default_branch: main
+    has_lakefile: false
+    has_toolchain: false
+    has_manifest: false
+    has_readme: false
+    lean_file_count: 3
+    estimated_lean_loc: 34
+    tree_truncated: false
+    query_matches:
+    - language:Lean created:>=2026-09-28 fork:false archived:false
   yi-111-a/jsp-000314-consecutive-products:
     url: https://github.com/Yi-111-a/jsp-000314-consecutive-products
     first_seen_at: '2026-09-21T19:34:10+00:00'
@@ -229505,4 +232463,117 @@ arxiv:
     summary: We prove that every smooth immersed disk in Euclidean three-space with nonzero
       constant mean curvature, regular up to the boundary and mapping its boundary diffeomorphically
       onto a circle, is an embedded spherical cap.
+    github_urls: []
+  2609.34460v1:
+    url: http://arxiv.org/abs/2609.34460v1
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    title: When Does Structured Knowledge Help Neural Theorem Proving?
+    authors:
+    - Sareh Nabi
+    - Roland Vogl
+    - Marzieh Nabi
+    published: '2026-09-28T07:17:43Z'
+    updated: '2026-09-28T07:17:43Z'
+    summary: 'Does structured mathematical knowledge help LLMs prove theorems in Lean 4? If
+      so, for which models, and does the answer vary by problem? Formal libraries such as
+      Mathlib encode 285,000+ verified theorems with syntactic dependencies, but the semantic
+      layer mathematicians rely on for discovery (analogies, generalizations, cross-domain
+      bridges) remains implicit. We introduce MathAgent, which builds this layer as a knowledge
+      graph, MathKG, and uses it to augment LLM theorem provers. MathKG connects 364 Mathlib
+      theorems and definitions by 9,434 typed semantic edges inferred via LLM-based relation
+      extraction anchored to verified Mathlib declarations. We run a controlled ablation across
+      four augmentation modes (no context, knowledge-graph context, Mathlib retrieval, both)
+      and five models: Qwen3-8B/32B, their Lean-specialized derivatives Goedel-Prover-V2-8B/32B,
+      and Claude Sonnet 4.6, on miniF2F, plus PutnamBench and MathOlympiadBench for Sonnet.
+      Three findings emerge. (i) Specialization dominates augmentation: Lean fine-tuning adds
+      33-38 percentage points of solve rate in every mode, and a specialized 8B model beats
+      a $4\times$ larger general one by 29-35 points, while no augmentation mode improves
+      solve rate by more than 3 points. (ii) Augmentation is capability-conditioned: knowledge-graph
+      context helps small models but hurts large ones, with the specialized model gaining
+      more relative to its general base at every scale. (iii) Yet the augmentation modes solve
+      different problems: an oracle selecting the best mode per problem solves 6% to 58% more
+      than the unaugmented prover, a complementarity effect that strengthens on harder problems
+      (32% more on PutnamBench). These results motivate adaptive strategies that select augmentation
+      by model capability and problem. Code, data, and artifacts are available at https://github.com/sarehnabi/mathagent'
+    github_urls:
+    - https://github.com/sarehnabi/mathagent
+  2609.34927v1:
+    url: http://arxiv.org/abs/2609.34927v1
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    title: Session Type State Spaces Form Lattices
+    authors:
+    - Alexandre Zua Caldeira
+    published: '2026-09-28T11:26:09Z'
+    updated: '2026-09-28T11:26:09Z'
+    summary: 'We prove that the state space of every well-formed session type, quotiented
+      by strongly connected components, forms a bounded lattice; n-ary parallel composition
+      yields product lattices. Two consequences follow: duality preserves the lattice up to
+      isomorphism, and Gay-Hole width subtyping corresponds to lattice embedding for non-recursive
+      types. We validate this on 108 benchmark protocols across networking, databases, distributed
+      systems, AI, and fault tolerance: all form lattices, 93 distributive, 15 non-distributive.
+      Mechanised in Lean 4 with two independently developed tool implementations.'
+    github_urls: []
+  2609.35062v1:
+    url: http://arxiv.org/abs/2609.35062v1
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    title: Blackwell Boundaries
+    authors:
+    - Shuo Li Liu
+    published: '2026-09-28T12:54:21Z'
+    updated: '2026-09-28T12:54:21Z'
+    summary: We give a finite simplex theorem. When the number of states equals the number
+      of source signals and the source posterior likelihood-ratio vectors form a simplex,
+      Blackwell dominance is characterized by a universal barycentric-coordinate condition.
+      We also give an explicit countable-state, countable-signal diagnostic-monitor theorem
+      with a closed-form universal criterion and a closed-form garbling; tensorization yields
+      dominance at every sample size. Finally, we provide a three-state, two-signal counterexample
+      to the sufficiency conjectured by Mu, Pomatto, Strack, and Tamuz for their many-state
+      moment-generating-function conditions for large-sample Blackwell dominance. The pair
+      satisfies strict comparisons on both parameter domains, all ordered Kullback-Leibler
+      inequalities, bounded likelihood ratios and pairwise genericity, but dominance fails
+      at every positive sample size. The finite theorem, obstruction, and continuum inequalities
+      are verified in Lean 4.30 with Mathlib; the countable diagnostic proof is given analytically.
+    github_urls: []
+  2609.35187v1:
+    url: http://arxiv.org/abs/2609.35187v1
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    title: Moments of random multiplicative functions with polynomial coefficients
+    authors:
+    - Xinyu Wang
+    published: '2026-09-28T13:49:23Z'
+    updated: '2026-09-28T13:49:23Z'
+    summary: 'Let $f$ be a Steinhaus random multiplicative function and let $g$ be a polynomial
+      of degree $d$. Write $S_N=N^{-1/2}\sum_{n\le N}f(n)\,e(g(n))$. We prove a quantitative
+      dichotomy for the moments of $S_N$: for each integer $s\ge 2$, either $\mathbb{E}|S_N|^{2s}$
+      is close to the Gaussian moment $s!$, or the coefficients of $g$ can be approximated
+      by rationals with a small denominator. In particular, if the coefficients of $g$ satisfy
+      a Diophantine condition, then $S_N$ converges in law to a complex normal distribution
+      with mean $0$ and variance $1$. Lean 4 code for the proofs is provided, for convenience
+      of verification.'
+    github_urls: []
+  2609.35762v1:
+    url: http://arxiv.org/abs/2609.35762v1
+    first_seen_at: '2026-09-29T19:28:43+00:00'
+    title: 'Peppy: An AI-Assisted Workflow for Tight Convergence Analysis of Optimization
+      Algorithms'
+    authors:
+    - Jaewook J. Suh
+    - TaeHo Yoon
+    - Edward Duc Hien Nguyen
+    - Bicheng Ying
+    - Shiqian Ma
+    published: '2026-09-28T17:59:12Z'
+    updated: '2026-09-28T17:59:12Z'
+    summary: This paper presents Peppy, an AI-assisted workflow for discovering tight, analytic
+      convergence proofs for first-order optimization algorithms. Generic approaches to using
+      LLMs to conduct mathematical research target an unspecified, broad spectrum of problems
+      and sometimes use the Lean 4 proof assistant for formalization. On the other hand, Peppy
+      leverages domain-specific knowledge more heavily and is thereby capable of constructing
+      the proofs in a more structured manner, which allow a minimal and accessible verification
+      through SymPy. We experimentally demonstrate through examples that Peppy provides a
+      rigorous, practical, and reproducible paradigm for AI-assisted theorem synthesis in
+      optimization. We further highlight its capability of closing several open problems on
+      tight convergence analysis of first-order optimization algorithms, including conjectures
+      for Nesterov's FGM. Overall, Peppy is designed to turn the art of optimization algorithm
+      analysis into a science.
     github_urls: []
